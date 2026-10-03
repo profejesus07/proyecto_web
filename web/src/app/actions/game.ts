@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { AVATAR_BASES, type AvatarBase, type CompleteResult } from "@/lib/data/types";
+import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
 import { PASS_MARK, gradeAnswers } from "@/lib/game/grading";
 import { ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
@@ -91,16 +92,33 @@ export async function submitMissionAction(missionId: string, answers: number[]):
   }
 }
 
-export type BuyOutcome = { ok: true; coins: number; name: string } | { ok: false; error: string };
+export type BuyOutcome = { ok: true; coins: number; name: string; quantity?: number } | { ok: false; error: string };
 
 export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
-  if (!SHOP_OPEN) return { ok: false, error: "La tienda todavía no está abierta." };
+  const aid = typeof itemId === "string" ? aidByItem(itemId) : undefined;
+  // Las ayudas que ya funcionan (Pista y 50/50) se venden aunque el resto de la tienda siga cerrada.
+  if (!SHOP_OPEN && !aid) return { ok: false, error: "La tienda todavía no está abierta." };
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const item = typeof itemId === "string" ? getItem(itemId) : undefined;
   const price = item ? priceOf(item) : null;
   if (!item || price === null || !(SHOP_CATEGORIES as readonly string[]).includes(item.categoria)) {
     return { ok: false, error: "Ese objeto no está a la venta." };
+  }
+  if (aid) {
+    if (viewer.xp < aid.minXp) return { ok: false, error: `Se desbloquea al llegar al rango ${aid.minRank}.` };
+    try {
+      const { coins, quantity } = await getRepo().buyConsumable(viewer.id, item.id, price, aid.maxStock);
+      revalidatePath("/tienda");
+      revalidatePath("/gremio");
+      revalidatePath("/perfil");
+      return { ok: true, coins, name: item.nombre, quantity };
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      if (msg.includes("reserva_llena")) return { ok: false, error: `Ya llevas el máximo (${aid.maxStock}). Úsalas en tus misiones.` };
+      if (msg.includes("monedas_insuficientes")) return { ok: false, error: "Te faltan monedas. ¡Completa misiones para ganar más!" };
+      return { ok: false, error: "No pudimos completar la compra. Inténtalo de nuevo." };
+    }
   }
   try {
     const { coins } = await getRepo().purchaseItem(viewer.id, item.id, price);
@@ -113,6 +131,39 @@ export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
     if (msg.includes("ya_lo_tienes")) return { ok: false, error: "Ya tienes este objeto." };
     if (msg.includes("monedas_insuficientes")) return { ok: false, error: "Te faltan monedas. ¡Completa misiones para ganar más!" };
     return { ok: false, error: "No pudimos completar la compra. Inténtalo de nuevo." };
+  }
+}
+
+export type AidOutcome =
+  | { ok: true; kind: AidKind; hint?: string; removed?: number[]; free: boolean; charged: boolean; left: number }
+  | { ok: false; error: string };
+
+const AID_MESSAGES: Record<string, string> = {
+  sin_unidades: "No te quedan. Consigue más en la tienda.",
+  tope_diario: "Ya usaste el máximo de hoy. Mañana podrás usar más.",
+  rango_insuficiente: "Esta ayuda se desbloquea en un rango más alto.",
+  sin_pista: "Esta pregunta no tiene pista.",
+  no_aplica: "Esta ayuda no sirve en esta pregunta.",
+  mision_bloqueada: MESSAGES.mision_bloqueada,
+  pregunta_no_encontrada: "No encontramos esa pregunta.",
+};
+
+/** Usa una Pista o un 50/50 en una pregunta. El servidor decide si cobra y qué revela. */
+export async function activateAidAction(questionId: string, kind: string): Promise<AidOutcome> {
+  if (typeof questionId !== "string" || questionId.length < 1 || questionId.length > 64 || !(kind in AIDS)) {
+    return { ok: false, error: "No pudimos usar esa ayuda." };
+  }
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
+  const rule = AIDS[kind as AidKind];
+  try {
+    const r = await getRepo().useAid(viewer.id, questionId, rule.itemId, rule.dailyCap, rule.minXp);
+    if (r.charged) revalidatePath("/tienda");
+    return { ok: true, kind: rule.kind, ...r };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    for (const [k, v] of Object.entries(AID_MESSAGES)) if (msg.includes(k)) return { ok: false, error: v };
+    return { ok: false, error: "No pudimos usar esa ayuda. Inténtalo de nuevo." };
   }
 }
 

@@ -1,7 +1,8 @@
 import "server-only";
+import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidResult, AidUseRow, AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -80,10 +81,13 @@ export function createSupabaseRepo(): Repo {
       const { data: c, error: e2 } = await db.from("courses").select("*").eq("slug", m.course_slug).eq("published", true).maybeSingle();
       if (e2) fail(e2, "curso");
       if (!c) return null;
-      // Nunca se selecciona correct_index ni explanation aquí: esos datos no viajan al navegador.
+      // Nunca se selecciona correct_index ni explanation aquí, y la pista solo se usa para saber si existe:
+      // esos datos no viajan al navegador.
       const { data: qs, error: e3 } = await db.from("questions").select("id,position,prompt,options,hint").eq("mission_id", missionId).order("position");
       if (e3) fail(e3, "preguntas");
-      const questions = (qs ?? []).map((q): PublicQuestion => ({ id: q.id, position: q.position, prompt: q.prompt, options: q.options as string[], hint: q.hint }));
+      const questions = (qs ?? []).map((q): PublicQuestion => ({
+        id: q.id, position: q.position, prompt: q.prompt, options: q.options as string[], hasHint: String(q.hint ?? "").trim() !== "",
+      }));
       return { mission: mission(m), course: course(c), questions };
     },
 
@@ -117,6 +121,39 @@ export function createSupabaseRepo(): Repo {
     async setAvatar(userId, base) {
       const { error } = await db.from("profiles").update({ avatar: { base } }).eq("id", userId);
       if (error) fail(error, "avatar");
+    },
+
+    async getConsumables(userId) {
+      const { data, error } = await db.from("consumables").select("item_id,quantity").eq("user_id", userId);
+      if (error) fail(error, "ayudas");
+      return Object.fromEntries((data ?? []).map((r) => [r.item_id as string, r.quantity as number]));
+    },
+
+    async getAidUsesToday(userId) {
+      const { data, error } = await db.from("aid_uses").select("item_id,mission_id,question_id,free,payload").eq("user_id", userId).eq("used_on", todayBogota());
+      if (error) fail(error, "ayudas usadas");
+      return (data ?? []).map((r): AidUseRow => {
+        const pl = (r.payload ?? {}) as { hint?: string; removed?: number[] };
+        return { itemId: r.item_id, missionId: r.mission_id, questionId: r.question_id, free: r.free, hint: pl.hint, removed: pl.removed };
+      });
+    },
+
+    async buyConsumable(userId, itemId, price, maxStock) {
+      const { data, error } = await db.rpc("buy_consumable", { p_user: userId, p_item: itemId, p_price: price, p_max: maxStock });
+      if (error) fail(error, "compra");
+      const r = data as { coins: number; quantity: number };
+      return { coins: r.coins, quantity: r.quantity };
+    },
+
+    async useAid(userId, questionId, itemId, dailyCap, minXp) {
+      const { data, error } = await db.rpc("use_aid", { p_user: userId, p_question: questionId, p_item: itemId, p_daily_cap: dailyCap, p_min_xp: minXp });
+      if (error) fail(error, "ayuda");
+      const r = data as Record<string, unknown>;
+      const out: AidResult = {
+        hint: r.hint as string | undefined, removed: r.removed as number[] | undefined,
+        free: r.free as boolean, charged: r.charged as boolean, left: r.left as number,
+      };
+      return out;
     },
   };
 }

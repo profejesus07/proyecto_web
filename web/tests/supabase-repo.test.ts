@@ -46,7 +46,8 @@ describe("repositorio de Supabase", () => {
     const q = calls.find((c) => c.table === "questions")!;
     expect(q.select).toBe("id,position,prompt,options,hint");
     expect(q.select).not.toMatch(/correct|explanation|\*/);
-    expect(play?.questions[0]).toEqual({ id: "q1", position: 1, prompt: "p", options: ["a", "b"], hint: "h" });
+    expect(play?.questions[0]).toEqual({ id: "q1", position: 1, prompt: "p", options: ["a", "b"], hasHint: true });
+    expect(JSON.stringify(play)).not.toContain('"h"');
   });
 
   it("solo lista cursos publicados", async () => {
@@ -81,5 +82,18 @@ describe("repositorio de Supabase", () => {
     rpcResult = { data: { coins: 80, item: "obj_ayuda_pista" }, error: null };
     expect(await createSupabaseRepo().purchaseItem("u", "obj_ayuda_pista", 20)).toEqual({ coins: 80 });
     expect(rpcCalls[0].fn).toBe("purchase_item");
+  });
+
+  it("usa ayudas con la función de la base de datos", async () => {
+    rpcResult = { data: { removed: [0, 2], free: false, charged: true, left: 3 }, error: null };
+    const r = await createSupabaseRepo().useAid("u", "q1", "obj_ayuda_5050", 5, 150);
+    expect(rpcCalls[0]).toEqual({ fn: "use_aid", args: { p_user: "u", p_question: "q1", p_item: "obj_ayuda_5050", p_daily_cap: 5, p_min_xp: 150 } });
+    expect(r).toEqual({ hint: undefined, removed: [0, 2], free: false, charged: true, left: 3 });
+  });
+
+  it("compra ayudas acumulables", async () => {
+    rpcResult = { data: { coins: 20, quantity: 2 }, error: null };
+    expect(await createSupabaseRepo().buyConsumable("u", "obj_ayuda_pista", 20, 20)).toEqual({ coins: 20, quantity: 2 });
+    expect(rpcCalls[0]).toEqual({ fn: "buy_consumable", args: { p_user: "u", p_item: "obj_ayuda_pista", p_price: 20, p_max: 20 } });
   });
 });

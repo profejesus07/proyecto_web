@@ -45,32 +45,48 @@ export function AvatarPicker({ current, rank }: { current: AvatarBase; rank: str
   );
 }
 
-export function BuyButton({ itemId, price, coins, owned, open }: { itemId: string; price: number; coins: number; owned: boolean; open: boolean }) {
+interface Stack {
+  have: number;
+  max: number;
+  dailyCap: number;
+  /** Rango necesario si todavía no se puede comprar. */
+  locked: string | null;
+}
+
+export function BuyButton({ itemId, price, coins, owned, open, stack }: { itemId: string; price: number; coins: number; owned: boolean; open: boolean; stack?: Stack }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   if (owned) return <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Ya lo tienes</span>;
   if (!open) return <span className="chip text-sm text-muted" title="La compra se abrirá pronto">🪙 {price} · Próximamente</span>;
+  if (stack?.locked) return <span className="chip text-sm text-muted">🔒 Se desbloquea en rango {stack.locked}</span>;
   const poor = coins < price;
+  const full = !!stack && stack.have >= stack.max;
 
   return (
     <div className="space-y-1.5">
+      {stack && (
+        <p className="flex justify-between text-xs text-muted">
+          <span>En tu mochila: <strong className="text-text">{stack.have}</strong> / {stack.max}</span>
+          <span>Máx. {stack.dailyCap} al día</span>
+        </p>
+      )}
       <button
         type="button"
         className="btn btn-primary btn-sm w-full"
-        disabled={pending || poor}
+        disabled={pending || poor || full}
         onClick={() =>
           start(async () => {
             const r = await buyItemAction(itemId);
-            setMsg(r.ok ? { ok: true, text: `¡Conseguiste ${r.name}!` } : { ok: false, text: r.error });
+            setMsg(r.ok ? { ok: true, text: r.quantity ? `¡+1 ${r.name}! Ahora tienes ${r.quantity}.` : `¡Conseguiste ${r.name}!` } : { ok: false, text: r.error });
             if (r.ok) router.refresh();
           })
         }
       >
-        {pending ? "Comprando…" : <>🪙 {price} · Comprar</>}
+        {pending ? "Comprando…" : full ? "Mochila llena" : <>🪙 {price} · Comprar</>}
       </button>
-      {poor && !msg && <p className="text-center text-xs text-muted">Te faltan {price - coins} monedas</p>}
+      {poor && !full && !msg && <p className="text-center text-xs text-muted">Te faltan {price - coins} monedas</p>}
       <p aria-live="polite" className={`text-center text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
     </div>
   );

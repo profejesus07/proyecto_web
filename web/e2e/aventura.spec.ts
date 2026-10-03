@@ -37,6 +37,22 @@ test("fallar no da premio y se puede reintentar", async ({ page }) => {
   await expect(page.getByText("Pregunta 1 de 4")).toBeVisible();
 });
 
+test("la primera pista de la misión es gratis; después hacen falta unidades", async ({ page }) => {
+  await page.goto("/mision/m1");
+  const ayudas = page.getByRole("group", { name: "Ayudas" });
+  await expect(ayudas.getByText("rango D")).toBeVisible(); // el 50/50 aún no está disponible
+  await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
+  await expect(page.getByRole("note")).toBeVisible();
+  await expect(ayudas.getByRole("button", { name: /Pista/ })).toHaveCount(0);
+  await page.locator("label:has(input[type=radio])").first().click();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await expect(ayudas.getByRole("button", { name: /Pista · tienes 0/ })).toBeDisabled();
+  await expect(ayudas.getByRole("link", { name: "Conseguir más en la tienda" })).toBeVisible();
+  // Al recargar, la pista ya revelada sigue ahí sin volver a cobrar.
+  await page.reload();
+  await expect(page.getByRole("note")).toBeVisible();
+});
+
 test("aprobar da XP, monedas y la primera insignia", async ({ page }) => {
   await play(page, "m1", CORRECT.m1);
   await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
@@ -63,10 +79,31 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await expect(page.getByText("¡Tienes un certificado!")).toBeVisible();
 });
 
-test("la tienda se puede explorar, pero las compras aún no están abiertas", async ({ page }) => {
-  await page.goto("/tienda");
+test("la tienda vende Pista y 50/50; lo demás sigue cerrado", async ({ page }) => {
+  await page.goto("/tienda?c=poder");
   await expect(page.getByText("Brann está preparando la forja")).toBeVisible();
   await expect(page.getByRole("button", { name: /Comprar/ })).toHaveCount(0);
+  await page.goto("/tienda");
+  const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
+  await card("50/50").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("50/50").getByText("Ahora tienes 1")).toBeVisible();
+  await card("Pista").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("Pista").getByText("Ahora tienes 1")).toBeVisible();
+});
+
+test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ page }) => {
+  await page.goto("/mision/m2");
+  const ayudas = page.getByRole("group", { name: "Ayudas" });
+  await ayudas.getByRole("button", { name: /50\/50 · tienes 1/ }).click();
+  await expect(ayudas.getByText("50/50 usado")).toBeVisible();
+  await expect(page.locator("label[data-descartada]")).toHaveCount(2);
+  const correct = page.locator("label:has(input[type=radio])").nth(CORRECT.m2[0]);
+  await expect(correct).not.toHaveAttribute("data-descartada");
+  await correct.click();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await expect(ayudas.getByRole("button", { name: /50\/50 · tienes 0/ })).toBeDisabled();
+  await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
+  await expect(page.getByRole("note")).toBeVisible();
 });
 
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {

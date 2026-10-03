@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
+import { activateAidAction, submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
 import { Sprite, asset } from "@/components/sprite";
 import { RANKS } from "@/lib/game/ranks";
 
@@ -15,8 +15,14 @@ export interface QuizProps {
   courseSlug: string;
   courseTitle: string;
   guardian: { slug: string; name: string };
-  questions: { id: string; prompt: string; options: string[]; hint: string }[];
+  questions: { id: string; prompt: string; options: string[]; hasHint: boolean }[];
   nextMissionId: string | null;
+  aids: {
+    pista: { stock: number; usedToday: number; cap: number; freeAvailable: boolean };
+    fifty: { stock: number; usedToday: number; cap: number; unlocked: boolean; minRank: string };
+  };
+  /** Lo que ya se reveló hoy en esta misión, por id de pregunta. */
+  revealed: Record<string, { hint?: string; removed?: number[] }>;
 }
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -39,13 +45,19 @@ export function Quiz(p: QuizProps) {
   const total = p.questions.length;
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<number[]>(() => Array(total).fill(-1));
-  const [hints, setHints] = useState<Set<number>>(new Set());
+  const [revealed, setRevealed] = useState(p.revealed);
+  const [pista, setPista] = useState(p.aids.pista);
+  const [fifty, setFifty] = useState(p.aids.fifty);
+  const [aidMsg, setAidMsg] = useState<string | null>(null);
+  const [aidPending, startAid] = useTransition();
   const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
   const [pending, startTransition] = useTransition();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const q = p.questions[idx];
   const chosen = answers[idx];
+  const shown = revealed[q.id] ?? {};
+  const removed = shown.removed ?? [];
   const last = idx === total - 1;
   const answered = answers.filter((a) => a >= 0).length;
 
@@ -54,6 +66,7 @@ export function Quiz(p: QuizProps) {
   }
   function go(to: number) {
     setIdx(to);
+    setAidMsg(null);
     requestAnimationFrame(() => headingRef.current?.focus());
   }
   function send() {
@@ -66,9 +79,35 @@ export function Quiz(p: QuizProps) {
   function retry() {
     setOutcome(null);
     setAnswers(Array(total).fill(-1));
-    setHints(new Set());
+    setAidMsg(null);
     setIdx(0);
   }
+  function askAid(kind: "pista" | "5050") {
+    const at = idx;
+    const qid = q.id;
+    setAidMsg(null);
+    startAid(async () => {
+      const r = await activateAidAction(qid, kind);
+      if (!r.ok) {
+        setAidMsg(r.error);
+        return;
+      }
+      setRevealed((all) => ({ ...all, [qid]: { ...all[qid], ...(r.hint !== undefined && { hint: r.hint }), ...(r.removed && { removed: r.removed }) } }));
+      if (kind === "pista") {
+        setPista((s) => ({ ...s, stock: r.left, usedToday: s.usedToday + (r.charged ? 1 : 0), freeAvailable: r.free ? false : s.freeAvailable }));
+      } else {
+        setFifty((s) => ({ ...s, stock: r.left, usedToday: s.usedToday + (r.charged ? 1 : 0) }));
+        // Si había elegido una opción descartada, se libera.
+        if (r.removed) setAnswers((a) => a.map((v, k) => (k === at && r.removed!.includes(v) ? -1 : v)));
+      }
+    });
+  }
+
+  const pistaCapped = pista.usedToday >= pista.cap;
+  const pistaReady = pista.freeAvailable || (pista.stock > 0 && !pistaCapped);
+  const fiftyCapped = fifty.usedToday >= fifty.cap;
+  const fiftyReady = fifty.unlocked && fifty.stock > 0 && !fiftyCapped;
+  const needShop = (q.hasHint && !shown.hint && !pista.freeAvailable && pista.stock === 0) || (fifty.unlocked && removed.length === 0 && fifty.stock === 0);
 
   // ===== Resultado =====
   if (outcome?.ok) {
@@ -190,21 +229,47 @@ export function Quiz(p: QuizProps) {
         <legend className="sr-only">Pregunta {idx + 1}</legend>
         <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">{q.prompt}</h2>
         <div className="grid gap-3" role="radiogroup" aria-label="Opciones">
-          {q.options.map((opt, i) => (
-            <label key={i} className="cursor-pointer">
-              <input type="radio" name={`q-${q.id}`} value={i} checked={chosen === i} onChange={() => choose(i)} className="peer sr-only" />
-              <span className="flex items-center gap-4 rounded-2xl border-2 border-line bg-bg/40 p-4 text-lg transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan hover:border-[#5a52b8]">
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 font-display font-extrabold" aria-hidden="true">{LETTERS[i]}</span>
-                <span className="font-medium">{opt}</span>
-              </span>
-            </label>
-          ))}
+          {q.options.map((opt, i) => {
+            const out = removed.includes(i);
+            return (
+              <label key={i} className={out ? "cursor-not-allowed" : "cursor-pointer"} data-descartada={out || undefined}>
+                <input type="radio" name={`q-${q.id}`} value={i} checked={chosen === i} onChange={() => choose(i)} disabled={out} className="peer sr-only" />
+                <span className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-lg transition peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${out ? "border-dashed border-line/60 bg-bg/20 opacity-45" : "border-line bg-bg/40 peer-checked:border-cyan peer-checked:bg-cyan/10 hover:border-[#5a52b8]"}`}>
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 font-display font-extrabold" aria-hidden="true">{out ? "✕" : LETTERS[i]}</span>
+                  <span className={`font-medium ${out ? "line-through" : ""}`}>{opt}</span>
+                  {out && <span className="sr-only"> (descartada por el 50/50)</span>}
+                </span>
+              </label>
+            );
+          })}
         </div>
-        {hints.has(idx) ? (
-          <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">💡 {q.hint}</p>
-        ) : (
-          <button type="button" onClick={() => setHints((h) => new Set(h).add(idx))} className="btn btn-ghost btn-sm">💡 Ver una pista</button>
+
+        {shown.hint && (
+          <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">💡 {shown.hint}</p>
         )}
+
+        <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
+          <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
+          {q.hasHint && !shown.hint && (
+            <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
+              title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
+              💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
+            </button>
+          )}
+          {removed.length > 0 ? (
+            <span className="chip text-sm text-muted">🔮 50/50 usado</span>
+          ) : !fifty.unlocked ? (
+            <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}>🔒 50/50 · rango {fifty.minRank}</span>
+          ) : (
+            <button type="button" onClick={() => askAid("5050")} disabled={!fiftyReady || aidPending || pending} className="btn btn-ghost btn-sm"
+              title={fiftyCapped ? "Llegaste al máximo de 50/50 de hoy" : "Quita la mitad de las respuestas incorrectas"}>
+              🔮 50/50 · {fiftyCapped ? "tope de hoy" : `tienes ${fifty.stock}`}
+            </button>
+          )}
+          {aidPending && <span className="text-sm text-muted">Usando ayuda…</span>}
+          {needShop && <Link href="/tienda?c=ayuda" className="text-sm font-semibold text-cyan underline-offset-4 hover:underline">Conseguir más en la tienda</Link>}
+        </div>
+        <p aria-live="polite" className="min-h-0 text-sm font-medium text-[#ffb3b3] empty:hidden">{aidMsg}</p>
       </fieldset>
 
       {outcome && !outcome.ok && (

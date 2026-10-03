@@ -44,7 +44,8 @@ export interface PublicQuestion {
   position: number;
   prompt: string;
   options: string[];
-  hint: string;
+  /** Solo dice si existe pista; el texto se entrega al usar la ayuda «Pista». */
+  hasHint: boolean;
 }
 
 export interface MissionPlay {
@@ -88,6 +89,24 @@ export interface InventoryRow {
   acquiredAt: string;
 }
 
+/** Ayuda usada hoy (en cualquier misión). */
+export interface AidUseRow {
+  itemId: string;
+  missionId: string;
+  questionId: string;
+  free: boolean;
+  hint?: string;
+  removed?: number[];
+}
+
+export interface AidResult {
+  hint?: string;
+  removed?: number[];
+  free: boolean;
+  charged: boolean;
+  left: number;
+}
+
 /** Todo lo que el servidor necesita de la base de datos. Una implementación real (Supabase) y otra en memoria (vista previa). */
 export interface Repo {
   getProfile(userId: string): Promise<Profile | null>;
@@ -101,4 +120,10 @@ export interface Repo {
   completeMission(userId: string, missionId: string, score: number, passMark: number, items: string[]): Promise<CompleteResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
   setAvatar(userId: string, base: AvatarBase): Promise<void>;
+  /** Unidades de cada ayuda consumible: { item_id: cantidad }. */
+  getConsumables(userId: string): Promise<Record<string, number>>;
+  /** Ayudas usadas hoy (fecha de Colombia). */
+  getAidUsesToday(userId: string): Promise<AidUseRow[]>;
+  buyConsumable(userId: string, itemId: string, price: number, maxStock: number): Promise<{ coins: number; quantity: number }>;
+  useAid(userId: string, questionId: string, itemId: string, dailyCap: number, minXp: number): Promise<AidResult>;
 }

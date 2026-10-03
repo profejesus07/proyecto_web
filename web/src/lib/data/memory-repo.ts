@@ -1,7 +1,8 @@
 import seed from "@/content/primer-portal.json";
+import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidUseRow, AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -17,6 +18,8 @@ interface State {
   progress: Map<string, ProgressRow>;
   bosses: Set<string>;
   inventory: InventoryRow[];
+  consumables: Map<string, number>;
+  aidUses: (AidUseRow & { day: string })[];
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -28,6 +31,8 @@ function state(): State {
       progress: new Map(),
       bosses: new Set(),
       inventory: [],
+      consumables: new Map(),
+      aidUses: [],
     };
   }
   return g.__umbralPreview;
@@ -50,7 +55,7 @@ export function createMemoryRepo(): Repo {
     async getMissionPlay(id): Promise<MissionPlay | null> {
       const mission = missions.find((m) => m.id === id);
       if (!mission) return null;
-      return { mission, course: courseRow, questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hint: q.hint })) };
+      return { mission, course: courseRow, questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
     },
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
       return questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, correctIndex: q.correct_index, explanation: q.explanation }));
@@ -86,6 +91,46 @@ export function createMemoryRepo(): Repo {
       return { coins: s.profile.coins };
     },
     async setAvatar(_u, base: AvatarBase) { state().profile = { ...state().profile, avatarBase: base }; },
+    async getConsumables() { return Object.fromEntries(state().consumables); },
+    async getAidUsesToday() {
+      const day = todayBogota();
+      return state().aidUses.filter((u) => u.day === day).map((u): AidUseRow => ({ itemId: u.itemId, missionId: u.missionId, questionId: u.questionId, free: u.free, hint: u.hint, removed: u.removed }));
+    },
+    async buyConsumable(_u, itemId, price, maxStock) {
+      const s = state();
+      const have = s.consumables.get(itemId) ?? 0;
+      if (have >= maxStock) throw new Error("reserva_llena");
+      if (s.profile.coins < price) throw new Error("monedas_insuficientes");
+      s.profile = { ...s.profile, coins: s.profile.coins - price };
+      s.consumables.set(itemId, have + 1);
+      return { coins: s.profile.coins, quantity: have + 1 };
+    },
+    async useAid(_u, questionId, itemId, dailyCap, minXp) {
+      const s = state();
+      const day = todayBogota();
+      const missionId = questionId.replace(/q\d+$/, "");
+      const m = missions.find((x) => x.id === missionId);
+      const qi = Number(questionId.slice(missionId.length + 1)) - 1;
+      const q = questions(missionId)[qi];
+      if (!m || !q) throw new Error("pregunta_no_encontrada");
+      if (missions.some((p) => p.position < m.position && !s.progress.get(p.id)?.completed)) throw new Error("mision_bloqueada");
+      const left = () => s.consumables.get(itemId) ?? 0;
+      const prev = s.aidUses.find((u) => u.day === day && u.itemId === itemId && u.questionId === questionId);
+      if (prev) return { hint: prev.hint, removed: prev.removed, free: prev.free, charged: false, left: left() };
+      if (s.profile.xp < minXp) throw new Error("rango_insuficiente");
+      const isHint = itemId === "obj_ayuda_pista";
+      const free = isHint && !s.aidUses.some((u) => u.day === day && u.itemId === itemId && u.missionId === missionId && u.free);
+      if (!free) {
+        if (s.aidUses.filter((u) => u.day === day && u.itemId === itemId && !u.free).length >= dailyCap) throw new Error("tope_diario");
+        if (left() < 1) throw new Error("sin_unidades");
+        s.consumables.set(itemId, left() - 1);
+      }
+      const wrong = q.options.map((_, i) => i).filter((i) => i !== q.correct_index).sort(() => Math.random() - 0.5);
+      const removed = isHint ? undefined : wrong.slice(0, Math.min(Math.ceil(wrong.length / 2), wrong.length - 1)).sort((a, b) => a - b);
+      const use = { itemId, missionId, questionId, free, hint: isHint ? q.hint : undefined, removed, day };
+      s.aidUses.push(use);
+      return { hint: use.hint, removed, free, charged: !free, left: left() };
+    },
   };
 }
 

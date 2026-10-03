@@ -7,14 +7,16 @@ import { requireViewer } from "@/lib/auth";
 import { CATEGORY_LABEL, RARITY, itemImage, priceOf, shopItems, SHOP_CATEGORIES } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import { SHOP_OPEN } from "@/lib/features";
+import { aidByItem } from "@/lib/game/aids";
 
 export const metadata: Metadata = { title: "Tienda y Arsenal" };
 
 export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
   const viewer = await requireViewer("/tienda");
   const sp = await searchParams;
-  const cat = typeof sp.c === "string" && (SHOP_CATEGORIES as readonly string[]).includes(sp.c) ? sp.c : "poder";
-  const inventory = await getRepo().getInventory(viewer.id);
+  const cat = typeof sp.c === "string" && (SHOP_CATEGORIES as readonly string[]).includes(sp.c) ? sp.c : SHOP_OPEN ? "poder" : "ayuda";
+  const repo = getRepo();
+  const [inventory, stock] = await Promise.all([repo.getInventory(viewer.id), repo.getConsumables(viewer.id)]);
   const owned = new Set(inventory.map((i) => i.itemId));
   const all = shopItems();
   const items = all.filter((i) => i.categoria === cat).sort((a, b) => (priceOf(a) ?? 0) - (priceOf(b) ?? 0));
@@ -31,7 +33,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
       {!SHOP_OPEN && (
         <p role="note" className="panel flex items-start gap-3 !border-gold/50 p-4 text-[#ffe3a0]">
           <span aria-hidden="true">🛠️</span>
-          <span><strong>Brann está preparando la forja.</strong> Ya puedes ver todo lo que vendrá. Las compras se abrirán cuando estos objetos ya funcionen dentro de las misiones, y tus monedas te estarán esperando.</span>
+          <span><strong>Brann está preparando la forja.</strong> Ya puedes comprar <Link href="/tienda?c=ayuda" className="font-bold underline underline-offset-4">Pista y 50/50</Link> para usarlas en tus misiones. Lo demás se abrirá cuando ya funcione dentro del juego, y tus monedas te estarán esperando.</span>
         </p>
       )}
 
@@ -48,6 +50,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
         {items.map((it) => {
           const r = RARITY[it.rareza];
           const price = priceOf(it)!;
+          const aid = aidByItem(it.id);
           return (
             <li key={it.id} className="panel flex flex-col gap-3 p-4" style={{ borderColor: `${r.color}55` }}>
               <div className="grid h-32 place-items-center rounded-xl bg-bg/40">
@@ -58,7 +61,12 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
                 <h2 className="text-lg leading-tight">{it.nombre}</h2>
                 <p className="text-sm text-muted">{it.descripcion}</p>
               </div>
-              <div className="mt-auto"><BuyButton itemId={it.id} price={price} coins={viewer.coins} owned={owned.has(it.id)} open={SHOP_OPEN} /></div>
+              <div className="mt-auto">{aid ? (
+                <BuyButton itemId={it.id} price={price} coins={viewer.coins} open owned={false}
+                  stack={{ have: stock[it.id] ?? 0, max: aid.maxStock, dailyCap: aid.dailyCap, locked: viewer.xp < aid.minXp ? aid.minRank : null }} />
+              ) : (
+                <BuyButton itemId={it.id} price={price} coins={viewer.coins} owned={owned.has(it.id)} open={SHOP_OPEN} />
+              )}</div>
             </li>
           );
         })}
