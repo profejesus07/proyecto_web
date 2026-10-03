@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AvatarFace } from "@/components/avatar-face";
+import { SpeechBubble } from "@/components/dialogue";
+import { SoraWelcome } from "@/components/sora-welcome";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
 import { getItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
+import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
+import { kuroStage } from "@/lib/game/battle";
 import { rankProgress } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "El Gremio" };
@@ -18,7 +22,9 @@ function isDay(): boolean {
 
 export default async function GremioPage() {
   const viewer = await requireViewer("/gremio");
-  const [courses, inventory] = await Promise.all([loadCourseViews(viewer.id), getRepo().getInventory(viewer.id)]);
+  const [courses, inventory, shelves] = await Promise.all([loadCourseViews(viewer.id), getRepo().getInventory(viewer.id), loadChronicles(viewer)]);
+  const unread = unreadCount(shelves);
+  const newest = shelves.flatMap((s) => s.chapters).filter((c) => c.unlocked && !c.read).at(-1);
   const rank = rankProgress(viewer.xp).rank;
   const pending = courses.find((c) => c.next);
   const allDone = courses.length > 0 && !pending;
@@ -55,10 +61,22 @@ export default async function GremioPage() {
           <div className="relative hidden h-72 md:block" aria-hidden="true">
             <Sprite src={asset.sora("saludar")} alt="" decorative className="absolute bottom-[-6%] right-[6%] h-[110%] w-auto" />
             <Sprite src={asset.avatar(viewer.avatarBase, rank.key)} alt="" decorative className="absolute bottom-[-8%] right-[38%] h-[105%] w-auto" />
-            <Sprite src={asset.kuro("reposo")} alt="" decorative className="absolute bottom-0 right-[66%] h-[42%] w-auto" />
+            <Sprite src={asset.kuro("reposo", kuroStage(rank.key))} alt="" decorative className="absolute bottom-0 right-[66%] h-[42%] w-auto" />
           </div>
         </div>
       </section>
+
+      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} />}
+
+      {newest && (
+        <section aria-label="Crónicas nuevas" className="panel flex flex-wrap items-center gap-4 !border-violet/40 p-4 sm:p-5">
+          <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet" className="min-w-0 flex-1">
+            {unread === 1 ? "Se abrió un capítulo nuevo de las Crónicas: " : `Tienes ${unread} capítulos nuevos en las Crónicas. El más reciente: `}
+            <strong>«{newest.chapter.title}»</strong>.
+          </SpeechBubble>
+          <Link href={`/cronicas/${newest.chapter.id}`} className="btn btn-secondary">📜 Leer ahora</Link>
+        </section>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <RankCard xp={viewer.xp} />

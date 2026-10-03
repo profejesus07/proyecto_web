@@ -28,5 +28,6 @@ export const asset = {
   avatar: (base: string, rank: string) => `/assets/avatares/${base}/${base}-rango-${rank.toLowerCase()}-reposo.svg`,
   avatarAnim: (base: string, anim: string) => `/assets/avatares/${base}/${base}-${anim}.svg`,
   sora: (anim = "reposo") => `/assets/guias/sora/sora-${anim}.svg`,
+  eon: (anim = "reposo") => `/assets/personajes/eon/eon-${anim}.svg`,
   kuro: (anim = "reposo", stage: "cachorro" | "joven" | "majestuoso" = "cachorro") => `/assets/guias/kuro-${stage}/kuro-${stage}-${anim}.svg`,
 };

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
+import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
 import { getRepo } from "@/lib/data";
 import { AVATAR_BASES, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
 import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
@@ -29,7 +30,7 @@ export interface GrantedItem {
 }
 
 export type SubmitOutcome =
-  | { ok: true; passMark: number; review: ReviewRow[]; result: CompleteResult; newRanks: string[]; items: GrantedItem[] }
+  | { ok: true; passMark: number; review: ReviewRow[]; result: CompleteResult; newRanks: string[]; items: GrantedItem[]; chronicles: { id: string; title: string }[] }
   | { ok: false; error: string };
 
 const MESSAGES: Record<string, string> = {
@@ -92,6 +93,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
     revalidatePath("/portales", "layout");
     revalidatePath("/perfil");
     revalidatePath("/tienda");
+    revalidatePath("/cronicas", "layout");
 
     const { answers, ...rest } = result;
     return {
@@ -100,6 +102,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
       review: key.map((k, i) => ({ correct: answers[i] === k.correctIndex, chosen: answers[i] ?? -1, correctIndex: k.correctIndex, explanation: k.explanation })),
       result: rest,
       newRanks: result.first ? ranksReached(viewer.xp, result.xp).map((r) => r.key) : [],
+      chronicles: result.first ? chaptersUnlockedBy(play.course.slug, play.mission.position).map((c) => ({ id: c.id, title: c.title })) : [],
       items: result.granted.flatMap((id) => {
         const it = getItem(id);
         return it ? [{ id, name: it.nombre, alt: it.alt, image: itemImage(it), rarity: RARITY[it.rareza].label, color: RARITY[it.rareza].color }] : [];
@@ -190,5 +193,22 @@ export async function selectAvatarAction(base: string): Promise<{ ok: boolean }>
   if (!viewer || !(AVATAR_BASES as readonly string[]).includes(base)) return { ok: false };
   await getRepo().setAvatar(viewer.id, base as AvatarBase);
   revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** La bienvenida de Sora ya se vio (no vuelve a aparecer sola). */
+export async function markIntroSeenAction(): Promise<{ ok: boolean }> {
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false };
+  await getRepo().markIntroSeen(viewer.id);
+  revalidatePath("/gremio");
+  return { ok: true };
+}
+
+/** Marca un capítulo de las Crónicas como leído (solo si existe). */
+export async function markChapterReadAction(id: string): Promise<{ ok: boolean }> {
+  const viewer = await getViewer();
+  if (!viewer || typeof id !== "string" || !chapterById(id)) return { ok: false };
+  if (!viewer.chroniclesRead.includes(id)) await getRepo().markChapterRead(viewer.id, id);
   return { ok: true };
 }

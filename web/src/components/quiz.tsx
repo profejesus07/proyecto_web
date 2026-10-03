@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { preload } from "react-dom";
 import { activateAidAction, answerQuestionAction, submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
+import { SpeechBubble } from "@/components/dialogue";
 import { Sprite, asset } from "@/components/sprite";
 import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
 import { PASS_MARK } from "@/lib/game/grading";
@@ -255,6 +256,18 @@ export function Quiz(p: QuizProps) {
                 </ul>
               </div>
             )}
+            {outcome.chronicles.length > 0 && (
+              <div className="w-full max-w-xl pt-2 text-left">
+                <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet">
+                  {outcome.chronicles.length === 1 ? "¡Se abrió un capítulo nuevo de las Crónicas!" : "¡Se abrieron capítulos nuevos de las Crónicas!"}
+                  <span className="mt-2 flex flex-wrap gap-2">
+                    {outcome.chronicles.map((c) => (
+                      <Link key={c.id} href={`/cronicas/${c.id}`} className="btn btn-secondary btn-sm">📜 {c.title}</Link>
+                    ))}
+                  </span>
+                </SpeechBubble>
+              </div>
+            )}
             <div className="flex flex-wrap justify-center gap-3 pt-2">
               {win && p.nextMissionId && <Link href={`/mision/${p.nextMissionId}`} className="btn btn-primary btn-lg">Siguiente misión</Link>}
               {!win && <button type="button" onClick={retry} className="btn btn-primary btn-lg">Intentarlo de nuevo</button>}
@@ -289,8 +302,18 @@ export function Quiz(p: QuizProps) {
       <header className="space-y-1">
         <p className="eyebrow">{p.isBoss ? `Prueba de ${p.guardian.name}` : p.courseTitle}</p>
         <h1 className="text-2xl leading-tight sm:text-3xl">{p.title}</h1>
-        {answeredCount === 0 && <p className="text-sm text-muted">{p.intro}</p>}
       </header>
+
+      {answeredCount === 0 && (
+        <SpeechBubble name="Maestra Sora" src={asset.sora(p.isBoss ? "alerta" : "hablar")} alt="La Maestra Sora" tone={p.isBoss ? "coral" : "cyan"}>
+          <p>{p.intro}</p>
+          <p className="mt-1.5 text-sm text-muted">
+            {p.isBoss
+              ? `Necesitas ${needed} aciertos de ${total} para purificarlo. Si te equivocas, no pasa nada: Kuro te explica y sigues.`
+              : `${total} enemigos custodian esta sala. Elige tu respuesta y pulsa «Responder»; si fallas, Kuro te cuenta por qué.`}
+          </p>
+        </SpeechBubble>
+      )}
 
       {/* Escena: Kuro a la izquierda, el enemigo o el Guardián a la derecha. */}
       <section ref={stageRef} aria-label={p.isBoss ? `Batalla contra ${p.guardian.name}` : "Mazmorra"} className="panel relative scroll-mt-20 isolate aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9]">

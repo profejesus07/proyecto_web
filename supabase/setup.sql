@@ -806,3 +806,11 @@ revoke all on function public.answer_question(uuid, uuid, integer, integer) from
 revoke all on function public.finish_attempt(uuid, uuid, integer, text[]) from public, anon, authenticated;
 grant execute on function public.answer_question(uuid, uuid, integer, integer) to service_role;
 grant execute on function public.finish_attempt(uuid, uuid, integer, text[]) to service_role;
+
+-- >>> 0008_bienvenida_y_cronicas.sql
+-- Bienvenida de Sora y lectura de Crónicas.
+-- Las cambia solo el servidor (el navegador sigue pudiendo editar únicamente su nombre).
+-- Sin DROP: se puede ejecutar varias veces.
+
+alter table public.profiles add column if not exists intro_seen_at timestamptz;
+alter table public.profiles add column if not exists chronicles_read text[] not null default '{}';

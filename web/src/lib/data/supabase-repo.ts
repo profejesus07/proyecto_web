@@ -34,6 +34,7 @@ export function createSupabaseRepo(): Repo {
         id: data.id, role: data.role, displayName: data.display_name,
         avatarBase: (AVATAR_BASES as readonly string[]).includes(base ?? "") ? (base as AvatarBase) : "aria",
         xp: data.xp, coins: data.coins, gems: data.gems, streak: data.streak,
+        introSeen: data.intro_seen_at != null, chroniclesRead: (data.chronicles_read as string[] | null) ?? [],
       };
       return p;
     },
@@ -137,6 +138,20 @@ export function createSupabaseRepo(): Repo {
     async setAvatar(userId, base) {
       const { error } = await db.from("profiles").update({ avatar: { base } }).eq("id", userId);
       if (error) fail(error, "avatar");
+    },
+
+    async markIntroSeen(userId) {
+      const { error } = await db.from("profiles").update({ intro_seen_at: new Date().toISOString() }).eq("id", userId).is("intro_seen_at", null);
+      if (error) fail(error, "bienvenida");
+    },
+
+    async markChapterRead(userId, chapterId) {
+      const { data, error } = await db.from("profiles").select("chronicles_read").eq("id", userId).maybeSingle();
+      if (error) fail(error, "crónicas");
+      const read = (data?.chronicles_read as string[] | null) ?? [];
+      if (read.includes(chapterId)) return;
+      const { error: e2 } = await db.from("profiles").update({ chronicles_read: [...read, chapterId] }).eq("id", userId);
+      if (e2) fail(e2, "crónicas");
     },
 
     async getConsumables(userId) {

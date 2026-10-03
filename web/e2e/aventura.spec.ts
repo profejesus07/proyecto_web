@@ -20,6 +20,17 @@ async function play(page: Page, id: string, answers: number[]) {
 
 test.describe.configure({ mode: "serial" });
 
+test("la Maestra Sora da la bienvenida la primera vez y lleva al primer portal", async ({ page }) => {
+  await page.goto("/gremio");
+  await expect(page.getByRole("dialog", { name: /Bienvenido al Gremio/ })).toBeVisible();
+  const sora = page.getByRole("dialog");
+  for (let i = 0; i < 4; i++) await sora.getByRole("button", { name: "Siguiente" }).click();
+  await sora.getByRole("button", { name: "Cruzar mi primer portal" }).click();
+  await expect(page).toHaveURL(/\/portales\/primer-portal$/);
+  await page.goto("/gremio");
+  await expect(page.getByRole("dialog")).toHaveCount(0); // no vuelve a aparecer
+});
+
 test("el estudiante empieza sin XP y ve su primer portal", async ({ page }) => {
   await page.goto("/gremio");
   await expect(page.getByText("Tu primer portal te espera")).toBeVisible();
@@ -27,6 +38,18 @@ test("el estudiante empieza sin XP y ve su primer portal", async ({ page }) => {
   await page.goto("/portales/primer-portal");
   await expect(page.getByRole("heading", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
   await expect(page.getByText("Termina las 3 misiones para desbloquearlo")).toBeVisible();
+});
+
+test("el prólogo de las Crónicas está abierto y los demás capítulos sellados", async ({ page }) => {
+  await page.goto("/cronicas");
+  await expect(page.getByText("Prólogo: La Gran Fractura")).toBeVisible();
+  await expect(page.getByText("Páginas selladas").first()).toBeVisible();
+  await page.goto("/cronicas/petrox-3");
+  await expect(page).toHaveURL(/\/cronicas$/); // sellado: no se puede leer por la dirección
+  await page.goto("/cronicas/prologo");
+  await expect(page.getByText("Página 1 de 7")).toBeVisible();
+  for (let i = 0; i < 6; i++) await page.getByRole("button", { name: /Seguir leyendo/ }).click();
+  await expect(page.getByText("Página 7 de 7")).toBeVisible();
 });
 
 test("no se puede saltar a una misión bloqueada", async ({ page }) => {
@@ -102,6 +125,8 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await play(page, "m3", CORRECT.m3);
   await play(page, "m4", CORRECT.m4);
   await expect(page.getByRole("heading", { name: "¡Purificaste a Petrox!" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /El constructor despierta/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /La llama que tiembla/ })).toBeVisible();
   for (const name of ["Capa de Musgo", "Sello de Naturaleza", "Certificado «Sello del Portal»"]) {
     await expect(page.getByText(name).first()).toBeVisible();
   }

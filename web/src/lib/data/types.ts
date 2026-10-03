@@ -14,6 +14,10 @@ export interface Profile {
   coins: number;
   gems: number;
   streak: number;
+  /** Ya vio la bienvenida de Sora. */
+  introSeen: boolean;
+  /** Capítulos de las Crónicas ya leídos. */
+  chroniclesRead: string[];
 }
 
 export interface Course {
@@ -141,6 +145,8 @@ export interface Repo {
   finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
   setAvatar(userId: string, base: AvatarBase): Promise<void>;
+  markIntroSeen(userId: string): Promise<void>;
+  markChapterRead(userId: string, chapterId: string): Promise<void>;
   /** Unidades de cada ayuda consumible: { item_id: cantidad }. */
   getConsumables(userId: string): Promise<Record<string, number>>;
   /** Ayudas usadas hoy (fecha de Colombia). */

@@ -29,7 +29,7 @@ const g = globalThis as unknown as { __umbralPreview?: State };
 function state(): State {
   if (!g.__umbralPreview) {
     g.__umbralPreview = {
-      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", xp: 0, coins: 40, gems: 0, streak: 1 },
+      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", xp: 0, coins: 40, gems: 0, streak: 1, introSeen: false, chroniclesRead: [] },
       progress: new Map(),
       bosses: new Set(),
       inventory: [],
@@ -146,6 +146,11 @@ export function createMemoryRepo(): Repo {
       return { coins: s.profile.coins };
     },
     async setAvatar(_u, base: AvatarBase) { state().profile = { ...state().profile, avatarBase: base }; },
+    async markIntroSeen() { state().profile = { ...state().profile, introSeen: true }; },
+    async markChapterRead(_u, id) {
+      const p = state().profile;
+      if (!p.chroniclesRead.includes(id)) state().profile = { ...p, chroniclesRead: [...p.chroniclesRead, id] };
+    },
     async getConsumables() { return Object.fromEntries(state().consumables); },
     async getAidUsesToday() {
       const day = todayBogota();

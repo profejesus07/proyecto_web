@@ -5,6 +5,7 @@ import { Sprite, asset } from "@/components/sprite";
 import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
+import { CHAPTERS, isUnlocked, missionKey } from "@/content/cronicas";
 import { loadCourseView } from "@/lib/data/queries";
 
 export async function generateMetadata({ params }: PageProps<"/portales/[slug]">): Promise<Metadata> {
@@ -22,6 +23,8 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   const normal = course.missions.filter((m) => !m.isBoss);
   const boss = course.missions.find((m) => m.isBoss);
   const before = course.lockedBy ? guardianBySlug(course.lockedBy.guardian) : undefined;
+  const done = new Set(course.missions.filter((m) => m.state === "completada").map((m) => missionKey(course.slug, m.position)));
+  const chapters = CHAPTERS.filter((c) => c.course === course.slug);
 
   return (
     <div className="space-y-8">
@@ -89,6 +92,36 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
               <Sprite src={asset.boss(course.guardian, boss.state === "completada" ? "purificado" : "reposo")} alt="" decorative className={`mx-auto h-44 w-auto ${boss.state === "bloqueada" ? "brightness-50 grayscale" : ""}`} />
             </div>
           </div>
+        </section>
+      )}
+
+      {chapters.length > 0 && (
+        <section aria-labelledby="cronicas-t" className="space-y-4">
+          <div className="flex items-end justify-between gap-4">
+            <h2 id="cronicas-t" className="text-2xl">Crónicas de este portal</h2>
+            <Link href="/cronicas" className="text-sm font-semibold text-cyan hover:underline">Ir al Archivo →</Link>
+          </div>
+          <ol className="grid gap-3 md:grid-cols-3">
+            {chapters.map((ch, i) => {
+              // En un portal cerrado, sus capítulos pueden abrirse por el portal anterior (p. ej. el primero).
+              const open = isUnlocked(ch, done) || (ch.unlock.kind === "mision" && ch.unlock.course !== course.slug && !course.locked);
+              return (
+                <li key={ch.id}>
+                  {open ? (
+                    <Link href={`/cronicas/${ch.id}`} className="panel flex h-full items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-violet/60">
+                      <span aria-hidden="true" className="text-2xl">📜</span>
+                      <span className="min-w-0"><span className="block text-xs font-bold uppercase tracking-wider text-muted">Capítulo {i + 1}</span><span className="font-display font-bold leading-tight">{ch.title}</span></span>
+                    </Link>
+                  ) : (
+                    <div className="panel flex h-full items-center gap-3 border-dashed p-4 opacity-75">
+                      <span aria-hidden="true" className="text-2xl">🔒</span>
+                      <span className="min-w-0"><span className="block text-xs font-bold uppercase tracking-wider text-muted">Capítulo {i + 1}</span><span className="text-sm text-muted">{ch.hint}</span></span>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
         </section>
       )}
     </div>
