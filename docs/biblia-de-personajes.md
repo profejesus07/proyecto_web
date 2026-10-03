@@ -1,9 +1,35 @@
-# Biblia de Personajes y Universo — v0.1
+# Biblia de Personajes y Universo — v0.2
 
 > Nombre provisional del universo: **UMBRAL — Cazadores del Saber**
 > (se puede cambiar; todo el documento usa este nombre como referencia)
 
 Documento de diseño visual, narrativo y de animación. Es la fuente única de verdad para ilustradores, animadores y desarrolladores. El sitio web se construye después, a partir de este documento.
+
+---
+
+## Estado actual (v0.2): lo que ya está producido
+
+La parte visual está completa y vive en el artefacto **«Elenco del gremio»** (12 pestañas). Los 1.057 SVG están exportados en [`assets/`](../assets/README.md). Donde esta tabla y el resto del documento difieran, **manda esta tabla**.
+
+| Área | Estado | Cambios respecto a v0.1 |
+|---|---|---|
+| Guías | Kuro (3 etapas) y Sora | — |
+| Aliados | Eon, Brann, Kael | — |
+| Avatares del jugador | **4**: Aria, Leo, Tomás y Nuri, con **personalizador** (piel, ojos, peinado, cabello, ropa) y rangos E–S | Mei, Kai, Zuri y Dani se sustituyen por el personalizador. Tomás usa silla con aros de energía; Nuri, audífonos y bastón de runas |
+| Docentes y familias | 4 Maestros del Gremio y 4 Guardianes del Hogar (madre, padre, abuela, abuelo) | Las familias incluyen abuelos |
+| Enemigos menores | Slime Confuso, Duende Enredador, Sombrita, Cofre Mímico | — |
+| **Jefes** | **8 Guardianes** (Petrox, Ignaris, Brumalis, Mirelle, Quimax, Sandrael, Eclipsa, Zhaal) con fases de calma, furia y purificado; 15–22 animaciones cada uno | Cada Guardián encarna un obstáculo de aprendizaje, no una materia (ver §4) |
+| **Escenarios** | **7**: Gremio (día/noche), Sala de Portales, Mazmorra (fuego/agua/sombra), Arena del Guardián, Tienda y Arsenal, Archivo de Crónicas, Terraza del Hogar; 4 capas y marcadores `slot_*` | Se añade la Terraza para el panel de familias |
+| **Objetos** | **156** en 17 categorías y 5 rarezas, con 3 estados y `catalogo.json` | Incluye poderes, ayudas, recursos, interfaz, cofres, recompensas de Guardianes, insignias, sellos de portal, marcos, títulos, certificado, equipo, cosméticos, focos, compañeros y decoración |
+
+### Decisiones que siguen abiertas
+- Nombre definitivo del universo («UMBRAL» es provisional).
+- Sonido: música, efectos y voz.
+- Validar la animación de señas de Nuri con una persona usuaria de Lengua de Señas Colombiana.
+- Definir los cursos y asignar a cada uno el Guardián cuyo obstáculo mejor encaje (§4.4).
+
+### Pendiente para la web
+Registro y perfil, Sala de Portales conectada a los cursos, misiones y evaluaciones, XP y rangos, inventario y tienda, y paneles para docentes y familias.
 
 ---
 
