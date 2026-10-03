@@ -106,6 +106,18 @@ test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ pag
   await expect(page.getByRole("note")).toBeVisible();
 });
 
+test("el registro muestra qué le falta a la contraseña", async ({ page }) => {
+  await page.goto("/registro");
+  const pass = page.locator("#password");
+  await pass.fill("estrella");
+  await expect(page.locator("#password-rules [data-cumple]")).toHaveCount(2);
+  await expect(page.getByText("Un número (0-9)")).toBeVisible();
+  expect(await pass.evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(false);
+  await pass.fill("estrella7");
+  await expect(page.locator("#password-rules [data-cumple]")).toHaveCount(3);
+  expect(await pass.evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(true);
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);

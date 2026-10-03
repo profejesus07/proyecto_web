@@ -9,6 +9,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 3. **Correos de confirmación.** **Authentication → Sign In / Providers → Email**:
    - *Confirm email* **activado** (recomendado): cada persona confirma su correo. Ojo: el correo gratuito de Supabase envía muy pocos mensajes por hora; para un grupo grande conviene configurar un servicio de correo propio (**Authentication → SMTP Settings**).
    - *Confirm email* **desactivado**: entran de inmediato. Útil para probar o para clases donde el docente crea las cuentas.
+   - En la misma pantalla, **Minimum password length:** `8` y **Password requirements:** *Letters and digits*. Son las mismas reglas que muestra el formulario de registro. (*Prevent use of leaked passwords* solo existe en el plan Pro.)
 4. **Direcciones permitidas.** **Authentication → URL Configuration**: cuando tengas la dirección de Vercel, ponla en *Site URL* y añade `https://TU-SITIO.vercel.app/auth/callback` en *Redirect URLs*.
 5. **Copiar las claves.** **Project Settings → API Keys** (o *API*): copia
    - `Project URL`

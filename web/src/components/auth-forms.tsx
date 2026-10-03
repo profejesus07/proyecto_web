@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { loginAction, registerAction, type FormState } from "@/app/actions/auth";
 import { Sprite, asset } from "@/components/sprite";
+import { PASSWORD_RULES } from "@/lib/validation";
 
 function Submit({ children, pending: label }: { children: React.ReactNode; pending: string }) {
   const { pending } = useFormStatus();
@@ -28,11 +29,14 @@ function Notice({ state }: { state: FormState }) {
   );
 }
 
-function PasswordField({ id = "password", autoComplete }: { id?: string; autoComplete: string }) {
+function PasswordField({ id = "password", autoComplete, onChange, describedBy, pattern, title }: {
+  id?: string; autoComplete: string; onChange?: (v: string) => void; describedBy?: string; pattern?: string; title?: string;
+}) {
   const [show, setShow] = useState(false);
   return (
     <div className="relative">
-      <input id={id} name="password" type={show ? "text" : "password"} required minLength={8} maxLength={72} autoComplete={autoComplete} className="input pr-24" />
+      <input id={id} name="password" type={show ? "text" : "password"} required minLength={8} maxLength={72} autoComplete={autoComplete} className="input pr-24"
+        onChange={onChange && ((e) => onChange(e.target.value))} aria-describedby={describedBy} pattern={pattern} title={title} />
       <button type="button" onClick={() => setShow((s) => !s)} aria-pressed={show} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-3 py-1.5 text-sm font-semibold text-cyan hover:bg-white/5">
         {show ? "Ocultar" : "Mostrar"}
       </button>
@@ -56,6 +60,13 @@ const AVATARS = [
 export function RegisterForm() {
   const [state, action] = useActionState(registerAction, undefined);
   const [role, setRole] = useState<string>("estudiante");
+  const [password, setPassword] = useState("");
+  // Tras un envío fallido React vacía el formulario: la lista de reglas vuelve a empezar con él.
+  const [seen, setSeen] = useState(state);
+  if (seen !== state) {
+    setSeen(state);
+    setPassword("");
+  }
 
   if (state?.message) {
     return (
@@ -115,8 +126,20 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="password" className="label">Contraseña</label>
-        <PasswordField autoComplete="new-password" />
-        <p className="hint mt-1.5">Mínimo 8 caracteres.</p>
+        <PasswordField autoComplete="new-password" onChange={setPassword} describedBy="password-rules"
+          pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,72}" title="Al menos 8 caracteres, con letras y números" />
+        <ul id="password-rules" className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm" aria-label="La contraseña necesita">
+          {PASSWORD_RULES.map((r) => {
+            const ok = r.test(password);
+            return (
+              <li key={r.id} data-cumple={ok || undefined} className={`flex items-center gap-1.5 transition-colors ${ok ? "text-green" : "text-muted"}`}>
+                <span aria-hidden="true" className={`grid size-4 place-items-center rounded-full text-[0.65rem] font-black ${ok ? "bg-green text-bg" : "border border-current"}`}>{ok ? "✓" : ""}</span>
+                {r.label}
+                <span className="sr-only">{ok ? " (listo)" : " (falta)"}</span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-bg/40 p-3 text-sm">

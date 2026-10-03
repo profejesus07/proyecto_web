@@ -47,7 +47,7 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     if (error.code === "user_already_exists" || /already/i.test(error.message)) {
       return { error: "Ya existe una cuenta con ese correo. Prueba a iniciar sesión." };
     }
-    if (error.code === "weak_password") return { error: "Esa contraseña es muy fácil de adivinar. Prueba con otra más larga." };
+    if (error.code === "weak_password") return { error: "Esa contraseña es muy fácil de adivinar. Usa al menos 8 caracteres con letras y números." };
     if (error.code === "over_email_send_rate_limit" || error.status === 429) return { error: "Hay muchos intentos seguidos. Espera un minuto y vuelve a probar." };
     return { error: "No pudimos crear tu cuenta. Inténtalo de nuevo en un momento." };
   }
