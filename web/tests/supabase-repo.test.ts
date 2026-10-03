@@ -66,16 +66,23 @@ describe("repositorio de Supabase", () => {
     expect(await createSupabaseRepo().getProfile("nadie")).toBeNull();
   });
 
-  it("completa la misión con la función de la base de datos y convierte la respuesta", async () => {
-    rpcResult = { data: { passed: true, first: true, score: 100, xp_gain: 60, coins_gain: 20, gems_gain: 0, xp: 60, coins: 60, gems: 0, streak: 1, boss_defeated: false, course_done: false, granted: ["obj_x"] }, error: null };
-    const r = await createSupabaseRepo().completeMission("u", "m", 100, 70, ["obj_x"]);
-    expect(rpcCalls[0]).toEqual({ fn: "complete_mission", args: { p_user: "u", p_mission: "m", p_score: 100, p_pass_mark: 70, p_items_on_first: ["obj_x"] } });
-    expect(r).toMatchObject({ passed: true, first: true, xpGain: 60, coinsGain: 20, granted: ["obj_x"] });
+  it("termina el intento con la función de la base de datos y convierte la respuesta", async () => {
+    rpcResult = { data: { passed: true, first: true, score: 100, xp_gain: 60, coins_gain: 20, gems_gain: 0, xp: 60, coins: 60, gems: 0, streak: 1, boss_defeated: false, course_done: false, granted: ["obj_x"], answers: [1, 1, 0, 1] }, error: null };
+    const r = await createSupabaseRepo().finishAttempt("u", "m", 70, ["obj_x"]);
+    expect(rpcCalls[0]).toEqual({ fn: "finish_attempt", args: { p_user: "u", p_mission: "m", p_pass_mark: 70, p_items_on_first: ["obj_x"] } });
+    expect(r).toMatchObject({ passed: true, first: true, xpGain: 60, coinsGain: 20, granted: ["obj_x"], answers: [1, 1, 0, 1] });
+  });
+
+  it("responde con la función de la base de datos", async () => {
+    rpcResult = { data: { index: 2, choice: 1, correct: false, correct_index: 3, explanation: "x", answered: 3, right: 2, total: 4 }, error: null };
+    const r = await createSupabaseRepo().answerQuestion("u", "m", 2, 1);
+    expect(rpcCalls[0]).toEqual({ fn: "answer_question", args: { p_user: "u", p_mission: "m", p_index: 2, p_choice: 1 } });
+    expect(r).toEqual({ index: 2, choice: 1, correct: false, correctIndex: 3, explanation: "x", answered: 3, right: 2, total: 4 });
   });
 
   it("propaga el error de la base de datos para poder explicarlo", async () => {
     rpcResult = { data: null, error: { message: "mision_bloqueada" } };
-    await expect(createSupabaseRepo().completeMission("u", "m", 100, 70, [])).rejects.toThrow(/mision_bloqueada/);
+    await expect(createSupabaseRepo().finishAttempt("u", "m", 70, [])).rejects.toThrow(/mision_bloqueada/);
   });
 
   it("compra con la función atómica", async () => {

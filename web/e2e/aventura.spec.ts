@@ -5,11 +5,16 @@ const CORRECT = { m1: [1, 1, 0, 1], m2: [0, 1, 1, 1], m3: [1, 1, 1, 0], m4: [1, 
 
 async function play(page: Page, id: string, answers: number[]) {
   await page.goto(`/mision/${id}`);
-  for (let i = 0; i < answers.length; i++) {
+  // Si había un intento a medias, la misión continúa donde quedó.
+  const label = await page.getByText(/^Pregunta \d+ de \d+$/).textContent();
+  const start = Number(label!.match(/\d+/)![0]) - 1;
+  for (let i = start; i < answers.length; i++) {
     await page.locator("label:has(input[type=radio])").nth(answers[i]).click();
+    await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+    await expect(page.locator("#feedback")).toBeVisible();
     if (i < answers.length - 1) await page.getByRole("button", { name: /Siguiente/ }).click();
   }
-  await page.getByRole("button", { name: /Terminar misión|Enfrentar al Guardián/ }).click();
+  await page.getByRole("button", { name: /Terminar misión|Purificar al Guardián/ }).click();
   await expect(page.getByRole("heading", { name: "Repaso de tus respuestas" })).toBeVisible();
 }
 
@@ -53,13 +58,30 @@ test("la primera pista de la misión es gratis; después hacen falta unidades", 
   await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
   await expect(page.getByRole("note")).toBeVisible();
   await expect(ayudas.getByRole("button", { name: /Pista/ })).toHaveCount(0);
-  await page.locator("label:has(input[type=radio])").first().click();
-  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await page.locator("label:has(input[type=radio])").nth(CORRECT.m1[0]).click();
+  await page.getByRole("button", { name: "Responder" }).click();
+  await page.getByRole("button", { name: /Siguiente enemigo/ }).click();
   await expect(ayudas.getByRole("button", { name: /Pista · tienes 0/ })).toBeDisabled();
   await expect(ayudas.getByRole("link", { name: "Conseguir más en la tienda" })).toBeVisible();
-  // Al recargar, la pista ya revelada sigue ahí sin volver a cobrar.
+  // Al recargar, la misión sigue en la pregunta 2: la respuesta anterior quedó guardada.
   await page.reload();
-  await expect(page.getByRole("note")).toBeVisible();
+  await expect(page.getByText("Pregunta 2 de 4", { exact: true })).toBeVisible();
+});
+
+test("cada respuesta se revisa al momento y queda fija", async ({ page }) => {
+  await page.goto("/mision/m3");
+  await expect(page).toHaveURL(/\/portales\/primer-portal$/); // aún bloqueada
+  await page.goto("/mision/m1");
+  await expect(page.getByText("Pregunta 2 de 4", { exact: true })).toBeVisible();
+  const wrong = (CORRECT.m1[1] + 1) % 4;
+  await page.locator("label:has(input[type=radio])").nth(wrong).click();
+  await page.getByRole("button", { name: "Responder" }).click();
+  await expect(page.getByText("¡Uy, no era esa!")).toBeVisible();
+  await expect(page.locator("label[data-correcta]")).toHaveCount(1);
+  await expect(page.locator("input[type=radio]:not([disabled])")).toHaveCount(0);
+  await page.reload();
+  // No se puede volver a intentar la misma pregunta: la misión sigue en la siguiente.
+  await expect(page.getByText("Pregunta 3 de 4", { exact: true })).toBeVisible();
 });
 
 test("aprobar da XP, monedas y la primera insignia", async ({ page }) => {
@@ -118,7 +140,8 @@ test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ pag
   const correct = page.locator("label:has(input[type=radio])").nth(CORRECT.m2[0]);
   await expect(correct).not.toHaveAttribute("data-descartada");
   await correct.click();
-  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await page.getByRole("button", { name: "Responder" }).click();
+  await page.getByRole("button", { name: /Siguiente enemigo/ }).click();
   await expect(ayudas.getByRole("button", { name: /50\/50 · tienes 0/ })).toBeDisabled();
   await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
   await expect(page.getByRole("note")).toBeVisible();

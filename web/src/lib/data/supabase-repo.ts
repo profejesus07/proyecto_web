@@ -2,7 +2,7 @@ import "server-only";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AidResult, AidUseRow, AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidResult, AidUseRow, AnswerKeyRow, AnswerResult, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -97,17 +97,33 @@ export function createSupabaseRepo(): Repo {
       return (data ?? []).map((r): AnswerKeyRow => ({ id: r.id, correctIndex: r.correct_index, explanation: r.explanation }));
     },
 
-    async completeMission(userId, missionId, score, passMark, items) {
-      const { data, error } = await db.rpc("complete_mission", {
-        p_user: userId, p_mission: missionId, p_score: score, p_pass_mark: passMark, p_items_on_first: items,
-      });
+    async getOpenAttempt(userId, missionId) {
+      const { data, error } = await db.from("attempts").select("answers").eq("user_id", userId).eq("mission_id", missionId).is("finished_at", null).maybeSingle();
+      if (error) fail(error, "intento");
+      return data ? (data.answers as number[]) : null;
+    },
+
+    async answerQuestion(userId, missionId, index, choice) {
+      const { data, error } = await db.rpc("answer_question", { p_user: userId, p_mission: missionId, p_index: index, p_choice: choice });
+      if (error) fail(error, "responder");
+      const r = data as Record<string, unknown>;
+      const out: AnswerResult = {
+        index: r.index as number, choice: r.choice as number, correct: r.correct as boolean, correctIndex: r.correct_index as number,
+        explanation: r.explanation as string, answered: r.answered as number, right: r.right as number, total: r.total as number,
+      };
+      return out;
+    },
+
+    async finishAttempt(userId, missionId, passMark, items) {
+      const { data, error } = await db.rpc("finish_attempt", { p_user: userId, p_mission: missionId, p_pass_mark: passMark, p_items_on_first: items });
       if (error) fail(error, "completar misión");
       const r = data as Record<string, unknown>;
-      const out: CompleteResult = {
+      const out: FinishResult = {
         passed: r.passed as boolean, first: r.first as boolean, score: r.score as number,
         xpGain: r.xp_gain as number, coinsGain: r.coins_gain as number, gemsGain: r.gems_gain as number,
         xp: r.xp as number, coins: r.coins as number, gems: r.gems as number, streak: r.streak as number,
         bossDefeated: r.boss_defeated as boolean, courseDone: r.course_done as boolean, granted: (r.granted as string[]) ?? [],
+        answers: (r.answers as number[]) ?? [],
       };
       return out;
     },

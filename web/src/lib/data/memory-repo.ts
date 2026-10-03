@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AidUseRow, AnswerKeyRow, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidUseRow, AnswerKeyRow, AnswerResult, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -20,6 +20,7 @@ interface State {
   bosses: Set<string>;
   inventory: InventoryRow[];
   consumables: Map<string, number>;
+  attempts: Map<string, number[]>;
   aidUses: (AidUseRow & { day: string })[];
 }
 
@@ -33,6 +34,7 @@ function state(): State {
       bosses: new Set(),
       inventory: [],
       consumables: new Map(),
+      attempts: new Map(),
       aidUses: [],
     };
   }
@@ -62,6 +64,29 @@ function isLocked(s: State, m: MissionSummary): boolean {
   });
 }
 
+/** Misma lógica que public.complete_mission (0003/0006). */
+function complete(_u: string, id: string, score: number, passMark: number, items: string[]): CompleteResult {
+  const s = state();
+  const m = missions.find((x) => x.id === id);
+  if (!m) throw new Error("mision_no_encontrada");
+  if (isLocked(s, m)) throw new Error("mision_bloqueada");
+  const passed = score >= passMark;
+  const prev = s.progress.get(id);
+  const first = passed && !prev?.completed;
+  s.progress.set(id, { missionId: id, bestScore: Math.max(prev?.bestScore ?? 0, score), attempts: (prev?.attempts ?? 0) + 1, completed: passed || !!prev?.completed });
+  const xpGain = first ? m.xpReward : 0;
+  const coinsGain = first ? 10 + (score === 100 ? 10 : 0) + (m.isBoss ? 100 : 0) : 0;
+  const gemsGain = first && m.isBoss ? 5 : 0;
+  const granted: string[] = [];
+  if (first) {
+    if (m.isBoss) s.bosses.add(m.courseSlug);
+    for (const it of items) if (!s.inventory.some((i) => i.itemId === it)) { s.inventory.push({ itemId: it, source: "logro", acquiredAt: new Date().toISOString() }); granted.push(it); }
+  }
+  s.profile = { ...s.profile, xp: s.profile.xp + xpGain, coins: s.profile.coins + coinsGain, gems: s.profile.gems + gemsGain };
+  const courseDone = missions.filter((x) => x.courseSlug === m.courseSlug).every((x) => s.progress.get(x.id)?.completed);
+  return { passed, first, score, xpGain, coinsGain, gemsGain, xp: s.profile.xp, coins: s.profile.coins, gems: s.profile.gems, streak: s.profile.streak, bossDefeated: first && m.isBoss, courseDone, granted };
+}
+
 export function createMemoryRepo(): Repo {
   return {
     async getProfile() { return { ...state().profile }; },
@@ -81,26 +106,36 @@ export function createMemoryRepo(): Repo {
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
       return questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, correctIndex: q.correct_index, explanation: q.explanation }));
     },
-    async completeMission(_u, id, score, passMark, items): Promise<CompleteResult> {
+    async getOpenAttempt(_u, id) {
+      const a = state().attempts.get(id);
+      return a ? [...a] : null;
+    },
+    async answerQuestion(_u, id, index, choice): Promise<AnswerResult> {
       const s = state();
       const m = missions.find((x) => x.id === id);
       if (!m) throw new Error("mision_no_encontrada");
       if (isLocked(s, m)) throw new Error("mision_bloqueada");
-      const passed = score >= passMark;
-      const prev = s.progress.get(id);
-      const first = passed && !prev?.completed;
-      s.progress.set(id, { missionId: id, bestScore: Math.max(prev?.bestScore ?? 0, score), attempts: (prev?.attempts ?? 0) + 1, completed: passed || !!prev?.completed });
-      const xpGain = first ? m.xpReward : 0;
-      const coinsGain = first ? 10 + (score === 100 ? 10 : 0) + (m.isBoss ? 100 : 0) : 0;
-      const gemsGain = first && m.isBoss ? 5 : 0;
-      const granted: string[] = [];
-      if (first) {
-        if (m.isBoss) s.bosses.add(m.courseSlug);
-        for (const it of items) if (!s.inventory.some((i) => i.itemId === it)) { s.inventory.push({ itemId: it, source: "logro", acquiredAt: new Date().toISOString() }); granted.push(it); }
-      }
-      s.profile = { ...s.profile, xp: s.profile.xp + xpGain, coins: s.profile.coins + coinsGain, gems: s.profile.gems + gemsGain };
-      const courseDone = missions.filter((x) => x.courseSlug === m.courseSlug).every((x) => s.progress.get(x.id)?.completed);
-      return { passed, first, score, xpGain, coinsGain, gemsGain, xp: s.profile.xp, coins: s.profile.coins, gems: s.profile.gems, streak: s.profile.streak, bossDefeated: first && m.isBoss, courseDone, granted };
+      const qs = questions(id);
+      if (!Number.isInteger(index) || index < 0 || index >= qs.length) throw new Error("pregunta_invalida");
+      if (!Number.isInteger(choice) || choice < 0 || choice >= qs[index].options.length) throw new Error("respuesta_invalida");
+      let a = s.attempts.get(id);
+      if (!a || a.length !== qs.length) s.attempts.set(id, (a = Array(qs.length).fill(-1)));
+      if (a[index] === -1) a[index] = choice;
+      const q = qs[index];
+      return {
+        index, choice: a[index], correct: a[index] === q.correct_index, correctIndex: q.correct_index, explanation: q.explanation,
+        answered: a.filter((x) => x >= 0).length, right: a.filter((x, i) => x === qs[i].correct_index).length, total: qs.length,
+      };
+    },
+    async finishAttempt(u, id, passMark, items): Promise<FinishResult> {
+      const s = state();
+      const a = s.attempts.get(id);
+      if (!a) throw new Error("sin_intento");
+      const qs = questions(id);
+      if (a.length !== qs.length || a.includes(-1)) throw new Error("respuestas_incompletas");
+      const score = Math.round((100 * a.filter((x, i) => x === qs[i].correct_index).length) / qs.length);
+      s.attempts.delete(id);
+      return { ...complete(u, id, score, passMark, items), answers: a };
     },
     async purchaseItem(_u, itemId, price) {
       const s = state();

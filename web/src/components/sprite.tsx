@@ -23,6 +23,7 @@ export function Sprite({
 
 export const asset = {
   scene: (name: string, state: string) => `/assets/escenarios/${name}/${name}-${state}.svg`,
+  enemy: (slug: string, anim = "reposo") => `/assets/enemigos/${slug}/${slug}-${anim}.svg`,
   boss: (slug: string, anim = "reposo") => `/assets/jefes/${slug}/${slug}-${anim}.svg`,
   avatar: (base: string, rank: string) => `/assets/avatares/${base}/${base}-rango-${rank.toLowerCase()}-reposo.svg`,
   avatarAnim: (base: string, anim: string) => `/assets/avatares/${base}/${base}-${anim}.svg`,

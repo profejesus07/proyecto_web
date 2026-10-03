@@ -83,6 +83,23 @@ export interface CompleteResult {
   granted: string[];
 }
 
+/** Resultado de responder una pregunta: el servidor la revisa al momento y la respuesta queda fija. */
+export interface AnswerResult {
+  index: number;
+  choice: number;
+  correct: boolean;
+  correctIndex: number;
+  explanation: string;
+  answered: number;
+  right: number;
+  total: number;
+}
+
+export interface FinishResult extends CompleteResult {
+  /** Respuestas guardadas del intento, en orden. */
+  answers: number[];
+}
+
 export interface InventoryRow {
   itemId: string;
   source: string;
@@ -117,7 +134,11 @@ export interface Repo {
   getInventory(userId: string): Promise<InventoryRow[]>;
   getMissionPlay(missionId: string): Promise<MissionPlay | null>;
   getAnswerKey(missionId: string): Promise<AnswerKeyRow[]>;
-  completeMission(userId: string, missionId: string, score: number, passMark: number, items: string[]): Promise<CompleteResult>;
+  /** Respuestas del intento abierto (-1 = sin responder), o null si no hay. */
+  getOpenAttempt(userId: string, missionId: string): Promise<number[] | null>;
+  answerQuestion(userId: string, missionId: string, index: number, choice: number): Promise<AnswerResult>;
+  /** Cierra el intento: la nota sale de las respuestas guardadas. */
+  finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
   setAvatar(userId: string, base: AvatarBase): Promise<void>;
   /** Unidades de cada ayuda consumible: { item_id: cantidad }. */

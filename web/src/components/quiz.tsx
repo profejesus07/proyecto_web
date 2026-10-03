@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
-import { activateAidAction, submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { preload } from "react-dom";
+import { activateAidAction, answerQuestionAction, submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
 import { Sprite, asset } from "@/components/sprite";
+import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
+import { PASS_MARK } from "@/lib/game/grading";
 import { RANKS } from "@/lib/game/ranks";
+
+export interface AnsweredQuestion {
+  choice: number;
+  correct: boolean;
+  correctIndex: number;
+  explanation: string;
+}
 
 export interface QuizProps {
   missionId: string;
@@ -14,6 +24,7 @@ export interface QuizProps {
   xpReward: number;
   courseSlug: string;
   courseTitle: string;
+  element: string;
   guardian: { slug: string; name: string };
   questions: { id: string; prompt: string; options: string[]; hasHint: boolean }[];
   nextMissionId: string | null;
@@ -23,9 +34,13 @@ export interface QuizProps {
   };
   /** Lo que ya se reveló hoy en esta misión, por id de pregunta. */
   revealed: Record<string, { hint?: string; removed?: number[] }>;
+  /** Respuestas ya dadas en el intento abierto (para continuar donde quedó). */
+  resume: (AnsweredQuestion | null)[];
+  kuroStage: "cachorro" | "joven" | "majestuoso";
 }
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
+const CHEERS = ["¡Golpe certero!", "¡Así se hace!", "¡Bien pensado!", "¡Directo al blanco!", "¡Brillante!", "¡Imparable!"];
 
 function ScoreRing({ score, passed }: { score: number; passed: boolean }) {
   const r = 52;
@@ -43,47 +58,122 @@ function ScoreRing({ score, passed }: { score: number; passed: boolean }) {
 
 export function Quiz(p: QuizProps) {
   const total = p.questions.length;
-  const [idx, setIdx] = useState(0);
-  const [answers, setAnswers] = useState<number[]>(() => Array(total).fill(-1));
+  const firstOpen = () => {
+    const i = p.resume.findIndex((r) => !r);
+    return i === -1 ? total - 1 : i;
+  };
+  const [idx, setIdx] = useState(firstOpen);
+  const [results, setResults] = useState<(AnsweredQuestion | null)[]>(() => p.questions.map((_, i) => p.resume[i] ?? null));
+  const [selected, setSelected] = useState(-1);
+  const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  // Si se vuelve a una pregunta ya respondida (continuar intento), la escena queda en su estado final.
+  const [beat, setBeat] = useState<{ kind: BeatKind; n: number }>(() => {
+    const r = p.resume[firstOpen()];
+    return { kind: r ? (r.correct ? "hit" : "miss") : "enter", n: 0 };
+  });
+  const [phase, setPhase] = useState(() => (p.resume[firstOpen()] ? 1 : 0));
   const [revealed, setRevealed] = useState(p.revealed);
   const [pista, setPista] = useState(p.aids.pista);
   const [fifty, setFifty] = useState(p.aids.fifty);
   const [aidMsg, setAidMsg] = useState<string | null>(null);
   const [aidPending, startAid] = useTransition();
-  const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
-  const [pending, startTransition] = useTransition();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const stageRef = useRef<HTMLElement>(null);
 
   const q = p.questions[idx];
-  const chosen = answers[idx];
+  const res = results[idx];
+  const answeredCount = results.filter(Boolean).length;
+  const rightCount = results.filter((r) => r?.correct).length;
+  const wrongCount = results.filter((r) => r && !r.correct).length;
   const shown = revealed[q.id] ?? {};
   const removed = shown.removed ?? [];
-  const last = idx === total - 1;
-  const answered = answers.filter((a) => a >= 0).length;
 
-  function choose(i: number) {
-    setAnswers((a) => a.map((v, k) => (k === idx ? i : v)));
+  // ----- Escena -----
+  const enemy = enemyFor(idx, total);
+  const prev = idx > 0 ? results[idx - 1] : null;
+  const foe = foeAnim({ boss: p.isBoss, kind: beat.kind, phase, fury: !!prev && !prev.correct, firstEnter: idx === 0 && beat.n === 0 });
+  const foeSrc = p.isBoss ? asset.boss(p.guardian.slug, foe) : asset.enemy(enemy.slug, foe);
+  const kuroSrc = asset.kuro(kuroAnim(res), p.kuroStage);
+  const scene = sceneFor(p.isBoss, p.element);
+  const needed = Math.ceil((total * PASS_MARK) / 100);
+  const hp = p.isBoss ? Math.max(0, needed - rightCount) / needed : 0;
+  const stillPossible = total - wrongCount >= needed;
+
+  // Avanza la animación (aparecer → reposo, golpe → derrota, etc.).
+  useEffect(() => {
+    const ms = beatDuration({ boss: p.isBoss, kind: beat.kind, firstEnter: idx === 0 && beat.n === 0 });
+    if (!ms) return;
+    const t = setTimeout(() => setPhase(1), ms);
+    return () => clearTimeout(t);
+  }, [beat, idx, p.isBoss]);
+
+  // Precarga las animaciones que vienen para que no parpadeen.
+  if (p.isBoss) for (const a of ["golpe", "furia-golpe", "transicion-furia", "furia-reposo", "reposo"]) preload(asset.boss(p.guardian.slug, a), { as: "image" });
+  else for (const a of ["reposo", "recibir-golpe", "derrota", "burla"]) preload(asset.enemy(enemy.slug, a), { as: "image" });
+  for (const a of ["celebrar", "animar"] as const) preload(asset.kuro(a, p.kuroStage), { as: "image" });
+
+  function play(kind: BeatKind) {
+    setBeat((b) => ({ kind, n: b.n + 1 }));
+    setPhase(0);
   }
-  function go(to: number) {
-    setIdx(to);
-    setAidMsg(null);
-    requestAnimationFrame(() => headingRef.current?.focus());
-  }
-  function send() {
+
+  function answer() {
+    if (selected < 0 || res) return;
+    const at = idx;
+    setError(null);
     startTransition(async () => {
-      const res = await submitMissionAction(p.missionId, answers);
-      setOutcome(res);
+      const r = await answerQuestionAction(p.missionId, at, selected);
+      if (!r.ok) {
+        setError(r.error);
+        return;
+      }
+      setResults((all) => all.map((x, i) => (i === at ? { choice: r.choice, correct: r.correct, correctIndex: r.correctIndex, explanation: r.explanation } : x)));
+      play(r.correct ? "hit" : "miss");
+      // Lleva la vista a la escena para ver la reacción; la explicación queda justo debajo.
+      requestAnimationFrame(() => {
+        stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("feedback")?.focus({ preventScroll: true });
+      });
+    });
+  }
+
+  function next() {
+    const to = results.findIndex((r, i) => !r && i > idx);
+    const target = to === -1 ? results.findIndex((r) => !r) : to;
+    if (target === -1) return;
+    setIdx(target);
+    setSelected(-1);
+    setAidMsg(null);
+    play("enter");
+    requestAnimationFrame(() => {
+      stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      headingRef.current?.focus({ preventScroll: true });
+    });
+  }
+
+  function finish() {
+    setError(null);
+    startTransition(async () => {
+      const r = await submitMissionAction(p.missionId);
+      if (r.ok) setOutcome(r);
+      else setError(r.error);
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+
   function retry() {
     setOutcome(null);
-    setAnswers(Array(total).fill(-1));
+    setResults(p.questions.map(() => null));
+    setSelected(-1);
     setAidMsg(null);
     setIdx(0);
+    setBeat({ kind: "enter", n: 0 });
+    setPhase(0);
   }
+
   function askAid(kind: "pista" | "5050") {
-    const at = idx;
     const qid = q.id;
     setAidMsg(null);
     startAid(async () => {
@@ -97,8 +187,7 @@ export function Quiz(p: QuizProps) {
         setPista((s) => ({ ...s, stock: r.left, usedToday: s.usedToday + (r.charged ? 1 : 0), freeAvailable: r.free ? false : s.freeAvailable }));
       } else {
         setFifty((s) => ({ ...s, stock: r.left, usedToday: s.usedToday + (r.charged ? 1 : 0) }));
-        // Si había elegido una opción descartada, se libera.
-        if (r.removed) setAnswers((a) => a.map((v, k) => (k === at && r.removed!.includes(v) ? -1 : v)));
+        if (r.removed?.includes(selected)) setSelected(-1);
       }
     });
   }
@@ -194,98 +283,147 @@ export function Quiz(p: QuizProps) {
     );
   }
 
-  // ===== Preguntas =====
+  // ===== Misión en curso =====
   return (
-    <div className="space-y-6">
-      <header className={`panel flex items-center gap-4 p-4 sm:p-5 ${p.isBoss ? "panel-glow" : ""}`}>
-        {p.isBoss ? (
-          <Sprite src={asset.boss(p.guardian.slug)} alt={p.guardian.name} className="h-24 w-auto shrink-0 sm:h-28" />
-        ) : (
-          <Sprite src={asset.kuro("pensar")} alt="Kuro piensa contigo" className="h-20 w-auto shrink-0" />
-        )}
-        <div className="min-w-0 flex-1 space-y-2">
-          <p className="eyebrow">{p.isBoss ? `Prueba de ${p.guardian.name}` : p.courseTitle}</p>
-          <h1 className="text-2xl leading-tight sm:text-3xl">{p.title}</h1>
-          <p className="text-sm text-muted">{p.intro}</p>
-        </div>
+    <div className="space-y-5">
+      <header className="space-y-1">
+        <p className="eyebrow">{p.isBoss ? `Prueba de ${p.guardian.name}` : p.courseTitle}</p>
+        <h1 className="text-2xl leading-tight sm:text-3xl">{p.title}</h1>
+        {answeredCount === 0 && <p className="text-sm text-muted">{p.intro}</p>}
       </header>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm font-semibold">
-          <span>Pregunta {idx + 1} de {total}</span>
-          <span className="text-muted">{answered} respondida{answered === 1 ? "" : "s"}</span>
+      {/* Escena: Kuro a la izquierda, el enemigo o el Guardián a la derecha. */}
+      <section ref={stageRef} aria-label={p.isBoss ? `Batalla contra ${p.guardian.name}` : "Mazmorra"} className="panel relative scroll-mt-20 isolate aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9]">
+        <Sprite src={asset.scene(scene.name, scene.state)} alt="" decorative priority className="absolute inset-0 -z-10 size-full object-cover" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-bg/70 to-transparent" />
+
+        <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-4">
+          {p.isBoss ? (
+            <div className="w-full max-w-sm rounded-2xl bg-bg/75 px-4 py-2.5 backdrop-blur-sm">
+              <div className="mb-1.5 flex items-center justify-between text-xs font-bold sm:text-sm">
+                <span>Vida de {p.guardian.name}</span>
+                <span className="text-muted">{hp === 0 ? "¡Listo para purificarlo!" : `Faltan ${Math.max(0, needed - rightCount)} aciertos`}</span>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`Vida de ${p.guardian.name}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(hp * 100)}>
+                <div className="h-full rounded-full bg-gradient-to-r from-coral to-gold transition-[width] duration-700 ease-out" style={{ width: `${hp * 100}%` }} />
+              </div>
+            </div>
+          ) : (
+            <span className="rounded-full bg-bg/75 px-3 py-1 text-xs font-bold backdrop-blur-sm sm:text-sm">{enemy.name} · {idx + 1} de {total}</span>
+          )}
+          <span className="hidden shrink-0 rounded-full bg-bg/75 px-3 py-1 text-xs font-bold backdrop-blur-sm sm:inline sm:text-sm">✔ {rightCount} · ✕ {wrongCount}</span>
         </div>
-        <ol className="flex gap-1.5" aria-label="Progreso">
-          {p.questions.map((qq, i) => (
-            <li key={qq.id} className="flex-1">
-              <button type="button" onClick={() => go(i)} aria-label={`Ir a la pregunta ${i + 1}${answers[i] >= 0 ? ", respondida" : ""}`} aria-current={i === idx ? "step" : undefined}
-                className={`block h-2.5 w-full rounded-full transition ${i === idx ? "bg-cyan" : answers[i] >= 0 ? "bg-violet" : "bg-white/15 hover:bg-white/25"}`} />
-            </li>
-          ))}
-        </ol>
-      </div>
+
+        <Sprite key={kuroSrc} src={kuroSrc} alt={res ? (res.correct ? "Kuro celebra" : "Kuro te anima") : "Kuro piensa contigo"} className="absolute bottom-[3%] left-[6%] h-[34%] w-auto sm:left-[18%]" />
+        <Sprite key={`${foeSrc}-${beat.n}`} src={foeSrc} alt={p.isBoss ? p.guardian.name : enemy.name}
+          className={`absolute bottom-[4%] w-auto ${p.isBoss ? "right-[2%] h-[66%] sm:right-[12%]" : "right-[8%] h-[40%] sm:right-[22%]"}`} />
+      </section>
+
+      {res && (
+        <div id="feedback" tabIndex={-1} role="status" className={`space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-gold/50 bg-gold/10"}`}>
+          <p className="font-display text-xl font-bold">
+            {res.correct
+              ? p.isBoss ? `${CHEERS[idx % CHEERS.length]} ${p.guardian.name} pierde fuerza.` : `${CHEERS[idx % CHEERS.length]} El ${enemy.name} se desvanece en luz.`
+              : p.isBoss ? `¡Uy! ${p.guardian.name} se crece un momento. Kuro te explica:` : "¡Uy, no era esa! Kuro te explica:"}
+          </p>
+          <p className={res.correct ? "text-muted" : "text-[#ffe3a0]"}>💡 {res.explanation}</p>
+          {p.isBoss && !res.correct && !stillPossible && (
+            <p className="text-sm text-muted">Esta vez no alcanzarás el {PASS_MARK}%, pero termina la prueba: cada respuesta te prepara para la revancha.</p>
+          )}
+          <div className="flex justify-end">
+            {answeredCount < total ? (
+              <button type="button" className="btn btn-primary btn-lg" onClick={next} disabled={pending}>
+                {p.isBoss ? "Siguiente ataque →" : "Siguiente enemigo →"}
+              </button>
+            ) : (
+              <button type="button" className="btn btn-primary btn-lg" onClick={finish} disabled={pending}>
+                {pending ? "Calificando…" : p.isBoss ? "¡Purificar al Guardián!" : "Terminar misión"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <ol className="flex gap-1.5" aria-label="Progreso">
+        {results.map((r, i) => (
+          <li key={i} className={`h-2.5 flex-1 rounded-full transition ${i === idx ? "ring-2 ring-cyan ring-offset-2 ring-offset-bg" : ""} ${r ? (r.correct ? "bg-green" : "bg-coral") : i === idx ? "bg-cyan" : "bg-white/15"}`}>
+            <span className="sr-only">Pregunta {i + 1}: {r ? (r.correct ? "acertada" : "fallada") : i === idx ? "actual" : "pendiente"}</span>
+          </li>
+        ))}
+      </ol>
 
       <fieldset className="panel space-y-5 p-5 sm:p-7" disabled={pending}>
-        <legend className="sr-only">Pregunta {idx + 1}</legend>
+        <legend className="text-sm font-semibold text-muted">Pregunta {idx + 1} de {total}</legend>
         <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">{q.prompt}</h2>
         <div className="grid gap-3" role="radiogroup" aria-label="Opciones">
           {q.options.map((opt, i) => {
-            const out = removed.includes(i);
+            const out = !res && removed.includes(i);
+            const isRight = res && i === res.correctIndex;
+            const isWrongPick = res && i === res.choice && !res.correct;
+            const tone = isRight
+              ? "border-green bg-green/15"
+              : isWrongPick
+                ? "border-coral bg-coral/15"
+                : res
+                  ? "border-line bg-bg/30 opacity-60"
+                  : out
+                    ? "border-dashed border-line/60 bg-bg/20 opacity-45"
+                    : "border-line bg-bg/40 peer-checked:border-cyan peer-checked:bg-cyan/10 hover:border-[#5a52b8]";
             return (
-              <label key={i} className={out ? "cursor-not-allowed" : "cursor-pointer"} data-descartada={out || undefined}>
-                <input type="radio" name={`q-${q.id}`} value={i} checked={chosen === i} onChange={() => choose(i)} disabled={out} className="peer sr-only" />
-                <span className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-lg transition peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${out ? "border-dashed border-line/60 bg-bg/20 opacity-45" : "border-line bg-bg/40 peer-checked:border-cyan peer-checked:bg-cyan/10 hover:border-[#5a52b8]"}`}>
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 font-display font-extrabold" aria-hidden="true">{out ? "✕" : LETTERS[i]}</span>
+              <label key={i} className={res || out ? "cursor-default" : "cursor-pointer"} data-descartada={out || undefined} data-correcta={isRight || undefined}>
+                <input type="radio" name={`q-${q.id}`} value={i} checked={(res ? res.choice : selected) === i} onChange={() => setSelected(i)} disabled={!!res || out} className="peer sr-only" />
+                <span className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-lg transition peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${tone}`}>
+                  <span className={`grid size-9 shrink-0 place-items-center rounded-lg font-display font-extrabold ${isRight ? "bg-green text-ink" : isWrongPick ? "bg-coral text-ink" : "bg-white/10"}`} aria-hidden="true">
+                    {isRight ? "✓" : isWrongPick ? "✕" : out ? "✕" : LETTERS[i]}
+                  </span>
                   <span className={`font-medium ${out ? "line-through" : ""}`}>{opt}</span>
                   {out && <span className="sr-only"> (descartada por el 50/50)</span>}
+                  {isRight && <span className="sr-only"> (respuesta correcta)</span>}
+                  {isWrongPick && <span className="sr-only"> (tu respuesta)</span>}
                 </span>
               </label>
             );
           })}
         </div>
 
-        {shown.hint && (
-          <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">💡 {shown.hint}</p>
+        {!res && (
+          <>
+            {shown.hint && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">💡 {shown.hint}</p>}
+            <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
+              <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
+              {q.hasHint && !shown.hint && (
+                <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
+                  title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
+                  💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
+                </button>
+              )}
+              {removed.length > 0 ? (
+                <span className="chip text-sm text-muted">🔮 50/50 usado</span>
+              ) : !fifty.unlocked ? (
+                <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}>🔒 50/50 · rango {fifty.minRank}</span>
+              ) : (
+                <button type="button" onClick={() => askAid("5050")} disabled={!fiftyReady || aidPending || pending} className="btn btn-ghost btn-sm"
+                  title={fiftyCapped ? "Llegaste al máximo de 50/50 de hoy" : "Quita la mitad de las respuestas incorrectas"}>
+                  🔮 50/50 · {fiftyCapped ? "tope de hoy" : `tienes ${fifty.stock}`}
+                </button>
+              )}
+              {aidPending && <span className="text-sm text-muted">Usando ayuda…</span>}
+              {needShop && <Link href="/tienda?c=ayuda" className="text-sm font-semibold text-cyan underline-offset-4 hover:underline">Conseguir más en la tienda</Link>}
+            </div>
+            <p aria-live="polite" className="text-sm font-medium text-[#ffb3b3] empty:hidden">{aidMsg}</p>
+          </>
         )}
-
-        <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
-          <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
-          {q.hasHint && !shown.hint && (
-            <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
-              title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
-              💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
-            </button>
-          )}
-          {removed.length > 0 ? (
-            <span className="chip text-sm text-muted">🔮 50/50 usado</span>
-          ) : !fifty.unlocked ? (
-            <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}>🔒 50/50 · rango {fifty.minRank}</span>
-          ) : (
-            <button type="button" onClick={() => askAid("5050")} disabled={!fiftyReady || aidPending || pending} className="btn btn-ghost btn-sm"
-              title={fiftyCapped ? "Llegaste al máximo de 50/50 de hoy" : "Quita la mitad de las respuestas incorrectas"}>
-              🔮 50/50 · {fiftyCapped ? "tope de hoy" : `tienes ${fifty.stock}`}
-            </button>
-          )}
-          {aidPending && <span className="text-sm text-muted">Usando ayuda…</span>}
-          {needShop && <Link href="/tienda?c=ayuda" className="text-sm font-semibold text-cyan underline-offset-4 hover:underline">Conseguir más en la tienda</Link>}
-        </div>
-        <p aria-live="polite" className="min-h-0 text-sm font-medium text-[#ffb3b3] empty:hidden">{aidMsg}</p>
       </fieldset>
 
-      {outcome && !outcome.ok && (
-        <p role="alert" className="rounded-xl border border-coral/50 bg-coral/10 px-4 py-3 font-medium text-[#ffb3b3]">{outcome.error}</p>
-      )}
+      {error && <p role="alert" className="rounded-xl border border-coral/50 bg-coral/10 px-4 py-3 font-medium text-[#ffb3b3]">{error}</p>}
 
-      <div className="flex items-center justify-between gap-3">
-        <button type="button" className="btn btn-ghost" onClick={() => go(idx - 1)} disabled={idx === 0 || pending}>← Anterior</button>
-        {last ? (
-          <button type="button" className="btn btn-primary btn-lg" onClick={send} disabled={answered < total || pending}>
-            {pending ? "Calificando…" : answered < total ? `Faltan ${total - answered} por responder` : p.isBoss ? "¡Enfrentar al Guardián!" : "Terminar misión"}
+      {!res && (
+        <div className="flex items-center justify-end gap-3">
+          <button type="button" className="btn btn-primary btn-lg" onClick={answer} disabled={selected < 0 || pending}>
+            {pending ? "Revisando…" : selected < 0 ? "Elige una respuesta" : p.isBoss ? "¡Lanzar ataque!" : "Responder"}
           </button>
-        ) : (
-          <button type="button" className="btn btn-primary btn-lg" onClick={() => go(idx + 1)} disabled={chosen < 0 || pending}>Siguiente →</button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

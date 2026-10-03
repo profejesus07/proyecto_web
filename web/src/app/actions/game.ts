@@ -3,14 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
-import { AVATAR_BASES, type AvatarBase, type CompleteResult } from "@/lib/data/types";
+import { AVATAR_BASES, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
 import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
-import { PASS_MARK, gradeAnswers } from "@/lib/game/grading";
+import { PASS_MARK } from "@/lib/game/grading";
 import { ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
 import { RARITY, getItem, itemImage, priceOf, SHOP_CATEGORIES } from "@/lib/catalog";
 import { SHOP_OPEN } from "@/lib/features";
-import { submitSchema } from "@/lib/validation";
+import { answerSchema, submitSchema } from "@/lib/validation";
 
 export interface ReviewRow {
   correct: boolean;
@@ -36,6 +36,9 @@ const MESSAGES: Record<string, string> = {
   mision_bloqueada: "Esta misión todavía está bloqueada. Termina primero las anteriores.",
   mision_no_encontrada: "No encontramos esa misión.",
   respuestas_incompletas: "Falta responder alguna pregunta.",
+  sin_intento: "Empieza la misión respondiendo la primera pregunta.",
+  pregunta_invalida: "Esa pregunta no existe.",
+  respuesta_invalida: "Esa opción no existe.",
   sin_preguntas: "Esta misión aún no tiene preguntas.",
 };
 
@@ -45,9 +48,26 @@ function friendly(e: unknown, fallback: string): string {
   return fallback;
 }
 
-export async function submitMissionAction(missionId: string, answers: number[]): Promise<SubmitOutcome> {
-  const parsed = submitSchema.safeParse({ missionId, answers });
-  if (!parsed.success) return { ok: false, error: "No pudimos leer tus respuestas." };
+export type AnswerOutcome = ({ ok: true } & AnswerResult) | { ok: false; error: string };
+
+/** Responde una pregunta. El servidor la revisa al momento y la respuesta queda fija. */
+export async function answerQuestionAction(missionId: string, index: number, choice: number): Promise<AnswerOutcome> {
+  const parsed = answerSchema.safeParse({ missionId, index, choice });
+  if (!parsed.success) return { ok: false, error: "No pudimos leer tu respuesta." };
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
+  try {
+    const r = await getRepo().answerQuestion(viewer.id, parsed.data.missionId, parsed.data.index, parsed.data.choice);
+    return { ok: true, ...r };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos guardar tu respuesta. Inténtalo de nuevo.") };
+  }
+}
+
+/** Termina la misión con las respuestas ya guardadas en el servidor. */
+export async function submitMissionAction(missionId: string): Promise<SubmitOutcome> {
+  const parsed = submitSchema.safeParse({ missionId });
+  if (!parsed.success) return { ok: false, error: "No encontramos esa misión." };
 
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
@@ -57,9 +77,6 @@ export async function submitMissionAction(missionId: string, answers: number[]):
     const play = await repo.getMissionPlay(parsed.data.missionId);
     if (!play) return { ok: false, error: MESSAGES.mision_no_encontrada };
     const key = await repo.getAnswerKey(parsed.data.missionId);
-    if (key.length !== play.questions.length) return { ok: false, error: "Esta misión está en mantenimiento. Inténtalo más tarde." };
-
-    const grade = gradeAnswers(key.map((k) => k.correctIndex), parsed.data.answers);
     const progress = await repo.getProgress(viewer.id);
     const items = itemsOnFirstCompletion({
       isBoss: play.mission.isBoss,
@@ -69,18 +86,19 @@ export async function submitMissionAction(missionId: string, answers: number[]):
       xpGain: play.mission.xpReward,
       firstEver: !progress.some((p) => p.completed),
     });
-    const result = await repo.completeMission(viewer.id, play.mission.id, grade.score, PASS_MARK, items);
+    const result = await repo.finishAttempt(viewer.id, play.mission.id, PASS_MARK, items);
 
     revalidatePath("/gremio");
     revalidatePath("/portales", "layout");
     revalidatePath("/perfil");
     revalidatePath("/tienda");
 
+    const { answers, ...rest } = result;
     return {
       ok: true,
       passMark: PASS_MARK,
-      review: key.map((k, i) => ({ correct: grade.perQuestion[i], chosen: parsed.data.answers[i], correctIndex: k.correctIndex, explanation: k.explanation })),
-      result,
+      review: key.map((k, i) => ({ correct: answers[i] === k.correctIndex, chosen: answers[i] ?? -1, correctIndex: k.correctIndex, explanation: k.explanation })),
+      result: rest,
       newRanks: result.first ? ranksReached(viewer.xp, result.xp).map((r) => r.key) : [],
       items: result.granted.flatMap((id) => {
         const it = getItem(id);
