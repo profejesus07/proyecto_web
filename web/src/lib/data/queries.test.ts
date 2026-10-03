@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { CourseDetail, ProgressRow } from "./types";
 
 
-import { buildCourseView } from "./queries";
+import { buildCourseView, buildCourseViews } from "./queries";
 
 const course: CourseDetail = {
   slug: "c", title: "C", summary: "", element: "naturaleza", guardian: "petrox", position: 1,
@@ -41,5 +41,26 @@ describe("buildCourseView", () => {
     expect(v.status).toBe("completado");
     expect(v.bossDefeated).toBe(true);
     expect(v.next).toBeNull();
+  });
+});
+
+describe("buildCourseViews", () => {
+  const second: CourseDetail = {
+    slug: "d", title: "D", summary: "", element: "fuego", guardian: "ignaris", position: 2,
+    missions: [1, 2].map((n) => ({ id: `d${n}`, courseSlug: "d", position: n, title: `D${n}`, intro: "", xpReward: 10, isBoss: n === 2 })),
+  };
+
+  it("el segundo portal está cerrado hasta terminar el primero", () => {
+    const [a, b] = buildCourseViews([second, course], [done("m1")], []);
+    expect(a.slug).toBe("c");
+    expect(a.locked).toBe(false);
+    expect(b).toMatchObject({ locked: true, lockedBy: { slug: "c", title: "C", guardian: "petrox" }, next: null });
+    expect(b.missions.map((m) => m.state)).toEqual(["bloqueada", "bloqueada"]);
+  });
+
+  it("al vencer al Guardián del primero se abre el segundo", () => {
+    const [, b] = buildCourseViews([course, second], ["m1", "m2", "m3", "m4"].map((id) => done(id)), ["c"]);
+    expect(b).toMatchObject({ locked: false, lockedBy: null });
+    expect(b.next?.id).toBe("d1");
   });
 });

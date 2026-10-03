@@ -479,3 +479,232 @@ revoke all on function public.buy_consumable(uuid, text, integer, integer) from 
 revoke all on function public.use_aid(uuid, uuid, text, integer, integer) from public, anon, authenticated;
 grant execute on function public.buy_consumable(uuid, text, integer, integer) to service_role;
 grant execute on function public.use_aid(uuid, uuid, text, integer, integer) to service_role;
+
+-- >>> 0005_seed_portal_del_primer_intento.sql
+-- Contenido de ejemplo: El Portal del Primer Intento
+-- Generado por supabase/build_setup.py. No editar a mano.
+
+insert into public.courses (slug,title,summary,element,guardian,position,published) values ('portal-del-primer-intento','El Portal del Primer Intento','Equivocarse no es perder: es parte de aprender. Al final te espera Ignaris, el dragón joven cuyas llamas se apagan cada vez que tiene miedo de intentarlo.','fuego','ignaris',2,true)
+  on conflict (slug) do update set title=excluded.title, summary=excluded.summary, element=excluded.element, guardian=excluded.guardian, position=excluded.position, published=excluded.published;
+
+insert into public.missions (id,course_slug,position,title,intro,xp_reward,is_boss) values ('60a71a72-6b6d-5140-a936-044b789148e5','portal-del-primer-intento',1,'La llama del primer intento','Ignaris no se atreve a empezar nada por miedo a hacerlo mal. Muéstrale que el primer paso no tiene que ser perfecto.',60,false)
+  on conflict (id) do update set title=excluded.title, intro=excluded.intro, xp_reward=excluded.xp_reward, is_boss=excluded.is_boss;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('6e65b9a7-4bb3-5470-82c9-0b2fcd9de8b5','60a71a72-6b6d-5140-a936-044b789148e5',1,'Tienes que escribir un cuento y la hoja en blanco te da miedo. ¿Cuál es el mejor primer paso?','["Esperar a tener la idea perfecta", "Escribir una primera frase, aunque no sea perfecta", "Copiar un cuento de internet", "Dejarlo para el último día"]'::jsonb,1,'Un borrador se puede mejorar; una hoja en blanco, no.','Empezar con algo imperfecto te da material para mejorar. La idea perfecta casi nunca llega mientras esperas.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('37de0298-4374-515a-b5bd-cd27576c1fa0','60a71a72-6b6d-5140-a936-044b789148e5',2,'Valentina quiere aprender a montar en bicicleta, pero le da miedo caerse. ¿Qué le ayuda más?','["Practicar en un lugar seguro, con casco y poco a poco", "No intentarlo nunca", "Bajar una loma muy empinada el primer día", "Solo ver videos, sin subirse nunca"]'::jsonb,0,'El miedo baja cuando el primer intento es pequeño y seguro.','Un primer intento pequeño y seguro reduce el miedo y te deja aprender sin arriesgar demasiado.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('5554f901-6b53-5ef5-aaca-b2d633facb3e','60a71a72-6b6d-5140-a936-044b789148e5',3,'¿Qué significa decir «todavía no me sale»?','["Que nunca te va a salir", "Que no eres bueno para eso", "Que estás aprendiendo y con práctica te puede salir", "Que es culpa de otra persona"]'::jsonb,2,'Fíjate en la palabra «todavía».','«Todavía» significa que vas en camino: con práctica, lo que hoy no sale mañana puede salir.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('1177d6bd-5b05-598a-8af4-940b7c7c4522','60a71a72-6b6d-5140-a936-044b789148e5',4,'Antes de un examen sientes nervios. ¿Qué es cierto?','["Sentir nervios es normal y puedes responder igual", "Los nervios significan que te va a ir mal", "Si tienes nervios, mejor no presentarlo", "Solo sienten nervios los que no estudiaron"]'::jsonb,0,'Hasta los deportistas profesionales sienten nervios antes de jugar.','Los nervios son normales cuando algo te importa. Respirar despacio y empezar por una pregunta fácil ayuda mucho.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+
+insert into public.missions (id,course_slug,position,title,intro,xp_reward,is_boss) values ('9f57076b-f4a7-5529-9db9-8e108c73252c','portal-del-primer-intento',2,'Los errores son pistas','Cada error deja una huella que dice por dónde seguir. Ayuda a Kuro a leerlas.',60,false)
+  on conflict (id) do update set title=excluded.title, intro=excluded.intro, xp_reward=excluded.xp_reward, is_boss=excluded.is_boss;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('adabac70-1b70-5213-8f25-504b8794634a','9f57076b-f4a7-5529-9db9-8e108c73252c',1,'Te equivocaste en una suma. ¿Qué es lo más útil?','["Borrar todo y no volver a mirarla", "Revisar en qué paso estuvo el error", "Decir que las matemáticas no son para ti", "Pedir que no cuenten esa tarea"]'::jsonb,1,'Un error te dice dónde mirar.','Encontrar el paso exacto del error te enseña qué practicar y evita que lo repitas.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('734ca0fd-a0eb-5421-bd4f-8a3c3b6d9f3b','9f57076b-f4a7-5529-9db9-8e108c73252c',2,'Una científica prueba una idea y no funciona. ¿Qué hace?','["Anota qué pasó y prueba un cambio", "Esconde los resultados", "Deja la ciencia para siempre", "Repite exactamente lo mismo cien veces"]'::jsonb,0,'Un experimento que falla también da información.','Cada intento que no funciona descarta una posibilidad y acerca la respuesta. Por eso en ciencia se anotan los errores.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('bbced9bf-197e-5b93-99a0-34ca1ee5a558','9f57076b-f4a7-5529-9db9-8e108c73252c',3,'¿Cuál de estas frases trata al error como una pista?','["Soy un desastre", "Esto no es para mí", "Ya sé que este camino no funciona; probaré otro", "Nunca más lo intento"]'::jsonb,2,'Busca la frase que mira hacia adelante.','Esa frase convierte el error en información: ya sabes qué no funciona y puedes probar otra cosa.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('a006ac7a-64be-56c2-a354-84bb1746a268','9f57076b-f4a7-5529-9db9-8e108c73252c',4,'Tu profesora te devuelve el trabajo con correcciones. ¿Para qué sirven?','["Para hacerte sentir mal", "Para mostrarte qué mejorar en el próximo intento", "Para que no vuelvas a entregar trabajos", "Para nada; mejor no leerlas"]'::jsonb,1,'Las correcciones son como un mapa.','Las correcciones señalan exactamente qué mejorar. Leerlas es la forma más rápida de avanzar.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+
+insert into public.missions (id,course_slug,position,title,intro,xp_reward,is_boss) values ('ee43a599-93b0-5c2b-a86b-4b0b00447f8d','portal-del-primer-intento',3,'Intentarlo de otra manera','Repetir lo mismo da el mismo resultado. Aprende a cambiar de estrategia antes de enfrentar al dragón.',70,false)
+  on conflict (id) do update set title=excluded.title, intro=excluded.intro, xp_reward=excluded.xp_reward, is_boss=excluded.is_boss;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('9676ac66-5dce-5aa6-8b59-eeea2d8a0b71','ee43a599-93b0-5c2b-a86b-4b0b00447f8d',1,'Llevas un rato con un problema y no te sale. ¿Qué puedes probar?','["Hacer lo mismo, pero más rápido", "Rendirte y no volver a intentarlo", "Hacer un dibujo o un esquema del problema", "Esperar a que se resuelva solo"]'::jsonb,2,'Cambia la forma de mirarlo.','Cambiar de estrategia, por ejemplo dibujando el problema, muchas veces deja ver lo que antes no veías.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('39c28e08-292d-5b33-85d3-5ad77d7dee59','ee43a599-93b0-5c2b-a86b-4b0b00447f8d',2,'¿Cuándo es buena idea pedir ayuda?','["Nunca: pedir ayuda es de débiles", "Después de intentarlo y saber qué parte no entiendes", "Antes de leer la pregunta", "Solo si nadie te ve"]'::jsonb,1,'Pedir ayuda funciona mejor cuando sabes qué preguntar.','Pedir ayuda es una estrategia de los buenos aprendices. Funciona mejor si ya lo intentaste y sabes qué parte te traba.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('d89593a9-b170-5c9c-9d40-4b355a917d8b','ee43a599-93b0-5c2b-a86b-4b0b00447f8d',3,'Sebastián falla el mismo tiro libre varias veces. ¿Qué le ayuda más?','["Cambiar una cosa pequeña en cada intento y fijarse en el resultado", "Patear más fuerte sin pensar", "Culpar al balón", "Dejar de practicar"]'::jsonb,0,'Probar, mirar y ajustar.','Ajustar una sola cosa a la vez y observar qué pasa es la forma en que mejoran los deportistas.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('695f4cd5-260a-5256-a70a-4270c8959387','ee43a599-93b0-5c2b-a86b-4b0b00447f8d',4,'Después de varios intentos lograste algo difícil. ¿Qué aprendiste?','["Que tuviste suerte", "Que era fácil desde el principio", "Que ya no necesitas aprender nada más", "Que la práctica y los intentos te hicieron mejorar"]'::jsonb,3,'Piensa en todo lo que pasó antes del logro.','No fue suerte: cada intento te enseñó algo. Recordarlo te da valor para el siguiente reto.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+
+insert into public.missions (id,course_slug,position,title,intro,xp_reward,is_boss) values ('dde52c31-4a94-50ff-86b9-084ac1e3d9a5','portal-del-primer-intento',4,'Ignaris, el dragón que teme equivocarse','Las llamas de Ignaris se apagan cada vez que duda. Enséñale que equivocarse es parte de aprender y su fuego volverá a brillar.',150,true)
+  on conflict (id) do update set title=excluded.title, intro=excluded.intro, xp_reward=excluded.xp_reward, is_boss=excluded.is_boss;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('22e8e0c0-cb1b-5902-b4d6-2aaf86a51180','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',1,'Ignaris ruge: «¡Si me equivoco, todos se van a reír de mí!». ¿Qué le respondes?','["Tienes razón, mejor no lo intentes", "Todos nos equivocamos al aprender; lo importante es seguir intentando", "Haz que otro lo haga por ti", "Equivócate a escondidas"]'::jsonb,1,'¿Conoces a alguien que haya aprendido algo sin equivocarse nunca?','Equivocarse es parte de aprender para todo el mundo. Quien sigue intentando es quien mejora.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('2c279222-3bb2-5c9b-98cd-db661b901f36','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',2,'¿Cuál es el mejor primer paso ante una tarea que te da miedo?','["Esperar a dejar de sentir miedo", "Hacerla toda de una vez esta noche", "Empezar por una parte pequeña durante cinco minutos", "Decir que ya la hiciste"]'::jsonb,2,'Empezar pequeño apaga el miedo.','Cinco minutos con una parte pequeña rompen el bloqueo; casi siempre, después es más fácil seguir.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('8c46fba9-a5e3-58e9-b9dc-68f9a34884d5','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',3,'Te equivocaste en una pregunta de esta misma prueba. ¿Qué haces?','["Leo la explicación para entender por qué", "Cierro la página y no vuelvo", "Pienso que no sirvo para esto", "Culpo a la pregunta"]'::jsonb,0,'El repaso del final está ahí por algo.','La explicación convierte el error en aprendizaje, y en el siguiente intento lo harás mejor.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('773df992-f6cb-5913-807e-86ab2e8dfa05','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',4,'¿Cuál de estas frases ayuda a Ignaris a volver a intentarlo?','["Nunca voy a poder", "Es imposible", "Los demás son mejores que yo", "Todavía no me sale, pero voy a probar otra forma"]'::jsonb,3,'Busca la frase que abre una puerta.','«Todavía» y «otra forma» convierten un tropiezo en un plan para el próximo intento.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('0f14e8a0-3a69-55d0-8490-af8465ef7cfa','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',5,'Intentaste algo tres veces de la misma manera y no salió. ¿Qué conviene?','["Intentarlo igual una cuarta vez", "Cambiar de estrategia o pedir ayuda", "Abandonarlo para siempre", "Esconder que no te salió"]'::jsonb,1,'Si un camino no te lleva, prueba otro.','Repetir lo mismo da el mismo resultado; cambiar de estrategia o pedir ayuda abre caminos nuevos.')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+insert into public.questions (id,mission_id,position,prompt,options,correct_index,hint,explanation) values ('1ca4c12f-0a59-5e9c-b877-113d5f9935b2','dde52c31-4a94-50ff-86b9-084ac1e3d9a5',6,'Al final, ¿qué apaga el miedo de Ignaris?','["Probar, equivocarse, aprender y volver a intentar", "No intentar nada nuevo", "Hacer solo lo que ya sabe", "Esperar a ser perfecto"]'::jsonb,0,'Es la habilidad que vence a este Guardián.','Probar, equivocarse y reintentar es la forma de aprender cualquier cosa. ¡Con eso purificas a Ignaris!')
+  on conflict (id) do update set prompt=excluded.prompt, options=excluded.options, correct_index=excluded.correct_index, hint=excluded.hint, explanation=excluded.explanation;
+
+
+-- >>> 0006_orden_de_portales.sql
+-- Los portales se abren en orden: para entrar a uno hay que terminar todas las misiones
+-- (incluido el Guardián) de los portales publicados anteriores. Dentro de un portal,
+-- las misiones siguen abriéndose una tras otra.
+-- Sin DROP: se puede ejecutar varias veces.
+
+create or replace function public.mission_is_locked(p_user uuid, p_mission uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1
+      from missions target
+      join courses tc on tc.slug = target.course_slug
+      join missions m on true
+      join courses c on c.slug = m.course_slug
+     where target.id = p_mission
+       and c.published
+       and (c.position < tc.position or (c.slug = tc.slug and m.position < target.position))
+       and not exists (select 1 from mission_progress pr
+                        where pr.user_id = p_user and pr.mission_id = m.id and pr.completed_at is not null)
+  );
+$$;
+
+-- Igual que en 0003, pero con la nueva regla de orden entre portales.
+create or replace function public.complete_mission(
+  p_user uuid, p_mission uuid, p_score integer, p_pass_mark integer, p_items_on_first text[] default '{}'
+) returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  m record; prof record; prog record;
+  had_prog boolean; passed boolean; first boolean := false;
+  xp_gain integer := 0; coin_gain integer := 0; gem_gain integer := 0;
+  today date := (now() at time zone 'America/Bogota')::date;
+  new_streak integer; granted text[] := '{}'; item text; ok boolean;
+  boss_done boolean := false; course_done boolean := false;
+begin
+  if p_score < 0 or p_score > 100 then raise exception 'puntaje_invalido'; end if;
+  passed := p_score >= p_pass_mark;
+
+  select mi.id, mi.course_slug, mi.position, mi.xp_reward, mi.is_boss
+    into m
+    from missions mi join courses c on c.slug = mi.course_slug
+   where mi.id = p_mission and c.published;
+  if not found then raise exception 'mision_no_encontrada'; end if;
+
+  select * into prof from profiles where id = p_user for update;
+  if not found then raise exception 'perfil_no_encontrado'; end if;
+
+  if public.mission_is_locked(p_user, p_mission) then raise exception 'mision_bloqueada'; end if;
+
+  select * into prog from mission_progress where user_id = p_user and mission_id = p_mission;
+  had_prog := found;
+  first := passed and (not had_prog or prog.completed_at is null);
+
+  insert into mission_progress (user_id, mission_id, best_score, attempts, completed_at)
+  values (p_user, p_mission, p_score, 1, case when passed then now() end)
+  on conflict (user_id, mission_id) do update set
+    best_score   = greatest(mission_progress.best_score, excluded.best_score),
+    attempts     = mission_progress.attempts + 1,
+    completed_at = coalesce(mission_progress.completed_at, excluded.completed_at),
+    updated_at   = now();
+
+  if prof.last_active = today then new_streak := greatest(prof.streak, 1);
+  elsif prof.last_active = today - 1 then new_streak := prof.streak + 1;
+  else new_streak := 1; end if;
+
+  if first then
+    xp_gain   := m.xp_reward;
+    coin_gain := 10 + case when p_score = 100 then 10 else 0 end + case when m.is_boss then 100 else 0 end;
+    gem_gain  := case when m.is_boss then 5 else 0 end;
+    if m.is_boss then
+      insert into boss_defeats (user_id, course_slug) values (p_user, m.course_slug) on conflict do nothing;
+      boss_done := true;
+    end if;
+    foreach item in array p_items_on_first loop
+      insert into inventory (user_id, item_id, source) values (p_user, item, 'logro') on conflict do nothing;
+      get diagnostics ok = row_count;
+      if ok then granted := granted || item; end if;
+    end loop;
+  end if;
+
+  if new_streak > prof.streak or prof.last_active is distinct from today then
+    foreach item in array (case new_streak when 3 then array['obj_insignia_racha3'] when 7 then array['obj_insignia_racha7'] when 30 then array['obj_insignia_racha30'] else '{}'::text[] end) loop
+      insert into inventory (user_id, item_id, source) values (p_user, item, 'racha') on conflict do nothing;
+      get diagnostics ok = row_count;
+      if ok then granted := granted || item; end if;
+    end loop;
+  end if;
+
+  update profiles set xp = xp + xp_gain, coins = coins + coin_gain, gems = gems + gem_gain,
+                      streak = new_streak, last_active = today
+   where id = p_user
+   returning * into prof;
+
+  if xp_gain   > 0 then insert into ledger (user_id, kind, delta, reason, ref) values (p_user, 'xp',    xp_gain,   'mision', p_mission::text); end if;
+  if coin_gain > 0 then insert into ledger (user_id, kind, delta, reason, ref) values (p_user, 'coins', coin_gain, 'mision', p_mission::text); end if;
+  if gem_gain  > 0 then insert into ledger (user_id, kind, delta, reason, ref) values (p_user, 'gems',  gem_gain,  'jefe',   p_mission::text); end if;
+
+  course_done := not exists (
+    select 1 from missions mi where mi.course_slug = m.course_slug
+       and not exists (select 1 from mission_progress pr
+                        where pr.user_id = p_user and pr.mission_id = mi.id and pr.completed_at is not null));
+
+  return jsonb_build_object(
+    'passed', passed, 'first', first, 'score', p_score,
+    'xp_gain', xp_gain, 'coins_gain', coin_gain, 'gems_gain', gem_gain,
+    'xp', prof.xp, 'coins', prof.coins, 'gems', prof.gems, 'streak', prof.streak,
+    'boss_defeated', boss_done, 'course_done', course_done, 'granted', to_jsonb(granted));
+end $$;
+
+-- Igual que en 0004, pero con la nueva regla de orden entre portales.
+create or replace function public.use_aid(p_user uuid, p_question uuid, p_item text, p_daily_cap integer, p_min_xp integer default 0)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  qq record; prof record; prev record;
+  today date := (now() at time zone 'America/Bogota')::date;
+  is_free boolean := false; used_today integer; have integer;
+  wrong integer[]; n_remove integer; out_payload jsonb;
+begin
+  if p_item not in ('obj_ayuda_pista', 'obj_ayuda_5050') then raise exception 'ayuda_invalida'; end if;
+
+  select q.id, q.mission_id, q.options, q.correct_index, q.hint
+    into qq
+    from questions q join missions mi on mi.id = q.mission_id join courses c on c.slug = mi.course_slug
+   where q.id = p_question and c.published;
+  if not found then raise exception 'pregunta_no_encontrada'; end if;
+
+  select * into prof from profiles where id = p_user for update;
+  if not found then raise exception 'perfil_no_encontrado'; end if;
+
+  if public.mission_is_locked(p_user, qq.mission_id) then raise exception 'mision_bloqueada'; end if;
+
+  -- Ya la usó hoy en esta pregunta: se devuelve lo mismo sin cobrar.
+  select * into prev from aid_uses where user_id = p_user and item_id = p_item and question_id = p_question and used_on = today;
+  if found then
+    select quantity into have from consumables where user_id = p_user and item_id = p_item;
+    return prev.payload || jsonb_build_object('charged', false, 'free', prev.free, 'left', coalesce(have, 0));
+  end if;
+
+  if prof.xp < coalesce(p_min_xp, 0) then raise exception 'rango_insuficiente'; end if;
+
+  if p_item = 'obj_ayuda_pista' then
+    if coalesce(trim(qq.hint), '') = '' then raise exception 'sin_pista'; end if;
+    is_free := not exists (select 1 from aid_uses where user_id = p_user and item_id = p_item
+                            and mission_id = qq.mission_id and used_on = today and free);
+    out_payload := jsonb_build_object('hint', qq.hint);
+  else
+    select array_agg(i order by random()) into wrong
+      from generate_series(0, jsonb_array_length(qq.options) - 1) as i
+     where i <> qq.correct_index;
+    n_remove := least(ceil(coalesce(array_length(wrong, 1), 0) / 2.0)::integer, coalesce(array_length(wrong, 1), 0) - 1);
+    if n_remove < 1 then raise exception 'no_aplica'; end if;
+    out_payload := jsonb_build_object('removed', (select to_jsonb(array_agg(x order by x)) from unnest(wrong[1:n_remove]) as x));
+  end if;
+
+  if is_free then
+    select quantity into have from consumables where user_id = p_user and item_id = p_item;
+  else
+    select count(*) into used_today from aid_uses where user_id = p_user and item_id = p_item and used_on = today and not free;
+    if used_today >= p_daily_cap then raise exception 'tope_diario'; end if;
+    update consumables set quantity = quantity - 1, updated_at = now()
+     where user_id = p_user and item_id = p_item and quantity > 0
+    returning quantity into have;
+    if not found then raise exception 'sin_unidades'; end if;
+  end if;
+
+  insert into aid_uses (user_id, item_id, mission_id, question_id, used_on, free, payload)
+  values (p_user, p_item, qq.mission_id, p_question, today, is_free, out_payload);
+
+  return out_payload || jsonb_build_object('charged', not is_free, 'free', is_free, 'left', coalesce(have, 0));
+end $$;
+
+revoke all on function public.mission_is_locked(uuid, uuid) from public, anon, authenticated;
+grant execute on function public.mission_is_locked(uuid, uuid) to service_role;

@@ -21,6 +21,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   const g = guardianBySlug(course.guardian);
   const normal = course.missions.filter((m) => !m.isBoss);
   const boss = course.missions.find((m) => m.isBoss);
+  const before = course.lockedBy ? guardianBySlug(course.lockedBy.guardian) : undefined;
 
   return (
     <div className="space-y-8">
@@ -40,12 +41,23 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
         <Sprite src={asset.boss(course.guardian)} alt={`${g?.name ?? "El Guardián"} custodia este portal`} className="mx-auto h-48 w-auto md:h-56" />
       </header>
 
+      {course.lockedBy && (
+        <div role="note" className="panel flex flex-wrap items-center gap-4 !border-gold/50 p-5">
+          {before && <Sprite src={asset.boss(course.lockedBy.guardian)} alt={before.name} className="h-20 w-auto" />}
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="font-display text-xl font-bold">🔒 Este portal todavía está cerrado</p>
+            <p className="text-muted">Termina «{course.lockedBy.title}» y vence a {before?.name ?? "su Guardián"} para abrirlo.</p>
+          </div>
+          <Link href={`/portales/${course.lockedBy.slug}`} className="btn btn-primary">Ir a ese portal</Link>
+        </div>
+      )}
+
       <section aria-labelledby="misiones-t" className="space-y-4">
         <h2 id="misiones-t" className="text-2xl">Misiones</h2>
         <ol className="space-y-3">
           {normal.map((m) => (
             <li key={m.id}>
-              <MissionRow m={m} index={m.position} />
+              <MissionRow m={m} index={m.position} portalLocked={course.locked} />
             </li>
           ))}
         </ol>
@@ -83,7 +95,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   );
 }
 
-function MissionRow({ m, index }: { m: { id: string; title: string; intro: string; xpReward: number; state: "bloqueada" | "disponible" | "completada"; bestScore: number | null; attempts: number }; index: number }) {
+function MissionRow({ m, index, portalLocked }: { portalLocked: boolean; m: { id: string; title: string; intro: string; xpReward: number; state: "bloqueada" | "disponible" | "completada"; bestScore: number | null; attempts: number }; index: number }) {
   const locked = m.state === "bloqueada";
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
@@ -92,7 +104,7 @@ function MissionRow({ m, index }: { m: { id: string; title: string; intro: strin
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-display text-lg font-bold leading-tight">{m.title}</p>
-        <p className="text-sm text-muted">{locked ? "Termina la misión anterior para abrirla." : m.intro}</p>
+        <p className="text-sm text-muted">{locked ? (portalLocked ? "Se abre cuando abras este portal." : "Termina la misión anterior para abrirla.") : m.intro}</p>
       </div>
       <div className="shrink-0 text-right text-sm">
         {m.state === "completada" ? (

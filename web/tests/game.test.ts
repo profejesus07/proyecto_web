@@ -24,7 +24,7 @@ beforeEach(async () => {
   h = await makeDb();
   await h.addUser(U, { display_name: "Ursula" });
   await h.addUser(V, { display_name: "Víctor" });
-  const m = await h.db.query<{ id: string; position: number; is_boss: boolean }>("select id, position, is_boss from public.missions order by position");
+  const m = await h.db.query<{ id: string; position: number; is_boss: boolean }>("select id, position, is_boss from public.missions where course_slug = 'primer-portal' order by position");
   missions = m.rows;
 });
 
@@ -112,6 +112,39 @@ describe("complete_mission", () => {
   it("solo el servidor puede ejecutarla", async () => {
     await expect(h.as("authenticated", U, "select public.complete_mission($1, $2, 100, 70, '{}')", [U, missions[0].id])).rejects.toThrow();
     await expect(h.as("anon", null, "select public.complete_mission($1, $2, 100, 70, '{}')", [U, missions[0].id])).rejects.toThrow();
+  });
+});
+
+describe("orden de los portales", () => {
+  const second = async () => (await h.db.query<{ id: string; position: number; is_boss: boolean }>(
+    "select id, position, is_boss from public.missions where course_slug = 'portal-del-primer-intento' order by position")).rows;
+
+  it("el segundo portal está cerrado hasta terminar el primero, Guardián incluido", async () => {
+    const [i1] = await second();
+    await expect(complete(U, i1.id, 100)).rejects.toThrow(/mision_bloqueada/);
+    for (const m of missions.filter((x) => !x.is_boss)) await complete(U, m.id, 100);
+    await expect(complete(U, i1.id, 100)).rejects.toThrow(/mision_bloqueada/);
+    await complete(U, missions.find((m) => m.is_boss)!.id, 100);
+    await expect(complete(U, i1.id, 100)).resolves.toMatchObject({ first: true, xp_gain: 60 });
+  });
+
+  it("las ayudas tampoco sirven en un portal cerrado", async () => {
+    const [i1] = await second();
+    const q = await h.db.query<{ id: string }>("select id from public.questions where mission_id = $1 limit 1", [i1.id]);
+    await expect(h.db.query("select public.use_aid($1, $2, 'obj_ayuda_pista', 10, 0)", [U, q.rows[0].id])).rejects.toThrow(/mision_bloqueada/);
+  });
+
+  it("vencer a Ignaris da su recompensa y su sello", async () => {
+    for (const m of missions) await complete(U, m.id, 100);
+    const ms = await second();
+    for (const m of ms.filter((x) => !x.is_boss)) await complete(U, m.id, 100);
+    const r = await complete(U, ms.find((m) => m.is_boss)!.id, 100, ["obj_recompensa_brasas", "obj_titulo_valiente", "obj_sello_fuego"]);
+    expect(r).toMatchObject({ boss_defeated: true, course_done: true });
+    expect(r.granted).toEqual(expect.arrayContaining(["obj_recompensa_brasas", "obj_titulo_valiente", "obj_sello_fuego"]));
+  });
+
+  it("la regla de orden no se puede consultar desde el navegador", async () => {
+    await expect(h.as("authenticated", U, "select public.mission_is_locked($1, $2)", [U, missions[0].id])).rejects.toThrow(/permission denied/);
   });
 });
 

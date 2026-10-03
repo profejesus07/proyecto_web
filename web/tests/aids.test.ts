@@ -30,7 +30,8 @@ beforeEach(async () => {
   await h.addUser(V);
   const r = await h.db.query<(typeof qs)[number]>(`
     select q.id, q.mission_id, m.position as mpos, q.correct_index, q.hint, jsonb_array_length(q.options) as n
-      from public.questions q join public.missions m on m.id = q.mission_id order by m.position, q.position`);
+      from public.questions q join public.missions m on m.id = q.mission_id
+     where m.course_slug = 'primer-portal' order by m.position, q.position`);
   qs = r.rows;
 });
 

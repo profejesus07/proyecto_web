@@ -24,11 +24,18 @@ describe("esquema", () => {
     expect(r.rows[1]).toMatchObject({ display_name: "Beto", role: "estudiante", avatar: { base: "aria" } });
   });
 
-  it("siembra el primer portal con 4 misiones y 18 preguntas", async () => {
-    const m = await db.query<{ n: number }>("select count(*)::int n from public.missions");
-    const q = await db.query<{ n: number }>("select count(*)::int n from public.questions");
-    expect(m.rows[0].n).toBe(4);
-    expect(q.rows[0].n).toBe(18);
+  it("siembra dos portales, cada uno con 4 misiones (la última es el Guardián) y 18 preguntas", async () => {
+    const r = await db.query<{ slug: string; guardian: string; position: number; misiones: number; jefes: number; preguntas: number }>(`
+      select c.slug, c.guardian, c.position,
+             count(distinct m.id)::int misiones,
+             count(distinct m.id) filter (where m.is_boss)::int jefes,
+             count(q.id)::int preguntas
+        from public.courses c join public.missions m on m.course_slug = c.slug join public.questions q on q.mission_id = m.id
+       group by c.slug order by c.position`);
+    expect(r.rows).toEqual([
+      { slug: "primer-portal", guardian: "petrox", position: 1, misiones: 4, jefes: 1, preguntas: 18 },
+      { slug: "portal-del-primer-intento", guardian: "ignaris", position: 2, misiones: 4, jefes: 1, preguntas: 18 },
+    ]);
   });
 
   it("cada pregunta tiene una respuesta correcta válida", async () => {
@@ -51,7 +58,7 @@ describe("seguridad por filas", () => {
     await expect(as("authenticated", A, "select correct_index from public.questions")).rejects.toThrow();
     await expect(as("anon", null, "select * from public.questions")).rejects.toThrow();
     const r = await as("service_role", null, "select count(*)::int n from public.questions");
-    expect(r.rows[0]).toEqual({ n: 18 });
+    expect(r.rows[0]).toEqual({ n: 36 });
   });
 
   it("un estudiante NO puede darse XP ni monedas", async () => {
@@ -99,9 +106,9 @@ describe("seguridad por filas", () => {
 
   it("los cursos publicados y sus misiones son públicos", async () => {
     const c = await as("anon", null, "select slug from public.courses");
-    expect(c.rows).toEqual([{ slug: "primer-portal" }]);
+    expect(c.rows).toEqual(expect.arrayContaining([{ slug: "primer-portal" }, { slug: "portal-del-primer-intento" }]));
     const m = await as("anon", null, "select count(*)::int n from public.missions");
-    expect(m.rows[0].n).toBe(4);
+    expect(m.rows[0].n).toBe(8);
   });
 
   it("un curso sin publicar queda oculto", async () => {

@@ -26,7 +26,9 @@ export default async function GremioPage() {
 
   const greeting = pending?.next
     ? pending.status === "nuevo"
-      ? `¡Bienvenido, ${viewer.displayName}! Tu primer portal te espera: «${pending.title}».`
+      ? pending === courses[0]
+        ? `¡Bienvenido, ${viewer.displayName}! Tu primer portal te espera: «${pending.title}».`
+        : `¡Se abrió un nuevo portal, ${viewer.displayName}! Te espera «${pending.title}».`
       : `Muy bien, ${viewer.displayName}. Tu próxima misión es «${pending.next.title}».`
     : allDone
       ? `¡Increíble, ${viewer.displayName}! Cruzaste todos los portales abiertos. Pronto habrá más.`
@@ -78,11 +80,11 @@ export default async function GremioPage() {
               {courses.map((c) => (
                 <li key={c.slug}>
                   <Link href={`/portales/${c.slug}`} className="panel flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:border-cyan/50">
-                    <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-16 shrink-0 object-contain" />
+                    <Sprite src={asset.boss(c.guardian)} alt="" decorative className={`size-16 shrink-0 object-contain ${c.locked ? "brightness-50 grayscale" : ""}`} />
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <p className="font-display text-lg font-bold leading-tight">{c.title}</p>
                       <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={c.total} aria-valuenow={c.done} aria-label="Misiones completadas"><i style={{ width: `${(c.done / Math.max(c.total, 1)) * 100}%` }} /></div>
-                      <p className="text-sm text-muted">{c.done} de {c.total} misiones{c.bossDefeated ? " · Guardián vencido ✔" : ""}</p>
+                      <p className="text-sm text-muted">{c.locked ? "🔒 Se abre al terminar el portal anterior" : `${c.done} de ${c.total} misiones${c.bossDefeated ? " · Guardián vencido ✔" : ""}`}</p>
                     </div>
                   </Link>
                 </li>

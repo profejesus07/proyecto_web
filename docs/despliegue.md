@@ -50,5 +50,5 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 ## Mantenimiento
 
-- Para cambiar o añadir cursos, edita `supabase/seed/*.json`, ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL.
+- Para cambiar o añadir cursos, edita o crea `supabase/seed/<curso>.json`, añádelo a `SEEDS` en `supabase/build_setup.py` (con el nombre de su migración), ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL. Los portales se abren en el orden de su `position`: cada uno exige terminar los anteriores.
 - Las claves se rotan desde Supabase; después actualiza la variable en Vercel y vuelve a desplegar.

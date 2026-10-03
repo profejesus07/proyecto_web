@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // Respuestas correctas del primer portal (índices de cada pregunta).
-const CORRECT = { m1: [1, 1, 0, 1], m2: [0, 1, 1, 1], m3: [1, 1, 1, 0], m4: [1, 1, 1, 1, 1, 0] };
+const CORRECT = { m1: [1, 1, 0, 1], m2: [0, 1, 1, 1], m3: [1, 1, 1, 0], m4: [1, 1, 1, 1, 1, 0], c2m1: [1, 0, 2, 0] };
 
 async function play(page: Page, id: string, answers: number[]) {
   await page.goto(`/mision/${id}`);
@@ -27,6 +27,15 @@ test("el estudiante empieza sin XP y ve su primer portal", async ({ page }) => {
 test("no se puede saltar a una misión bloqueada", async ({ page }) => {
   await page.goto("/mision/m2");
   await expect(page).toHaveURL(/\/portales\/primer-portal$/);
+});
+
+test("el segundo portal está cerrado hasta vencer a Petrox", async ({ page }) => {
+  await page.goto("/portales");
+  await expect(page.getByText("Se abre al vencer a Petrox")).toBeVisible();
+  await page.goto("/mision/c2m1");
+  await expect(page).toHaveURL(/\/portales\/portal-del-primer-intento$/);
+  await expect(page.getByText("Este portal todavía está cerrado")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Empezar/ })).toHaveCount(0);
 });
 
 test("fallar no da premio y se puede reintentar", async ({ page }) => {
@@ -77,6 +86,15 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await page.goto("/perfil");
   await expect(page.getByText("Rango D · Explorador").first()).toBeVisible();
   await expect(page.getByText("¡Tienes un certificado!")).toBeVisible();
+});
+
+test("vencer a Petrox abre el Portal del Primer Intento", async ({ page }) => {
+  await page.goto("/gremio");
+  await expect(page.getByText("¡Se abrió un nuevo portal")).toBeVisible();
+  await page.goto("/portales/portal-del-primer-intento");
+  await expect(page.getByText("Este portal todavía está cerrado")).toHaveCount(0);
+  await play(page, "c2m1", CORRECT.c2m1);
+  await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
 });
 
 test("la tienda vende Pista y 50/50; lo demás sigue cerrado", async ({ page }) => {

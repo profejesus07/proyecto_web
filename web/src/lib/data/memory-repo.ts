@@ -1,4 +1,5 @@
-import seed from "@/content/primer-portal.json";
+import intento from "@/content/portal-del-primer-intento.json";
+import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
@@ -38,24 +39,44 @@ function state(): State {
   return g.__umbralPreview;
 }
 
-const courseRow: Course = { ...(seed.course as Course) };
-const missions: MissionSummary[] = seed.missions.map((m) => ({
-  id: `m${m.position}`, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss,
-}));
-const questions = (id: string) => seed.missions.find((m) => `m${m.position}` === id)?.questions ?? [];
+type Seed = typeof primer;
+// Ids de la vista previa: el primer portal usa m1..m4 y los siguientes c2m1.., c3m1..
+const SEEDS: { seed: Seed; prefix: string }[] = [{ seed: primer, prefix: "m" }, { seed: intento as Seed, prefix: "c2m" }];
+const courses: Course[] = SEEDS.map(({ seed }) => ({ ...(seed.course as Course) }));
+const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => ({
+  id: `${prefix}${m.position}`, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss,
+})));
+const questions = (id: string) => {
+  const m = missions.find((x) => x.id === id);
+  const seed = SEEDS.find((s) => s.seed.course.slug === m?.courseSlug)?.seed;
+  return seed?.missions.find((x) => x.position === m?.position)?.questions ?? [];
+};
+const courseOf = (slug: string) => courses.find((c) => c.slug === slug)!;
+/** Misma regla que public.mission_is_locked: portales anteriores terminados y misiones anteriores del portal también. */
+function isLocked(s: State, m: MissionSummary): boolean {
+  const pos = courseOf(m.courseSlug).position;
+  return missions.some((p) => {
+    const cp = courseOf(p.courseSlug).position;
+    const before = cp < pos || (p.courseSlug === m.courseSlug && p.position < m.position);
+    return before && !s.progress.get(p.id)?.completed;
+  });
+}
 
 export function createMemoryRepo(): Repo {
   return {
     async getProfile() { return { ...state().profile }; },
-    async listCourses() { return [courseRow]; },
-    async getCourse(slug): Promise<CourseDetail | null> { return slug === courseRow.slug ? { ...courseRow, missions } : null; },
+    async listCourses() { return [...courses]; },
+    async getCourse(slug): Promise<CourseDetail | null> {
+      const c = courses.find((x) => x.slug === slug);
+      return c ? { ...c, missions: missions.filter((m) => m.courseSlug === slug) } : null;
+    },
     async getProgress() { return [...state().progress.values()]; },
     async getBossDefeats() { return [...state().bosses]; },
     async getInventory() { return [...state().inventory]; },
     async getMissionPlay(id): Promise<MissionPlay | null> {
       const mission = missions.find((m) => m.id === id);
       if (!mission) return null;
-      return { mission, course: courseRow, questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
+      return { mission, course: courseOf(mission.courseSlug), questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
     },
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
       return questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, correctIndex: q.correct_index, explanation: q.explanation }));
@@ -64,8 +85,7 @@ export function createMemoryRepo(): Repo {
       const s = state();
       const m = missions.find((x) => x.id === id);
       if (!m) throw new Error("mision_no_encontrada");
-      const blocked = missions.some((p) => p.position < m.position && !s.progress.get(p.id)?.completed);
-      if (blocked) throw new Error("mision_bloqueada");
+      if (isLocked(s, m)) throw new Error("mision_bloqueada");
       const passed = score >= passMark;
       const prev = s.progress.get(id);
       const first = passed && !prev?.completed;
@@ -75,11 +95,11 @@ export function createMemoryRepo(): Repo {
       const gemsGain = first && m.isBoss ? 5 : 0;
       const granted: string[] = [];
       if (first) {
-        if (m.isBoss) s.bosses.add(courseRow.slug);
+        if (m.isBoss) s.bosses.add(m.courseSlug);
         for (const it of items) if (!s.inventory.some((i) => i.itemId === it)) { s.inventory.push({ itemId: it, source: "logro", acquiredAt: new Date().toISOString() }); granted.push(it); }
       }
       s.profile = { ...s.profile, xp: s.profile.xp + xpGain, coins: s.profile.coins + coinsGain, gems: s.profile.gems + gemsGain };
-      const courseDone = missions.every((x) => s.progress.get(x.id)?.completed);
+      const courseDone = missions.filter((x) => x.courseSlug === m.courseSlug).every((x) => s.progress.get(x.id)?.completed);
       return { passed, first, score, xpGain, coinsGain, gemsGain, xp: s.profile.xp, coins: s.profile.coins, gems: s.profile.gems, streak: s.profile.streak, bossDefeated: first && m.isBoss, courseDone, granted };
     },
     async purchaseItem(_u, itemId, price) {
@@ -108,12 +128,11 @@ export function createMemoryRepo(): Repo {
     async useAid(_u, questionId, itemId, dailyCap, minXp) {
       const s = state();
       const day = todayBogota();
-      const missionId = questionId.replace(/q\d+$/, "");
+      const [, missionId = "", n = "0"] = /^(.*)q(\d+)$/.exec(questionId) ?? [];
       const m = missions.find((x) => x.id === missionId);
-      const qi = Number(questionId.slice(missionId.length + 1)) - 1;
-      const q = questions(missionId)[qi];
+      const q = questions(missionId)[Number(n) - 1];
       if (!m || !q) throw new Error("pregunta_no_encontrada");
-      if (missions.some((p) => p.position < m.position && !s.progress.get(p.id)?.completed)) throw new Error("mision_bloqueada");
+      if (isLocked(s, m)) throw new Error("mision_bloqueada");
       const left = () => s.consumables.get(itemId) ?? 0;
       const prev = s.aidUses.find((u) => u.day === day && u.itemId === itemId && u.questionId === questionId);
       if (prev) return { hint: prev.hint, removed: prev.removed, free: prev.free, charged: false, left: left() };

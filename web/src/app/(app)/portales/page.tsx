@@ -9,6 +9,7 @@ import { loadCourseViews } from "@/lib/data/queries";
 export const metadata: Metadata = { title: "Sala de Portales" };
 
 const STATUS = {
+  cerrado: { label: "Cerrado", cls: "bg-line text-text" },
   nuevo: { label: "Nuevo", cls: "bg-gold text-ink" },
   "en-curso": { label: "En curso", cls: "bg-cyan text-ink" },
   completado: { label: "Completado", cls: "bg-green text-ink" },
@@ -36,23 +37,31 @@ export default async function PortalsPage() {
         {courses.map((c) => {
           const color = ELEMENT_COLOR[c.element];
           const g = guardianBySlug(c.guardian);
-          const st = STATUS[c.status];
+          const st = STATUS[c.locked ? "cerrado" : c.status];
+          const before = c.lockedBy ? guardianBySlug(c.lockedBy.guardian) : undefined;
           return (
             <li key={c.slug}>
               <Link href={`/portales/${c.slug}`} className="panel group flex h-full flex-col overflow-hidden transition hover:-translate-y-1" style={{ borderColor: `${color}77` }}>
                 <div className="relative grid h-44 place-items-center overflow-hidden" style={{ background: `radial-gradient(circle at 50% 60%, ${color}44, transparent 70%)` }}>
                   <span className="absolute size-36 rounded-full border-[6px] opacity-80" style={{ borderColor: color, boxShadow: `0 0 40px ${color}88, inset 0 0 30px ${color}55` }} aria-hidden="true" />
-                  <Sprite src={asset.boss(c.guardian)} alt={`${g?.name ?? "Guardián"}, guardián de este portal`} className="relative h-36 w-auto transition-transform duration-300 group-hover:scale-110" />
+                  <Sprite src={asset.boss(c.guardian)} alt={`${g?.name ?? "Guardián"}, guardián de este portal`} className={`relative h-36 w-auto transition-transform duration-300 group-hover:scale-110 ${c.locked ? "brightness-50 grayscale" : ""}`} />
                   <span className={`absolute right-3 top-3 rounded-lg px-2 py-0.5 text-xs font-extrabold ${st.cls}`}>{st.label}</span>
                 </div>
                 <div className="flex flex-1 flex-col gap-3 p-5">
                   <p className="text-xs font-bold uppercase tracking-wider" style={{ color }}>Portal de {ELEMENT_LABEL[c.element]}</p>
                   <h2 className="text-xl">{c.title}</h2>
                   <p className="text-sm text-muted">{c.summary}</p>
+                  {c.locked ? (
+                    <p className="mt-auto flex items-start gap-2 rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm font-semibold">
+                      <span aria-hidden="true">🔒</span>
+                      <span>Se abre al vencer a {before?.name ?? "el Guardián anterior"} en «{c.lockedBy?.title}».</span>
+                    </p>
+                  ) : (
                   <div className="mt-auto space-y-2 pt-2">
                     <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={c.total} aria-valuenow={c.done} aria-label="Misiones completadas"><i style={{ width: `${(c.done / Math.max(c.total, 1)) * 100}%` }} /></div>
                     <p className="text-sm font-semibold">{c.done} de {c.total} misiones</p>
                   </div>
+                  )}
                 </div>
               </Link>
             </li>

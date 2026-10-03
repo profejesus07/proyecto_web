@@ -1,0 +1,67 @@
+{
+  "course": {
+    "slug": "portal-del-primer-intento",
+    "title": "El Portal del Primer Intento",
+    "summary": "Equivocarse no es perder: es parte de aprender. Al final te espera Ignaris, el dragón joven cuyas llamas se apagan cada vez que tiene miedo de intentarlo.",
+    "element": "fuego",
+    "guardian": "ignaris",
+    "position": 2,
+    "published": true
+  },
+  "missions": [
+    {
+      "position": 1,
+      "title": "La llama del primer intento",
+      "intro": "Ignaris no se atreve a empezar nada por miedo a hacerlo mal. Muéstrale que el primer paso no tiene que ser perfecto.",
+      "xp_reward": 60,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Tienes que escribir un cuento y la hoja en blanco te da miedo. ¿Cuál es el mejor primer paso?", "options": ["Esperar a tener la idea perfecta", "Escribir una primera frase, aunque no sea perfecta", "Copiar un cuento de internet", "Dejarlo para el último día"], "correct_index": 1, "hint": "Un borrador se puede mejorar; una hoja en blanco, no.", "explanation": "Empezar con algo imperfecto te da material para mejorar. La idea perfecta casi nunca llega mientras esperas."},
+        {"prompt": "Valentina quiere aprender a montar en bicicleta, pero le da miedo caerse. ¿Qué le ayuda más?", "options": ["Practicar en un lugar seguro, con casco y poco a poco", "No intentarlo nunca", "Bajar una loma muy empinada el primer día", "Solo ver videos, sin subirse nunca"], "correct_index": 0, "hint": "El miedo baja cuando el primer intento es pequeño y seguro.", "explanation": "Un primer intento pequeño y seguro reduce el miedo y te deja aprender sin arriesgar demasiado."},
+        {"prompt": "¿Qué significa decir «todavía no me sale»?", "options": ["Que nunca te va a salir", "Que no eres bueno para eso", "Que estás aprendiendo y con práctica te puede salir", "Que es culpa de otra persona"], "correct_index": 2, "hint": "Fíjate en la palabra «todavía».", "explanation": "«Todavía» significa que vas en camino: con práctica, lo que hoy no sale mañana puede salir."},
+        {"prompt": "Antes de un examen sientes nervios. ¿Qué es cierto?", "options": ["Sentir nervios es normal y puedes responder igual", "Los nervios significan que te va a ir mal", "Si tienes nervios, mejor no presentarlo", "Solo sienten nervios los que no estudiaron"], "correct_index": 0, "hint": "Hasta los deportistas profesionales sienten nervios antes de jugar.", "explanation": "Los nervios son normales cuando algo te importa. Respirar despacio y empezar por una pregunta fácil ayuda mucho."}
+      ]
+    },
+    {
+      "position": 2,
+      "title": "Los errores son pistas",
+      "intro": "Cada error deja una huella que dice por dónde seguir. Ayuda a Kuro a leerlas.",
+      "xp_reward": 60,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Te equivocaste en una suma. ¿Qué es lo más útil?", "options": ["Borrar todo y no volver a mirarla", "Revisar en qué paso estuvo el error", "Decir que las matemáticas no son para ti", "Pedir que no cuenten esa tarea"], "correct_index": 1, "hint": "Un error te dice dónde mirar.", "explanation": "Encontrar el paso exacto del error te enseña qué practicar y evita que lo repitas."},
+        {"prompt": "Una científica prueba una idea y no funciona. ¿Qué hace?", "options": ["Anota qué pasó y prueba un cambio", "Esconde los resultados", "Deja la ciencia para siempre", "Repite exactamente lo mismo cien veces"], "correct_index": 0, "hint": "Un experimento que falla también da información.", "explanation": "Cada intento que no funciona descarta una posibilidad y acerca la respuesta. Por eso en ciencia se anotan los errores."},
+        {"prompt": "¿Cuál de estas frases trata al error como una pista?", "options": ["Soy un desastre", "Esto no es para mí", "Ya sé que este camino no funciona; probaré otro", "Nunca más lo intento"], "correct_index": 2, "hint": "Busca la frase que mira hacia adelante.", "explanation": "Esa frase convierte el error en información: ya sabes qué no funciona y puedes probar otra cosa."},
+        {"prompt": "Tu profesora te devuelve el trabajo con correcciones. ¿Para qué sirven?", "options": ["Para hacerte sentir mal", "Para mostrarte qué mejorar en el próximo intento", "Para que no vuelvas a entregar trabajos", "Para nada; mejor no leerlas"], "correct_index": 1, "hint": "Las correcciones son como un mapa.", "explanation": "Las correcciones señalan exactamente qué mejorar. Leerlas es la forma más rápida de avanzar."}
+      ]
+    },
+    {
+      "position": 3,
+      "title": "Intentarlo de otra manera",
+      "intro": "Repetir lo mismo da el mismo resultado. Aprende a cambiar de estrategia antes de enfrentar al dragón.",
+      "xp_reward": 70,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Llevas un rato con un problema y no te sale. ¿Qué puedes probar?", "options": ["Hacer lo mismo, pero más rápido", "Rendirte y no volver a intentarlo", "Hacer un dibujo o un esquema del problema", "Esperar a que se resuelva solo"], "correct_index": 2, "hint": "Cambia la forma de mirarlo.", "explanation": "Cambiar de estrategia, por ejemplo dibujando el problema, muchas veces deja ver lo que antes no veías."},
+        {"prompt": "¿Cuándo es buena idea pedir ayuda?", "options": ["Nunca: pedir ayuda es de débiles", "Después de intentarlo y saber qué parte no entiendes", "Antes de leer la pregunta", "Solo si nadie te ve"], "correct_index": 1, "hint": "Pedir ayuda funciona mejor cuando sabes qué preguntar.", "explanation": "Pedir ayuda es una estrategia de los buenos aprendices. Funciona mejor si ya lo intentaste y sabes qué parte te traba."},
+        {"prompt": "Sebastián falla el mismo tiro libre varias veces. ¿Qué le ayuda más?", "options": ["Cambiar una cosa pequeña en cada intento y fijarse en el resultado", "Patear más fuerte sin pensar", "Culpar al balón", "Dejar de practicar"], "correct_index": 0, "hint": "Probar, mirar y ajustar.", "explanation": "Ajustar una sola cosa a la vez y observar qué pasa es la forma en que mejoran los deportistas."},
+        {"prompt": "Después de varios intentos lograste algo difícil. ¿Qué aprendiste?", "options": ["Que tuviste suerte", "Que era fácil desde el principio", "Que ya no necesitas aprender nada más", "Que la práctica y los intentos te hicieron mejorar"], "correct_index": 3, "hint": "Piensa en todo lo que pasó antes del logro.", "explanation": "No fue suerte: cada intento te enseñó algo. Recordarlo te da valor para el siguiente reto."}
+      ]
+    },
+    {
+      "position": 4,
+      "title": "Ignaris, el dragón que teme equivocarse",
+      "intro": "Las llamas de Ignaris se apagan cada vez que duda. Enséñale que equivocarse es parte de aprender y su fuego volverá a brillar.",
+      "xp_reward": 150,
+      "is_boss": true,
+      "questions": [
+        {"prompt": "Ignaris ruge: «¡Si me equivoco, todos se van a reír de mí!». ¿Qué le respondes?", "options": ["Tienes razón, mejor no lo intentes", "Todos nos equivocamos al aprender; lo importante es seguir intentando", "Haz que otro lo haga por ti", "Equivócate a escondidas"], "correct_index": 1, "hint": "¿Conoces a alguien que haya aprendido algo sin equivocarse nunca?", "explanation": "Equivocarse es parte de aprender para todo el mundo. Quien sigue intentando es quien mejora."},
+        {"prompt": "¿Cuál es el mejor primer paso ante una tarea que te da miedo?", "options": ["Esperar a dejar de sentir miedo", "Hacerla toda de una vez esta noche", "Empezar por una parte pequeña durante cinco minutos", "Decir que ya la hiciste"], "correct_index": 2, "hint": "Empezar pequeño apaga el miedo.", "explanation": "Cinco minutos con una parte pequeña rompen el bloqueo; casi siempre, después es más fácil seguir."},
+        {"prompt": "Te equivocaste en una pregunta de esta misma prueba. ¿Qué haces?", "options": ["Leo la explicación para entender por qué", "Cierro la página y no vuelvo", "Pienso que no sirvo para esto", "Culpo a la pregunta"], "correct_index": 0, "hint": "El repaso del final está ahí por algo.", "explanation": "La explicación convierte el error en aprendizaje, y en el siguiente intento lo harás mejor."},
+        {"prompt": "¿Cuál de estas frases ayuda a Ignaris a volver a intentarlo?", "options": ["Nunca voy a poder", "Es imposible", "Los demás son mejores que yo", "Todavía no me sale, pero voy a probar otra forma"], "correct_index": 3, "hint": "Busca la frase que abre una puerta.", "explanation": "«Todavía» y «otra forma» convierten un tropiezo en un plan para el próximo intento."},
+        {"prompt": "Intentaste algo tres veces de la misma manera y no salió. ¿Qué conviene?", "options": ["Intentarlo igual una cuarta vez", "Cambiar de estrategia o pedir ayuda", "Abandonarlo para siempre", "Esconder que no te salió"], "correct_index": 1, "hint": "Si un camino no te lleva, prueba otro.", "explanation": "Repetir lo mismo da el mismo resultado; cambiar de estrategia o pedir ayuda abre caminos nuevos."},
+        {"prompt": "Al final, ¿qué apaga el miedo de Ignaris?", "options": ["Probar, equivocarse, aprender y volver a intentar", "No intentar nada nuevo", "Hacer solo lo que ya sabe", "Esperar a ser perfecto"], "correct_index": 0, "hint": "Es la habilidad que vence a este Guardián.", "explanation": "Probar, equivocarse y reintentar es la forma de aprender cualquier cosa. ¡Con eso purificas a Ignaris!"}
+      ]
+    }
+  ]
+}
