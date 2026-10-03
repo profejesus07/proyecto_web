@@ -87,6 +87,16 @@ describe("seguridad por filas", () => {
     expect(r.rows).toEqual([{ item_id: "obj_a" }]);
   });
 
+  it("nadie desde el navegador puede crear ni editar cursos o misiones", async () => {
+    await expect(as("anon", null, "insert into public.courses (slug,title,summary,element,guardian) values ('x','x','x','luz','x')")).rejects.toThrow();
+    await expect(as("authenticated", A, "update public.courses set title = 'hack'")).rejects.toThrow();
+    await expect(as("authenticated", A, "delete from public.missions")).rejects.toThrow();
+  });
+
+  it("el disparador de perfiles no se puede llamar desde el navegador", async () => {
+    await expect(as("authenticated", A, "select public.handle_new_user()")).rejects.toThrow();
+  });
+
   it("los cursos publicados y sus misiones son públicos", async () => {
     const c = await as("anon", null, "select slug from public.courses");
     expect(c.rows).toEqual([{ slug: "primer-portal" }]);

@@ -150,4 +150,8 @@ grant update (display_name) on public.profiles to authenticated;
 
 revoke all on public.questions, public.mission_progress, public.boss_defeats, public.inventory, public.ledger from anon, authenticated;
 grant select on public.mission_progress, public.boss_defeats, public.inventory, public.ledger to authenticated;
+revoke all on public.courses, public.missions from anon, authenticated;
 grant select on public.courses, public.missions to anon, authenticated;
+
+-- La función del disparador no debe poder llamarse desde el navegador.
+revoke all on function public.handle_new_user() from public, anon, authenticated;

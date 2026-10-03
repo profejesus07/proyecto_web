@@ -26,8 +26,9 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
-  const user = data.user;
+  // Sin cookie de sesión no hay nada que validar: evitamos una llamada a Supabase en cada visita pública.
+  const hasSessionCookie = request.cookies.getAll().some((c) => c.name.startsWith("sb-"));
+  const user = hasSessionCookie ? (await supabase.auth.getUser()).data.user : null;
 
   if (!user && needsLogin) {
     const url = request.nextUrl.clone();
