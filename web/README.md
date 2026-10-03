@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Umbral · plataforma web
 
-## Getting Started
+Next.js 16 (App Router) + TypeScript + Tailwind 4 + Supabase. Se publica en Vercel.
 
-First, run the development server:
+## Comandos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000 (necesita .env.local; ver .env.example)
+npm run typecheck    # tipos
+npm run lint         # estilo y errores comunes
+npm test             # pruebas del juego y de la base de datos (Postgres en memoria)
+npm run test:e2e     # recorrido completo con navegador (CHROMIUM_PATH=/ruta/a/chrome si hace falta)
+npm run build        # compilación de producción
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Vista previa sin Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Para ver y probar todas las pantallas sin conectar nada:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+UMBRAL_PREVIEW=1 npm run dev        # entra como un estudiante de ejemplo, con datos en memoria
+UMBRAL_PREVIEW=anon npm run dev     # visitante sin sesión
+```
 
-## Learn More
+Solo funciona en desarrollo; en producción se ignora.
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Carpeta | Contenido |
+|---|---|
+| `src/app/(auth)` | Registro e ingreso |
+| `src/app/(app)` | Pantallas privadas: Gremio, Portales, Misión, Perfil, Tienda |
+| `src/app/actions` | Acciones del servidor: autenticación, calificar misiones, comprar |
+| `src/lib/game` | Reglas puras del juego: rangos, calificación, premios (con pruebas) |
+| `src/lib/data` | Acceso a datos: Supabase (producción) y memoria (vista previa) |
+| `src/lib/supabase` | Clientes de Supabase y proxy de sesión |
+| `src/components` | Interfaz reutilizable |
+| `src/content` | Datos fijos: Guardianes y contenido de ejemplo |
+| `public/assets` | 1.057 SVG animados (personajes, jefes, escenarios, objetos) |
+| `tests`, `e2e` | Pruebas |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Seguridad en una frase
 
-## Deploy on Vercel
+El navegador nunca decide nada importante: las respuestas correctas, el XP, las monedas y los objetos viven solo en el servidor y en funciones de la base de datos que únicamente el servidor puede llamar. Cada tabla tiene seguridad por filas (RLS) y las pruebas de `tests/db.test.ts` comprueban que un estudiante no puede darse XP, cambiar su rol ni ver datos ajenos.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Más detalles en [`../docs/despliegue.md`](../docs/despliegue.md).

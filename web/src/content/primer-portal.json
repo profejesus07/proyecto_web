@@ -1,0 +1,67 @@
+{
+  "course": {
+    "slug": "primer-portal",
+    "title": "El Portal de los Pasos Pequeños",
+    "summary": "Aprende a dividir un reto enorme en pasos que sí puedes terminar. Al final te espera Petrox, el gólem que cree que todo es demasiado grande.",
+    "element": "naturaleza",
+    "guardian": "petrox",
+    "position": 1,
+    "published": true
+  },
+  "missions": [
+    {
+      "position": 1,
+      "title": "Cómo se come un elefante",
+      "intro": "Petrox dice que los retos grandes no se pueden vencer. Demuéstrale que se parten en trozos pequeños.",
+      "xp_reward": 60,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Tienes que armar una maqueta de tu barrio para el viernes. ¿Cuál es el mejor primer paso?", "options": ["Hacerla toda la noche del jueves", "Escribir una lista de las partes que necesita: casas, calles y parque", "Esperar a tener más tiempo", "Pedirle a alguien que la haga"], "correct_index": 1, "hint": "Piensa en qué te ayuda a saber por dónde empezar.", "explanation": "Una lista convierte un reto enorme en partes que puedes ir terminando una por una."},
+        {"prompt": "¿Cuál de estas es una tarea pequeña y clara?", "options": ["Estudiar todo el libro", "Leer la página 12 y subrayar tres ideas", "Ser bueno en matemáticas", "Terminar el año"], "correct_index": 1, "hint": "Una tarea pequeña se puede terminar hoy y sabes cuándo acabó.", "explanation": "Es corta, concreta y sabes exactamente cuándo la terminaste."},
+        {"prompt": "Si un reto parece enorme, ¿qué conviene hacer?", "options": ["Dividirlo en partes que puedas terminar en poco tiempo", "Ignorarlo", "Hacerlo todo de una vez", "Cambiar de tema"], "correct_index": 0, "hint": "Los gigantes se vencen por partes.", "explanation": "Dividir el reto lo hace manejable y te deja ver tu avance."},
+        {"prompt": "Una receta tiene 10 pasos y te asustas. ¿Qué te ayuda más?", "options": ["Leer solo el último paso", "Hacer un paso, marcarlo y pasar al siguiente", "Saltarte los pasos difíciles", "Cocinar sin leer la receta"], "correct_index": 1, "hint": "Un paso a la vez.", "explanation": "Concentrarte en un solo paso y marcarlo reduce el miedo al total."}
+      ]
+    },
+    {
+      "position": 2,
+      "title": "Ordenar el camino",
+      "intro": "Los pasos pequeños también necesitan un orden. Ayuda a Kuro a ponerlos en fila.",
+      "xp_reward": 60,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Ordena para preparar un sándwich: 1) Poner el pan, 2) Lavarse las manos, 3) Comer, 4) Poner el relleno. ¿Cuál es el orden correcto?", "options": ["2, 1, 4, 3", "1, 2, 3, 4", "4, 1, 2, 3", "3, 2, 1, 4"], "correct_index": 0, "hint": "Antes de tocar la comida, ¿qué haces?", "explanation": "Primero te lavas las manos, luego armas el sándwich y al final lo comes."},
+        {"prompt": "Para hacer un trabajo escrito, ¿qué va primero?", "options": ["Entregarlo", "Buscar información", "Escribir la conclusión", "Revisar la ortografía"], "correct_index": 1, "hint": "No puedes escribir sobre lo que aún no conoces.", "explanation": "Primero se reúne la información; después se escribe y, al final, se revisa y se entrega."},
+        {"prompt": "¿Por qué es útil ordenar los pasos?", "options": ["Porque así se ve más bonito", "Porque sabes qué hacer ahora y qué viene después", "Porque siempre lo piden", "Porque así tardas más"], "correct_index": 1, "hint": "Piensa en no perderte a la mitad.", "explanation": "Un orden claro te dice qué hacer ahora y evita que te bloquees."},
+        {"prompt": "Un paso depende de otro cuando…", "options": ["Se puede hacer en cualquier momento", "No puedes hacerlo hasta terminar el anterior", "Es más corto", "Es más difícil"], "correct_index": 1, "hint": "Como poner el techo antes de hacer las paredes.", "explanation": "Hay pasos que necesitan que otro termine antes, por eso importa el orden."}
+      ]
+    },
+    {
+      "position": 3,
+      "title": "Pasos que caben en un día",
+      "intro": "Un buen plan no es el más largo, es el que sí puedes cumplir. Prepárate para el gólem.",
+      "xp_reward": 70,
+      "is_boss": false,
+      "questions": [
+        {"prompt": "Tienes tres tareas: una de 10 minutos, una de 30 y una de 2 horas. Hoy solo tienes 1 hora. ¿Qué plan es realista?", "options": ["Hacer las tres hoy", "Hacer las de 10 y 30 minutos hoy y partir la de 2 horas en bloques para otros días", "Hacer solo la de 2 horas", "No hacer ninguna"], "correct_index": 1, "hint": "Suma los minutos y compara con el tiempo que tienes.", "explanation": "Las dos cortas caben en una hora; la larga se divide en bloques para no abandonarla."},
+        {"prompt": "¿Cuál es una meta pequeña para hoy?", "options": ["Aprenderme todas las tablas", "Practicar la tabla del 6 durante 10 minutos", "Ser el mejor de la clase", "No equivocarme nunca"], "correct_index": 1, "hint": "Una meta pequeña tiene tiempo y resultado claros.", "explanation": "Tiene un tema, un tiempo y se puede cumplir hoy."},
+        {"prompt": "Si no logras terminar un paso, lo mejor es…", "options": ["Rendirte", "Revisar qué pasó y dividirlo en un paso más pequeño", "Esconderlo", "Hacer otra cosa y olvidarlo"], "correct_index": 1, "hint": "Un paso que no sale suele ser demasiado grande.", "explanation": "Partir el paso en uno más pequeño suele destrabarlo."},
+        {"prompt": "Marcar cada paso terminado sirve para…", "options": ["Ver tu avance y motivarte", "Que otros te copien", "Gastar tinta", "Nada"], "correct_index": 0, "hint": "Ver el progreso da energía.", "explanation": "Ver lo que ya hiciste te motiva a seguir."}
+      ]
+    },
+    {
+      "position": 4,
+      "title": "Petrox, el gólem que cree que todo es demasiado grande",
+      "intro": "Es la prueba final del portal. Responde con calma: cada acierto parte un bloque de Petrox.",
+      "xp_reward": 150,
+      "is_boss": true,
+      "questions": [
+        {"prompt": "Petrox te dice: «¡Este proyecto es enorme, no podrás!». ¿Qué respondes?", "options": ["Tienes razón, me rindo", "Lo divido en pasos pequeños y empiezo por el primero", "Lo hago todo mañana", "Lo copio de otra persona"], "correct_index": 1, "hint": "Recuerda cómo se vence a un gigante.", "explanation": "Dividir el proyecto y empezar por el primer paso es la forma de vencerlo."},
+        {"prompt": "Para organizar una fiesta sorpresa, ¿qué orden tiene más sentido?", "options": ["Enviar invitaciones, elegir fecha, comprar el pastel", "Elegir fecha, enviar invitaciones, comprar el pastel", "Comprar el pastel, olvidar la fecha, invitar", "Invitar sin decir la fecha"], "correct_index": 1, "hint": "Para invitar necesitas saber cuándo es.", "explanation": "La fecha va primero porque las invitaciones y el pastel dependen de ella."},
+        {"prompt": "¿Cuál es el mejor primer paso para estudiar para un examen?", "options": ["Mirar el tema cinco minutos antes", "Hacer una lista de los temas y escoger uno para hoy", "Dormir sin estudiar", "Estudiarlo todo en una noche"], "correct_index": 1, "hint": "Primero sabes qué hay que estudiar.", "explanation": "Una lista de temas y un tema para hoy convierten el examen en pasos."},
+        {"prompt": "Un paso pequeño debe ser…", "options": ["Vago y larguísimo", "Claro, corto y posible de terminar", "Imposible", "Secreto"], "correct_index": 1, "hint": "Recuerda la misión 1.", "explanation": "Si es claro, corto y posible, sabes cómo empezar y cuándo acabaste."},
+        {"prompt": "Si tienes 5 pasos y terminaste 3, ¿cuánto del camino llevas?", "options": ["Casi nada", "Más de la mitad", "Todo", "No se puede saber"], "correct_index": 1, "hint": "La mitad de 5 es 2,5.", "explanation": "3 de 5 es más de la mitad: ya vas por buen camino."},
+        {"prompt": "¿Qué aprendiste de Petrox?", "options": ["Que los retos grandes se vencen paso a paso", "Que mejor no intentarlo", "Que hay que hacerlo todo hoy", "Que los pasos no sirven"], "correct_index": 0, "hint": "Es la lección de todo el portal.", "explanation": "Cualquier montaña se sube paso a paso."}
+      ]
+    }
+  ]
+}

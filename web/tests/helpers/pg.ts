@@ -20,10 +20,10 @@ export async function makeDb() {
   await db.exec(setupSql);
   await db.exec(setupSql); // el esquema debe ser idempotente
   await db.exec(`grant all on all tables in schema public to service_role;`);
-  async function as(role: Role, uid: string | null, sql: string, params: unknown[] = []) {
+  async function as<T = Record<string, unknown>>(role: Role, uid: string | null, sql: string, params: unknown[] = []) {
     await db.exec(`set role ${role}; select set_config('request.jwt.claim.sub', '${uid ?? ""}', false);`);
     try {
-      return await db.query(sql, params);
+      return await db.query<T>(sql, params);
     } finally {
       await db.exec("reset role;");
     }
