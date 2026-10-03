@@ -1,0 +1,43 @@
+TIENDA Y ARSENAL · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (tienda · forja · oferta).
+
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 330 · suelo 660 · alto del personaje 150
+  slot_jugador  x 452 · suelo 664 · alto del personaje 290
+  slot_guia  x 900 · suelo 664 · alto del personaje 320
+  slot_ui_arriba  x 640 · y 150 · 600 × 110
+
+ARCHIVOS
+  tienda-tienda.svg  —  Tienda · Escena completa
+  tienda-tienda-vertical.svg  —  Tienda · Recorte vertical 9:16
+  tienda-tienda-cuadrado.svg  —  Tienda · Recorte cuadrado 1:1
+  tienda-tienda-capa-fondo.svg  —  Tienda · Capa fondo
+  tienda-tienda-capa-medio.svg  —  Tienda · Capa medio
+  tienda-tienda-capa-frente.svg  —  Tienda · Capa frente
+  tienda-tienda-capa-particulas.svg  —  Tienda · Capa partículas
+  tienda-forja.svg  —  Forja · Escena completa
+  tienda-forja-vertical.svg  —  Forja · Recorte vertical 9:16
+  tienda-forja-cuadrado.svg  —  Forja · Recorte cuadrado 1:1
+  tienda-forja-capa-fondo.svg  —  Forja · Capa fondo
+  tienda-forja-capa-medio.svg  —  Forja · Capa medio
+  tienda-forja-capa-frente.svg  —  Forja · Capa frente
+  tienda-forja-capa-particulas.svg  —  Forja · Capa partículas
+  tienda-oferta.svg  —  Oferta · Escena completa
+  tienda-oferta-vertical.svg  —  Oferta · Recorte vertical 9:16
+  tienda-oferta-cuadrado.svg  —  Oferta · Recorte cuadrado 1:1
+  tienda-oferta-capa-fondo.svg  —  Oferta · Capa fondo
+  tienda-oferta-capa-medio.svg  —  Oferta · Capa medio
+  tienda-oferta-capa-frente.svg  —  Oferta · Capa frente
+  tienda-oferta-capa-particulas.svg  —  Oferta · Capa partículas

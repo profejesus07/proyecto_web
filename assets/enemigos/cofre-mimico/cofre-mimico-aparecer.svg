@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="870 20 290 404" role="img" class="cc" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290" height="404"><style>.cc{--display:"Baloo 2","Trebuchet MS",sans-serif;--body:system-ui,sans-serif}
+.cc .ol{stroke: rgb(14, 12, 43); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round;}
+.cc .ol2{stroke: rgb(14, 12, 43); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round;}
+.cc .foehit{cursor: pointer;}
+.cc .foehit:focus-visible{outline: none;}
+.cc .foe,.cc .foe *{transform-box: fill-box;}
+.cc .foe .appear-g,.cc .foe .body-g{transform-origin: 50% 100%;}
+.cc .fx,.cc .poof,.cc .hitfx{opacity: 0; transition: opacity 0.15s;}
+.cc .foe[data-act="appear"] .appear-g{animation: 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) 0s 1 normal both running x_appear;}
+.cc #x-cofre .c-lid{transform-origin: 50% 100%; animation: 3s ease-in-out 0s infinite normal none running x_peek;}
+.cc #x-cofre .c-mouth{transform-origin: 50% 0%;}
+.cc .impact,.cc .speed,.cc .dust,.cc .dring{opacity: 0;}
+.cc .foe[data-act="appear"] .dust{animation: 0.6s ease-out 0.35s 1 normal both running x_dust;}
+.cc .glint{transform-origin: 50% 50%; animation: 3.6s ease-in-out 0s infinite normal none running x_glint;}
+@media (prefers-reduced-motion: reduce){.cc .foe,.cc .foe *{animation: auto ease 0s 1 normal none running none !important;}}
+@keyframes x_peek { 
+  0%, 80%, 100% { transform: translateY(0px); }
+  86%, 94% { transform: translateY(-8px) rotate(-2deg); }
+}
+@keyframes x_appear { 
+  0% { transform: translateY(-80px) scale(0.7, 1.2); opacity: 0; }
+  55% { transform: translateY(0px) scale(1.2, 0.8); opacity: 1; }
+  75% { transform: translateY(-10px) scale(0.95, 1.05); }
+  100% { transform: translateY(0px) scale(1); }
+}
+@keyframes x_dust { 
+  0% { opacity: 0.9; transform: scale(0.3); }
+  100% { opacity: 0; transform: scale(1.6) translateY(-6px); }
+}
+@keyframes x_glint { 
+  0%, 70%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  80% { opacity: 1; transform: scale(1.1) rotate(45deg); }
+  90% { opacity: 0; transform: scale(0.4) rotate(90deg); }
+}
+@keyframes cxena0_0{0%{opacity:0;animation-timing-function:linear}0.006%{opacity:0;animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}26.557%{opacity:1;animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}48.282%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes cxena0_1{0%{transform:translateY(-80px) scale(0.7, 1.2);animation-timing-function:linear}0.006%{transform:translateY(-80px) scale(0.7, 1.2);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}26.557%{transform:translateY(0px) scale(1.2, 0.8);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}36.213%{transform:translateY(-10px) scale(0.95, 1.05);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}48.282%{transform:translateY(0px) scale(1);animation-timing-function:linear}100%{transform:translateY(0px) scale(1);animation-timing-function:linear}}
+.cc [data-ai="a0"]{animation:cxena0_0 1450ms linear infinite,cxena0_1 1450ms linear infinite!important}
+@keyframes cxena1_0{0%{opacity:0.9;animation-timing-function:linear}24.144%{opacity:0.9;animation-timing-function:ease-out}65.523%{opacity:0;animation-timing-function:linear}100%{opacity:0;animation-timing-function:linear}}
+@keyframes cxena1_1{0%{transform:scale(0.3);animation-timing-function:linear}24.144%{transform:scale(0.3);animation-timing-function:ease-out}65.523%{transform:scale(1.6) translateY(-6px);animation-timing-function:linear}100%{transform:scale(1.6) translateY(-6px);animation-timing-function:linear}}
+.cc [data-ai="a1"]{animation:cxena1_0 1450ms linear infinite,cxena1_1 1450ms linear infinite!important}</style>
+<title>Cofre Mímico · aparecer</title>
+
+
+
+
+
+<g class="foehit" data-k="cofre" tabindex="0" role="button" aria-label="Elegir a Cofre Mímico" transform="translate(880 40)">
+
+<ellipse class="shadow" cx="135" cy="332" rx="82" ry="9" fill="#000" opacity=".3"/>
+<g class="foe" id="x-cofre" data-act="appear" data-talk="0">
+<g class="appear-g" data-ai="a0"><g class="body-g">
+<g class="c-feet"><path class="ol2" fill="#5A3A24" d="M70 316 h22 l-4 16 h-16 Z M178 316 h22 l-2 16 h-16 Z"/></g>
+<path class="ol" fill="#8C5A3C" d="M60 236 H210 V318 H60 Z"/>
+<path d="M170 236 H210 V318 H170 Z" fill="#6E4429"/>
+<path d="M60 262 H210 M60 292 H210" stroke="#6E4429" stroke-width="2.4"/>
+<path class="ol2" fill="#FFC83D" d="M60 236 h14 v82 h-14 Z M196 236 h14 v82 h-14 Z"/>
+<path class="ol2" fill="#FFC83D" d="M60 310 H210 V318 H60 Z"/>
+<g class="c-mouth"><path class="ol2" fill="#2A0E14" d="M64 236 H206 V258 C170 270 100 270 64 258 Z"/><path d="M66 238 l8 12 8 -11 8 12 8 -11 8 12 8 -11 8 12 8 -11 8 12 8 -11 8 12 8 -11 8 12 8 -11 8 12 8 -11 6 9" fill="#F4F2FF" stroke="#0E0C2B" stroke-width="1.4" stroke-linejoin="round"/><path class="tongue" d="M118 258 C120 278 150 278 152 258 Z" fill="#FF6B6B" stroke="#0E0C2B" stroke-width="2"/></g>
+<g class="c-lid">
+<path class="ol" fill="#9C6A48" d="M56 236 C56 200 214 200 214 236 Z"/>
+<path d="M170 208 C196 214 214 222 214 236 H174 Z" fill="#7A4E32"/>
+<path class="ol2" fill="#FFC83D" d="M56 236 C56 230 70 214 70 214 L74 236 Z M214 236 C214 230 200 214 200 214 L196 236 Z"/>
+<path d="M60 226 C80 210 190 210 210 226" fill="none" stroke="#FFC83D" stroke-width="5"/>
+<path class="ol2" fill="#FFD84A" d="M96 214 L124 222 L120 230 C108 230 100 224 96 214 Z"/><path class="ol2" fill="#FFD84A" d="M174 214 L146 222 L150 230 C162 230 170 224 174 214 Z"/>
+<path d="M112 220 V229 M158 220 V229" stroke="#0E0C2B" stroke-width="3" stroke-linecap="round"/>
+<path d="M92 208 L126 216 M178 208 L144 216" stroke="#0E0C2B" stroke-width="4.5" stroke-linecap="round"/>
+<path class="ol2" fill="#FFC83D" d="M126 230 h18 v16 h-18 Z"/><circle cx="135" cy="236" r="3" fill="#0E0C2B"/><path class="glint" d="M196 215 L198.0 220.0 L203 222 L198.0 224.0 L196 229 L194.0 224.0 L189 222 L194.0 220.0 Z " fill="#FFF6D6"/>
+</g>
+<g class="fx fx-special"><circle cx="135" cy="246" r="56" fill="#FFE58A" opacity=".5"/><g fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.6"><circle cx="110" cy="236" r="9"/><circle cx="135" cy="228" r="10"/><circle cx="160" cy="236" r="9"/></g><path d="M96 199 L98.0 204.0 L103 206 L98.0 208.0 L96 213 L94.0 208.0 L89 206 L94.0 204.0 Z M176 198 L177.7 202.3 L182 204 L177.7 205.7 L176 210 L174.3 205.7 L170 204 L174.3 202.3 Z " fill="#FFF6D6"/></g>
+<g class="fx fx-hitcoins" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.6"><circle class="cn" cx="90" cy="220" r="7"/><circle class="cn" cx="180" cy="214" r="7"/><circle class="cn" cx="135" cy="200" r="7"/></g>
+</g></g>
+<g class="poof" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.2"><circle cx="135" cy="250" r="34" fill="#E9E6F8" opacity=".85" stroke="none"/><circle cx="104" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><circle cx="166" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><path d="M96 193 L98.0 198.0 L103 200 L98.0 202.0 L96 207 L94.0 202.0 L89 200 L94.0 198.0 Z M176 190 L177.7 194.3 L182 196 L177.7 197.7 L176 202 L174.3 197.7 L170 196 L174.3 194.3 Z M136 172 L138.2 177.8 L144 180 L138.2 182.2 L136 188 L133.8 182.2 L128 180 L133.8 177.8 Z M150 285 L151.4 288.6 L155 290 L151.4 291.4 L150 295 L148.6 291.4 L145 290 L148.6 288.6 Z M112 281 L113.4 284.6 L117 286 L113.4 287.4 L112 291 L110.6 287.4 L107 286 L110.6 284.6 Z "/></g>
+<g class="hitfx" fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2"><path d="M100 178 L103.4 186.6 L112 190 L103.4 193.4 L100 202 L96.6 193.4 L88 190 L96.6 186.6 Z "/><path d="M170 205 L172.5 211.5 L179 214 L172.5 216.5 L170 223 L167.5 216.5 L161 214 L167.5 211.5 Z "/><path d="M138 163 L140.0 168.0 L145 170 L140.0 172.0 L138 177 L136.0 172.0 L131 170 L136.0 168.0 Z "/></g>
+<g class="impact"><circle class="ring" cx="34" cy="268" r="18" fill="none" stroke="#FFC83D" stroke-width="5"/><path d="M34 250 L39.0 263.0 L52 268 L39.0 273.0 L34 286 L29.0 273.0 L16 268 L29.0 263.0 Z " fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2.4"/></g>
+<g class="speed" stroke="#E9E6F8" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M214 236 h26 M218 262 h30 M214 288 h24"/></g>
+<g class="dust" fill="#E9E6F8" data-ai="a1"><ellipse cx="86" cy="326" rx="16" ry="8"/><ellipse cx="184" cy="326" rx="16" ry="8"/><ellipse cx="66" cy="320" rx="9" ry="5"/><ellipse cx="204" cy="320" rx="9" ry="5"/></g>
+<circle class="dring" cx="135" cy="260" r="40" fill="none" stroke="#FFC83D" stroke-width="5"/>
+</g></g>
+
+</svg>

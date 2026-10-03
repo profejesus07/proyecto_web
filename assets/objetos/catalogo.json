@@ -1,0 +1,5440 @@
+{
+  "version": 3,
+  "tandas": [
+    "A",
+    "B",
+    "C"
+  ],
+  "anclajes": {
+    "cabeza": [
+      150,
+      62
+    ],
+    "ojos": [
+      150,
+      138
+    ],
+    "cuello": [
+      150,
+      198
+    ],
+    "espalda": [
+      150,
+      220
+    ],
+    "mano_izq": [
+      106,
+      312
+    ],
+    "mano_der": [
+      194,
+      310
+    ]
+  },
+  "rarezas": {
+    "comun": [
+      "Común",
+      "#9AA0B4"
+    ],
+    "poco": [
+      "Poco común",
+      "#4ADE80"
+    ],
+    "raro": [
+      "Raro",
+      "#2EE6D6"
+    ],
+    "epico": [
+      "Épico",
+      "#8A5CFF"
+    ],
+    "legendario": [
+      "Legendario",
+      "#FFC83D"
+    ]
+  },
+  "objetos": [
+    {
+      "id": "obj_poder_rayo",
+      "tanda": "A",
+      "nombre": "Rayo de Claridad",
+      "categoria": "poder",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Rango D",
+      "descripcion": "Un rayo de luz recto aclara la zona: resalta la parte de la pregunta donde está la pista.",
+      "alt": "Poder: Rayo de Claridad",
+      "archivo": "poder/obj_poder_rayo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_rayo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_rayo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_rayo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_rayo_efecto.svg"
+    },
+    {
+      "id": "obj_poder_escudo",
+      "tanda": "A",
+      "nombre": "Escudo de Calma",
+      "categoria": "poder",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Rango D",
+      "descripcion": "Una burbuja de ondas suaves protege del siguiente error: no se pierde vida.",
+      "alt": "Poder: Escudo de Calma",
+      "archivo": "poder/obj_poder_escudo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_escudo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_escudo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_escudo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_escudo_efecto.svg"
+    },
+    {
+      "id": "obj_poder_aura",
+      "tanda": "A",
+      "nombre": "Aura de Concentración",
+      "categoria": "poder",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Rango B",
+      "descripcion": "Anillos de oro giran alrededor del avatar: más tiempo para pensar en la pregunta actual.",
+      "alt": "Poder: Aura de Concentración",
+      "archivo": "poder/obj_poder_aura.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_aura.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_aura-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_aura-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_aura_efecto.svg"
+    },
+    {
+      "id": "obj_poder_lluvia",
+      "tanda": "A",
+      "nombre": "Lluvia de Estrellas",
+      "categoria": "poder",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Rango B",
+      "descripcion": "Caen estrellas de oro y cian: celebración de un acierto con XP extra.",
+      "alt": "Poder: Lluvia de Estrellas",
+      "archivo": "poder/obj_poder_lluvia.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_lluvia.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_lluvia-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_lluvia-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_lluvia_efecto.svg"
+    },
+    {
+      "id": "obj_poder_sombra",
+      "tanda": "A",
+      "nombre": "Sombra Dorada",
+      "categoria": "poder",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Rango S o logro especial",
+      "descripcion": "Una silueta dorada acompaña al avatar y repite su mejor jugada. Solo para rango S.",
+      "alt": "Poder: Sombra Dorada",
+      "archivo": "poder/obj_poder_sombra.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_sombra.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_sombra-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_sombra-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_sombra_efecto.svg"
+    },
+    {
+      "id": "obj_poder_kuro",
+      "tanda": "A",
+      "nombre": "Invocación de Kuro",
+      "categoria": "poder",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Vencer a un Guardián de rango B",
+      "descripcion": "Un círculo de runas trae a Kuro, que da una pista con su propia voz.",
+      "alt": "Poder: Invocación de Kuro",
+      "archivo": "poder/obj_poder_kuro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_kuro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_kuro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_kuro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_kuro_efecto.svg"
+    },
+    {
+      "id": "obj_poder_pulso",
+      "tanda": "A",
+      "nombre": "Pulso de Memoria",
+      "categoria": "poder",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Vencer a un Guardián de rango B",
+      "descripcion": "Una onda revela de nuevo las pistas que ya se vieron en la misión.",
+      "alt": "Poder: Pulso de Memoria",
+      "archivo": "poder/obj_poder_pulso.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_pulso.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_pulso-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_pulso-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_pulso_efecto.svg"
+    },
+    {
+      "id": "obj_poder_aliento",
+      "tanda": "A",
+      "nombre": "Segundo Aliento",
+      "categoria": "poder",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Rango S o logro especial",
+      "descripcion": "Un corazón de luz devuelve un intento perdido.",
+      "alt": "Poder: Segundo Aliento",
+      "archivo": "poder/obj_poder_aliento.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "poder/obj_poder_aliento.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "poder/obj_poder_aliento-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "poder/obj_poder_aliento-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "efecto": "poder/poder_aliento_efecto.svg"
+    },
+    {
+      "id": "obj_ayuda_pista",
+      "tanda": "A",
+      "nombre": "Pista",
+      "categoria": "ayuda",
+      "rareza": "comun",
+      "precio": 20,
+      "desbloqueo": "Misiones; tope diario",
+      "descripcion": "Una linterna que ilumina una pista sobre la pregunta actual.",
+      "alt": "Linterna cian de pista",
+      "archivo": "ayuda/obj_ayuda_pista.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_pista.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_pista-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_pista-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ayuda_5050",
+      "tanda": "A",
+      "nombre": "50/50",
+      "categoria": "ayuda",
+      "rareza": "poco",
+      "precio": 60,
+      "desbloqueo": "Rango D; tope diario",
+      "descripcion": "El cristal se parte: quita la mitad de las respuestas incorrectas.",
+      "alt": "Cristal partido por la mitad",
+      "archivo": "ayuda/obj_ayuda_5050.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_5050.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_5050-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_5050-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ayuda_escudo",
+      "tanda": "A",
+      "nombre": "Escudo contra error",
+      "categoria": "ayuda",
+      "rareza": "poco",
+      "precio": 90,
+      "desbloqueo": "Cofres y rango C",
+      "descripcion": "Si fallas, el escudo recibe el golpe y no pierdes vida.",
+      "alt": "Escudo con el emblema del gremio",
+      "archivo": "ayuda/obj_ayuda_escudo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_escudo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_escudo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_escudo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ayuda_tiempo",
+      "tanda": "A",
+      "nombre": "Tiempo extra",
+      "categoria": "ayuda",
+      "rareza": "comun",
+      "precio": 30,
+      "desbloqueo": "Misiones; tope diario",
+      "descripcion": "Suma 30 segundos al reloj de la pregunta.",
+      "alt": "Reloj de arena dorada",
+      "archivo": "ayuda/obj_ayuda_tiempo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_tiempo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_tiempo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_tiempo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ayuda_fenix",
+      "tanda": "A",
+      "nombre": "Pluma de fénix",
+      "categoria": "ayuda",
+      "rareza": "raro",
+      "precio": 220,
+      "desbloqueo": "Cofres raros",
+      "descripcion": "Revive un intento cuando se acaban las vidas.",
+      "alt": "Pluma de fénix coral y dorada",
+      "archivo": "ayuda/obj_ayuda_fenix.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_fenix.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_fenix-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_fenix-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ayuda_doblexp",
+      "tanda": "A",
+      "nombre": "Doble XP",
+      "categoria": "ayuda",
+      "rareza": "raro",
+      "precio": 180,
+      "desbloqueo": "Tienda y cofres",
+      "descripcion": "Durante una misión, cada acierto da el doble de experiencia.",
+      "alt": "Poción violeta con estrella y ×2",
+      "archivo": "ayuda/obj_ayuda_doblexp.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "ayuda/obj_ayuda_doblexp.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "ayuda/obj_ayuda_doblexp-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "ayuda/obj_ayuda_doblexp-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recurso_moneda",
+      "tanda": "A",
+      "nombre": "Moneda del gremio",
+      "categoria": "recurso",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Misiones, retos y cofres",
+      "descripcion": "La moneda de la tienda. Se gana jugando; nunca se compra con dinero.",
+      "alt": "Moneda de oro con el emblema",
+      "archivo": "recurso/obj_recurso_moneda.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recurso/obj_recurso_moneda.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recurso/obj_recurso_moneda-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recurso/obj_recurso_moneda-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "sumar",
+          "archivo": "recurso/obj_recurso_moneda-sumar.svg",
+          "atributo": "data-act",
+          "valor": "sumar"
+        },
+        {
+          "estado": "gastar",
+          "archivo": "recurso/obj_recurso_moneda-gastar.svg",
+          "atributo": "data-act",
+          "valor": "gastar"
+        }
+      ]
+    },
+    {
+      "id": "obj_recurso_gema",
+      "tanda": "A",
+      "nombre": "Gema",
+      "categoria": "recurso",
+      "rareza": "raro",
+      "precio": null,
+      "desbloqueo": "Eventos y logros",
+      "descripcion": "Moneda especial solo para cosméticos y eventos; nunca para ventajas de aprendizaje.",
+      "alt": "Gema cian facetada",
+      "archivo": "recurso/obj_recurso_gema.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recurso/obj_recurso_gema.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recurso/obj_recurso_gema-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recurso/obj_recurso_gema-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "sumar",
+          "archivo": "recurso/obj_recurso_gema-sumar.svg",
+          "atributo": "data-act",
+          "valor": "sumar"
+        },
+        {
+          "estado": "gastar",
+          "archivo": "recurso/obj_recurso_gema-gastar.svg",
+          "atributo": "data-act",
+          "valor": "gastar"
+        }
+      ]
+    },
+    {
+      "id": "obj_recurso_xp",
+      "tanda": "A",
+      "nombre": "Orbe de XP",
+      "categoria": "recurso",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Cada acierto",
+      "descripcion": "Experiencia: flota hacia el avatar y llena la barra de nivel.",
+      "alt": "Orbe violeta de experiencia",
+      "archivo": "recurso/obj_recurso_xp.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recurso/obj_recurso_xp.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recurso/obj_recurso_xp-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recurso/obj_recurso_xp-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "sumar",
+          "archivo": "recurso/obj_recurso_xp-sumar.svg",
+          "atributo": "data-act",
+          "valor": "sumar"
+        },
+        {
+          "estado": "gastar",
+          "archivo": "recurso/obj_recurso_xp-gastar.svg",
+          "atributo": "data-act",
+          "valor": "gastar"
+        }
+      ]
+    },
+    {
+      "id": "obj_recurso_llave",
+      "tanda": "A",
+      "nombre": "Llave de portal",
+      "categoria": "recurso",
+      "rareza": "raro",
+      "precio": null,
+      "desbloqueo": "Completar un curso",
+      "descripcion": "Abre un portal nuevo en la Sala de Portales.",
+      "alt": "Llave dorada con arco y gema",
+      "archivo": "recurso/obj_recurso_llave.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recurso/obj_recurso_llave.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recurso/obj_recurso_llave-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recurso/obj_recurso_llave-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "sumar",
+          "archivo": "recurso/obj_recurso_llave-sumar.svg",
+          "atributo": "data-act",
+          "valor": "sumar"
+        },
+        {
+          "estado": "gastar",
+          "archivo": "recurso/obj_recurso_llave-gastar.svg",
+          "atributo": "data-act",
+          "valor": "gastar"
+        }
+      ]
+    },
+    {
+      "id": "obj_recurso_sello",
+      "tanda": "A",
+      "nombre": "Sello de portal vacío",
+      "categoria": "recurso",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Inscribirse en un curso",
+      "descripcion": "Se llena al terminar el curso y se convierte en el certificado.",
+      "alt": "Sello circular vacío con cintas",
+      "archivo": "recurso/obj_recurso_sello.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recurso/obj_recurso_sello.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recurso/obj_recurso_sello-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recurso/obj_recurso_sello-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "sumar",
+          "archivo": "recurso/obj_recurso_sello-sumar.svg",
+          "atributo": "data-act",
+          "valor": "sumar"
+        },
+        {
+          "estado": "gastar",
+          "archivo": "recurso/obj_recurso_sello-gastar.svg",
+          "atributo": "data-act",
+          "valor": "gastar"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_xp",
+      "tanda": "A",
+      "nombre": "Barra de XP",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Siempre visible",
+      "descripcion": "Muestra el progreso hacia el siguiente nivel. «Llenar» anima el relleno.",
+      "alt": "Barra de experiencia",
+      "archivo": "interfaz/obj_ui_xp.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_xp.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_xp-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_xp-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "llenar",
+          "archivo": "interfaz/obj_ui_xp-llenar.svg",
+          "atributo": "data-act",
+          "valor": "llenar"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_vida",
+      "tanda": "A",
+      "nombre": "Corazón de vida",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Siempre visible",
+      "descripcion": "Cada corazón es un intento: lleno, medio, vacío o recuperándose.",
+      "alt": "Corazón de vida",
+      "archivo": "interfaz/obj_ui_vida.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_vida.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_vida-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_vida-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "lleno",
+          "archivo": "interfaz/obj_ui_vida-lleno.svg",
+          "atributo": "data-v",
+          "valor": "lleno"
+        },
+        {
+          "estado": "medio",
+          "archivo": "interfaz/obj_ui_vida-medio.svg",
+          "atributo": "data-v",
+          "valor": "medio"
+        },
+        {
+          "estado": "vacio",
+          "archivo": "interfaz/obj_ui_vida-vacio.svg",
+          "atributo": "data-v",
+          "valor": "vacio"
+        },
+        {
+          "estado": "recuperando",
+          "archivo": "interfaz/obj_ui_vida-recuperando.svg",
+          "atributo": "data-v",
+          "valor": "recuperando"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_monedas",
+      "tanda": "A",
+      "nombre": "Contador de monedas",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Siempre visible",
+      "descripcion": "Cuenta las monedas. «Tintineo» hace girar la moneda al sumar.",
+      "alt": "Contador de monedas",
+      "archivo": "interfaz/obj_ui_monedas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_monedas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_monedas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_monedas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "tintineo",
+          "archivo": "interfaz/obj_ui_monedas-tintineo.svg",
+          "atributo": "data-act",
+          "valor": "tintineo"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_rango",
+      "tanda": "A",
+      "nombre": "Emblema de rango",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Al subir de rango",
+      "descripcion": "Escudo con la letra del rango, de E a S, en el color de cada rango.",
+      "alt": "Emblema de rango",
+      "archivo": "interfaz/obj_ui_rango.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_rango.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_rango-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_rango-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "E",
+          "archivo": "interfaz/obj_ui_rango-E.svg",
+          "atributo": "data-v",
+          "valor": "E"
+        },
+        {
+          "estado": "D",
+          "archivo": "interfaz/obj_ui_rango-D.svg",
+          "atributo": "data-v",
+          "valor": "D"
+        },
+        {
+          "estado": "C",
+          "archivo": "interfaz/obj_ui_rango-C.svg",
+          "atributo": "data-v",
+          "valor": "C"
+        },
+        {
+          "estado": "B",
+          "archivo": "interfaz/obj_ui_rango-B.svg",
+          "atributo": "data-v",
+          "valor": "B"
+        },
+        {
+          "estado": "A",
+          "archivo": "interfaz/obj_ui_rango-A.svg",
+          "atributo": "data-v",
+          "valor": "A"
+        },
+        {
+          "estado": "S",
+          "archivo": "interfaz/obj_ui_rango-S.svg",
+          "atributo": "data-v",
+          "valor": "S"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_racha",
+      "tanda": "A",
+      "nombre": "Marcador de racha",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Días seguidos jugando",
+      "descripcion": "Llama con el número de días seguidos. La llama respira.",
+      "alt": "Llama de racha con el número 7",
+      "archivo": "interfaz/obj_ui_racha.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_racha.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_racha-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_racha-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_ui_nivel",
+      "tanda": "A",
+      "nombre": "Insignia de nivel",
+      "categoria": "interfaz",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Al subir de nivel",
+      "descripcion": "Estrella con el nivel actual del jugador.",
+      "alt": "Estrella de nivel 12",
+      "archivo": "interfaz/obj_ui_nivel.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "interfaz/obj_ui_nivel.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "interfaz/obj_ui_nivel-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "interfaz/obj_ui_nivel-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_cofre_comun",
+      "tanda": "A",
+      "nombre": "Cofre común",
+      "categoria": "cofre",
+      "rareza": "comun",
+      "precio": null,
+      "desbloqueo": "Misiones",
+      "descripcion": "Premio de misión: monedas y una ayuda común.",
+      "alt": "Cofre común",
+      "archivo": "cofre/obj_cofre_comun.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cofre/obj_cofre_comun.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cofre/obj_cofre_comun-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cofre/obj_cofre_comun-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "abriendo",
+          "archivo": "cofre/obj_cofre_comun-abriendo.svg",
+          "atributo": "data-act",
+          "valor": "abriendo"
+        },
+        {
+          "estado": "abierto",
+          "archivo": "cofre/obj_cofre_comun-abierto.svg",
+          "atributo": "data-act",
+          "valor": "abierto"
+        }
+      ]
+    },
+    {
+      "id": "obj_cofre_raro",
+      "tanda": "A",
+      "nombre": "Cofre raro",
+      "categoria": "cofre",
+      "rareza": "raro",
+      "precio": null,
+      "desbloqueo": "Retos de mazmorra",
+      "descripcion": "Premio de reto: ayudas raras y gemas.",
+      "alt": "Cofre raro",
+      "archivo": "cofre/obj_cofre_raro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cofre/obj_cofre_raro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cofre/obj_cofre_raro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cofre/obj_cofre_raro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "abriendo",
+          "archivo": "cofre/obj_cofre_raro-abriendo.svg",
+          "atributo": "data-act",
+          "valor": "abriendo"
+        },
+        {
+          "estado": "abierto",
+          "archivo": "cofre/obj_cofre_raro-abierto.svg",
+          "atributo": "data-act",
+          "valor": "abierto"
+        }
+      ]
+    },
+    {
+      "id": "obj_cofre_epico",
+      "tanda": "A",
+      "nombre": "Cofre épico",
+      "categoria": "cofre",
+      "rareza": "epico",
+      "precio": null,
+      "desbloqueo": "Vencer a un Guardián",
+      "descripcion": "Premio de Guardián: objetos épicos.",
+      "alt": "Cofre épico",
+      "archivo": "cofre/obj_cofre_epico.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cofre/obj_cofre_epico.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cofre/obj_cofre_epico-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cofre/obj_cofre_epico-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "abriendo",
+          "archivo": "cofre/obj_cofre_epico-abriendo.svg",
+          "atributo": "data-act",
+          "valor": "abriendo"
+        },
+        {
+          "estado": "abierto",
+          "archivo": "cofre/obj_cofre_epico-abierto.svg",
+          "atributo": "data-act",
+          "valor": "abierto"
+        }
+      ]
+    },
+    {
+      "id": "obj_cofre_legendario",
+      "tanda": "A",
+      "nombre": "Cofre legendario",
+      "categoria": "cofre",
+      "rareza": "legendario",
+      "precio": null,
+      "desbloqueo": "Rango S y eventos",
+      "descripcion": "Premio especial: un objeto legendario seguro.",
+      "alt": "Cofre legendario",
+      "archivo": "cofre/obj_cofre_legendario.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cofre/obj_cofre_legendario.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cofre/obj_cofre_legendario-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cofre/obj_cofre_legendario-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "abriendo",
+          "archivo": "cofre/obj_cofre_legendario-abriendo.svg",
+          "atributo": "data-act",
+          "valor": "abriendo"
+        },
+        {
+          "estado": "abierto",
+          "archivo": "cofre/obj_cofre_legendario-abierto.svg",
+          "atributo": "data-act",
+          "valor": "abierto"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_capa",
+      "tanda": "B",
+      "nombre": "Capa de Musgo",
+      "categoria": "recompensa",
+      "rareza": "epico",
+      "titulo": "Constructor",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Petrox",
+      "descripcion": "Recompensa de Petrox. Otorga el título «Constructor».",
+      "alt": "Capa de musgo con broche de oro",
+      "archivo": "recompensa/obj_recompensa_capa.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_capa.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_capa-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_capa-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_brasas",
+      "tanda": "B",
+      "nombre": "Aura de Brasas",
+      "categoria": "recompensa",
+      "rareza": "epico",
+      "titulo": "Valiente",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Ignaris",
+      "descripcion": "Recompensa de Ignaris. Otorga el título «Valiente».",
+      "alt": "Anillo de brasas con una llama",
+      "archivo": "recompensa/obj_recompensa_brasas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_brasas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_brasas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_brasas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_linterna",
+      "tanda": "B",
+      "nombre": "Linterna de Memoria",
+      "categoria": "recompensa",
+      "rareza": "epico",
+      "titulo": "Memorioso",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Brumalis",
+      "descripcion": "Recompensa de Brumalis. Otorga el título «Memorioso».",
+      "alt": "Linterna de niebla violeta",
+      "archivo": "recompensa/obj_recompensa_linterna.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_linterna.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_linterna-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_linterna-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_pluma",
+      "tanda": "B",
+      "nombre": "Pluma de Marea",
+      "categoria": "recompensa",
+      "rareza": "epico",
+      "titulo": "Narrador",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Mirelle",
+      "descripcion": "Recompensa de Mirelle. Otorga el título «Narrador».",
+      "alt": "Pluma turquesa sobre una ola",
+      "archivo": "recompensa/obj_recompensa_pluma.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_pluma.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_pluma-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_pluma-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_hilo",
+      "tanda": "B",
+      "nombre": "Hilo de Cometa",
+      "categoria": "recompensa",
+      "rareza": "legendario",
+      "titulo": "Conector",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Quimax",
+      "descripcion": "Recompensa de Quimax. Otorga el título «Conector».",
+      "alt": "Carrete de hilo unido a una estrella",
+      "archivo": "recompensa/obj_recompensa_hilo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_hilo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_hilo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_hilo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_reloj",
+      "tanda": "B",
+      "nombre": "Reloj de Arena Dorada",
+      "categoria": "recompensa",
+      "rareza": "legendario",
+      "titulo": "Estratega",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Sandrael",
+      "descripcion": "Recompensa de Sandrael. Otorga el título «Estratega».",
+      "alt": "Reloj de arena dorado con alas",
+      "archivo": "recompensa/obj_recompensa_reloj.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_reloj.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_reloj-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_reloj-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_espejo",
+      "tanda": "B",
+      "nombre": "Espejo Sincero",
+      "categoria": "recompensa",
+      "rareza": "legendario",
+      "titulo": "Seguro de sí",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Eclipsa",
+      "descripcion": "Recompensa de Eclipsa. Otorga el título «Seguro de sí».",
+      "alt": "Espejo dorado con sol y luna",
+      "archivo": "recompensa/obj_recompensa_espejo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_espejo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_espejo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_espejo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_recompensa_corona",
+      "tanda": "B",
+      "nombre": "Corona del Gremio",
+      "categoria": "recompensa",
+      "rareza": "legendario",
+      "titulo": "Maestro del Saber",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Zhaal",
+      "descripcion": "Recompensa de Zhaal. Otorga el título «Maestro del Saber».",
+      "alt": "Corona dorada con el emblema",
+      "archivo": "recompensa/obj_recompensa_corona.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "recompensa/obj_recompensa_corona.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "recompensa/obj_recompensa_corona-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "recompensa/obj_recompensa_corona-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_luz",
+      "tanda": "B",
+      "nombre": "Sello de Luz",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de luz",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Luz",
+      "archivo": "sello/obj_sello_luz.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_luz.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_luz-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_luz-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_luz-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_luz-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_sombra",
+      "tanda": "B",
+      "nombre": "Sello de Sombra",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de sombra",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Sombra",
+      "archivo": "sello/obj_sello_sombra.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_sombra.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_sombra-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_sombra-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_sombra-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_sombra-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_fuego",
+      "tanda": "B",
+      "nombre": "Sello de Fuego",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de fuego",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Fuego",
+      "archivo": "sello/obj_sello_fuego.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_fuego.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_fuego-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_fuego-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_fuego-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_fuego-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_agua",
+      "tanda": "B",
+      "nombre": "Sello de Agua",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de agua",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Agua",
+      "archivo": "sello/obj_sello_agua.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_agua.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_agua-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_agua-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_agua-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_agua-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_naturaleza",
+      "tanda": "B",
+      "nombre": "Sello de Naturaleza",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de naturaleza",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Naturaleza",
+      "archivo": "sello/obj_sello_naturaleza.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_naturaleza.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_naturaleza-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_naturaleza-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_naturaleza-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_naturaleza-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_eter",
+      "tanda": "B",
+      "nombre": "Sello de Éter",
+      "categoria": "sello",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Terminar un curso de éter",
+      "descripcion": "Certifica el curso del elemento. Se estampa en el certificado.",
+      "alt": "Sello de portal: Éter",
+      "archivo": "sello/obj_sello_eter.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_eter.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_eter-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_eter-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_eter-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_eter-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_sello_completado",
+      "tanda": "B",
+      "nombre": "Sello dorado · portal completado",
+      "categoria": "sello",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Completar un portal entero",
+      "descripcion": "Sello dorado que se pone en el certificado al completar el portal.",
+      "alt": "Sello de portal: Portal completado",
+      "archivo": "sello/obj_sello_completado.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "sello/obj_sello_completado.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "sello/obj_sello_completado-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "sello/obj_sello_completado-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "recien",
+          "archivo": "sello/obj_sello_completado-recien.svg",
+          "atributo": "data-act",
+          "valor": "recien"
+        },
+        {
+          "estado": "sin-ganar",
+          "archivo": "sello/obj_sello_completado-sin-ganar.svg",
+          "atributo": "data-v",
+          "valor": "sin-ganar"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_e",
+      "tanda": "B",
+      "nombre": "Insignia de rango E",
+      "categoria": "rango",
+      "rareza": "comun",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango E",
+      "descripcion": "Insignia del rango E en su color.",
+      "alt": "Insignia hexagonal del rango E",
+      "archivo": "rango/obj_rango_e.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_e.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_e-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_e-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_d",
+      "tanda": "B",
+      "nombre": "Insignia de rango D",
+      "categoria": "rango",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango D",
+      "descripcion": "Insignia del rango D en su color.",
+      "alt": "Insignia hexagonal del rango D",
+      "archivo": "rango/obj_rango_d.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_d.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_d-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_d-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_c",
+      "tanda": "B",
+      "nombre": "Insignia de rango C",
+      "categoria": "rango",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango C",
+      "descripcion": "Insignia del rango C en su color.",
+      "alt": "Insignia hexagonal del rango C",
+      "archivo": "rango/obj_rango_c.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_c.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_c-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_c-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_b",
+      "tanda": "B",
+      "nombre": "Insignia de rango B",
+      "categoria": "rango",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango B",
+      "descripcion": "Insignia del rango B en su color.",
+      "alt": "Insignia hexagonal del rango B",
+      "archivo": "rango/obj_rango_b.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_b.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_b-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_b-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_a",
+      "tanda": "B",
+      "nombre": "Insignia de rango A",
+      "categoria": "rango",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango A",
+      "descripcion": "Insignia del rango A en su color.",
+      "alt": "Insignia hexagonal del rango A",
+      "archivo": "rango/obj_rango_a.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_a.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_a-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_a-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_rango_s",
+      "tanda": "B",
+      "nombre": "Insignia de rango S",
+      "categoria": "rango",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango S",
+      "descripcion": "Insignia del rango S en su color.",
+      "alt": "Insignia hexagonal del rango S",
+      "archivo": "rango/obj_rango_s.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "rango/obj_rango_s.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "rango/obj_rango_s-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "rango/obj_rango_s-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_primera_mision",
+      "tanda": "B",
+      "nombre": "Primera misión",
+      "categoria": "insignia",
+      "rareza": "comun",
+      "grupo": "Inicio",
+      "precio": "No se compra",
+      "desbloqueo": "Inicio",
+      "descripcion": "Completó su primera misión.",
+      "alt": "Insignia: Primera misión",
+      "archivo": "insignia/obj_insignia_primera_mision.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_primera_mision.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_primera_mision-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_primera_mision-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_primer_portal",
+      "tanda": "B",
+      "nombre": "Primer portal",
+      "categoria": "insignia",
+      "rareza": "comun",
+      "grupo": "Inicio",
+      "precio": "No se compra",
+      "desbloqueo": "Inicio",
+      "descripcion": "Abrió su primer portal de curso.",
+      "alt": "Insignia: Primer portal",
+      "archivo": "insignia/obj_insignia_primer_portal.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_primer_portal.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_primer_portal-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_primer_portal-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_primer_cofre",
+      "tanda": "B",
+      "nombre": "Primer cofre",
+      "categoria": "insignia",
+      "rareza": "comun",
+      "grupo": "Inicio",
+      "precio": "No se compra",
+      "desbloqueo": "Inicio",
+      "descripcion": "Abrió su primer cofre de premio.",
+      "alt": "Insignia: Primer cofre",
+      "archivo": "insignia/obj_insignia_primer_cofre.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_primer_cofre.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_primer_cofre-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_primer_cofre-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_primer_guardian",
+      "tanda": "B",
+      "nombre": "Primer Guardián",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Inicio",
+      "precio": "No se compra",
+      "desbloqueo": "Inicio",
+      "descripcion": "Venció a su primer Guardián.",
+      "alt": "Insignia: Primer Guardián",
+      "archivo": "insignia/obj_insignia_primer_guardian.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_primer_guardian.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_primer_guardian-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_primer_guardian-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_racha3",
+      "tanda": "B",
+      "nombre": "Racha de 3 días",
+      "categoria": "insignia",
+      "rareza": "comun",
+      "grupo": "Constancia",
+      "precio": "No se compra",
+      "desbloqueo": "Constancia",
+      "descripcion": "Jugó tres días seguidos.",
+      "alt": "Insignia: Racha de 3 días",
+      "archivo": "insignia/obj_insignia_racha3.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_racha3.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_racha3-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_racha3-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_racha7",
+      "tanda": "B",
+      "nombre": "Racha de 7 días",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Constancia",
+      "precio": "No se compra",
+      "desbloqueo": "Constancia",
+      "descripcion": "Jugó una semana completa sin faltar.",
+      "alt": "Insignia: Racha de 7 días",
+      "archivo": "insignia/obj_insignia_racha7.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_racha7.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_racha7-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_racha7-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_racha30",
+      "tanda": "B",
+      "nombre": "Racha de 30 días",
+      "categoria": "insignia",
+      "rareza": "epico",
+      "grupo": "Constancia",
+      "precio": "No se compra",
+      "desbloqueo": "Constancia",
+      "descripcion": "Un mes entero de constancia.",
+      "alt": "Insignia: Racha de 30 días",
+      "archivo": "insignia/obj_insignia_racha30.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_racha30.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_racha30-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_racha30-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_sin_errores",
+      "tanda": "B",
+      "nombre": "Sin errores",
+      "categoria": "insignia",
+      "rareza": "raro",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Terminó una misión sin fallar ninguna pregunta.",
+      "alt": "Insignia: Sin errores",
+      "archivo": "insignia/obj_insignia_sin_errores.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_sin_errores.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_sin_errores-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_sin_errores-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_repasador",
+      "tanda": "B",
+      "nombre": "Repasador",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Volvió a repasar misiones ya superadas.",
+      "alt": "Insignia: Repasador",
+      "archivo": "insignia/obj_insignia_repasador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_repasador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_repasador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_repasador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_explicador",
+      "tanda": "B",
+      "nombre": "Explicador",
+      "categoria": "insignia",
+      "rareza": "raro",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Explicó con sus palabras cómo resolvió un reto.",
+      "alt": "Insignia: Explicador",
+      "archivo": "insignia/obj_insignia_explicador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_explicador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_explicador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_explicador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_planificador",
+      "tanda": "B",
+      "nombre": "Planificador",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Organizó sus pasos antes de resolver.",
+      "alt": "Insignia: Planificador",
+      "archivo": "insignia/obj_insignia_planificador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_planificador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_planificador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_planificador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_conector",
+      "tanda": "B",
+      "nombre": "Conector de ideas",
+      "categoria": "insignia",
+      "rareza": "raro",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Relacionó lo aprendido en dos cursos distintos.",
+      "alt": "Insignia: Conector de ideas",
+      "archivo": "insignia/obj_insignia_conector.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_conector.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_conector-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_conector-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_valiente",
+      "tanda": "B",
+      "nombre": "Pensamiento valiente",
+      "categoria": "insignia",
+      "rareza": "raro",
+      "grupo": "Habilidad",
+      "precio": "No se compra",
+      "desbloqueo": "Habilidad",
+      "descripcion": "Se atrevió a reintentar después de equivocarse.",
+      "alt": "Insignia: Pensamiento valiente",
+      "archivo": "insignia/obj_insignia_valiente.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_valiente.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_valiente-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_valiente-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_ayudante",
+      "tanda": "B",
+      "nombre": "Ayudante",
+      "categoria": "insignia",
+      "rareza": "comun",
+      "grupo": "Comunidad",
+      "precio": "No se compra",
+      "desbloqueo": "Comunidad",
+      "descripcion": "Ayudó a un compañero (lo otorga el docente o la familia).",
+      "alt": "Insignia: Ayudante",
+      "archivo": "insignia/obj_insignia_ayudante.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_ayudante.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_ayudante-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_ayudante-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_companero",
+      "tanda": "B",
+      "nombre": "Compañero de equipo",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Comunidad",
+      "precio": "No se compra",
+      "desbloqueo": "Comunidad",
+      "descripcion": "Completó una misión en equipo.",
+      "alt": "Insignia: Compañero de equipo",
+      "archivo": "insignia/obj_insignia_companero.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_companero.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_companero-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_companero-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_mentor",
+      "tanda": "B",
+      "nombre": "Mentor",
+      "categoria": "insignia",
+      "rareza": "epico",
+      "grupo": "Comunidad",
+      "precio": "No se compra",
+      "desbloqueo": "Comunidad",
+      "descripcion": "Acompañó a otro estudiante durante un curso.",
+      "alt": "Insignia: Mentor",
+      "archivo": "insignia/obj_insignia_mentor.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_mentor.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_mentor-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_mentor-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_explorador",
+      "tanda": "B",
+      "nombre": "Explorador de las 6 mazmorras",
+      "categoria": "insignia",
+      "rareza": "epico",
+      "grupo": "Exploración",
+      "precio": "No se compra",
+      "desbloqueo": "Exploración",
+      "descripcion": "Entró en las mazmorras de los seis elementos.",
+      "alt": "Insignia: Explorador de las 6 mazmorras",
+      "archivo": "insignia/obj_insignia_explorador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_explorador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_explorador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_explorador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_coleccionista",
+      "tanda": "B",
+      "nombre": "Coleccionista",
+      "categoria": "insignia",
+      "rareza": "raro",
+      "grupo": "Exploración",
+      "precio": "No se compra",
+      "desbloqueo": "Exploración",
+      "descripcion": "Reunió diez objetos distintos.",
+      "alt": "Insignia: Coleccionista",
+      "archivo": "insignia/obj_insignia_coleccionista.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_coleccionista.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_coleccionista-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_coleccionista-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_cazador",
+      "tanda": "B",
+      "nombre": "Cazador de cofres",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Exploración",
+      "precio": "No se compra",
+      "desbloqueo": "Exploración",
+      "descripcion": "Encontró cofres escondidos en las mazmorras.",
+      "alt": "Insignia: Cazador de cofres",
+      "archivo": "insignia/obj_insignia_cazador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_cazador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_cazador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_cazador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_lector",
+      "tanda": "B",
+      "nombre": "Lector de Crónicas",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Exploración",
+      "precio": "No se compra",
+      "desbloqueo": "Exploración",
+      "descripcion": "Leyó todos los capítulos desbloqueados del Archivo.",
+      "alt": "Insignia: Lector de Crónicas",
+      "archivo": "insignia/obj_insignia_lector.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_lector.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_lector-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_lector-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_madrugador",
+      "tanda": "B",
+      "nombre": "Madrugador",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Especiales",
+      "precio": "No se compra",
+      "desbloqueo": "Especiales",
+      "descripcion": "Completó una misión antes de las 8 de la mañana.",
+      "alt": "Insignia: Madrugador",
+      "archivo": "insignia/obj_insignia_madrugador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_madrugador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_madrugador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_madrugador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_noche",
+      "tanda": "B",
+      "nombre": "Noche de estudio",
+      "categoria": "insignia",
+      "rareza": "poco",
+      "grupo": "Especiales",
+      "precio": "No se compra",
+      "desbloqueo": "Especiales",
+      "descripcion": "Repasó antes de dormir (sin pasar la hora de descanso).",
+      "alt": "Insignia: Noche de estudio",
+      "archivo": "insignia/obj_insignia_noche.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_noche.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_noche-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_noche-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_cumple",
+      "tanda": "B",
+      "nombre": "Cumpleaños del gremio",
+      "categoria": "insignia",
+      "rareza": "epico",
+      "grupo": "Especiales",
+      "precio": "No se compra",
+      "desbloqueo": "Especiales",
+      "descripcion": "Participó en la fiesta anual del gremio.",
+      "alt": "Insignia: Cumpleaños del gremio",
+      "archivo": "insignia/obj_insignia_cumple.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_cumple.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_cumple-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_cumple-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_insignia_evento",
+      "tanda": "B",
+      "nombre": "Evento especial",
+      "categoria": "insignia",
+      "rareza": "legendario",
+      "grupo": "Especiales",
+      "precio": "No se compra",
+      "desbloqueo": "Especiales",
+      "descripcion": "Participó en un evento por tiempo limitado.",
+      "alt": "Insignia: Evento especial",
+      "archivo": "insignia/obj_insignia_evento.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "insignia/obj_insignia_evento.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "insignia/obj_insignia_evento-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "insignia/obj_insignia_evento-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_basico",
+      "tanda": "B",
+      "nombre": "Marco básico",
+      "categoria": "marco",
+      "rareza": "comun",
+      "precio": "Gratis",
+      "desbloqueo": "Desde el inicio",
+      "descripcion": "El marco con el que empieza todo el mundo. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco básico",
+      "archivo": "marco/obj_marco_basico.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_basico.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_basico-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_basico-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_comun",
+      "tanda": "B",
+      "nombre": "Marco de piedra",
+      "categoria": "marco",
+      "rareza": "comun",
+      "precio": 25,
+      "desbloqueo": "Rango o tienda",
+      "descripcion": "Marco gris con remaches de piedra. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco de piedra",
+      "archivo": "marco/obj_marco_comun.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_comun.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_comun-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_comun-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_poco",
+      "tanda": "B",
+      "nombre": "Marco de brotes",
+      "categoria": "marco",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Rango o tienda",
+      "descripcion": "Marco verde con hojas que crecen. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco de brotes",
+      "archivo": "marco/obj_marco_poco.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_poco.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_poco-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_poco-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_raro",
+      "tanda": "B",
+      "nombre": "Marco de cristal",
+      "categoria": "marco",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Rango o tienda",
+      "descripcion": "Marco cian con cuatro gemas y un brillo que respira. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco de cristal",
+      "archivo": "marco/obj_marco_raro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_raro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_raro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_raro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_epico",
+      "tanda": "B",
+      "nombre": "Marco de alas arcanas",
+      "categoria": "marco",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Rango o tienda",
+      "descripcion": "Marco violeta con alas de luz y partículas que orbitan. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco de alas arcanas",
+      "archivo": "marco/obj_marco_epico.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_epico.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_epico-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_epico-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_legendario",
+      "tanda": "B",
+      "nombre": "Marco solar",
+      "categoria": "marco",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Rango o tienda",
+      "descripcion": "Marco de oro con rayos y corona. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco solar",
+      "archivo": "marco/obj_marco_legendario.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_legendario.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_legendario-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_legendario-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_marco_evento",
+      "tanda": "B",
+      "nombre": "Marco de fiesta",
+      "categoria": "marco",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Eventos del gremio",
+      "descripcion": "Marco coral con confeti para los eventos del gremio. El centro queda libre para la foto o el avatar.",
+      "alt": "Marco de fiesta",
+      "archivo": "marco/obj_marco_evento.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "marco/obj_marco_evento.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "marco/obj_marco_evento-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "marco/obj_marco_evento-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_constructor",
+      "tanda": "B",
+      "nombre": "Título «Constructor»",
+      "categoria": "titulo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Constructor",
+      "archivo": "titulo/obj_titulo_constructor.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_constructor.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_constructor-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_constructor-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_valiente",
+      "tanda": "B",
+      "nombre": "Título «Valiente»",
+      "categoria": "titulo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Valiente",
+      "archivo": "titulo/obj_titulo_valiente.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_valiente.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_valiente-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_valiente-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_memorioso",
+      "tanda": "B",
+      "nombre": "Título «Memorioso»",
+      "categoria": "titulo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Memorioso",
+      "archivo": "titulo/obj_titulo_memorioso.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_memorioso.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_memorioso-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_memorioso-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_narrador",
+      "tanda": "B",
+      "nombre": "Título «Narrador»",
+      "categoria": "titulo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Narrador",
+      "archivo": "titulo/obj_titulo_narrador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_narrador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_narrador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_narrador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_conector",
+      "tanda": "B",
+      "nombre": "Título «Conector»",
+      "categoria": "titulo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Conector",
+      "archivo": "titulo/obj_titulo_conector.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_conector.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_conector-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_conector-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_estratega",
+      "tanda": "B",
+      "nombre": "Título «Estratega»",
+      "categoria": "titulo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Estratega",
+      "archivo": "titulo/obj_titulo_estratega.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_estratega.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_estratega-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_estratega-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_seguro_de_si",
+      "tanda": "B",
+      "nombre": "Título «Seguro de sí»",
+      "categoria": "titulo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Seguro de sí",
+      "archivo": "titulo/obj_titulo_seguro_de_si.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_seguro_de_si.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_seguro_de_si-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_seguro_de_si-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_maestro_del_saber",
+      "tanda": "B",
+      "nombre": "Título «Maestro del Saber»",
+      "categoria": "titulo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Recompensa de Guardián",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Maestro del Saber",
+      "archivo": "titulo/obj_titulo_maestro_del_saber.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_maestro_del_saber.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_maestro_del_saber-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_maestro_del_saber-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_explorador",
+      "tanda": "B",
+      "nombre": "Título «Explorador»",
+      "categoria": "titulo",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Explorador",
+      "archivo": "titulo/obj_titulo_explorador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_explorador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_explorador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_explorador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_guardian_de_portales",
+      "tanda": "B",
+      "nombre": "Título «Guardián de Portales»",
+      "categoria": "titulo",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Guardián de Portales",
+      "archivo": "titulo/obj_titulo_guardian_de_portales.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_guardian_de_portales.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_guardian_de_portales-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_guardian_de_portales-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_cartografo",
+      "tanda": "B",
+      "nombre": "Título «Cartógrafo»",
+      "categoria": "titulo",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Cartógrafo",
+      "archivo": "titulo/obj_titulo_cartografo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_cartografo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_cartografo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_cartografo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_buscatesoros",
+      "tanda": "B",
+      "nombre": "Título «Buscatesoros»",
+      "categoria": "titulo",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Buscatesoros",
+      "archivo": "titulo/obj_titulo_buscatesoros.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_buscatesoros.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_buscatesoros-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_buscatesoros-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_viajero_de_mazmorras",
+      "tanda": "B",
+      "nombre": "Título «Viajero de Mazmorras»",
+      "categoria": "titulo",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Viajero de Mazmorras",
+      "archivo": "titulo/obj_titulo_viajero_de_mazmorras.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_viajero_de_mazmorras.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_viajero_de_mazmorras-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_viajero_de_mazmorras-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_lector_de_cronicas",
+      "tanda": "B",
+      "nombre": "Título «Lector de Crónicas»",
+      "categoria": "titulo",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Lector de Crónicas",
+      "archivo": "titulo/obj_titulo_lector_de_cronicas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_lector_de_cronicas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_lector_de_cronicas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_lector_de_cronicas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_amigo_de_kuro",
+      "tanda": "B",
+      "nombre": "Título «Amigo de Kuro»",
+      "categoria": "titulo",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Amigo de Kuro",
+      "archivo": "titulo/obj_titulo_amigo_de_kuro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_amigo_de_kuro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_amigo_de_kuro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_amigo_de_kuro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_titulo_leyenda_del_gremio",
+      "tanda": "B",
+      "nombre": "Título «Leyenda del Gremio»",
+      "categoria": "titulo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Logros de exploración",
+      "descripcion": "Cinta con el título que se muestra bajo el nombre del perfil.",
+      "alt": "Cinta de título: Leyenda del Gremio",
+      "archivo": "titulo/obj_titulo_leyenda_del_gremio.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "titulo/obj_titulo_leyenda_del_gremio.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "titulo/obj_titulo_leyenda_del_gremio-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "titulo/obj_titulo_leyenda_del_gremio-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_certificado_portal",
+      "tanda": "B",
+      "nombre": "Certificado «Sello del Portal»",
+      "categoria": "certificado",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Completar un curso",
+      "descripcion": "Diploma horizontal (1123 × 794) con nombre, curso, fecha, el emblema, la firma de Sora y un sello. Tiene versión en blanco y negro para imprimir.",
+      "alt": "Certificado Sello del Portal",
+      "archivo": "certificado/obj_certificado_portal.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "certificado/obj_certificado_portal.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "byn",
+          "archivo": "certificado/obj_certificado_portal-byn.svg",
+          "atributo": "data-v",
+          "valor": "byn"
+        }
+      ]
+    },
+    {
+      "id": "obj_equipo_conjunto_e",
+      "tanda": "C",
+      "nombre": "Conjunto de rango E",
+      "categoria": "equipo",
+      "rareza": "comun",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango E",
+      "descripcion": "Icono del conjunto del rango E (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango E",
+      "archivo": "equipo/obj_equipo_conjunto_e.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_e.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_e-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_e-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "E"
+    },
+    {
+      "id": "obj_equipo_pieza_e",
+      "tanda": "C",
+      "nombre": "Cinta de aprendiz",
+      "categoria": "equipo",
+      "rareza": "comun",
+      "precio": 25,
+      "desbloqueo": "Rango E o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango E, para la tienda.",
+      "alt": "Cinta de aprendiz",
+      "archivo": "equipo/obj_equipo_pieza_e.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_e.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_e-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_e-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "E"
+    },
+    {
+      "id": "obj_equipo_conjunto_d",
+      "tanda": "C",
+      "nombre": "Conjunto de rango D",
+      "categoria": "equipo",
+      "rareza": "poco",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango D",
+      "descripcion": "Icono del conjunto del rango D (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango D",
+      "archivo": "equipo/obj_equipo_conjunto_d.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_d.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_d-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_d-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "D"
+    },
+    {
+      "id": "obj_equipo_pieza_d",
+      "tanda": "C",
+      "nombre": "Capa corta de brotes",
+      "categoria": "equipo",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Rango D o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango D, para la tienda.",
+      "alt": "Capa corta de brotes",
+      "archivo": "equipo/obj_equipo_pieza_d.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_d.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_d-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_d-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "D"
+    },
+    {
+      "id": "obj_equipo_conjunto_c",
+      "tanda": "C",
+      "nombre": "Conjunto de rango C",
+      "categoria": "equipo",
+      "rareza": "raro",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango C",
+      "descripcion": "Icono del conjunto del rango C (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango C",
+      "archivo": "equipo/obj_equipo_conjunto_c.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_c.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_c-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_c-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "C"
+    },
+    {
+      "id": "obj_equipo_pieza_c",
+      "tanda": "C",
+      "nombre": "Peto con runas cian",
+      "categoria": "equipo",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Rango C o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango C, para la tienda.",
+      "alt": "Peto con runas cian",
+      "archivo": "equipo/obj_equipo_pieza_c.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_c.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_c-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_c-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "C"
+    },
+    {
+      "id": "obj_equipo_conjunto_b",
+      "tanda": "C",
+      "nombre": "Conjunto de rango B",
+      "categoria": "equipo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango B",
+      "descripcion": "Icono del conjunto del rango B (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango B",
+      "archivo": "equipo/obj_equipo_conjunto_b.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_b.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_b-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_b-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "B"
+    },
+    {
+      "id": "obj_equipo_pieza_b",
+      "tanda": "C",
+      "nombre": "Capa larga arcana",
+      "categoria": "equipo",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Rango B o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango B, para la tienda.",
+      "alt": "Capa larga arcana",
+      "archivo": "equipo/obj_equipo_pieza_b.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_b.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_b-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_b-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "B"
+    },
+    {
+      "id": "obj_equipo_conjunto_a",
+      "tanda": "C",
+      "nombre": "Conjunto de rango A",
+      "categoria": "equipo",
+      "rareza": "epico",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango A",
+      "descripcion": "Icono del conjunto del rango A (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango A",
+      "archivo": "equipo/obj_equipo_conjunto_a.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_a.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_a-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_a-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "A"
+    },
+    {
+      "id": "obj_equipo_pieza_a",
+      "tanda": "C",
+      "nombre": "Hombrera blanca y coral",
+      "categoria": "equipo",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Rango A o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango A, para la tienda.",
+      "alt": "Hombrera blanca y coral",
+      "archivo": "equipo/obj_equipo_pieza_a.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_a.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_a-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_a-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "A"
+    },
+    {
+      "id": "obj_equipo_conjunto_s",
+      "tanda": "C",
+      "nombre": "Conjunto de rango S",
+      "categoria": "equipo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Subir al rango S",
+      "descripcion": "Icono del conjunto del rango S (cabeza, torso y capa). Es el mismo equipo que aparece sobre el avatar.",
+      "alt": "Conjunto de equipo del rango S",
+      "archivo": "equipo/obj_equipo_conjunto_s.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_conjunto_s.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_conjunto_s-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_conjunto_s-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "S"
+    },
+    {
+      "id": "obj_equipo_pieza_s",
+      "tanda": "C",
+      "nombre": "Corona del rango S",
+      "categoria": "equipo",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Rango S o tienda",
+      "descripcion": "Pieza suelta del conjunto del rango S, para la tienda.",
+      "alt": "Corona del rango S",
+      "archivo": "equipo/obj_equipo_pieza_s.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "equipo/obj_equipo_pieza_s.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "equipo/obj_equipo_pieza_s-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "equipo/obj_equipo_pieza_s-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "rango": "S"
+    },
+    {
+      "id": "obj_cosmetico_capa_estrellas",
+      "tanda": "C",
+      "nombre": "Capa de estrellas",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Capas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa de estrellas",
+      "archivo": "cosmetico/obj_cosmetico_capa_estrellas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_estrellas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_estrellas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_estrellas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_capa_hojas",
+      "tanda": "C",
+      "nombre": "Capa de hojas",
+      "categoria": "cosmetico",
+      "rareza": "comun",
+      "grupo": "Capas",
+      "precio": 25,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa de hojas",
+      "archivo": "cosmetico/obj_cosmetico_capa_hojas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_hojas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_hojas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_hojas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_capa_brasa",
+      "tanda": "C",
+      "nombre": "Capa de brasa suave",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Capas",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa de brasa suave",
+      "archivo": "cosmetico/obj_cosmetico_capa_brasa.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_brasa.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_brasa-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_brasa-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_capa_olas",
+      "tanda": "C",
+      "nombre": "Capa de olas",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Capas",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa de olas",
+      "archivo": "cosmetico/obj_cosmetico_capa_olas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_olas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_olas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_olas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_capa_real",
+      "tanda": "C",
+      "nombre": "Capa real",
+      "categoria": "cosmetico",
+      "rareza": "epico",
+      "grupo": "Capas",
+      "precio": 600,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa real",
+      "archivo": "cosmetico/obj_cosmetico_capa_real.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_real.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_real-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_real-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_capa_umbral",
+      "tanda": "C",
+      "nombre": "Capa del umbral",
+      "categoria": "cosmetico",
+      "rareza": "legendario",
+      "grupo": "Capas",
+      "precio": "No se compra",
+      "desbloqueo": "Eventos y logros",
+      "descripcion": "Capa que cae desde los hombros. En Tomás es más corta para no tapar la silla.",
+      "alt": "Capa del umbral",
+      "archivo": "cosmetico/obj_cosmetico_capa_umbral.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_capa_umbral.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_capa_umbral-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_capa_umbral-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_bufanda_lana",
+      "tanda": "C",
+      "nombre": "Bufanda de lana",
+      "categoria": "cosmetico",
+      "rareza": "comun",
+      "grupo": "Bufandas",
+      "precio": 25,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Bufanda que se anuda al cuello.",
+      "alt": "Bufanda de lana",
+      "archivo": "cosmetico/obj_cosmetico_bufanda_lana.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_lana.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_lana-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_lana-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cuello"
+    },
+    {
+      "id": "obj_cosmetico_bufanda_rayas",
+      "tanda": "C",
+      "nombre": "Bufanda a rayas",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Bufandas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Bufanda que se anuda al cuello.",
+      "alt": "Bufanda a rayas",
+      "archivo": "cosmetico/obj_cosmetico_bufanda_rayas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_rayas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_rayas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_rayas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cuello"
+    },
+    {
+      "id": "obj_cosmetico_bufanda_dorada",
+      "tanda": "C",
+      "nombre": "Bufanda dorada con borlas",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Bufandas",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Bufanda que se anuda al cuello.",
+      "alt": "Bufanda dorada con borlas",
+      "archivo": "cosmetico/obj_cosmetico_bufanda_dorada.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_dorada.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_dorada-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_bufanda_dorada-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cuello"
+    },
+    {
+      "id": "obj_cosmetico_gafas_redondas",
+      "tanda": "C",
+      "nombre": "Gafas redondas doradas",
+      "categoria": "cosmetico",
+      "rareza": "comun",
+      "grupo": "Gafas",
+      "precio": 25,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Gafas a la altura de los ojos; las patillas terminan antes de las orejas para no tapar los audífonos de Nuri.",
+      "alt": "Gafas redondas doradas",
+      "archivo": "cosmetico/obj_cosmetico_gafas_redondas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_gafas_redondas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_redondas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_redondas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "ojos"
+    },
+    {
+      "id": "obj_cosmetico_gafas_estrella",
+      "tanda": "C",
+      "nombre": "Gafas de estrella",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Gafas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Gafas a la altura de los ojos; las patillas terminan antes de las orejas para no tapar los audífonos de Nuri.",
+      "alt": "Gafas de estrella",
+      "archivo": "cosmetico/obj_cosmetico_gafas_estrella.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_gafas_estrella.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_estrella-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_estrella-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "ojos"
+    },
+    {
+      "id": "obj_cosmetico_gafas_inventor",
+      "tanda": "C",
+      "nombre": "Gafas de inventor",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Gafas",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Gafas a la altura de los ojos; las patillas terminan antes de las orejas para no tapar los audífonos de Nuri.",
+      "alt": "Gafas de inventor",
+      "archivo": "cosmetico/obj_cosmetico_gafas_inventor.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_gafas_inventor.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_inventor-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_inventor-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "ojos"
+    },
+    {
+      "id": "obj_cosmetico_gafas_cristal",
+      "tanda": "C",
+      "nombre": "Gafas de cristal cian",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Gafas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Gafas a la altura de los ojos; las patillas terminan antes de las orejas para no tapar los audífonos de Nuri.",
+      "alt": "Gafas de cristal cian",
+      "archivo": "cosmetico/obj_cosmetico_gafas_cristal.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_gafas_cristal.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_cristal-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_gafas_cristal-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "ojos"
+    },
+    {
+      "id": "obj_cosmetico_sombrero_mago",
+      "tanda": "C",
+      "nombre": "Sombrero de mago",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Sombreros y cintas",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Se apoya sobre el pelo; no baja hasta las orejas.",
+      "alt": "Sombrero de mago",
+      "archivo": "cosmetico/obj_cosmetico_sombrero_mago.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_mago.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_mago-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_mago-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cabeza"
+    },
+    {
+      "id": "obj_cosmetico_sombrero_explorador",
+      "tanda": "C",
+      "nombre": "Sombrero de explorador",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Sombreros y cintas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Se apoya sobre el pelo; no baja hasta las orejas.",
+      "alt": "Sombrero de explorador",
+      "archivo": "cosmetico/obj_cosmetico_sombrero_explorador.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_explorador.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_explorador-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_explorador-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cabeza"
+    },
+    {
+      "id": "obj_cosmetico_sombrero_cinta",
+      "tanda": "C",
+      "nombre": "Cinta del umbral",
+      "categoria": "cosmetico",
+      "rareza": "comun",
+      "grupo": "Sombreros y cintas",
+      "precio": 25,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Se apoya sobre el pelo; no baja hasta las orejas.",
+      "alt": "Cinta del umbral",
+      "archivo": "cosmetico/obj_cosmetico_sombrero_cinta.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_cinta.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_cinta-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_cinta-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cabeza"
+    },
+    {
+      "id": "obj_cosmetico_sombrero_flores",
+      "tanda": "C",
+      "nombre": "Corona de flores",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Sombreros y cintas",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Se apoya sobre el pelo; no baja hasta las orejas.",
+      "alt": "Corona de flores",
+      "archivo": "cosmetico/obj_cosmetico_sombrero_flores.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_flores.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_flores-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_sombrero_flores-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "cabeza"
+    },
+    {
+      "id": "obj_cosmetico_alas_cian",
+      "tanda": "C",
+      "nombre": "Alas de luz cian",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Alas de luz",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Alas de luz que salen de la espalda y se mueven despacio.",
+      "alt": "Alas de luz cian",
+      "archivo": "cosmetico/obj_cosmetico_alas_cian.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_alas_cian.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_alas_cian-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_alas_cian-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_alas_doradas",
+      "tanda": "C",
+      "nombre": "Alas de luz doradas",
+      "categoria": "cosmetico",
+      "rareza": "epico",
+      "grupo": "Alas de luz",
+      "precio": 600,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Alas de luz que salen de la espalda y se mueven despacio.",
+      "alt": "Alas de luz doradas",
+      "archivo": "cosmetico/obj_cosmetico_alas_doradas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_alas_doradas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_alas_doradas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_alas_doradas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_alas_mariposa",
+      "tanda": "C",
+      "nombre": "Alas de mariposa violeta",
+      "categoria": "cosmetico",
+      "rareza": "epico",
+      "grupo": "Alas de luz",
+      "precio": 600,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Alas de luz que salen de la espalda y se mueven despacio.",
+      "alt": "Alas de mariposa violeta",
+      "archivo": "cosmetico/obj_cosmetico_alas_mariposa.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_alas_mariposa.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_alas_mariposa-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_alas_mariposa-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_aura_chispas",
+      "tanda": "C",
+      "nombre": "Aura de chispas",
+      "categoria": "cosmetico",
+      "rareza": "raro",
+      "grupo": "Auras",
+      "precio": 200,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Aura alrededor de todo el cuerpo, detrás del avatar.",
+      "alt": "Aura de chispas",
+      "archivo": "cosmetico/obj_cosmetico_aura_chispas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_aura_chispas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_aura_chispas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_aura_chispas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_aura_petalos",
+      "tanda": "C",
+      "nombre": "Aura de pétalos",
+      "categoria": "cosmetico",
+      "rareza": "poco",
+      "grupo": "Auras",
+      "precio": 80,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Aura alrededor de todo el cuerpo, detrás del avatar.",
+      "alt": "Aura de pétalos",
+      "archivo": "cosmetico/obj_cosmetico_aura_petalos.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_aura_petalos.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_aura_petalos-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_aura_petalos-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_aura_estrellas",
+      "tanda": "C",
+      "nombre": "Aura de estrellas",
+      "categoria": "cosmetico",
+      "rareza": "epico",
+      "grupo": "Auras",
+      "precio": 600,
+      "desbloqueo": "Tienda (monedas o gemas)",
+      "descripcion": "Aura alrededor de todo el cuerpo, detrás del avatar.",
+      "alt": "Aura de estrellas",
+      "archivo": "cosmetico/obj_cosmetico_aura_estrellas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_aura_estrellas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_aura_estrellas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_aura_estrellas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_cosmetico_aura_arcoiris",
+      "tanda": "C",
+      "nombre": "Aura arcoíris",
+      "categoria": "cosmetico",
+      "rareza": "legendario",
+      "grupo": "Auras",
+      "precio": "No se compra",
+      "desbloqueo": "Eventos y logros",
+      "descripcion": "Aura alrededor de todo el cuerpo, detrás del avatar.",
+      "alt": "Aura arcoíris",
+      "archivo": "cosmetico/obj_cosmetico_aura_arcoiris.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "cosmetico/obj_cosmetico_aura_arcoiris.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "cosmetico/obj_cosmetico_aura_arcoiris-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "cosmetico/obj_cosmetico_aura_arcoiris-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "espalda"
+    },
+    {
+      "id": "obj_foco_baculo",
+      "tanda": "C",
+      "nombre": "Báculo de runas",
+      "categoria": "foco",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda",
+      "descripcion": "Báculo de madera con runas cian y un cristal en la punta.",
+      "alt": "Báculo de runas",
+      "archivo": "foco/obj_foco_baculo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_baculo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_baculo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_baculo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_varita",
+      "tanda": "C",
+      "nombre": "Varita estelar",
+      "categoria": "foco",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Tienda",
+      "descripcion": "Varita blanca con una estrella dorada.",
+      "alt": "Varita estelar",
+      "archivo": "foco/obj_foco_varita.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_varita.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_varita-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_varita-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_libro",
+      "tanda": "C",
+      "nombre": "Libro de hechizos",
+      "categoria": "foco",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda",
+      "descripcion": "Libro de hechizos con el emblema del umbral.",
+      "alt": "Libro de hechizos",
+      "archivo": "foco/obj_foco_libro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_libro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_libro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_libro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_espada",
+      "tanda": "C",
+      "nombre": "Espada de luz",
+      "categoria": "foco",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda",
+      "descripcion": "Espada de luz estilizada, redondeada y sin filo.",
+      "alt": "Espada de luz",
+      "archivo": "foco/obj_foco_espada.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_espada.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_espada-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_espada-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_escudo",
+      "tanda": "C",
+      "nombre": "Escudo del umbral",
+      "categoria": "foco",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda",
+      "descripcion": "Escudo índigo con el emblema del gremio.",
+      "alt": "Escudo del umbral",
+      "archivo": "foco/obj_foco_escudo.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_escudo.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_escudo-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_escudo-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_lira",
+      "tanda": "C",
+      "nombre": "Lira de cristal",
+      "categoria": "foco",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda",
+      "descripcion": "Lira de cristal que suena al acertar.",
+      "alt": "Lira de cristal",
+      "archivo": "foco/obj_foco_lira.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_lira.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_lira-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_lira-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_linterna",
+      "tanda": "C",
+      "nombre": "Linterna del explorador",
+      "categoria": "foco",
+      "rareza": "comun",
+      "precio": 25,
+      "desbloqueo": "Tienda",
+      "descripcion": "Linterna cálida para las mazmorras.",
+      "alt": "Linterna del explorador",
+      "archivo": "foco/obj_foco_linterna.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_linterna.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_linterna-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_linterna-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_foco_pluma",
+      "tanda": "C",
+      "nombre": "Pluma-espada",
+      "categoria": "foco",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Vencer a Zhaal",
+      "descripcion": "Pluma blanca con punta de cristal: escribe y protege.",
+      "alt": "Pluma-espada",
+      "archivo": "foco/obj_foco_pluma.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "foco/obj_foco_pluma.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "foco/obj_foco_pluma-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "foco/obj_foco_pluma-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ],
+      "anclaje": "mano_izq"
+    },
+    {
+      "id": "obj_companero_kuro_cian",
+      "tanda": "C",
+      "nombre": "Kuro cian",
+      "categoria": "companero",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda (gemas) y eventos",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro cian",
+      "archivo": "companero/obj_companero_kuro_cian-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_cian-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_cian-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_cian-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_kuro_dorado",
+      "tanda": "C",
+      "nombre": "Kuro dorado",
+      "categoria": "companero",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Tienda (gemas) y eventos",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro dorado",
+      "archivo": "companero/obj_companero_kuro_dorado-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_dorado-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_dorado-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_dorado-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_kuro_coral",
+      "tanda": "C",
+      "nombre": "Kuro coral",
+      "categoria": "companero",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda (gemas) y eventos",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro coral",
+      "archivo": "companero/obj_companero_kuro_coral-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_coral-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_coral-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_coral-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_kuro_bosque",
+      "tanda": "C",
+      "nombre": "Kuro verde bosque",
+      "categoria": "companero",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Tienda",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro verde bosque",
+      "archivo": "companero/obj_companero_kuro_bosque-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_bosque-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_bosque-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_bosque-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_kuro_medianoche",
+      "tanda": "C",
+      "nombre": "Kuro medianoche",
+      "categoria": "companero",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda (gemas) y eventos",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro medianoche",
+      "archivo": "companero/obj_companero_kuro_medianoche-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_medianoche-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_medianoche-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_medianoche-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_kuro_arcoiris",
+      "tanda": "C",
+      "nombre": "Kuro arcoíris",
+      "categoria": "companero",
+      "rareza": "legendario",
+      "precio": "No se compra",
+      "desbloqueo": "Tienda (gemas) y eventos",
+      "descripcion": "Piel de Kuro: el mismo esqueleto y las mismas animaciones con otra paleta. Tiene sus tres etapas.",
+      "alt": "Kuro arcoíris",
+      "archivo": "companero/obj_companero_kuro_arcoiris-cachorro.svg",
+      "estados": [
+        {
+          "estado": "cachorro",
+          "archivo": "companero/obj_companero_kuro_arcoiris-cachorro.svg",
+          "atributo": "data-v",
+          "valor": "cachorro"
+        },
+        {
+          "estado": "joven",
+          "archivo": "companero/obj_companero_kuro_arcoiris-joven.svg",
+          "atributo": "data-v",
+          "valor": "joven"
+        },
+        {
+          "estado": "majestuoso",
+          "archivo": "companero/obj_companero_kuro_arcoiris-majestuoso.svg",
+          "atributo": "data-v",
+          "valor": "majestuoso"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_zorro",
+      "tanda": "C",
+      "nombre": "Zorro estelar",
+      "categoria": "companero",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda y eventos",
+      "descripcion": "Mascota pequeña con cola de estrellas. Reposo, celebrar y dormir.",
+      "alt": "Zorro estelar",
+      "archivo": "companero/obj_companero_zorro.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "companero/obj_companero_zorro.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "companero/obj_companero_zorro-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "companero/obj_companero_zorro-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "celebrar",
+          "archivo": "companero/obj_companero_zorro-celebrar.svg",
+          "atributo": "data-act",
+          "valor": "celebrar"
+        },
+        {
+          "estado": "dormir",
+          "archivo": "companero/obj_companero_zorro-dormir.svg",
+          "atributo": "data-act",
+          "valor": "dormir"
+        }
+      ]
+    },
+    {
+      "id": "obj_companero_buho",
+      "tanda": "C",
+      "nombre": "Búho de páginas",
+      "categoria": "companero",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda y eventos",
+      "descripcion": "Mascota pequeña con alas de páginas de libro. Reposo, celebrar y dormir.",
+      "alt": "Búho de páginas",
+      "archivo": "companero/obj_companero_buho.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "companero/obj_companero_buho.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "companero/obj_companero_buho-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "companero/obj_companero_buho-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        },
+        {
+          "estado": "celebrar",
+          "archivo": "companero/obj_companero_buho-celebrar.svg",
+          "atributo": "data-act",
+          "valor": "celebrar"
+        },
+        {
+          "estado": "dormir",
+          "archivo": "companero/obj_companero_buho-dormir.svg",
+          "atributo": "data-act",
+          "valor": "dormir"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_macetas",
+      "tanda": "C",
+      "nombre": "Macetas en flor",
+      "categoria": "decoracion",
+      "rareza": "comun",
+      "precio": 25,
+      "desbloqueo": "Tienda",
+      "descripcion": "Dos macetas con flores para la barandilla. Para la Terraza del Hogar.",
+      "alt": "Macetas en flor",
+      "archivo": "decoracion/obj_decoracion_macetas.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_macetas.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_macetas-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_macetas-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_banderines",
+      "tanda": "C",
+      "nombre": "Banderines de colores",
+      "categoria": "decoracion",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Tienda",
+      "descripcion": "Guirnalda de banderines con los colores de los elementos. Para la Terraza del Hogar.",
+      "alt": "Banderines de colores",
+      "archivo": "decoracion/obj_decoracion_banderines.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_banderines.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_banderines-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_banderines-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_mesita",
+      "tanda": "C",
+      "nombre": "Mesita de té",
+      "categoria": "decoracion",
+      "rareza": "comun",
+      "precio": 25,
+      "desbloqueo": "Tienda",
+      "descripcion": "Mesita redonda con té y el diario de progreso. Para la Terraza del Hogar.",
+      "alt": "Mesita de té",
+      "archivo": "decoracion/obj_decoracion_mesita.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_mesita.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_mesita-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_mesita-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_farol",
+      "tanda": "C",
+      "nombre": "Farol cálido",
+      "categoria": "decoracion",
+      "rareza": "poco",
+      "precio": 80,
+      "desbloqueo": "Tienda",
+      "descripcion": "Farol que se enciende al anochecer. Para la Terraza del Hogar.",
+      "alt": "Farol cálido",
+      "archivo": "decoracion/obj_decoracion_farol.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_farol.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_farol-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_farol-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_telescopio",
+      "tanda": "C",
+      "nombre": "Telescopio",
+      "categoria": "decoracion",
+      "rareza": "raro",
+      "precio": 200,
+      "desbloqueo": "Tienda",
+      "descripcion": "Para mirar las constelaciones del Archivo desde casa. Para la Terraza del Hogar.",
+      "alt": "Telescopio",
+      "archivo": "decoracion/obj_decoracion_telescopio.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_telescopio.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_telescopio-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_telescopio-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    },
+    {
+      "id": "obj_decoracion_cojin",
+      "tanda": "C",
+      "nombre": "Cojín del umbral",
+      "categoria": "decoracion",
+      "rareza": "epico",
+      "precio": 600,
+      "desbloqueo": "Tienda",
+      "descripcion": "Cojín índigo bordado con el emblema del gremio. Para la Terraza del Hogar.",
+      "alt": "Cojín del umbral",
+      "archivo": "decoracion/obj_decoracion_cojin.svg",
+      "estados": [
+        {
+          "estado": "reposo",
+          "archivo": "decoracion/obj_decoracion_cojin.svg",
+          "atributo": "data-state",
+          "valor": "reposo"
+        },
+        {
+          "estado": "destacado",
+          "archivo": "decoracion/obj_decoracion_cojin-destacado.svg",
+          "atributo": "data-state",
+          "valor": "destacado"
+        },
+        {
+          "estado": "bloqueado",
+          "archivo": "decoracion/obj_decoracion_cojin-bloqueado.svg",
+          "atributo": "data-state",
+          "valor": "bloqueado"
+        }
+      ]
+    }
+  ]
+}

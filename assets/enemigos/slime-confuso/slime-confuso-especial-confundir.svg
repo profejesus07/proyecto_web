@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 20 290 404" role="img" class="cc" data-ai="a0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290" height="404"><style>.cc{--display:"Baloo 2","Trebuchet MS",sans-serif;--body:system-ui,sans-serif}
+.cc .ol{stroke: rgb(14, 12, 43); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round;}
+.cc .ol2{stroke: rgb(14, 12, 43); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round;}
+.cc .q{font: 700 34px var(--display);}
+.cc .foehit{cursor: pointer;}
+.cc .foehit:focus-visible{outline: none;}
+.cc .foe,.cc .foe *{transform-box: fill-box;}
+.cc .foe .appear-g,.cc .foe .body-g{transform-origin: 50% 100%;}
+.cc .fx,.cc .poof,.cc .hitfx,.cc .mouth-o{opacity: 0; transition: opacity 0.15s;}
+.cc .foe[data-act="special"] .mouth-o{opacity: 1;}
+.cc .foe[data-act="special"] .mouth-c{opacity: 0;}
+.cc .mouth-c{transition: opacity 0.15s;}
+.cc .foe[data-act="special"] .fx-special{opacity: 1;}
+.cc #x-slime .body-g{animation: 1.6s ease-in-out 0s infinite normal none running x_wobble;}
+.cc #x-slime .spiral{transform-origin: 50% 50%; animation: 3s linear 0s infinite normal none running x_spin;}
+.cc #x-slime .s2{animation-direction: reverse;}
+.cc #x-slime[data-act="special"] .spiral{animation-duration: 0.5s;}
+.cc #x-slime[data-act="special"] .q{animation: 1.2s ease-in-out 0s infinite normal none running x_qfloat;}
+.cc #x-slime[data-act="special"] .q:nth-of-type(2){animation-delay: 0.3s;}
+.cc #x-slime[data-act="special"] .q:nth-of-type(3){animation-delay: 0.6s;}
+.cc .impact,.cc .speed,.cc .dust,.cc .dring{opacity: 0;}
+.cc .bub{animation: 3s ease-in 0s infinite normal none running x_bubble;}
+.cc .b2{animation-delay: 1.4s;}
+.cc .drip{animation: 2.6s ease-in 0s infinite normal none running x_drip;}
+@media (prefers-reduced-motion: reduce){.cc .foe,.cc .foe *{animation: auto ease 0s 1 normal none running none !important;}}
+@keyframes x_wobble { 
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.05, 0.95); }
+}
+@keyframes x_spin { 
+  100% { transform: rotate(360deg); }
+}
+@keyframes x_qfloat { 
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes x_bubble { 
+  0% { opacity: 0; transform: translateY(0px); }
+  20% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-50px); }
+}
+@keyframes x_drip { 
+  0%, 40% { opacity: 0; transform: translateY(-6px) scale(0.6); }
+  55% { opacity: 1; transform: translateY(0px) scale(1); }
+  100% { opacity: 0; transform: translateY(16px) scale(0.8, 1.2); }
+}
+@keyframes cxena0_0{0%{transform:translate(0px);animation-timing-function:linear}53.92%{transform:translate(0px);animation-timing-function:ease-in-out}58.331%{transform:translate(-4px, 2px);animation-timing-function:ease-in-out}62.743%{transform:translate(4px, -2px);animation-timing-function:ease-in-out}67.155%{transform:translate(-2px, 1px);animation-timing-function:ease-in-out}71.567%{transform:translate(0px);animation-timing-function:linear}100%{transform:translate(0px);animation-timing-function:linear}}
+.cc [data-ai="a0"]{animation:cxena0_0 1700ms linear infinite!important}</style>
+<title>Slime Confuso · especial</title>
+
+
+<g class="foehit" data-k="slime" tabindex="0" role="button" aria-label="Elegir a Slime Confuso" transform="translate(10 40)">
+
+<ellipse class="shadow" cx="135" cy="332" rx="84" ry="9" fill="#000" opacity=".3"/>
+<g class="foe" id="x-slime" data-act="special" data-talk="0">
+<g class="appear-g"><g class="body-g">
+<g class="slime-body">
+<path class="ol" fill="#6A3FC8" d="M48 330 C36 296 48 248 80 220 C98 204 112 194 135 190 C158 194 172 204 190 220 C222 248 234 296 222 330 Z"/>
+<path d="M150 194 C172 204 190 222 204 244 C220 270 226 300 222 330 L190 330 C200 296 196 254 176 226 C168 214 160 204 150 194 Z" fill="#4C2A9E"/>
+<path d="M70 252 C78 232 92 218 108 210" fill="none" stroke="#A98BF0" stroke-width="6" stroke-linecap="round"/>
+<circle class="bub" cx="84" cy="276" r="6" fill="#A98BF0" opacity=".7"/><circle class="bub b2" cx="150" cy="310" r="4" fill="#A98BF0" opacity=".7"/><circle cx="182" cy="296" r="5" fill="#A98BF0" opacity=".5"/><circle cx="104" cy="306" r="4" fill="#A98BF0" opacity=".6"/>
+<path class="ol2" fill="#6A3FC8" d="M62 330 C62 342 74 346 76 334 Z M188 330 C190 344 204 342 202 330 Z"/>
+<path d="M48 330 H222" stroke="#0E0C2B" stroke-width="3.5" stroke-linecap="round"/>
+</g>
+<path class="drip" d="M196 330 C196 338 190 344 190 348 C190 352 196 354 198 350 C200 346 196 338 196 330 Z" fill="#6A3FC8" stroke="#0E0C2B" stroke-width="1.8"/>
+<g class="eyes">
+<ellipse class="ol2" cx="110" cy="252" rx="17" ry="16" fill="#E8FF9A"/><ellipse class="ol2" cx="160" cy="252" rx="17" ry="16" fill="#E8FF9A"/>
+<g class="spiral"><path d="M110 252 m0 -2 a2 2 0 1 1 -2 2 a4 4 0 1 1 4 4 a7 7 0 1 1 -7 -7 a10 10 0 1 1 10 10" fill="none" stroke="#2A1060" stroke-width="2.6" stroke-linecap="round"/></g>
+<g class="spiral s2"><path d="M160 252 m0 -2 a2 2 0 1 1 -2 2 a4 4 0 1 1 4 4 a7 7 0 1 1 -7 -7 a10 10 0 1 1 10 10" fill="none" stroke="#2A1060" stroke-width="2.6" stroke-linecap="round"/></g>
+</g>
+<path d="M88 228 L126 240 M182 228 L144 240" stroke="#0E0C2B" stroke-width="6" stroke-linecap="round"/>
+<g class="mouth-c"><path class="ol2" fill="#2A1060" d="M96 284 C110 296 160 296 174 284 C160 290 110 290 96 284 Z"/><path d="M100 286 l6 6 6 -5 6 6 6 -5 6 6 6 -5 6 6 6 -5 6 6 6 -5 4 4" fill="none" stroke="#F4F2FF" stroke-width="2.2" stroke-linejoin="round"/></g>
+<g class="mouth-o"><path class="ol2" fill="#2A1060" d="M94 280 C106 312 164 312 176 280 C160 288 110 288 94 280 Z"/><path d="M98 282 l5 8 5 -7 5 8 5 -7 5 8 5 -7 5 8 5 -7 5 8 5 -7 5 8 5 -7 5 7" fill="#F4F2FF" stroke="#0E0C2B" stroke-width="1.4" stroke-linejoin="round"/><path d="M122 302 C128 296 142 296 148 302 C142 306 128 306 122 302 Z" fill="#7FE07A"/></g>
+<g class="fx fx-special" fill="#C9B2FF" stroke="#0E0C2B" stroke-width="2"><text x="60" y="190" class="q">?</text><text x="196" y="176" class="q">?</text><text x="128" y="150" class="q">?</text><ellipse cx="135" cy="196" rx="54" ry="10" fill="none" stroke="#C9B2FF" stroke-width="3" stroke-dasharray="8 8"/></g>
+<g class="fx fx-attack" fill="#7B4FD6" stroke="#0E0C2B" stroke-width="2"><circle cx="92" cy="280" r="10"/><circle cx="82" cy="254" r="7"/><circle cx="98" cy="236" r="5"/></g>
+</g></g>
+<g class="poof" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.2"><circle cx="135" cy="250" r="34" fill="#E9E6F8" opacity=".85" stroke="none"/><circle cx="104" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><circle cx="166" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><path d="M96 193 L98.0 198.0 L103 200 L98.0 202.0 L96 207 L94.0 202.0 L89 200 L94.0 198.0 Z M176 190 L177.7 194.3 L182 196 L177.7 197.7 L176 202 L174.3 197.7 L170 196 L174.3 194.3 Z M136 172 L138.2 177.8 L144 180 L138.2 182.2 L136 188 L133.8 182.2 L128 180 L133.8 177.8 Z M150 285 L151.4 288.6 L155 290 L151.4 291.4 L150 295 L148.6 291.4 L145 290 L148.6 288.6 Z M112 281 L113.4 284.6 L117 286 L113.4 287.4 L112 291 L110.6 287.4 L107 286 L110.6 284.6 Z "/></g>
+<g class="hitfx" fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2"><path d="M100 178 L103.4 186.6 L112 190 L103.4 193.4 L100 202 L96.6 193.4 L88 190 L96.6 186.6 Z "/><path d="M170 205 L172.5 211.5 L179 214 L172.5 216.5 L170 223 L167.5 216.5 L161 214 L167.5 211.5 Z "/><path d="M138 163 L140.0 168.0 L145 170 L140.0 172.0 L138 177 L136.0 172.0 L131 170 L136.0 168.0 Z "/></g>
+<g class="impact"><circle class="ring" cx="34" cy="268" r="18" fill="none" stroke="#FFC83D" stroke-width="5"/><path d="M34 250 L39.0 263.0 L52 268 L39.0 273.0 L34 286 L29.0 273.0 L16 268 L29.0 263.0 Z " fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2.4"/></g>
+<g class="speed" stroke="#E9E6F8" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M214 236 h26 M218 262 h30 M214 288 h24"/></g>
+<g class="dust" fill="#E9E6F8"><ellipse cx="86" cy="326" rx="16" ry="8"/><ellipse cx="184" cy="326" rx="16" ry="8"/><ellipse cx="66" cy="320" rx="9" ry="5"/><ellipse cx="204" cy="320" rx="9" ry="5"/></g>
+<circle class="dring" cx="135" cy="260" r="40" fill="none" stroke="#FFC83D" stroke-width="5"/>
+</g></g>
+
+
+
+
+</svg>

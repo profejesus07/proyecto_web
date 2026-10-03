@@ -1,0 +1,50 @@
+SALA DE PORTALES · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (mixto · bloqueado · disponible · completado).
+  Cada portal (esc_portal_1 … esc_portal_6) tiene data-st = locked | open | done; se usa cuando data-state="mixto".
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 452 · suelo 712 · alto del personaje 150
+  slot_jugador  x 562 · suelo 706 · alto del personaje 290
+  slot_guia  x 772 · suelo 700 · alto del personaje 320
+  slot_ui_arriba  x 640 · y 22 · 640 × 110
+
+ARCHIVOS
+  portales-mixto.svg  —  Mixto · Escena completa
+  portales-mixto-vertical.svg  —  Mixto · Recorte vertical 9:16
+  portales-mixto-cuadrado.svg  —  Mixto · Recorte cuadrado 1:1
+  portales-mixto-capa-fondo.svg  —  Mixto · Capa fondo
+  portales-mixto-capa-medio.svg  —  Mixto · Capa medio
+  portales-mixto-capa-frente.svg  —  Mixto · Capa frente
+  portales-mixto-capa-particulas.svg  —  Mixto · Capa partículas
+  portales-bloqueado.svg  —  Bloqueado · Escena completa
+  portales-bloqueado-vertical.svg  —  Bloqueado · Recorte vertical 9:16
+  portales-bloqueado-cuadrado.svg  —  Bloqueado · Recorte cuadrado 1:1
+  portales-bloqueado-capa-fondo.svg  —  Bloqueado · Capa fondo
+  portales-bloqueado-capa-medio.svg  —  Bloqueado · Capa medio
+  portales-bloqueado-capa-frente.svg  —  Bloqueado · Capa frente
+  portales-bloqueado-capa-particulas.svg  —  Bloqueado · Capa partículas
+  portales-disponible.svg  —  Disponible · Escena completa
+  portales-disponible-vertical.svg  —  Disponible · Recorte vertical 9:16
+  portales-disponible-cuadrado.svg  —  Disponible · Recorte cuadrado 1:1
+  portales-disponible-capa-fondo.svg  —  Disponible · Capa fondo
+  portales-disponible-capa-medio.svg  —  Disponible · Capa medio
+  portales-disponible-capa-frente.svg  —  Disponible · Capa frente
+  portales-disponible-capa-particulas.svg  —  Disponible · Capa partículas
+  portales-completado.svg  —  Completado · Escena completa
+  portales-completado-vertical.svg  —  Completado · Recorte vertical 9:16
+  portales-completado-cuadrado.svg  —  Completado · Recorte cuadrado 1:1
+  portales-completado-capa-fondo.svg  —  Completado · Capa fondo
+  portales-completado-capa-medio.svg  —  Completado · Capa medio
+  portales-completado-capa-frente.svg  —  Completado · Capa frente
+  portales-completado-capa-particulas.svg  —  Completado · Capa partículas

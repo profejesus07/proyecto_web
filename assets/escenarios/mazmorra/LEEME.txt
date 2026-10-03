@@ -1,0 +1,43 @@
+MAZMORRA · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (fuego · agua · sombra).
+
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 262 · suelo 676 · alto del personaje 150
+  slot_jugador  x 392 · suelo 684 · alto del personaje 290
+  slot_jefe  x 930 · suelo 680 · alto del personaje 140
+  slot_ui_arriba  x 640 · y 96 · 640 × 110
+
+ARCHIVOS
+  mazmorra-fuego.svg  —  Fuego · Escena completa
+  mazmorra-fuego-vertical.svg  —  Fuego · Recorte vertical 9:16
+  mazmorra-fuego-cuadrado.svg  —  Fuego · Recorte cuadrado 1:1
+  mazmorra-fuego-capa-fondo.svg  —  Fuego · Capa fondo
+  mazmorra-fuego-capa-medio.svg  —  Fuego · Capa medio
+  mazmorra-fuego-capa-frente.svg  —  Fuego · Capa frente
+  mazmorra-fuego-capa-particulas.svg  —  Fuego · Capa partículas
+  mazmorra-agua.svg  —  Agua · Escena completa
+  mazmorra-agua-vertical.svg  —  Agua · Recorte vertical 9:16
+  mazmorra-agua-cuadrado.svg  —  Agua · Recorte cuadrado 1:1
+  mazmorra-agua-capa-fondo.svg  —  Agua · Capa fondo
+  mazmorra-agua-capa-medio.svg  —  Agua · Capa medio
+  mazmorra-agua-capa-frente.svg  —  Agua · Capa frente
+  mazmorra-agua-capa-particulas.svg  —  Agua · Capa partículas
+  mazmorra-sombra.svg  —  Sombra · Escena completa
+  mazmorra-sombra-vertical.svg  —  Sombra · Recorte vertical 9:16
+  mazmorra-sombra-cuadrado.svg  —  Sombra · Recorte cuadrado 1:1
+  mazmorra-sombra-capa-fondo.svg  —  Sombra · Capa fondo
+  mazmorra-sombra-capa-medio.svg  —  Sombra · Capa medio
+  mazmorra-sombra-capa-frente.svg  —  Sombra · Capa frente
+  mazmorra-sombra-capa-particulas.svg  —  Sombra · Capa partículas

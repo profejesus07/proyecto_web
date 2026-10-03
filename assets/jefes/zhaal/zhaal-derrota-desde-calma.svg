@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="520" height="460">
+<title>Zhaal — Derrota desde calma</title>
+<style>
+.zh{--it:1;--zh-eye:#FF6B6B}
+.zh *{transform-box:view-box}
+.zh .ol{stroke:#0E0C2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.zh .ol2{stroke:#0E0C2B;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.zh-body,.zh-size,.zh-float{transform-origin:260px 392px}
+.zh-spirit,.zh-spfloat{transform-origin:260px 260px}
+.zh-fb,.zh-ragepop,.zh-fx g,.zh-fx path,.zh-fx circle,.zh-fx ellipse,.zh-sparks path{transform-box:fill-box;transform-origin:50% 50%}
+.zh-eye{fill:var(--zh-eye)}
+.zh-eyeglow{stroke:var(--zh-eye)}
+.zh-rageonly,.zh-ragepop,.zh-finalonly,.zh-spirit,.zh-fx&gt;g,.zh-m,.zh-squint,.zh-lid{opacity:0}
+.zh .m-calm{opacity:1}
+.zh[data-phase="rage"],.zh[data-phase="final"]{--zh-eye:#FF3D5A}
+.zh[data-phase="rage"] .zh-rageonly,.zh[data-phase="rage"] .zh-ragepop,.zh[data-phase="final"] .zh-rageonly,.zh[data-phase="final"] .zh-ragepop,.zh[data-phase="final"] .zh-finalonly{opacity:1}
+.zh[data-phase="rage"] .zh-calmonly,.zh[data-phase="final"] .zh-calmonly{opacity:0}
+.zh[data-phase="rage"] .zh-size,.zh[data-phase="final"] .zh-size{scale:1.06}
+.zh[data-phase="rage"] .m-calm,.zh[data-phase="final"] .m-calm{opacity:0}
+.zh[data-phase="rage"] .m-rage,.zh[data-phase="final"] .m-rage{opacity:1}
+.zh[data-phase="pure"] .zh-body,.zh[data-phase="pure"] .zh-calmonly,.zh[data-phase="pure"] .zh-amb{opacity:0}
+.zh[data-phase="pure"] .zh-spirit{opacity:1}
+.zh[data-phase="pure"] .zh-shadow{transform:scale(.5);opacity:.7}
+.zh:not([data-act="idle"]) .zh-m{opacity:0}
+.zh[data-act="appear"] .m-roar,.zh[data-act="attack"] .m-roar,.zh[data-act="rage"] .m-roar,.zh[data-act="special"] .m-sp,.zh[data-act="taunt"] .m-smirk{opacity:1}
+.zh[data-act="hit"] .m-ouch,.zh[data-act="defeat"] .m-ouch,.zh[data-act="hit"] .zh-squint,.zh[data-act="defeat"] .zh-squint{opacity:1}
+.zh[data-act="hit"] .zh-eyes-open,.zh[data-act="defeat"] .zh-eyes-open{opacity:0}
+.zh[data-act="taunt"] .zh-lid{opacity:1}
+.zh[data-act="idle"] .zh-float{animation:zh_float 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-eyeset{animation:zh_blink 3.6s linear infinite}
+.zh[data-phase="pure"] .zh-spfloat{animation:zh_float 3.6s ease-in-out infinite}
+.zh[data-phase="pure"] .zh-spglow{animation:zh_pulse 3.6s ease-in-out infinite}
+.zh[data-phase="pure"] .zh-sparks path{animation:zh_tw 1.7s ease-in-out infinite}
+.zh[data-phase="pure"] .zh-sparks path:nth-child(2n){animation-delay:-.85s}
+@keyframes zh_float{0%,100%{transform:none}50%{transform:translateY(-8px)}}
+@keyframes zh_blink{0%,86%,94%,100%{transform:none}90%{transform:scaleY(.1)}}
+@keyframes zh_pulse{0%,100%{transform:none;opacity:.8}50%{transform:scale(1.08);opacity:1}}
+@keyframes zh_tw{0%,100%{opacity:.3;transform:scale(.5)}50%{opacity:1;transform:scale(1.15)}}
+.zh[data-act="hit"] .zh-body{animation:zh_hit_body 0.6s var(--it) ease-out both}
+.zh[data-act="hit"] .zh-hitstars{animation:zh_imp2 0.6s var(--it) ease-out both}
+@keyframes zh_hit_body{0%,100%{transform:none;filter:none}12%{transform:translateX(12px) rotate(3deg);filter:brightness(2.2) saturate(.3)}35%{transform:translateX(16px) rotate(4deg);filter:none}70%{transform:translateX(-3px) rotate(-1deg)}}
+@keyframes zh_imp2{0%{opacity:0;transform:scale(.3)}20%{opacity:1;transform:scale(1.2)}70%,100%{opacity:0;transform:none}}
+@keyframes zh_imp{0%,40%{opacity:0;transform:scale(.3)}48%{opacity:1;transform:scale(1.2)}74%,100%{opacity:0;transform:none}}
+.zh[data-act="rage"] .zh-body{animation:zh_rg_body 1.8s var(--it) both}
+.zh[data-act="rage"] .zh-rageonly{animation:zh_rg_fade 1.8s var(--it) ease-out both}
+.zh[data-act="rage"] .zh-ragepop{animation:zh_rg_pop 1.8s var(--it) ease-out both}
+.zh[data-act="rage"] .zh-calmonly{animation:zh_rg_off 1.8s var(--it) both}
+.zh[data-act="rage"] .zh-eye{animation:zh_rg_eye 1.8s var(--it) both}
+.zh[data-act="rage"] .zh-eyeglow{animation:zh_rg_glow 1.8s var(--it) both}
+.zh[data-act="rage"] .zh-ragering{animation:zh_rg_ring 1.8s var(--it) ease-out both}
+@keyframes zh_rg_body{0%,40%{transform:scale(0.943)}10%,20%,30%{transform:translateX(-4px) scale(0.943)}15%,25%,35%{transform:translateX(4px) scale(0.943)}55%{transform:translateY(-8px) scale(1.06)}70%{transform:scale(.99)}85%{transform:scale(1.01)}100%{transform:none}}
+@keyframes zh_rg_fade{0%,40%{opacity:0}58%,100%{opacity:1}}
+@keyframes zh_rg_off{0%,40%{opacity:1}58%,100%{opacity:0}}
+@keyframes zh_rg_pop{0%,44%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:none}}
+@keyframes zh_rg_eye{0%,30%{fill:#FF6B6B}40%{fill:#FFFFFF}55%,100%{fill:#FF3D5A}}
+@keyframes zh_rg_glow{0%,30%{stroke:#FF6B6B}40%{stroke:#FFFFFF}55%,100%{stroke:#FF3D5A}}
+@keyframes zh_rg_ring{0%,40%{opacity:0;transform:scale(.3)}50%{opacity:1}90%,100%{opacity:0;transform:scale(3)}}
+.zh[data-act="defeat"] .zh-body{animation:zh_df_body 2.8s var(--it) both}
+.zh[data-act="defeat"] .zh-amb,.zh[data-act="defeat"] .zh-calmonly{animation:zh_df_off 2.8s var(--it) both}
+.zh[data-act="defeat"] .zh-light{animation:zh_df_light 2.8s var(--it) ease-out both}
+.zh[data-act="defeat"] .zh-light .zh-rays{animation:zh_spin 2.8s var(--it) linear both}
+.zh[data-act="defeat"] .zh-spirit{animation:zh_df_spirit 2.8s var(--it) both}
+.zh[data-act="defeat"] .zh-sparks path{animation:zh_df_tw 2.8s var(--it) both}
+.zh[data-act="defeat"] .zh-shadow{animation:zh_df_sh 2.8s var(--it) both}
+.zh:not([data-phase="calm"])[data-act="defeat"] .zh-rageonly,.zh:not([data-phase="calm"])[data-act="defeat"] .zh-ragepop,.zh[data-phase="final"][data-act="defeat"] .zh-finalonly{animation:zh_df_off 2.8s var(--it) both}
+@keyframes zh_df_body{0%{transform:none;opacity:1;filter:none}6%{transform:rotate(-3deg)}12%{transform:rotate(3deg)}18%{transform:rotate(-2deg)}30%{transform:scale(1.03,.95);opacity:1;filter:sepia(1) saturate(2.6) brightness(1.4)}46%,100%{transform:translateY(-10px) scale(.55);opacity:0;filter:sepia(1) saturate(2.6) brightness(1.8)}}
+@keyframes zh_df_off{0%{opacity:1}24%,100%{opacity:0}}
+@keyframes zh_df_light{0%,24%{opacity:0;transform:scale(.4)}44%{opacity:1;transform:scale(1.1)}66%,100%{opacity:0;transform:scale(1.4)}}
+@keyframes zh_spin{to{transform:rotate(60deg)}}
+@keyframes zh_df_spirit{0%,48%{opacity:0;transform:scale(.2)}66%{opacity:1;transform:scale(1.12)}78%{transform:scale(.96)}88%,100%{opacity:1;transform:none}}
+@keyframes zh_df_tw{0%,52%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.2)}85%,100%{opacity:.8;transform:none}}
+@keyframes zh_df_sh{0%,26%{transform:none;opacity:1}46%{transform:scale(.6);opacity:.4}100%{transform:scale(.5);opacity:.7}}
+
+.zh-wingwrap,.zh-wing{transform-origin:214px 236px}
+.zh-headwrap,.zh-head{transform-origin:260px 200px}
+.zh-eyeset{transform-origin:260px 150px}
+.zh-breath{transform-origin:260px 392px}
+.zh-tail1{transform-origin:300px 380px}
+.zh-tail2{transform-origin:420px 396px}
+.zh-shadow{transform-origin:260px 420px}
+.zh-crown,.zh-door,.zh-crack,.zh-finalpop,.zh-beam{transform-box:fill-box;transform-origin:50% 50%}
+.zh-door{transform-origin:50% 100%}
+.zh-beam{transform-origin:50% 0}
+.zh[data-phase="final"] .zh-size{scale:1.08}
+.zh[data-phase="rage"] .zh-brow-l,.zh[data-phase="final"] .zh-brow-l{rotate:8deg}
+.zh[data-phase="rage"] .zh-brow-r,.zh[data-phase="final"] .zh-brow-r{rotate:-8deg}
+.zh .zh-crack{animation:zh_crack 1.8s ease-in-out infinite}
+.zh .zh-crown{animation:zh_crown 2.4s ease-in-out infinite}
+.zh .zh-door{animation:zh_door 1.2s ease-in-out infinite alternate}
+@keyframes zh_crack{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes zh_crown{0%,100%{transform:none}50%{transform:translateY(-6px)}}
+@keyframes zh_door{0%{transform:none}100%{transform:scale(1.06)}}
+/* reposo */
+.zh[data-act="idle"] .zh-breath{animation:zh_breath 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-head{animation:zh_hbob 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-wing{animation:zh_wing 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-tail1{animation:zh_t1 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-tail2{animation:zh_t2 3.6s ease-in-out infinite}
+.zh[data-act="idle"] .zh-float{animation:none}
+.zh[data-phase="pure"] .zs-wing{animation:zh_wing 3.6s ease-in-out infinite}
+.zs-wing{transform-origin:214px 236px}
+@keyframes zh_breath{0%,100%{transform:none}50%{transform:scale(1.012,1.025)}}
+@keyframes zh_hbob{0%,100%{transform:none}50%{transform:translateY(-3px)}}
+@keyframes zh_wing{0%,100%{transform:none}50%{transform:rotate(-5deg)}}
+@keyframes zh_t1{0%,100%{transform:none}50%{transform:rotate(-3deg)}}
+@keyframes zh_t2{0%,100%{transform:none}50%{transform:rotate(7deg)}}
+/* aparecer */
+.zh[data-act="appear"] .zh-body{animation:zh_app_body 1.2s var(--it) both}
+.zh[data-act="appear"] .zh-wing{animation:zh_app_wing 1.2s var(--it) ease-in-out both}
+.zh[data-act="appear"] .zh-shadow{animation:zh_app_sh 1.2s var(--it) both}
+.zh[data-act="appear"] .zh-dust{opacity:1}
+.zh[data-act="appear"] .zh-dust ellipse{animation:zh_dust 1.2s var(--it) ease-out both}
+.zh[data-act="appear"] .zh-shock{animation:zh_shock 1.2s var(--it) ease-out both}
+@keyframes zh_app_body{0%{transform:translateY(-380px);opacity:0;animation-timing-function:ease-in}6%{opacity:1}46%{transform:none;animation-timing-function:ease-out}54%{transform:scale(1.08,.86)}68%{transform:translateY(-4px) scale(.98,1.03)}84%{transform:scale(1.01,.99)}100%{transform:none;opacity:1}}
+@keyframes zh_app_wing{0%{transform:rotate(-26deg)}12%{transform:rotate(12deg)}24%{transform:rotate(-26deg)}36%{transform:rotate(12deg)}46%{transform:rotate(-10deg)}60%{transform:rotate(6deg)}100%{transform:none}}
+@keyframes zh_app_sh{0%{transform:scale(.3);opacity:.2}46%{transform:none;opacity:1}54%{transform:scale(1.1)}100%{transform:none;opacity:1}}
+@keyframes zh_dust{0%,46%{opacity:0;transform:scale(.4)}56%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px) scale(1.8)}}
+@keyframes zh_shock{0%,46%{opacity:0;transform:scale(.3)}52%{opacity:1}90%,100%{opacity:0;transform:scale(2.2)}}
+/* provocar: pose majestuosa */
+.zh[data-act="taunt"] .zh-head{animation:zh_tau_head 1.8s var(--it) ease-in-out both}
+.zh[data-act="taunt"] .zh-wing{animation:zh_tau_wing 1.8s var(--it) ease-in-out both}
+.zh[data-act="taunt"] .zh-breath{animation:zh_tau_body 1.8s var(--it) ease-in-out both}
+.zh[data-act="taunt"] .zh-crack{animation:zh_tau_crack 1.8s var(--it) ease-in-out both}
+@keyframes zh_tau_head{0%,100%{transform:none}18%,82%{transform:translateY(-10px) rotate(-4deg)}}
+@keyframes zh_tau_wing{0%,100%{transform:none}18%,82%{transform:rotate(-16deg)}}
+@keyframes zh_tau_body{0%,100%{transform:none}18%,82%{transform:scale(1.03,1.06)}}
+@keyframes zh_tau_crack{0%,100%{opacity:.8}30%,70%{opacity:1;stroke-width:16}}
+/* atacar: zarpazo de cristal */
+.zh[data-act="attack"] .zh-breath{animation:zh_atk_body 1.2s var(--it) ease-in-out both}
+.zh[data-act="attack"] .zh-head{animation:zh_atk_head 1.2s var(--it) ease-in-out both}
+.zh[data-act="attack"] .zh-wing{animation:zh_atk_wing 1.2s var(--it) ease-in-out both}
+.zh[data-act="attack"] .zh-shadow{animation:zh_atk_sh 1.2s var(--it) ease-in-out both}
+.zh[data-act="attack"] .zh-shards{opacity:1}
+.zh[data-act="attack"] .zh-shards path{animation:zh_shard 1.2s var(--it) ease-out both}
+.zh[data-act="attack"] .zh-impact{animation:zh_imp 1.2s var(--it) ease-out both}
+@keyframes zh_atk_body{0%,100%{transform:none}25%{transform:translateY(-16px) scale(.95)}40%{transform:translateY(6px) scale(1.1)}70%{transform:translateY(4px) scale(1.08)}}
+@keyframes zh_atk_head{0%,100%{transform:none}25%{transform:translateY(-6px) rotate(4deg)}40%,70%{transform:translateY(8px)}}
+@keyframes zh_atk_wing{0%,100%{transform:none}25%{transform:rotate(-20deg)}40%,70%{transform:rotate(10deg)}}
+@keyframes zh_atk_sh{0%,100%{transform:none}25%{transform:scale(.9)}40%,70%{transform:scale(1.12)}}
+@keyframes zh_shard{0%,40%{opacity:0;transform:none}46%{opacity:1}90%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(160deg)}}
+/* especial: rayo de la grieta */
+.zh[data-act="special"] .zh-breath{animation:zh_sp_body 2.4s var(--it) ease-in-out both}
+.zh[data-act="special"] .zh-head{animation:zh_sp_head 2.4s var(--it) ease-in-out both}
+.zh[data-act="special"] .zh-wing{animation:zh_sp_wing 2.4s var(--it) ease-in-out both}
+.zh[data-act="special"] .zh-crack{animation:zh_sp_crack 2.4s var(--it) ease-in-out both}
+.zh[data-act="special"] .zh-beam{animation:zh_sp_beam 2.4s var(--it) ease-out both}
+.zh[data-act="special"] .zh-charge{animation:zh_sp_charge 2.4s var(--it) ease-in both}
+@keyframes zh_sp_body{0%,100%{transform:none}30%,36%{transform:translateY(-8px) scale(1.04,1.06)}42%,76%{transform:scale(1.02)}88%{transform:none}}
+@keyframes zh_sp_head{0%,100%{transform:none}30%,36%{transform:translateY(-8px) rotate(-6deg)}42%,76%{transform:translateY(2px)}}
+@keyframes zh_sp_wing{0%,100%{transform:none}30%,76%{transform:rotate(-22deg)}}
+@keyframes zh_sp_crack{0%,100%{opacity:.8}30%,76%{opacity:1}}
+@keyframes zh_sp_charge{0%{opacity:0;transform:scale(.2)}34%{opacity:1;transform:scale(1.3)}40%,100%{opacity:0;transform:scale(.6)}}
+@keyframes zh_sp_beam{0%,36%{opacity:0;transform:scaleY(.1)}42%{opacity:1;transform:scaleY(1)}48%{transform:scaleY(1) scaleX(1.06)}54%{transform:scaleX(.95)}62%{transform:scaleX(1.05)}72%{opacity:1;transform:none}84%,100%{opacity:0;transform:scaleX(.3)}}
+/* golpe / furia / fase 3 / derrota */
+.zh[data-act="hit"] .zh-head{animation:zh_hit_head .6s var(--it) ease-out both}
+.zh[data-act="hit"] .zh-wing{animation:zh_hit_wing .6s var(--it) ease-out both}
+@keyframes zh_hit_head{0%,100%{transform:none}20%,50%{transform:rotate(7deg) translateY(-2px)}}
+@keyframes zh_hit_wing{0%,100%{transform:none}20%,50%{transform:rotate(12deg)}}
+.zh[data-act="rage"] .zh-wing{animation:zh_rg_wing 1.8s var(--it) ease-in-out both}
+.zh[data-act="rage"] .zh-brow-l{animation:zh_rg_bl 1.8s var(--it) both}
+.zh[data-act="rage"] .zh-brow-r{animation:zh_rg_br 1.8s var(--it) both}
+@keyframes zh_rg_wing{0%,42%,100%{transform:none}50%{transform:rotate(-24deg)}58%{transform:rotate(8deg)}68%{transform:rotate(-12deg)}}
+@keyframes zh_rg_bl{0%,40%{rotate:0deg}55%,100%{rotate:8deg}}
+@keyframes zh_rg_br{0%,40%{rotate:0deg}55%,100%{rotate:-8deg}}
+.zh[data-phase="final"][data-act="rage"] .zh-rageonly,.zh[data-phase="final"][data-act="rage"] .zh-ragepop,.zh[data-phase="final"][data-act="rage"] .zh-eye,.zh[data-phase="final"][data-act="rage"] .zh-eyeglow,.zh[data-phase="final"][data-act="rage"] .zh-brow-l,.zh[data-phase="final"][data-act="rage"] .zh-brow-r{animation:none}
+.zh[data-phase="final"][data-act="rage"] .zh-finalonly{animation:zh_rg_fade 1.8s var(--it) ease-out both}
+.zh[data-phase="final"][data-act="rage"] .zh-finalpop{animation:zh_rg_pop 1.8s var(--it) ease-out both}
+.zh[data-phase="final"] .zh-finalpop{opacity:1}
+.zh-finalpop{opacity:0}
+.zh[data-phase="final"][data-act="defeat"] .zh-finalpop{animation:zh_df_off 2.8s var(--it) both}
+.zh[data-act="defeat"] .zh-wingwrap{animation:zh_df_wing 2.8s var(--it) ease-in-out both}
+@keyframes zh_df_wing{0%,14%{transform:none}32%,100%{transform:rotate(20deg)}}
+</style>
+<defs>
+<radialGradient id="jz-goldG"><stop offset="0" stop-color="#FFF6D6" stop-opacity=".95"/><stop offset=".45" stop-color="#FFC83D" stop-opacity=".5"/><stop offset="1" stop-color="#FFC83D" stop-opacity="0"/></radialGradient>
+<radialGradient id="jz-rageG"><stop offset="0" stop-color="#FF6B6B" stop-opacity="0"/><stop offset=".6" stop-color="#FF6B6B" stop-opacity=".18"/><stop offset="1" stop-color="#FF6B6B" stop-opacity="0"/></radialGradient>
+<linearGradient id="jz-beamG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6D6"/><stop offset=".5" stop-color="#FFC83D" stop-opacity=".85"/><stop offset="1" stop-color="#FFC83D" stop-opacity="0"/></linearGradient>
+<radialGradient id="jz-doorG" cx=".5" cy=".7" r=".8"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#FFF1B0"/><stop offset="1" stop-color="#FFC83D"/></radialGradient>
+<radialGradient id="jz-coreG"><stop offset="0" stop-color="#FFF1B0" stop-opacity=".9"/><stop offset="1" stop-color="#FFC83D" stop-opacity="0"/></radialGradient>
+</defs>
+
+<g class="zh" data-phase="calm" data-act="defeat" style="--it:infinite">
+<g transform="translate(260 268) scale(.82) translate(-260 -236)">
+<ellipse class="zh-shadow" cx="260" cy="420" rx="170" ry="13" fill="#000" fill-opacity=".28"/>
+<g class="zh-rageonly"><circle cx="260" cy="240" r="230" fill="url(#jz-rageG)"/></g>
+<g class="zh-finalonly"><circle cx="260" cy="240" r="200" fill="url(#jz-coreG)" fill-opacity=".35"/></g>
+<g class="zh-body"><g class="zh-size"><g class="zh-float"><g class="zh-breath">
+<g class="zh-wingwrap"><g class="zh-wing"><g class="zh-rageonly"><path d="M128 126 L112 92 L140 118 Z M96 96 L74 70 L104 90 Z M170 172 L162 140 L182 164 Z" fill="#6E5CC8" class="ol2"/></g><path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="#2A2370" class="ol"/>
+<path d="M214 226 L150 150 L60 60 L120 170 Z" fill="#3D3496"/>
+<path d="M214 226 L90 180 L52 224 L112 240 Z M214 226 L80 292 L150 280 Z" fill="#1E1858"/>
+<path d="M214 226 L76 120 M214 226 L90 180 M214 226 L112 240 M214 226 L150 280 M214 226 L200 300" fill="none" stroke="#6E5CC8" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="none" class="ol"/></g></g>
+<g transform="translate(520 0) scale(-1 1)"><g class="zh-wingwrap"><g class="zh-wing"><g class="zh-rageonly"><path d="M128 126 L112 92 L140 118 Z M96 96 L74 70 L104 90 Z M170 172 L162 140 L182 164 Z" fill="#6E5CC8" class="ol2"/></g><path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="#2A2370" class="ol"/>
+<path d="M214 226 L150 150 L60 60 L120 170 Z" fill="#3D3496"/>
+<path d="M214 226 L90 180 L52 224 L112 240 Z M214 226 L80 292 L150 280 Z" fill="#1E1858"/>
+<path d="M214 226 L76 120 M214 226 L90 180 M214 226 L112 240 M214 226 L150 280 M214 226 L200 300" fill="none" stroke="#6E5CC8" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="none" class="ol"/><path d="M66 72 L80 120" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/></g></g></g>
+<g class="zh-tail1"><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#0E0C2B" stroke-width="27" stroke-linecap="round"/><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#2A2370" stroke-width="20" stroke-linecap="round"/><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#6E5CC8" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 8"/><g class="zh-tail2"><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#0E0C2B" stroke-width="27" stroke-linecap="butt"/><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#2A2370" stroke-width="20" stroke-linecap="butt"/><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#6E5CC8" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 8"/><path d="M434 312 L448 270 L460 312 Z" fill="#6E5CC8" class="ol"/><path d="M462 352 L484 344 L466 366 Z M450 386 L470 394 L446 400 Z" fill="#6E5CC8" class="ol2"/></g></g>
+<path d="M176 330 L214 316 L232 380 L200 404 L160 394 L156 350 Z" fill="#2A2370" class="ol"/>
+<path d="M176 330 L214 316 L204 360 L160 360 Z" fill="#3D3496"/>
+<path d="M156 404 L162 416 L170 404 M172 404 L178 418 L186 404 M188 404 L194 416 L200 404" fill="#C4A8FF" class="ol2"/>
+<path d="M210 322 L240 322 L242 398 L208 398 Z" fill="#3D3496" class="ol"/>
+<path d="M226 322 L226 398" stroke="#6E5CC8" stroke-width="2.4"/>
+<path d="M208 398 L212 412 L218 398 M220 398 L225 414 L230 398 M232 398 L237 412 L242 398" fill="#C4A8FF" class="ol2"/><g transform="translate(520 0) scale(-1 1)"><path d="M176 330 L214 316 L232 380 L200 404 L160 394 L156 350 Z" fill="#2A2370" class="ol"/>
+<path d="M176 330 L214 316 L204 360 L160 360 Z" fill="#1E1858"/>
+<path d="M156 404 L162 416 L170 404 M172 404 L178 418 L186 404 M188 404 L194 416 L200 404" fill="#C4A8FF" class="ol2"/>
+<path d="M210 322 L240 322 L242 398 L208 398 Z" fill="#3D3496" class="ol"/>
+<path d="M226 322 L226 398" stroke="#6E5CC8" stroke-width="2.4"/>
+<path d="M208 398 L212 412 L218 398 M220 398 L225 414 L230 398 M232 398 L237 412 L242 398" fill="#C4A8FF" class="ol2"/></g>
+<path d="M216 214 L304 214 L334 296 L316 392 L204 392 L186 296 Z" fill="#2A2370" class="ol"/>
+<path d="M216 214 L186 296 L204 392 L232 392 L226 300 Z" fill="#3D3496"/>
+<path d="M304 214 L334 296 L316 392 L292 392 L296 300 Z" fill="#1E1858"/>
+<path d="M228 250 L260 262 L292 250 M224 290 L260 304 L296 290 M224 332 L260 346 L296 332" fill="none" stroke="#6E5CC8" stroke-width="2.6" stroke-linejoin="round"/>
+<path d="M216 214 L304 214 L334 296 L316 392 L204 392 L186 296 Z" fill="none" class="ol"/>
+<path d="M324 286 L330 300 L316 380" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<path d="M236 220 L284 220 L278 160 L242 160 Z" fill="#3D3496" class="ol"/>
+<!-- grieta dorada -->
+<g class="zh-crack">
+<path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFC83D" stroke-width="11" stroke-opacity=".35" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFF1B0" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="zh-rageonly"><path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFC83D" stroke-width="22" stroke-opacity=".35" stroke-linecap="round" stroke-linejoin="round"/><path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFF6D6" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></g>
+</g>
+<g class="zh-rageonly"><path d="M206 214 L194 180 L224 206 Z M314 214 L326 180 L296 206 Z M234 220 L230 196 L248 216 Z M286 220 L290 196 L272 216 Z" fill="#6E5CC8" class="ol2"/></g>
+<g class="zh-finalonly"><g class="zh-door">
+<path d="M260 270 L240 286 L232 300 M260 270 L280 286 L288 300 M226 330 L208 334 M294 330 L312 334 M232 360 L216 372 M288 360 L304 372" stroke="#FFC83D" stroke-width="4" stroke-linecap="round"/>
+<path d="M240 362 L240 306 Q260 276 280 306 L280 362 Z" fill="url(#jz-doorG)" stroke="#FFC83D" stroke-width="3.5"/>
+</g></g>
+<!-- cabeza -->
+<g class="zh-headwrap"><g class="zh-head">
+<g transform="translate(260 196) scale(1.14) translate(-260 -196)">
+<path d="M248 106 L234 76 L218 56 L200 42 L182 36 L194 50 L206 66 L218 88 L232 112 Z" fill="#6E5CC8" class="ol2"/><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L204 54 L224 82 Z" fill="#A898F0"/><g transform="translate(520 0) scale(-1 1)"><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L194 50 L206 66 L218 88 L232 112 Z" fill="#6E5CC8" class="ol2"/><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L204 54 L224 82 Z" fill="#A898F0"/></g>
+<path d="M216 148 L194 160 L218 164 Z M304 148 L326 160 L302 164 Z" fill="#6E5CC8" class="ol2"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 L242 186 L222 166 L214 140 L228 108 Z" fill="#3D3496" class="ol"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 Z" fill="#2A2370"/>
+<path d="M260 92 L228 108 L214 140 L240 128 Z" fill="#6E5CC8" opacity=".5"/>
+<path d="M260 96 L260 170" stroke="#6E5CC8" stroke-width="2.6"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 L242 186 L222 166 L214 140 L228 108 Z" fill="none" class="ol"/>
+<path d="M252 162 L256 158 M268 162 L264 158" stroke="#0E0C2B" stroke-width="2.6" stroke-linecap="round"/>
+<g class="zh-eyeset"><g class="zh-eyes-open">
+<path class="zh-eyeglow" d="M228 138 L252 146 L250 154 L232 152 Z M292 138 L268 146 L270 154 L288 152 Z" fill="none" stroke-width="8" stroke-opacity=".4" stroke-linejoin="round"/>
+<path class="zh-eye ol2" d="M228 138 L252 146 L250 154 L232 152 Z M292 138 L268 146 L270 154 L288 152 Z"/>
+</g></g>
+<path class="zh-squint" d="M230 140 L250 148 L230 156 M290 140 L270 148 L290 156" fill="none" stroke="#FFC83D" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="zh-lid" d="M228 140 L252 146 L250 154 L232 152 Z M292 140 L268 146 L270 154 L288 152 Z" fill="#3D3496"/>
+<path class="zh-brow zh-brow-l zh-fb" d="M222 132 L254 140" stroke="#0E0C2B" stroke-width="5.5" stroke-linecap="round"/>
+<path class="zh-brow zh-brow-r zh-fb" d="M298 132 L266 140" stroke="#0E0C2B" stroke-width="5.5" stroke-linecap="round"/>
+<path class="zh-m m-calm" d="M244 172 L260 176 L276 172" fill="none" stroke="#0E0C2B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="zh-m m-rage"><path d="M242 170 L278 170 L270 180 L250 180 Z" fill="#14123B" class="ol2"/><path d="M248 170 L251 176 L254 170 M266 170 L269 176 L272 170" fill="#F4F2FF"/></g>
+<g class="zh-m m-roar m-sp"><path d="M238 166 L282 166 L272 190 L248 190 Z" fill="#14123B" class="ol2"/><path d="M250 186 L270 186 L264 178 L256 178 Z" fill="#FFC83D"/><path d="M244 166 L247 174 L250 166 M270 166 L273 174 L276 166" fill="#F4F2FF"/></g>
+<path class="zh-m m-smirk" d="M244 174 L262 176 L278 168" fill="none" stroke="#0E0C2B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="zh-m m-ouch" d="M244 176 L250 172 L256 176 L262 172 L268 176 L274 172" fill="none" stroke="#0E0C2B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="zh-finalpop"><g class="zh-crown">
+<circle cx="260" cy="58" r="44" fill="url(#jz-coreG)"/>
+<path d="M222 72 L228 38 L244 58 L260 26 L276 58 L292 38 L298 72 Z" fill="#FFC83D" stroke="#0E0C2B" stroke-width="3" stroke-linejoin="round"/>
+<path d="M230 66 L234 50 L246 64 L260 40 L274 64 L286 50 L290 66 Z" fill="#FFF1B0"/>
+<circle cx="260" cy="62" r="5" fill="#FF6B6B" class="ol2"/>
+</g></g>
+</g></g>
+</g></g></g></g>
+
+<g class="zh-spirit"><g class="zh-spfloat">
+<circle class="zh-spglow" cx="260" cy="260" r="190" fill="url(#jz-goldG)" style="transform-box:fill-box;transform-origin:50% 50%"/>
+<g class="zs-wingwrap"><g class="zs-wing"><path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="#DDEBFF" class="ol"/>
+<path d="M214 226 L150 150 L60 60 L120 170 Z" fill="#F4F9FF"/>
+<path d="M214 226 L90 180 L52 224 L112 240 Z M214 226 L80 292 L150 280 Z" fill="#BFD6F5"/>
+<path d="M214 226 L76 120 M214 226 L90 180 M214 226 L112 240 M214 226 L150 280 M214 226 L200 300" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="none" class="ol"/></g></g>
+<g transform="translate(520 0) scale(-1 1)"><g class="zs-wingwrap"><g class="zs-wing"><path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="#DDEBFF" class="ol"/>
+<path d="M214 226 L150 150 L60 60 L120 170 Z" fill="#F4F9FF"/>
+<path d="M214 226 L90 180 L52 224 L112 240 Z M214 226 L80 292 L150 280 Z" fill="#BFD6F5"/>
+<path d="M214 226 L76 120 M214 226 L90 180 M214 226 L112 240 M214 226 L150 280 M214 226 L200 300" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M214 226 L150 150 L60 60 L76 120 L40 150 L90 180 L52 224 L112 240 L80 292 L150 280 L140 330 L200 300 Z" fill="none" class="ol"/></g></g></g>
+<g class="zs-tail1"><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#0E0C2B" stroke-width="27" stroke-linecap="round"/><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#DDEBFF" stroke-width="20" stroke-linecap="round"/><path d="M300 380 C340 404 390 412 420 396" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 8"/><g class="zs-tail2"><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#0E0C2B" stroke-width="27" stroke-linecap="butt"/><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#DDEBFF" stroke-width="20" stroke-linecap="butt"/><path d="M420 396 C452 380 464 340 446 304" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 8"/><path d="M434 312 L448 270 L460 312 Z" fill="#FFFFFF" class="ol"/><path d="M462 352 L484 344 L466 366 Z M450 386 L470 394 L446 400 Z" fill="#FFFFFF" class="ol2"/></g></g>
+<path d="M176 330 L214 316 L232 380 L200 404 L160 394 L156 350 Z" fill="#DDEBFF" class="ol"/>
+<path d="M176 330 L214 316 L204 360 L160 360 Z" fill="#F4F9FF"/>
+<path d="M156 404 L162 416 L170 404 M172 404 L178 418 L186 404 M188 404 L194 416 L200 404" fill="#FFF1C4" class="ol2"/>
+<path d="M210 322 L240 322 L242 398 L208 398 Z" fill="#F4F9FF" class="ol"/>
+<path d="M226 322 L226 398" stroke="#FFFFFF" stroke-width="2.4"/>
+<path d="M208 398 L212 412 L218 398 M220 398 L225 414 L230 398 M232 398 L237 412 L242 398" fill="#FFF1C4" class="ol2"/><g transform="translate(520 0) scale(-1 1)"><path d="M176 330 L214 316 L232 380 L200 404 L160 394 L156 350 Z" fill="#DDEBFF" class="ol"/>
+<path d="M176 330 L214 316 L204 360 L160 360 Z" fill="#BFD6F5"/>
+<path d="M156 404 L162 416 L170 404 M172 404 L178 418 L186 404 M188 404 L194 416 L200 404" fill="#FFF1C4" class="ol2"/>
+<path d="M210 322 L240 322 L242 398 L208 398 Z" fill="#F4F9FF" class="ol"/>
+<path d="M226 322 L226 398" stroke="#FFFFFF" stroke-width="2.4"/>
+<path d="M208 398 L212 412 L218 398 M220 398 L225 414 L230 398 M232 398 L237 412 L242 398" fill="#FFF1C4" class="ol2"/></g>
+<path d="M216 214 L304 214 L334 296 L316 392 L204 392 L186 296 Z" fill="#DDEBFF" class="ol"/>
+<path d="M216 214 L186 296 L204 392 L232 392 L226 300 Z" fill="#F4F9FF"/>
+<path d="M304 214 L334 296 L316 392 L292 392 L296 300 Z" fill="#BFD6F5"/>
+<path d="M228 250 L260 262 L292 250 M224 290 L260 304 L296 290 M224 332 L260 346 L296 332" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round"/>
+<path d="M216 214 L304 214 L334 296 L316 392 L204 392 L186 296 Z" fill="none" class="ol"/>
+<path d="M324 286 L330 300 L316 380" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity="0"/>
+<path d="M236 220 L284 220 L278 160 L242 160 Z" fill="#F4F9FF" class="ol"/>
+<path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFC83D" stroke-width="14" stroke-opacity=".5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M262 388 L254 360 L266 334 L252 304 L268 276 L256 246 L266 216 L258 190" fill="none" stroke="#FFF6D6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="260" cy="300" r="48" fill="url(#jz-coreG)"/>
+<g transform="translate(260 196) scale(1.14) translate(-260 -196)"><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L194 50 L206 66 L218 88 L232 112 Z" fill="#E9F2FF" class="ol2"/><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L204 54 L224 82 Z" fill="#FFFFFF"/><g transform="translate(520 0) scale(-1 1)"><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L194 50 L206 66 L218 88 L232 112 Z" fill="#E9F2FF" class="ol2"/><path d="M248 106 L234 76 L218 56 L200 42 L182 36 L204 54 L224 82 Z" fill="#FFFFFF"/></g>
+<path d="M216 148 L194 160 L218 164 Z M304 148 L326 160 L302 164 Z" fill="#FFFFFF" class="ol2"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 L242 186 L222 166 L214 140 L228 108 Z" fill="#F4F9FF" class="ol"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 Z" fill="#DDEBFF"/>
+<path d="M260 92 L228 108 L214 140 L240 128 Z" fill="#FFFFFF" opacity=".5"/>
+<path d="M260 96 L260 170" stroke="#FFFFFF" stroke-width="2.6"/>
+<path d="M260 92 L292 108 L306 140 L298 166 L278 186 L260 190 L242 186 L222 166 L214 140 L228 108 Z" fill="none" class="ol"/>
+<path d="M252 162 L256 158 M268 162 L264 158" stroke="#0E0C2B" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M230 148 Q240 140 250 148 M270 148 Q280 140 290 148 M248 172 Q260 178 272 172" fill="none" stroke="#0E0C2B" stroke-width="3" stroke-linecap="round"/></g>
+<g class="zh-sparks" fill="#FFF1C4" stroke="#E0A520" stroke-width="1.6" stroke-linejoin="round">
+<path d="M184 210 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M336 200 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M190 312 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><path d="M332 318 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z"/><path d="M226 168 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/>
+</g>
+</g></g>
+
+<g class="zh-fx">
+<g class="zh-dust" fill="#C4A8FF" fill-opacity=".7"><ellipse cx="150" cy="420" rx="34" ry="10"/><ellipse cx="370" cy="420" rx="34" ry="10"/><ellipse cx="100" cy="410" rx="18" ry="7"/><ellipse cx="420" cy="410" rx="18" ry="7"/></g>
+<g class="zh-shock"><ellipse cx="260" cy="420" rx="120" ry="16" fill="none" stroke="#C4A8FF" stroke-width="5"/></g>
+<g class="zh-shards" fill="#6E5CC8" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"><path d="M230 236 L240 256 L222 260 Z" style="--dx:-160px;--dy:40px"/><path d="M290 236 L300 256 L282 260 Z" style="--dx:160px;--dy:40px"/><path d="M250 286 L260 306 L242 310 Z" style="--dx:-90px;--dy:140px"/><path d="M270 286 L280 306 L262 310 Z" style="--dx:90px;--dy:140px"/><path d="M240 266 L250 286 L232 290 Z" style="--dx:-190px;--dy:-40px"/><path d="M280 266 L290 286 L272 290 Z" style="--dx:190px;--dy:-40px"/></g>
+<g class="zh-impact"><path d="M260 300 L268 322 L290 316 L274 332 L290 348 L268 342 L260 364 L252 342 L230 348 L246 332 L230 316 L252 322 Z" fill="#FFF6D6" stroke="#C4A8FF" stroke-width="3" stroke-linejoin="round"/></g>
+<g class="zh-charge"><circle cx="260" cy="300" r="60" fill="url(#jz-coreG)"/></g>
+<g class="zh-beam"><path d="M238 300 L282 300 L400 470 L120 470 Z" fill="url(#jz-beamG)"/><path d="M252 300 L268 300 L312 470 L208 470 Z" fill="#FFFFFF" fill-opacity=".8"/></g>
+<g class="zh-hitstars" fill="#F4F2FF" stroke="#2EE6D6" stroke-width="2" stroke-linejoin="round"><path d="M340 120 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M176 132 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M312 82 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/></g>
+<g class="zh-ragering"><circle cx="260" cy="240" r="70" fill="none" stroke="#FF6B6B" stroke-width="6"/><circle cx="260" cy="240" r="54" fill="none" stroke="#FFC83D" stroke-width="3"/></g>
+<g class="zh-light"><circle cx="260" cy="240" r="120" fill="url(#jz-goldG)"/><g class="zh-rays" stroke="#FFC83D" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M260 100 V140 M260 340 V380 M120 240 H160 M360 240 H400 M161 141 L189 169 M331 311 L359 339 M359 141 L331 169 M189 311 L161 339"/></g></g>
+</g>
+</g>
+</g>
+</svg>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="520" height="460">
+<title>Eclipsa — Estallido · furia</title>
+<style>
+.ec{--it:1;--ec-eye:#F4F2FF}
+.ec *{transform-box:view-box}
+.ec .ol{stroke:#0E0C2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.ec .ol2{stroke:#0E0C2B;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ec-body,.ec-size,.ec-float{transform-origin:260px 250px}
+.ec-spirit,.ec-spfloat{transform-origin:260px 250px}
+.ec-fb,.ec-ragepop,.ec-fx g,.ec-fx path,.ec-fx circle,.ec-fx ellipse,.ec-sparks path{transform-box:fill-box;transform-origin:50% 50%}
+.ec-eye{fill:var(--ec-eye)}
+.ec-eyeglow{stroke:var(--ec-eye)}
+.ec-rageonly,.ec-ragepop,.ec-finalonly,.ec-spirit,.ec-fx&gt;g,.ec-m,.ec-squint,.ec-lid{opacity:0}
+.ec .m-calm{opacity:1}
+.ec[data-phase="rage"],.ec[data-phase="final"]{--ec-eye:#FF5A5A}
+.ec[data-phase="rage"] .ec-rageonly,.ec[data-phase="rage"] .ec-ragepop,.ec[data-phase="final"] .ec-rageonly,.ec[data-phase="final"] .ec-ragepop,.ec[data-phase="final"] .ec-finalonly{opacity:1}
+.ec[data-phase="rage"] .ec-calmonly,.ec[data-phase="final"] .ec-calmonly{opacity:0}
+.ec[data-phase="rage"] .ec-size,.ec[data-phase="final"] .ec-size{scale:1.06}
+.ec[data-phase="rage"] .m-calm,.ec[data-phase="final"] .m-calm{opacity:0}
+.ec[data-phase="rage"] .m-rage,.ec[data-phase="final"] .m-rage{opacity:1}
+.ec[data-phase="pure"] .ec-body,.ec[data-phase="pure"] .ec-calmonly,.ec[data-phase="pure"] .ec-amb{opacity:0}
+.ec[data-phase="pure"] .ec-spirit{opacity:1}
+.ec[data-phase="pure"] .ec-shadow{transform:scale(.5);opacity:.7}
+.ec:not([data-act="idle"]) .ec-m{opacity:0}
+.ec[data-act="appear"] .m-roar,.ec[data-act="attack"] .m-roar,.ec[data-act="rage"] .m-roar,.ec[data-act="special"] .m-sp,.ec[data-act="taunt"] .m-smirk{opacity:1}
+.ec[data-act="hit"] .m-ouch,.ec[data-act="defeat"] .m-ouch,.ec[data-act="hit"] .ec-squint,.ec[data-act="defeat"] .ec-squint{opacity:1}
+.ec[data-act="hit"] .ec-eyes-open,.ec[data-act="defeat"] .ec-eyes-open{opacity:0}
+.ec[data-act="taunt"] .ec-lid{opacity:1}
+.ec[data-act="idle"] .ec-float{animation:ec_float 3.6s ease-in-out infinite}
+.ec[data-act="idle"] .ec-eyeset{animation:ec_blink 3.6s linear infinite}
+.ec[data-phase="pure"] .ec-spfloat{animation:ec_float 3.6s ease-in-out infinite}
+.ec[data-phase="pure"] .ec-spglow{animation:ec_pulse 3.6s ease-in-out infinite}
+.ec[data-phase="pure"] .ec-sparks path{animation:ec_tw 1.7s ease-in-out infinite}
+.ec[data-phase="pure"] .ec-sparks path:nth-child(2n){animation-delay:-.85s}
+@keyframes ec_float{0%,100%{transform:none}50%{transform:translateY(-8px)}}
+@keyframes ec_blink{0%,86%,94%,100%{transform:none}90%{transform:scaleY(.1)}}
+@keyframes ec_pulse{0%,100%{transform:none;opacity:.8}50%{transform:scale(1.08);opacity:1}}
+@keyframes ec_tw{0%,100%{opacity:.3;transform:scale(.5)}50%{opacity:1;transform:scale(1.15)}}
+.ec[data-act="hit"] .ec-body{animation:ec_hit_body 0.6s var(--it) ease-out both}
+.ec[data-act="hit"] .ec-hitstars{animation:ec_imp2 0.6s var(--it) ease-out both}
+@keyframes ec_hit_body{0%,100%{transform:none;filter:none}12%{transform:translateX(12px) rotate(3deg);filter:brightness(2.2) saturate(.3)}35%{transform:translateX(16px) rotate(4deg);filter:none}70%{transform:translateX(-3px) rotate(-1deg)}}
+@keyframes ec_imp2{0%{opacity:0;transform:scale(.3)}20%{opacity:1;transform:scale(1.2)}70%,100%{opacity:0;transform:none}}
+@keyframes ec_imp{0%,40%{opacity:0;transform:scale(.3)}48%{opacity:1;transform:scale(1.2)}74%,100%{opacity:0;transform:none}}
+.ec[data-act="rage"] .ec-body{animation:ec_rg_body 1.8s var(--it) both}
+.ec[data-act="rage"] .ec-rageonly{animation:ec_rg_fade 1.8s var(--it) ease-out both}
+.ec[data-act="rage"] .ec-ragepop{animation:ec_rg_pop 1.8s var(--it) ease-out both}
+.ec[data-act="rage"] .ec-calmonly{animation:ec_rg_off 1.8s var(--it) both}
+.ec[data-act="rage"] .ec-eye{animation:ec_rg_eye 1.8s var(--it) both}
+.ec[data-act="rage"] .ec-eyeglow{animation:ec_rg_glow 1.8s var(--it) both}
+.ec[data-act="rage"] .ec-ragering{animation:ec_rg_ring 1.8s var(--it) ease-out both}
+@keyframes ec_rg_body{0%,40%{transform:scale(0.943)}10%,20%,30%{transform:translateX(-4px) scale(0.943)}15%,25%,35%{transform:translateX(4px) scale(0.943)}55%{transform:translateY(-8px) scale(1.06)}70%{transform:scale(.99)}85%{transform:scale(1.01)}100%{transform:none}}
+@keyframes ec_rg_fade{0%,40%{opacity:0}58%,100%{opacity:1}}
+@keyframes ec_rg_off{0%,40%{opacity:1}58%,100%{opacity:0}}
+@keyframes ec_rg_pop{0%,44%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:none}}
+@keyframes ec_rg_eye{0%,30%{fill:#F4F2FF}40%{fill:#FFFFFF}55%,100%{fill:#FF5A5A}}
+@keyframes ec_rg_glow{0%,30%{stroke:#F4F2FF}40%{stroke:#FFFFFF}55%,100%{stroke:#FF5A5A}}
+@keyframes ec_rg_ring{0%,40%{opacity:0;transform:scale(.3)}50%{opacity:1}90%,100%{opacity:0;transform:scale(3)}}
+.ec[data-act="defeat"] .ec-body{animation:ec_df_body 2.8s var(--it) both}
+.ec[data-act="defeat"] .ec-amb,.ec[data-act="defeat"] .ec-calmonly{animation:ec_df_off 2.8s var(--it) both}
+.ec[data-act="defeat"] .ec-light{animation:ec_df_light 2.8s var(--it) ease-out both}
+.ec[data-act="defeat"] .ec-light .ec-rays{animation:ec_spin 2.8s var(--it) linear both}
+.ec[data-act="defeat"] .ec-spirit{animation:ec_df_spirit 2.8s var(--it) both}
+.ec[data-act="defeat"] .ec-sparks path{animation:ec_df_tw 2.8s var(--it) both}
+.ec[data-act="defeat"] .ec-shadow{animation:ec_df_sh 2.8s var(--it) both}
+.ec:not([data-phase="calm"])[data-act="defeat"] .ec-rageonly,.ec:not([data-phase="calm"])[data-act="defeat"] .ec-ragepop,.ec[data-phase="final"][data-act="defeat"] .ec-finalonly{animation:ec_df_off 2.8s var(--it) both}
+@keyframes ec_df_body{0%{transform:none;opacity:1;filter:none}6%{transform:rotate(-3deg)}12%{transform:rotate(3deg)}18%{transform:rotate(-2deg)}30%{transform:scale(1.03,.95);opacity:1;filter:sepia(1) saturate(2.6) brightness(1.4)}46%,100%{transform:translateY(-10px) scale(.55);opacity:0;filter:sepia(1) saturate(2.6) brightness(1.8)}}
+@keyframes ec_df_off{0%{opacity:1}24%,100%{opacity:0}}
+@keyframes ec_df_light{0%,24%{opacity:0;transform:scale(.4)}44%{opacity:1;transform:scale(1.1)}66%,100%{opacity:0;transform:scale(1.4)}}
+@keyframes ec_spin{to{transform:rotate(60deg)}}
+@keyframes ec_df_spirit{0%,48%{opacity:0;transform:scale(.2)}66%{opacity:1;transform:scale(1.12)}78%{transform:scale(.96)}88%,100%{opacity:1;transform:none}}
+@keyframes ec_df_tw{0%,52%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.2)}85%,100%{opacity:.8;transform:none}}
+@keyframes ec_df_sh{0%,26%{transform:none;opacity:1}46%{transform:scale(.6);opacity:.4}100%{transform:scale(.5);opacity:.7}}
+
+.ec-fig{transform-origin:260px 330px}
+.ec-headwrap,.ec-head{transform-origin:260px 220px}
+.ec-eyeset{transform-origin:260px 188px}
+.ec-arm{transform-origin:236px 238px}
+.ec-fore{transform-origin:196px 260px}
+.ec-shadow{transform-origin:260px 420px}
+.ec-shard,.ec-qm,.ec-echo,.ec-shine{transform-box:fill-box;transform-origin:50% 50%}
+.ec .ec-shard{animation:ec_shard 5s ease-in-out infinite}
+.ec .ec-shard.s1{animation-delay:-1.6s}.ec .ec-shard.s2{animation-delay:-3.2s}
+.ec .ec-shine{animation:ec_shine 3.6s ease-in-out infinite}
+.ec .ec-glow{animation:ec_glow 3.6s ease-in-out infinite}
+.ec[data-phase="rage"] .ec-glow{stroke:#FF6B6B}
+@keyframes ec_shard{0%,100%{transform:none}50%{transform:translateY(-10px) rotate(30deg)}}
+@keyframes ec_shine{0%,40%{transform:translateX(-120px);opacity:0}50%{opacity:1}70%,100%{transform:translateX(120px);opacity:0}}
+@keyframes ec_glow{0%,100%{stroke-opacity:.22}50%{stroke-opacity:.45}}
+/* reposo */
+.ec[data-act="idle"] .ec-fig{animation:ec_lean 3.6s ease-in-out infinite}
+.ec[data-act="idle"] .ec-head{animation:ec_tilt 3.6s ease-in-out infinite}
+.ec[data-act="idle"] .ec-shadow{animation:ec_sh 3.6s ease-in-out infinite}
+.ec[data-act="idle"] .ec-fore{animation:ec_tap 3.6s ease-in-out infinite}
+@keyframes ec_lean{0%,100%{transform:none}50%{transform:translateY(-4px) scale(1.03)}}
+@keyframes ec_tilt{0%,100%{transform:none}30%{transform:rotate(-6deg)}70%{transform:rotate(5deg)}}
+@keyframes ec_sh{0%,100%{transform:none}50%{transform:scale(.86);opacity:.75}}
+@keyframes ec_tap{0%,70%,100%{transform:none}76%,88%{transform:rotate(-12deg)}82%{transform:none}}
+/* aparecer: los fragmentos forman el espejo */
+.ec[data-act="appear"] .ec-body{animation:ec_app_body 1.2s var(--it) ease-out both}
+.ec[data-act="appear"] .ec-fig{animation:ec_app_fig 1.2s var(--it) ease-out both}
+.ec[data-act="appear"] .ec-shadow{animation:ec_app_sh 1.2s var(--it) both}
+.ec[data-act="appear"] .ec-gather{opacity:1}
+.ec[data-act="appear"] .ec-gather path{animation:ec_gather 1.2s var(--it) ease-in both}
+.ec[data-act="appear"] .ec-flash{animation:ec_flash 1.2s var(--it) ease-out both}
+@keyframes ec_app_body{0%,40%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1.08)}64%{transform:scale(.97)}100%{opacity:1;transform:none}}
+@keyframes ec_app_fig{0%,55%{opacity:0;transform:translateY(60px) scale(.8)}80%{opacity:1;transform:translateY(-6px)}100%{opacity:1;transform:none}}
+@keyframes ec_app_sh{0%,40%{transform:scale(.2);opacity:0}60%,100%{transform:none;opacity:1}}
+@keyframes ec_gather{0%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(180deg)}15%{opacity:1}45%{opacity:1;transform:none}50%,100%{opacity:0;transform:none}}
+@keyframes ec_flash{0%,44%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.5)}}
+/* provocar: la duda en el cristal */
+.ec[data-act="taunt"] .ec-fig{animation:ec_tau_fig 1.8s var(--it) ease-in-out both}
+.ec[data-act="taunt"] .ec-head{animation:ec_tau_head 1.8s var(--it) ease-in-out both}
+.ec[data-act="taunt"] .ec-arm-r .ec-arm{animation:ec_tau_arm 1.8s var(--it) ease-in-out both}
+.ec[data-act="taunt"] .ec-arm-r .ec-fore{animation:ec_tau_fore 1.8s var(--it) ease-in-out both}
+.ec[data-act="taunt"] .ec-bigq{animation:ec_tau_q 1.8s var(--it) ease-out both}
+@keyframes ec_tau_fig{0%,100%{transform:none}15%,85%{transform:translateY(-6px) scale(1.08)}}
+@keyframes ec_tau_head{0%,100%{transform:none}15%,85%{transform:rotate(-12deg)}}
+@keyframes ec_tau_arm{0%,100%{transform:none}15%,85%{transform:rotate(40deg)}}
+@keyframes ec_tau_fore{0%,100%{transform:none}15%,85%{transform:rotate(50deg)}}
+@keyframes ec_tau_q{0%,14%{opacity:0;transform:scale(.3)}26%{opacity:1;transform:scale(1.15)}34%,80%{opacity:1;transform:none}92%,100%{opacity:0;transform:scale(1.3)}}
+/* atacar: estallido de cristales */
+.ec[data-act="attack"] .ec-fig{animation:ec_atk_fig 1.2s var(--it) ease-in-out both}
+.ec[data-act="attack"] .ec-arm{animation:ec_atk_arm 1.2s var(--it) ease-in-out both}
+.ec[data-act="attack"] .ec-fore{animation:ec_atk_fore 1.2s var(--it) ease-in-out both}
+.ec[data-act="attack"] .ec-flashg{animation:ec_atk_flash 1.2s var(--it) ease-out both}
+.ec[data-act="attack"] .ec-burst{opacity:1}
+.ec[data-act="attack"] .ec-burst path{animation:ec_burst 1.2s var(--it) ease-out both}
+.ec[data-act="attack"] .ec-impact{animation:ec_imp 1.2s var(--it) ease-out both}
+@keyframes ec_atk_fig{0%,100%{transform:none}25%{transform:translateY(10px) scale(.92)}40%,70%{transform:translateY(-4px) scale(1.18)}}
+@keyframes ec_atk_arm{0%,100%{transform:none}25%{transform:rotate(35deg)}40%,70%{transform:rotate(-24deg)}}
+@keyframes ec_atk_fore{0%,100%{transform:none}25%{transform:rotate(30deg)}40%,70%{transform:rotate(-10deg)}}
+@keyframes ec_atk_flash{0%,36%,100%{opacity:0}42%{opacity:.9}60%{opacity:0}}
+@keyframes ec_burst{0%,40%{opacity:0;transform:none}46%{opacity:1}90%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(1.6)}}
+/* especial: eco de dudas */
+.ec[data-act="special"] .ec-fig{animation:ec_sp_fig 2.4s var(--it) ease-in-out both}
+.ec[data-act="special"] .ec-arm{animation:ec_sp_arm 2.4s var(--it) ease-in-out both}
+.ec[data-act="special"] .ec-fore{animation:ec_sp_fore 2.4s var(--it) ease-in-out both}
+.ec[data-act="special"] .ec-echoes{opacity:1}
+.ec[data-act="special"] .ec-echo{animation:ec_echo 2.4s var(--it) ease-out both}
+.ec[data-act="special"] .ec-echo.e2{animation-name:ec_echo2}
+.ec[data-act="special"] .ec-echo.e3{animation-name:ec_echo3}
+.ec[data-act="special"] .ec-qs{opacity:1}
+.ec[data-act="special"] .ec-qm{animation:ec_qm 2.4s var(--it) ease-out both}
+@keyframes ec_sp_fig{0%,100%{transform:none}16%,80%{transform:translateY(-8px) scale(1.06)}}
+@keyframes ec_sp_arm{0%,100%{transform:none}16%,80%{transform:rotate(60deg)}}
+@keyframes ec_sp_fore{0%,100%{transform:none}16%,80%{transform:rotate(30deg)}}
+@keyframes ec_echo{0%,24%{opacity:0;transform:none}30%{opacity:.9}62%,100%{opacity:0;transform:scale(2.3)}}
+@keyframes ec_echo2{0%,36%{opacity:0;transform:none}42%{opacity:.9}74%,100%{opacity:0;transform:scale(2.3)}}
+@keyframes ec_echo3{0%,48%{opacity:0;transform:none}54%{opacity:.9}86%,100%{opacity:0;transform:scale(2.3)}}
+@keyframes ec_qm{0%,30%{opacity:0;transform:none}40%{opacity:1}90%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.6)}}
+/* golpe / furia / derrota */
+.ec[data-act="hit"] .ec-head{animation:ec_hit_head .6s var(--it) ease-out both}
+.ec[data-act="hit"] .ec-fig{animation:ec_hit_fig .6s var(--it) ease-out both}
+@keyframes ec_hit_head{0%,100%{transform:none}20%,50%{transform:rotate(10deg)}}
+@keyframes ec_hit_fig{0%,100%{transform:none}20%,50%{transform:translateY(16px) scale(.92)}}
+.ec[data-act="rage"] .ec-fig{animation:ec_rg_fig 1.8s var(--it) ease-in-out both}
+@keyframes ec_rg_fig{0%,40%,100%{transform:none}50%{transform:translateY(-8px) scale(1.1)}62%{transform:none}}
+</style>
+<defs>
+<radialGradient id="je-goldG"><stop offset="0" stop-color="#FFF6D6" stop-opacity=".95"/><stop offset=".45" stop-color="#FFC83D" stop-opacity=".5"/><stop offset="1" stop-color="#FFC83D" stop-opacity="0"/></radialGradient>
+<radialGradient id="je-rageG"><stop offset="0" stop-color="#FF6B6B" stop-opacity="0"/><stop offset=".6" stop-color="#FF6B6B" stop-opacity=".18"/><stop offset="1" stop-color="#FF6B6B" stop-opacity="0"/></radialGradient>
+<clipPath id="je-cGlass"><path d="M260 74 L284 94 L326 104 L338 144 L338 334 L326 354 L194 354 L182 334 L182 144 L194 104 L236 94 Z"/></clipPath>
+<linearGradient id="je-glassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1F2FA"/><stop offset="1" stop-color="#D6D0EE"/></linearGradient>
+<linearGradient id="je-torsoG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8C90A6"/><stop offset=".55" stop-color="#9DA1B6"/><stop offset="1" stop-color="#D6D0EE" stop-opacity="0"/></linearGradient>
+</defs>
+
+<g class="ec" data-phase="rage" data-act="attack" style="--it:infinite">
+<g transform="translate(260 248) scale(.96) translate(-260 -236)">
+<ellipse class="ec-shadow" cx="260" cy="420" rx="100" ry="10" fill="#000" fill-opacity=".24"/>
+<g class="ec-rageonly"><circle cx="260" cy="230" r="215" fill="url(#je-rageG)"/></g>
+<g class="ec-amb"><g transform="translate(108 120)"><path class="ec-shard s0" d="M0 -14 L10 6 L-8 10 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g><g transform="translate(420 110)"><path class="ec-shard s1" d="M0 -12 L12 4 L-6 12 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g><g transform="translate(96 300)"><path class="ec-shard s2" d="M0 -10 L9 8 L-9 6 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g><g transform="translate(430 300)"><path class="ec-shard s0" d="M0 -14 L8 8 L-10 4 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g><g transform="translate(150 410)"><path class="ec-shard s1" d="M0 -9 L8 6 L-7 6 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g><g transform="translate(380 412)"><path class="ec-shard s2" d="M0 -10 L9 7 L-8 5 Z" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/></g></g>
+<g class="ec-body"><g class="ec-size"><g class="ec-float">
+<path class="ec-glow" d="M260 54 L290 78 L340 90 L356 140 L356 340 L340 370 L180 370 L164 340 L164 140 L180 90 L230 78 Z" fill="none" stroke="#8A5CFF" stroke-width="18" stroke-opacity=".3" stroke-linejoin="round"/>
+<path d="M260 54 L290 78 L340 90 L356 140 L356 340 L340 370 L180 370 L164 340 L164 140 L180 90 L230 78 Z" fill="#A9B0C4" class="ol"/>
+<path d="M260 54 L230 78 L180 90 L164 140 L164 340 L180 370 L194 354 L182 334 L182 144 L194 104 L236 94 L260 74 Z" fill="#D5DAE6"/>
+<path d="M260 54 L290 78 L340 90 L356 140 L356 340 L340 370 L326 354 L338 334 L338 144 L326 104 L284 94 L260 74 Z" fill="#7A8199"/>
+<path d="M260 54 L290 78 L340 90 L356 140 L356 340 L340 370 L180 370 L164 340 L164 140 L180 90 L230 78 Z" fill="none" class="ol"/>
+<path d="M352 150 L352 330" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<path d="M260 32 L272 50 L260 68 L248 50 Z" fill="#8A5CFF" class="ol2"/><path d="M260 40 L266 50 L260 60 L254 50 Z" fill="#C4A8FF"/>
+<path d="M164 230 L154 240 L164 250 Z M356 230 L366 240 L356 250 Z" fill="#8A5CFF" class="ol2"/>
+<path d="M196 370 L192 386 L216 386 L212 370 Z M308 370 L304 386 L328 386 L324 370 Z" fill="#7A8199" class="ol2"/>
+<path d="M260 74 L284 94 L326 104 L338 144 L338 334 L326 354 L194 354 L182 334 L182 144 L194 104 L236 94 Z" fill="url(#je-glassG)" class="ol2"/>
+<g clip-path="url(#je-cGlass)">
+<g class="ec-shine"><path d="M200 340 L280 80 L300 80 L220 340 Z M232 340 L312 80 L320 80 L240 340 Z" fill="#FFFFFF" opacity=".7"/></g>
+<g class="ec-rageonly"><g transform=""><g transform="translate(-46 -36)" fill-opacity=".85"><path d="M232 330 C232 280 240 262 260 262 C280 262 288 280 288 330 Z" fill="#6E7290"/><circle cx="260" cy="236" r="24" fill="#6E7290"/><path d="M266 232 Q272 240 280 232 Q272 237 266 232 Z" fill="#FF5A5A"/></g></g><g transform="translate(612 0) scale(-1 1)"><g transform="translate(46 -36)" fill-opacity=".85"><path d="M232 330 C232 280 240 262 260 262 C280 262 288 280 288 330 Z" fill="#6E7290"/><circle cx="260" cy="236" r="24" fill="#6E7290"/><path d="M266 232 Q272 240 280 232 Q272 237 266 232 Z" fill="#FF5A5A"/></g></g>
+<path d="M300 104 L286 150 L304 176 L280 214 M286 150 L256 160 M304 176 L330 190 M226 260 L250 290 L234 330 M250 290 L280 300" fill="none" stroke="#0E0C2B" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M300 104 L286 150 L304 176 L280 214 M286 150 L256 160 M304 176 L330 190 M226 260 L250 290 L234 330 M250 290 L280 300" fill="none" stroke="#FF6B6B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<path class="ec-flashg" d="M260 74 L284 94 L326 104 L338 144 L338 334 L326 354 L194 354 L182 334 L182 144 L194 104 L236 94 Z" fill="#FFFFFF" style="opacity:0"/>
+</g>
+<!-- figura -->
+<g class="ec-fig">
+<path d="M222 246 C228 230 244 222 260 222 C276 222 292 230 298 246 L304 330 C292 344 228 344 216 330 Z" fill="url(#je-torsoG)"/>
+<path d="M220 276 L222 246 C228 230 244 222 260 222 C276 222 292 230 298 246 L300 276" fill="none" stroke="#0E0C2B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="ec-arm-l"><g class="ec-arm"><path d="M236 238 Q210 248 196 260" fill="none" stroke="#0E0C2B" stroke-width="13" stroke-linecap="round"/><path d="M236 238 Q210 248 196 260" fill="none" stroke="#8C90A6" stroke-width="8" stroke-linecap="round"/>
+<g class="ec-fore"><path d="M196 260 Q182 256 172 244" fill="none" stroke="#0E0C2B" stroke-width="12" stroke-linecap="round"/><path d="M196 260 Q182 256 172 244" fill="none" stroke="#8C90A6" stroke-width="7" stroke-linecap="round"/>
+<path d="M172 244 L158 230 M172 244 L164 224 M172 244 L174 222 M172 244 L182 230" fill="none" stroke="#0E0C2B" stroke-width="7" stroke-linecap="round"/><path d="M172 244 L158 230 M172 244 L164 224 M172 244 L174 222 M172 244 L182 230" fill="none" stroke="#A3A7BC" stroke-width="3.4" stroke-linecap="round"/>
+<circle cx="172" cy="244" r="7" fill="#A3A7BC" class="ol2"/></g></g></g>
+<g class="ec-arm-r" transform="translate(520 0) scale(-1 1)"><g class="ec-arm"><path d="M236 238 Q210 248 196 260" fill="none" stroke="#0E0C2B" stroke-width="13" stroke-linecap="round"/><path d="M236 238 Q210 248 196 260" fill="none" stroke="#8C90A6" stroke-width="8" stroke-linecap="round"/>
+<g class="ec-fore"><path d="M196 260 Q182 256 172 244" fill="none" stroke="#0E0C2B" stroke-width="12" stroke-linecap="round"/><path d="M196 260 Q182 256 172 244" fill="none" stroke="#8C90A6" stroke-width="7" stroke-linecap="round"/>
+<path d="M172 244 L158 230 M172 244 L164 224 M172 244 L174 222 M172 244 L182 230" fill="none" stroke="#0E0C2B" stroke-width="7" stroke-linecap="round"/><path d="M172 244 L158 230 M172 244 L164 224 M172 244 L174 222 M172 244 L182 230" fill="none" stroke="#A3A7BC" stroke-width="3.4" stroke-linecap="round"/>
+<circle cx="172" cy="244" r="7" fill="#A3A7BC" class="ol2"/></g></g></g>
+<g class="ec-headwrap"><g class="ec-head">
+<path d="M260 150 C280 150 292 166 292 186 C292 206 278 222 260 222 C242 222 228 206 228 186 C228 166 240 150 260 150 Z" fill="#8C90A6" class="ol"/>
+<path d="M236 172 C240 160 250 154 260 154" fill="none" stroke="#B4B8CC" stroke-width="5" stroke-linecap="round"/>
+<path d="M286 172 C290 184 290 196 286 206" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<g class="ec-eyeset"><g class="ec-eyes-open">
+<path class="ec-eyeglow" d="M232 192 Q243 170 254 192 Q243 182 232 192 Z M266 192 Q277 170 288 192 Q277 182 266 192 Z" fill="none" stroke-width="10" stroke-opacity=".5" stroke-linejoin="round"/>
+<path class="ec-eye" d="M232 192 Q243 170 254 192 Q243 182 232 192 Z M266 192 Q277 170 288 192 Q277 182 266 192 Z" stroke="#0E0C2B" stroke-width="1.6" stroke-linejoin="round"/>
+</g>
+<path class="ec-lid" d="M234 188 Q243 184 252 188 M268 188 Q277 184 286 188" fill="none" stroke="#F4F2FF" stroke-width="3.4" stroke-linecap="round"/>
+</g>
+<path class="ec-squint" d="M238 180 L254 188 L238 196 M282 180 L266 188 L282 196" fill="none" stroke="#F4F2FF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+</g></g>
+</g>
+<g class="ec-bigq ec-fb" style="opacity:0"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(316 140) scale(2.6)" fill="none" stroke="#8A5CFF" stroke-width="2.31" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+</g></g></g>
+
+<g class="ec-spirit"><g class="ec-spfloat">
+<circle class="ec-spglow" cx="260" cy="250" r="100" fill="url(#je-goldG)" style="transform-box:fill-box;transform-origin:50% 50%"/>
+<path d="M260 186 L276 198 L298 204 L304 226 L304 300 L296 314 L224 314 L216 300 L216 226 L222 204 L244 198 Z" fill="#FFC83D" class="ol"/>
+<path d="M260 198 L272 208 L290 212 L294 228 L294 296 L288 304 L232 304 L226 296 L226 228 L230 212 L248 208 Z" fill="#FFF6D6" class="ol2"/>
+<circle cx="260" cy="246" r="13" fill="#E0A520"/><path d="M240 302 C240 274 248 264 260 264 C272 264 280 274 280 302 Z" fill="#E0A520"/>
+<path d="M254 244 Q260 250 266 244" fill="none" stroke="#FFF6D6" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M260 214 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#FFC83D" stroke="#E0A520" stroke-width="1.4"/>
+<g class="ec-sparks" fill="#FFF1C4" stroke="#E0A520" stroke-width="1.6" stroke-linejoin="round">
+<path d="M184 210 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M336 200 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M190 312 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><path d="M332 318 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4z"/><path d="M226 168 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/>
+</g>
+</g></g>
+
+<g class="ec-fx">
+<g class="ec-gather" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"><path d="M180 78 L190 96 L172 100 Z" style="--dx:-140px;--dy:-80px"/><path d="M340 78 L350 96 L332 100 Z" style="--dx:140px;--dy:-80px"/><path d="M164 238 L174 256 L156 260 Z" style="--dx:-160px;--dy:0px"/><path d="M356 238 L366 256 L348 260 Z" style="--dx:160px;--dy:0px"/><path d="M200 358 L210 376 L192 380 Z" style="--dx:-120px;--dy:90px"/><path d="M320 358 L330 376 L312 380 Z" style="--dx:120px;--dy:90px"/><path d="M260 48 L270 66 L252 70 Z" style="--dx:0px;--dy:-120px"/><path d="M260 358 L270 376 L252 380 Z" style="--dx:0px;--dy:120px"/></g>
+<g class="ec-flash"><circle cx="260" cy="220" r="120" fill="#F4F2FF" fill-opacity=".8"/></g>
+<g class="ec-burst" fill="#E6E9F5" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"><path d="M230 238 L240 256 L222 260 Z" style="--dx:-160px;--dy:40px"/><path d="M290 238 L300 256 L282 260 Z" style="--dx:160px;--dy:40px"/><path d="M250 288 L260 306 L242 310 Z" style="--dx:-90px;--dy:130px"/><path d="M270 288 L280 306 L262 310 Z" style="--dx:90px;--dy:130px"/><path d="M260 228 L270 246 L252 250 Z" style="--dx:0px;--dy:-140px"/><path d="M240 268 L250 286 L232 290 Z" style="--dx:-180px;--dy:-60px"/><path d="M280 268 L290 286 L272 290 Z" style="--dx:180px;--dy:-60px"/></g>
+<g class="ec-impact"><path d="M260 300 L268 322 L290 316 L274 332 L290 348 L268 342 L260 364 L252 342 L230 348 L246 332 L230 316 L252 322 Z" fill="#F4F2FF" stroke="#C4A8FF" stroke-width="3" stroke-linejoin="round"/></g>
+<g class="ec-echoes" fill="none" stroke="#C4A8FF" stroke-width="3"><g class="ec-echo e1"><path d="M260 150 C280 150 292 166 292 186 C292 206 278 222 260 222 C242 222 228 206 228 186 C228 166 240 150 260 150 Z"/><path d="M222 300 L222 246 C228 230 244 222 260 222 C276 222 292 230 298 246 L298 300"/></g><g class="ec-echo e2"><path d="M260 150 C280 150 292 166 292 186 C292 206 278 222 260 222 C242 222 228 206 228 186 C228 166 240 150 260 150 Z"/><path d="M222 300 L222 246 C228 230 244 222 260 222 C276 222 292 230 298 246 L298 300"/></g><g class="ec-echo e3"><path d="M260 150 C280 150 292 166 292 186 C292 206 278 222 260 222 C242 222 228 206 228 186 C228 166 240 150 260 150 Z"/><path d="M222 300 L222 246 C228 230 244 222 260 222 C276 222 292 230 298 246 L298 300"/></g></g>
+<g class="ec-qs"><g class="ec-qm" style="--dx:-130px;--dy:-60px"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(200 170) scale(1.3)" fill="none" stroke="#C4A8FF" stroke-width="3.08" stroke-linecap="round" stroke-linejoin="round"/></g></g><g class="ec-qm" style="--dx:130px;--dy:-60px"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(320 170) scale(1.3)" fill="none" stroke="#C4A8FF" stroke-width="3.08" stroke-linecap="round" stroke-linejoin="round"/></g></g><g class="ec-qm" style="--dx:-130px;--dy:60px"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(170 300) scale(1.1)" fill="none" stroke="#C4A8FF" stroke-width="3.64" stroke-linecap="round" stroke-linejoin="round"/></g></g><g class="ec-qm" style="--dx:130px;--dy:60px"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(350 300) scale(1.1)" fill="none" stroke="#C4A8FF" stroke-width="3.64" stroke-linecap="round" stroke-linejoin="round"/></g></g><g class="ec-qm" style="--dx:0px;--dy:-110px"><g class=""><path d="M-7 -6 Q-7 -13 0 -13 Q7 -13 7 -6 Q7 -1 0 1 V5 M0 11 V11.3" transform="translate(260 130) scale(1.2)" fill="none" stroke="#C4A8FF" stroke-width="3.33" stroke-linecap="round" stroke-linejoin="round"/></g></g></g>
+<g class="ec-hitstars" fill="#F4F2FF" stroke="#2EE6D6" stroke-width="2" stroke-linejoin="round"><path d="M340 120 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M176 132 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M312 82 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/></g>
+<g class="ec-ragering"><circle cx="260" cy="230" r="70" fill="none" stroke="#FF6B6B" stroke-width="6"/><circle cx="260" cy="230" r="54" fill="none" stroke="#C4A8FF" stroke-width="3"/></g>
+<g class="ec-light"><circle cx="260" cy="230" r="120" fill="url(#je-goldG)"/><g class="ec-rays" stroke="#FFC83D" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M260 90 V130 M260 330 V370 M120 230 H160 M360 230 H400 M161 131 L189 159 M331 301 L359 329 M359 131 L331 159 M189 301 L161 329"/></g></g>
+</g>
+</g>
+</g>
+</svg>

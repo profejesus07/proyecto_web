@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="580 20 290 404" role="img" class="cc" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="290" height="404"><style>.cc{--display:"Baloo 2","Trebuchet MS",sans-serif;--body:system-ui,sans-serif}
+.cc .ol{stroke: rgb(14, 12, 43); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round;}
+.cc .foehit{cursor: pointer;}
+.cc .foehit:focus-visible{outline: none;}
+.cc .foe,.cc .foe *{transform-box: fill-box;}
+.cc .foe .appear-g,.cc .foe .body-g{transform-origin: 50% 100%;}
+.cc .fx,.cc .poof,.cc .hitfx,.cc .mouth-o{opacity: 0; transition: opacity 0.15s;}
+.cc .mouth-c{transition: opacity 0.15s;}
+.cc .foe[data-act="appear"] .appear-g{animation: 0.7s cubic-bezier(0.3, 1.4, 0.5, 1) 0s 1 normal both running x_appear;}
+.cc #x-sombra .body-g{animation: 2.4s ease-in-out 0s infinite normal none running x_hover;}
+.cc #x-sombra .s-tail{transform-origin: 50% 0%; animation: 0.5s ease-in-out 0s infinite alternate none running x_flick;}
+.cc #x-sombra .s-eyes{transform-origin: 50% 50%; animation: 1.6s ease-in-out 0s infinite normal none running x_glow;}
+.cc .impact,.cc .speed,.cc .dust,.cc .dring{opacity: 0;}
+.cc .foe[data-act="appear"] .dust{animation: 0.6s ease-out 0.35s 1 normal both running x_dust;}
+.cc .wisps circle{animation: 2.2s ease-out 0s infinite normal none running x_wisp;}
+.cc .wisps circle:nth-child(2){animation-delay: 0.7s;}
+.cc .wisps circle:nth-child(3){animation-delay: 1.4s;}
+@media (prefers-reduced-motion: reduce){.cc .foe,.cc .foe *{animation: auto ease 0s 1 normal none running none !important;}}
+@keyframes x_hover { 
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes x_flick { 
+  0% { transform: skewX(-8deg); }
+  100% { transform: skewX(8deg); }
+}
+@keyframes x_glow { 
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+@keyframes x_appear { 
+  0% { transform: translateY(-80px) scale(0.7, 1.2); opacity: 0; }
+  55% { transform: translateY(0px) scale(1.2, 0.8); opacity: 1; }
+  75% { transform: translateY(-10px) scale(0.95, 1.05); }
+  100% { transform: translateY(0px) scale(1); }
+}
+@keyframes x_dust { 
+  0% { opacity: 0.9; transform: scale(0.3); }
+  100% { opacity: 0; transform: scale(1.6) translateY(-6px); }
+}
+@keyframes x_wisp { 
+  0% { opacity: 0.8; transform: translateY(0px) scale(0.6); }
+  100% { opacity: 0; transform: translateY(-30px) scale(1.4); }
+}
+@keyframes cxena0_0{0%{opacity:0;animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}27.5%{opacity:1;animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}50%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes cxena0_1{0%{transform:translateY(-80px) scale(0.7, 1.2);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}27.5%{transform:translateY(0px) scale(1.2, 0.8);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}37.5%{transform:translateY(-10px) scale(0.95, 1.05);animation-timing-function:cubic-bezier(0.3, 1.4, 0.5, 1)}50%{transform:translateY(0px) scale(1);animation-timing-function:linear}100%{transform:translateY(0px) scale(1);animation-timing-function:linear}}
+.cc [data-ai="a0"]{animation:cxena0_0 1400ms linear infinite,cxena0_1 1400ms linear infinite!important}
+@keyframes cxena1_0{0%{opacity:0.9;animation-timing-function:linear}25%{opacity:0.9;animation-timing-function:ease-out}67.857%{opacity:0;animation-timing-function:linear}100%{opacity:0;animation-timing-function:linear}}
+@keyframes cxena1_1{0%{transform:scale(0.3);animation-timing-function:linear}25%{transform:scale(0.3);animation-timing-function:ease-out}67.857%{transform:scale(1.6) translateY(-6px);animation-timing-function:linear}100%{transform:scale(1.6) translateY(-6px);animation-timing-function:linear}}
+.cc [data-ai="a1"]{animation:cxena1_0 1400ms linear infinite,cxena1_1 1400ms linear infinite!important}</style>
+<title>Sombrita · aparecer</title>
+
+
+
+
+<g class="foehit" data-k="sombra" tabindex="0" role="button" aria-label="Elegir a Sombrita" transform="translate(590 40)">
+
+<ellipse class="shadow" cx="135" cy="332" rx="56" ry="9" fill="#000" opacity=".3"/>
+<g class="foe" id="x-sombra" data-act="appear" data-talk="0">
+<g class="appear-g" data-ai="a0"><g class="body-g">
+<g class="wisps" fill="#3A2E70"><circle cx="118" cy="318" r="6"/><circle cx="150" cy="322" r="5"/><circle cx="134" cy="326" r="4"/></g>
+<g class="s-float">
+<g class="s-tail"><path class="ol" fill="#1A1440" d="M108 262 C100 290 116 310 104 330 C124 322 132 306 135 290 C140 306 148 318 168 324 C156 306 170 288 162 262 Z"/></g>
+<path class="ol" fill="#1A1440" d="M135 140 C178 140 196 180 194 218 C192 250 172 272 135 274 C98 272 78 250 76 218 C74 180 92 140 135 140 Z"/>
+<path d="M150 146 C176 156 190 186 188 220 C186 246 170 266 148 272 C168 252 176 222 172 196 C170 176 162 158 150 146 Z" fill="#100C2E"/>
+<path d="M90 190 C96 168 110 154 126 148" fill="none" stroke="#8A5CFF" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+<path d="M78 210 C70 200 64 188 66 176 C74 186 80 192 86 196 Z M192 210 C200 200 206 188 204 176 C196 186 190 192 184 196 Z" fill="#1A1440" stroke="#0E0C2B" stroke-width="2.4"/>
+<g class="s-eyes"><path d="M100 196 L130 206 L126 214 C114 214 104 208 100 196 Z" fill="#FF6B6B" stroke="#0E0C2B" stroke-width="2"/><path d="M170 196 L140 206 L144 214 C156 214 166 208 170 196 Z" fill="#FF6B6B" stroke="#0E0C2B" stroke-width="2"/><circle cx="118" cy="207" r="16" fill="#FF6B6B" opacity=".25"/><circle cx="152" cy="207" r="16" fill="#FF6B6B" opacity=".25"/></g>
+<g class="mouth-c"><path d="M106 234 L114 242 L122 234 L130 242 L138 234 L146 242 L154 234 L162 242 L166 236" fill="none" stroke="#FF8A6B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></g>
+<g class="mouth-o"><path d="M104 230 C112 256 158 256 166 230 Z" fill="#FF6B6B" stroke="#0E0C2B" stroke-width="2"/><path d="M106 232 l6 8 6 -7 6 8 6 -7 6 8 6 -7 6 8 6 -7 6 8 4 -5" fill="#1A1440" stroke="#1A1440" stroke-width="1"/></g>
+<g class="s-claw"><path d="M76 226 C60 236 54 252 58 266 L66 258 L68 270 L76 260 L82 268 C82 252 86 240 92 232 Z" fill="#1A1440" stroke="#0E0C2B" stroke-width="2.4"/></g>
+<path d="M194 226 C210 236 216 252 212 266 L204 258 L202 270 L194 260 L188 268 C188 252 184 240 178 232 Z" fill="#1A1440" stroke="#0E0C2B" stroke-width="2.4"/>
+</g>
+<g class="fx fx-attack" fill="none" stroke="#FF6B6B" stroke-width="5" stroke-linecap="round"><path d="M40 190 C24 230 26 270 44 300"/><path d="M58 186 C42 228 44 272 62 304"/><path d="M76 190 C62 228 62 266 78 298"/></g>
+<g class="fx fx-special" fill="#3A2E70"><circle cx="135" cy="290" r="26" opacity=".7"/><circle cx="108" cy="300" r="18" opacity=".6"/><circle cx="162" cy="300" r="18" opacity=".6"/></g>
+</g></g>
+<g class="poof" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.2"><circle cx="135" cy="250" r="34" fill="#E9E6F8" opacity=".85" stroke="none"/><circle cx="104" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><circle cx="166" cy="238" r="22" fill="#E9E6F8" opacity=".8" stroke="none"/><path d="M96 193 L98.0 198.0 L103 200 L98.0 202.0 L96 207 L94.0 202.0 L89 200 L94.0 198.0 Z M176 190 L177.7 194.3 L182 196 L177.7 197.7 L176 202 L174.3 197.7 L170 196 L174.3 194.3 Z M136 172 L138.2 177.8 L144 180 L138.2 182.2 L136 188 L133.8 182.2 L128 180 L133.8 177.8 Z M150 285 L151.4 288.6 L155 290 L151.4 291.4 L150 295 L148.6 291.4 L145 290 L148.6 288.6 Z M112 281 L113.4 284.6 L117 286 L113.4 287.4 L112 291 L110.6 287.4 L107 286 L110.6 284.6 Z "/></g>
+<g class="hitfx" fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2"><path d="M100 178 L103.4 186.6 L112 190 L103.4 193.4 L100 202 L96.6 193.4 L88 190 L96.6 186.6 Z "/><path d="M170 205 L172.5 211.5 L179 214 L172.5 216.5 L170 223 L167.5 216.5 L161 214 L167.5 211.5 Z "/><path d="M138 163 L140.0 168.0 L145 170 L140.0 172.0 L138 177 L136.0 172.0 L131 170 L136.0 168.0 Z "/></g>
+<g class="impact"><circle class="ring" cx="34" cy="268" r="18" fill="none" stroke="#FFC83D" stroke-width="5"/><path d="M34 250 L39.0 263.0 L52 268 L39.0 273.0 L34 286 L29.0 273.0 L16 268 L29.0 263.0 Z " fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2.4"/></g>
+<g class="speed" stroke="#E9E6F8" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M214 236 h26 M218 262 h30 M214 288 h24"/></g>
+<g class="dust" fill="#E9E6F8" data-ai="a1"><ellipse cx="86" cy="326" rx="16" ry="8"/><ellipse cx="184" cy="326" rx="16" ry="8"/><ellipse cx="66" cy="320" rx="9" ry="5"/><ellipse cx="204" cy="320" rx="9" ry="5"/></g>
+<circle class="dring" cx="135" cy="260" r="40" fill="none" stroke="#FFC83D" stroke-width="5"/>
+</g></g>
+
+
+</svg>

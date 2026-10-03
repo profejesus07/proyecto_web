@@ -1,0 +1,22 @@
+OBJETOS · El Archivo de los Mundos (tandas A, B y C)
+
+Cada objeto es un SVG de 256 × 256 sin fondo, con su CSS dentro. Pesa menos de 8 KB. El certificado mide 1123 × 794 y tiene versión en blanco y negro (data-v="byn").
+Estados (atributo del <svg>): data-state = reposo | destacado | bloqueado.
+Algunos tienen acciones (data-act: sumar, gastar, llenar, tintineo, abriendo, abierto, recien) o variantes (data-v: lleno, medio, vacio, recuperando, E…S, sin-ganar, byn).
+data-marco="no" quita el medallón de rareza. style="--it:1" no se usa aquí: las animaciones son bucles.
+Los poderes traen además poder/poder_<nombre>_efecto.svg (640 × 480) para superponerlo al avatar.
+
+Como imagen se usa un archivo por estado. En línea, pega el SVG y cambia los atributos con JavaScript.
+catalogo.json tiene id, nombre, categoría, rareza, precio, desbloqueo, descripción, texto alternativo y archivos.
+Con «reducir movimiento» las animaciones se detienen solas.
+
+TANDA C · PUNTOS DE ANCLAJE sobre el avatar (lienzo 300 × 494):
+  cabeza: x 150, y 62
+  ojos: x 150, y 138
+  cuello: x 150, y 198
+  espalda: x 150, y 220
+  mano_izq: x 106, y 312
+  mano_der: x 194, y 310
+Capas, alas y auras van DETRÁS del cuerpo (anclaje espalda); bufandas (cuello), gafas (ojos), sombreros (cabeza) y focos (mano_izq) van DELANTE.
+Con Tomás (silla de ruedas) la capa es corta y no tapa la silla. Las gafas y sombreros no cubren los audífonos de Nuri.
+Las pieles de Kuro (companero/obj_companero_kuro_<piel>-<etapa>.svg) son el mismo Kuro con otra paleta, en sus tres etapas.

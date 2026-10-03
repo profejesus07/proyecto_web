@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" class="esc e_mazmorra" data-state="fuego" role="img" width="1280" height="720" xmlns="http://www.w3.org/2000/svg"><title>Mazmorra — Fuego · Capa fondo</title><style>
+.esc .e_soft{stroke:#241F5C;stroke-opacity:.5;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.esc .e_ink{stroke:#14123B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.esc .e_mote{animation:e_rise var(--d,9s) linear var(--dl,0s) infinite;opacity:0}
+.esc .e_bob{animation:e_bob var(--d,6s) ease-in-out var(--dl,0s) infinite}
+.esc .e_breathe{animation:e_breathe var(--d,5s) ease-in-out var(--dl,0s) infinite}
+.esc .e_sway{transform-box:fill-box;transform-origin:50% 0;animation:e_sway var(--d,6s) ease-in-out var(--dl,0s) infinite}
+.esc .e_pulse{animation:e_pulse var(--d,3.2s) ease-in-out var(--dl,0s) infinite}
+.esc .e_twinkle{animation:e_twinkle var(--d,4s) ease-in-out var(--dl,0s) infinite}
+.esc .e_spin{transform-box:view-box;animation:e_spin var(--d,40s) linear infinite}
+.esc .e_flick{transform-box:fill-box;transform-origin:50% 100%;animation:e_flick var(--d,3s) ease-in-out var(--dl,0s) infinite}
+@keyframes e_rise{0%{transform:translate(0,0);opacity:0}15%{opacity:var(--o,.85)}80%{opacity:var(--o,.85)}100%{transform:translate(var(--dx,10px),var(--dy,-160px));opacity:0}}
+@keyframes e_bob{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--b,-8px))}}
+@keyframes e_breathe{0%,100%{opacity:var(--lo,.55)}50%{opacity:var(--hi,1)}}
+@keyframes e_sway{0%,100%{transform:rotate(calc(var(--a,2.5deg) * -1))}50%{transform:rotate(var(--a,2.5deg))}}
+@keyframes e_pulse{0%,100%{opacity:var(--lo,.3)}45%{opacity:1}}
+@keyframes e_twinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes e_spin{to{transform:rotate(360deg)}}
+@keyframes e_flick{0%,100%{transform:scale(1,1)}30%{transform:scale(.92,1.08)}60%{transform:scale(1.06,.94)}80%{transform:scale(.97,1.04)}}
+.esc .e_hot{cursor:pointer}
+.esc .e_hl{opacity:0;transition:opacity .25s;pointer-events:none}
+.esc .e_hot:hover .e_hl,.esc .e_hot:focus-visible .e_hl,.esc .e_hot.e_on .e_hl{opacity:1}
+.esc .e_hot:focus{outline:none}
+@media (prefers-reduced-motion:reduce){.esc *{animation:none!important;transition:none!important}}
+
+.esc .e_slots{pointer-events:none}
+.esc .e_slotlbl{font:700 15px "Bricolage Grotesque","Trebuchet MS",sans-serif;fill:#FFFFFF;paint-order:stroke;stroke:#14123B;stroke-width:4px;letter-spacing:.02em}
+
+.e_mazmorra{--el:#FF6B6B;--el2:#FFC83D;--el3:#FFE7A0;--elD:#8A2A3A;--w1:#86659E;--w2:#5C4584;--w3:#2C2056;--fl1:#86689F;--fl2:#5F4886;--fog:#FFC9B5;--fogO:.5}
+.e_mazmorra[data-state="agua"]{--el:#2EE6D6;--el2:#9FF3EC;--el3:#E9FFFD;--elD:#0E5E6B;--w1:#5878AC;--w2:#3C5490;--w3:#1A2458;--fl1:#5A7AAC;--fl2:#3F5A92;--fog:#B8FFF8;--fogO:.46}
+.e_mazmorra[data-state="sombra"]{--el:#8A5CFF;--el2:#C9B3FF;--el3:#F1EBFF;--elD:#2B1A73;--w1:#675CAE;--w2:#463B8A;--w3:#1E1852;--fl1:#6A60AE;--fl2:#4A4092;--fog:#DCCFFF;--fogO:.5}
+.e_mazmorra .m_fog{opacity:var(--fogO)}
+.e_mazmorra .m_agua,.e_mazmorra .m_sombra{display:none}
+.e_mazmorra[data-state="agua"] .m_fuego,.e_mazmorra[data-state="sombra"] .m_fuego{display:none}
+.e_mazmorra[data-state="agua"] .m_agua,.e_mazmorra[data-state="sombra"] .m_sombra{display:inline}
+.e_mazmorra .m_drift{animation:m_drift var(--d,8s) ease-in-out var(--dl,0s) infinite;opacity:0}
+@keyframes m_drift{0%{transform:translate(0,0);opacity:0}25%{opacity:var(--o,.8)}75%{opacity:var(--o,.8)}100%{transform:translate(var(--dx,60px),var(--dy,-30px));opacity:0}}
+</style><defs><linearGradient id="em-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--w3)"/><stop offset="1" style="stop-color:var(--w2)"/></linearGradient><linearGradient id="em-wl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--w1)"/><stop offset="1" style="stop-color:var(--w2)"/></linearGradient><linearGradient id="em-wr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" style="stop-color:var(--w2)"/><stop offset="1" style="stop-color:var(--w3)"/></linearGradient><linearGradient id="em-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--fl1)"/><stop offset="1" style="stop-color:var(--fl2)"/></linearGradient><linearGradient id="em-ceil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#110E33"/><stop offset="1" style="stop-color:var(--w3)"/></linearGradient><radialGradient id="em-fog"><stop offset="0" style="stop-color:var(--fog);stop-opacity:1"/><stop offset="1" style="stop-color:var(--fog);stop-opacity:0"/></radialGradient><radialGradient id="em-glow"><stop offset="0" style="stop-color:var(--el);stop-opacity:0.75"/><stop offset="1" style="stop-color:var(--el);stop-opacity:0"/></radialGradient><radialGradient id="em-door" cx=".5" cy=".6"><stop offset="0" style="stop-color:var(--el3)"/><stop offset="0.45" style="stop-color:var(--el)"/><stop offset="1" style="stop-color:var(--elD)"/></radialGradient><linearGradient id="em-step" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A91CF"/><stop offset="1" stop-color="#6A62A8"/></linearGradient><linearGradient id="em-pil" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8F87C6"/><stop offset=".55" stop-color="#635BA0"/><stop offset="1" stop-color="#433C80"/></linearGradient><linearGradient id="em-pilF" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6E66AE"/><stop offset=".6" stop-color="#4A4390"/><stop offset="1" stop-color="#332C74"/></linearGradient></defs><g id="esc_mazmorra_fondo" class="e_layer" data-depth="0.2"><rect x="-60" y="-40" width="1400" height="820" fill="url(#em-back)"/><polygon points="-60,-40 1340,-40 930,140 350,140" fill="url(#em-ceil)"/><polygon points="-60,-40 350,140 350,480 -60,800" fill="url(#em-wl)"/><polygon points="1340,-40 930,140 930,480 1340,800" fill="url(#em-wr)"/><polygon points="350,480 930,480 1340,800 -60,800" fill="url(#em-floor)"/><path d="M350 190L-60 -7.9 M930 190L1340 -7.9 M350 260L-60 161 M930 260L1340 161 M350 330L-60 330 M930 330L1340 330 M350 400L-60 499 M930 400L1340 499 M420 140V480 M500 140V480 M580 140V480 M660 140V480 M740 140V480 M820 140V480 M900 140V480 M350 200H930 M350 270H930 M350 340H930 M350 410H930" stroke="#110E33" stroke-opacity=".28" stroke-width="3"/><path d="M307.9 501.8H972.1" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M230.9 541.6H1049.1" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M131.3 593.1H1148.7" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M13.2 654.2H1266.8" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M-120.6 723.4H1400.6" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M-268.7 800H1548.7" stroke="#110E33" stroke-opacity=".22" stroke-width="2.5"/><path d="M422.5 480L-185 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><path d="M509.5 480L145 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><path d="M596.5 480L475 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><path d="M683.5 480L805 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><path d="M770.5 480L1135 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><path d="M857.5 480L1465 800" stroke="#110E33" stroke-opacity=".18" stroke-width="2.5"/><g class="m_fog"><ellipse cx="640" cy="400" rx="560" ry="300" fill="url(#em-fog)"/></g><g class="m_fog"><ellipse cx="620" cy="580" rx="640" ry="220" fill="url(#em-fog)"/></g><polygon points="282,150 318,150 322,168 322,500 278,500 278,168" fill="#4A4390" opacity=".65"/><polygon points="962,150 998,150 1002,168 1002,500 958,500 958,168" fill="#4A4390" opacity=".65"/></g></svg>

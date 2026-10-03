@@ -1,0 +1,43 @@
+ARCHIVO DE CRÓNICAS · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (calma · cronica · descubrimiento).
+
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 352 · suelo 668 · alto del personaje 150
+  slot_jugador  x 474 · suelo 672 · alto del personaje 290
+  slot_guia  x 852 · suelo 670 · alto del personaje 320
+  slot_ui_arriba  x 640 · y 210 · 600 × 110
+
+ARCHIVOS
+  cronicas-calma.svg  —  Calma · Escena completa
+  cronicas-calma-vertical.svg  —  Calma · Recorte vertical 9:16
+  cronicas-calma-cuadrado.svg  —  Calma · Recorte cuadrado 1:1
+  cronicas-calma-capa-fondo.svg  —  Calma · Capa fondo
+  cronicas-calma-capa-medio.svg  —  Calma · Capa medio
+  cronicas-calma-capa-frente.svg  —  Calma · Capa frente
+  cronicas-calma-capa-particulas.svg  —  Calma · Capa partículas
+  cronicas-cronica.svg  —  Crónica · Escena completa
+  cronicas-cronica-vertical.svg  —  Crónica · Recorte vertical 9:16
+  cronicas-cronica-cuadrado.svg  —  Crónica · Recorte cuadrado 1:1
+  cronicas-cronica-capa-fondo.svg  —  Crónica · Capa fondo
+  cronicas-cronica-capa-medio.svg  —  Crónica · Capa medio
+  cronicas-cronica-capa-frente.svg  —  Crónica · Capa frente
+  cronicas-cronica-capa-particulas.svg  —  Crónica · Capa partículas
+  cronicas-descubrimiento.svg  —  Descubrimiento · Escena completa
+  cronicas-descubrimiento-vertical.svg  —  Descubrimiento · Recorte vertical 9:16
+  cronicas-descubrimiento-cuadrado.svg  —  Descubrimiento · Recorte cuadrado 1:1
+  cronicas-descubrimiento-capa-fondo.svg  —  Descubrimiento · Capa fondo
+  cronicas-descubrimiento-capa-medio.svg  —  Descubrimiento · Capa medio
+  cronicas-descubrimiento-capa-frente.svg  —  Descubrimiento · Capa frente
+  cronicas-descubrimiento-capa-particulas.svg  —  Descubrimiento · Capa partículas

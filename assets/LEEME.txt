@@ -1,0 +1,7 @@
+EL ARCHIVO DE LOS MUNDOS · Elenco del gremio
+
+Todos los personajes, jefes, avatares y escenarios en SVG.
+Cada archivo trae su CSS dentro, tiene fondo transparente (los escenarios ocupan todo el lienzo) y no necesita JavaScript.
+Las animaciones se repiten en bucle; el archivo «-reposo» es el estado de espera.
+
+Carpetas: guias, personajes, maestros, familia, enemigos, jefes, avatares, escenarios y objetos.

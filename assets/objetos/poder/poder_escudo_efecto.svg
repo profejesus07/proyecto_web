@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" class="pe" id="poder_escudo_efecto" role="img" aria-label="Efecto: Escudo de Calma"><title>Escudo de Calma · efecto de activación</title><style>
+.pe{--it:infinite}
+.pe *{transform-box:view-box}
+.pe .a{animation-duration:1.8s;animation-iteration-count:var(--it);animation-fill-mode:both;animation-timing-function:ease-out}
+@media (prefers-reduced-motion:reduce){.pe *{animation:none!important}}
+
+.pe .bub{transform-origin:320px 260px;animation-name:bub}
+.pe .rip{transform-origin:320px 260px;animation-name:rip}
+@keyframes bub{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.06)}38%{transform:scale(.98)}50%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.02)}}
+@keyframes rip{0%,20%{opacity:0;transform:scale(.6)}40%{opacity:.9}100%{opacity:0;transform:scale(1.25)}}</style><defs><radialGradient id="e1" cx=".5" cy=".5"><stop offset=".7" stop-color="#8A5CFF" stop-opacity=".05"/><stop offset=".95" stop-color="#C9B3FF" stop-opacity=".55"/><stop offset="1" stop-color="#C9B3FF" stop-opacity=".9"/></radialGradient></defs><g class="a bub"><circle cx="320" cy="260" r="200" fill="url(#e1)" stroke="#8A5CFF" stroke-width="5"/><path d="M200 170A150 150 0 0 1 300 90" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" opacity=".7"/><path d="M150 300q20 -14 40 0t40 0M410 330q20 -14 40 0t40 0M230 400q20 -14 40 0t40 0" fill="none" stroke="#F4F2FF" stroke-width="4" stroke-linecap="round" opacity=".7"/></g><circle class="a rip" cx="320" cy="260" r="200" fill="none" stroke="#C9B3FF" stroke-width="4"/><circle class="a rip" style="animation-delay:.3s" cx="320" cy="260" r="200" fill="none" stroke="#C9B3FF" stroke-width="3"/></svg>

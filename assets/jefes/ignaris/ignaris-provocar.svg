@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="520" height="460">
+<title>Ignaris — Provocar · calma</title>
+<style>
+.ig{--it:1;--d:3.4s;--ig-eye:#E8F24A}
+.ig *{transform-box:view-box}
+.ig .ol{stroke:#0E0C2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.ig .ol2{stroke:#0E0C2B;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ig-body,.ig-size,.ig-breath,.ig-shadow{transform-origin:260px 420px}
+.ig-headwrap,.ig-head{transform-origin:260px 240px}
+.ig-tail{transform-origin:300px 394px}
+.ig-wingwrap,.ig-wing{transform-origin:222px 264px}
+.ig-arm{transform-origin:232px 266px}
+.ig-eyeset{transform-origin:260px 168px}
+.ig-brow-l{transform-origin:232px 149px}
+.ig-brow-r{transform-origin:288px 149px}
+.ig-mane{transform-origin:260px 120px}
+.ig-spirit,.ig-spfloat{transform-origin:260px 250px}
+.ig-fl,.ig-rflame,.ig-tflame{transform-box:fill-box;transform-origin:50% 100%}
+.ig-fx g,.ig-fx circle,.ig-fx path,.ig-fx ellipse,.ig-sparks path,.ig-pupil{transform-box:fill-box;transform-origin:50% 50%}
+.ig .ig-fire{transform-box:view-box;transform-origin:260px 232px}
+.ig-eye{fill:var(--ig-eye)}
+.ig-rageonly,.ig-spirit,.ig-fx&gt;g,.ig-m,.ig-squint,.ig-lid{opacity:0}
+.ig .m-calm{opacity:1}
+.ig[data-phase="rage"]{--ig-eye:#FF5A5A}
+.ig[data-phase="rage"] .ig-rageonly{opacity:1}
+.ig[data-phase="rage"] .ig-size{scale:1.05}
+.ig[data-phase="rage"] .ig-wingwrap{rotate:-4deg}
+.ig[data-phase="rage"] .ig-brow-l{transform:rotate(20deg) translateY(2px)}
+.ig[data-phase="rage"] .ig-brow-r{transform:rotate(-20deg) translateY(2px)}
+.ig[data-phase="rage"] .m-calm{opacity:0}
+.ig[data-phase="rage"] .m-grin{opacity:1}
+.ig[data-phase="pure"] .ig-body,.ig[data-phase="pure"] .ig-rageglow{opacity:0}
+.ig[data-phase="pure"] .ig-spirit{opacity:1}
+.ig[data-phase="pure"] .ig-shadow{transform:scale(.45);opacity:.7}
+.ig[data-act="appear"]{--d:1.1s}
+.ig[data-act="taunt"]{--d:1.8s}
+.ig[data-act="attack"]{--d:1.2s}
+.ig[data-act="special"]{--d:2.2s}
+.ig[data-act="hit"]{--d:.6s}
+.ig[data-act="rage"]{--d:1.8s}
+.ig[data-act="defeat"]{--d:2.8s}
+.ig:not([data-act="idle"]) .ig-m{opacity:0}
+.ig[data-act="appear"] .m-roar,.ig[data-act="attack"] .m-roar,.ig[data-act="rage"] .m-roar{opacity:1}
+.ig[data-act="taunt"] .m-smirk,.ig[data-act="taunt"] .ig-lid{opacity:1}
+.ig[data-act="hit"] .m-ouch,.ig[data-act="defeat"] .m-ouch,.ig[data-act="hit"] .ig-squint,.ig[data-act="defeat"] .ig-squint{opacity:1}
+.ig[data-act="hit"] .ig-eyes-open,.ig[data-act="defeat"] .ig-eyes-open{opacity:0}
+.ig .ig-fl{animation:ig_flick .8s ease-in-out infinite alternate}
+.ig .ig-fl.f2{animation-duration:.66s;animation-delay:-.3s}
+.ig .ig-fl.f3{animation-duration:.72s;animation-delay:-.5s}
+.ig .ig-rageglow{animation:ig_pulse var(--d) ease-in-out infinite}
+@keyframes ig_flick{0%{transform:none}50%{transform:scale(.94,1.08) skewX(-4deg)}100%{transform:scale(1.04,.95) skewX(3deg)}}
+@keyframes ig_pulse{0%,100%{opacity:.55;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+.ig[data-act="idle"] .ig-breath{animation:ig_breath 3.4s ease-in-out infinite}
+.ig[data-act="idle"] .ig-head{animation:ig_hbob 3.4s ease-in-out infinite}
+.ig[data-act="idle"] .ig-tail{animation:ig_sway 3.4s ease-in-out infinite}
+.ig[data-act="idle"] .ig-wing{animation:ig_flut 3.4s ease-in-out infinite}
+.ig[data-act="idle"] .ig-eyeset{animation:ig_blink 3.4s linear infinite}
+.ig[data-act="idle"] .ig-pupil{animation:ig_glance 3.4s ease-in-out infinite}
+.ig[data-act="idle"] .ig-arm{animation:ig_fidget 3.4s ease-in-out infinite}
+.ig[data-phase="pure"] .ig-spfloat{animation:ig_spfloat 3.4s ease-in-out infinite}
+.ig[data-phase="pure"] .ig-spglow{animation:ig_pulse 3.4s ease-in-out infinite}
+.ig[data-phase="pure"] .ig-sparks path{animation:ig_tw 1.7s ease-in-out infinite}
+.ig[data-phase="pure"] .ig-sparks path:nth-child(2n){animation-delay:-.85s}
+@keyframes ig_breath{0%,100%{transform:none}50%{transform:scale(1.01,1.025)}}
+@keyframes ig_hbob{0%,100%{transform:none}50%{transform:translateY(-3px) rotate(1.5deg)}}
+@keyframes ig_sway{0%,100%{transform:none}50%{transform:rotate(-6deg)}}
+@keyframes ig_flut{0%,70%,100%{transform:none}78%{transform:rotate(-12deg)}86%{transform:rotate(4deg)}92%{transform:rotate(-6deg)}}
+@keyframes ig_blink{0%,86%,94%,100%{transform:none}90%{transform:scaleY(.1)}}
+@keyframes ig_glance{0%,28%,100%{transform:none}36%,52%{transform:translateX(-3px)}60%,76%{transform:translateX(3px)}}
+@keyframes ig_fidget{0%,38%,62%,100%{transform:none}44%,56%{transform:rotate(-5deg)}50%{transform:rotate(2deg)}}
+@keyframes ig_spfloat{0%,100%{transform:none}50%{transform:translateY(-10px)}}
+@keyframes ig_tw{0%,100%{opacity:.3;transform:scale(.5)}50%{opacity:1;transform:scale(1.15)}}
+.ig[data-act="appear"] .ig-body{animation:ig_app_body 1.1s var(--it) both}
+.ig[data-act="appear"] .ig-wing{animation:ig_app_wing 1.1s var(--it) ease-in-out both}
+.ig[data-act="appear"] .ig-tail{animation:ig_app_tail 1.1s var(--it) ease-in-out both}
+.ig[data-act="appear"] .ig-shadow{animation:ig_app_sh 1.1s var(--it) both}
+.ig[data-act="appear"] .ig-dust{opacity:1}
+.ig[data-act="appear"] .ig-dust ellipse{animation:ig_dust_a 1.1s var(--it) ease-out both}
+@keyframes ig_app_body{0%{transform:translateY(-340px);opacity:0;animation-timing-function:ease-out}6%{opacity:1}50%{transform:none;animation-timing-function:ease-out}56%{transform:scale(1.1,.88)}70%{transform:translateY(-6px) scale(.97,1.04)}85%{transform:scale(1.01,.99)}100%{transform:none;opacity:1}}
+@keyframes ig_app_wing{0%{transform:rotate(-30deg)}10%{transform:rotate(20deg)}20%{transform:rotate(-30deg)}30%{transform:rotate(20deg)}40%{transform:rotate(-25deg)}50%{transform:rotate(10deg)}62%{transform:rotate(-6deg)}100%{transform:none}}
+@keyframes ig_app_tail{0%,50%,100%{transform:none}58%{transform:rotate(-12deg)}74%{transform:rotate(5deg)}}
+@keyframes ig_app_sh{0%{transform:scale(.3);opacity:.2}50%{transform:none;opacity:1}56%{transform:scale(1.1)}100%{transform:none;opacity:1}}
+@keyframes ig_dust_a{0%,50%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px) scale(1.7)}}
+.ig[data-act="taunt"] .ig-body{animation:ig_tau_body 1.8s var(--it) ease-in-out both}
+.ig[data-act="taunt"] .ig-head{animation:ig_tau_head 1.8s var(--it) ease-in-out both}
+.ig[data-act="taunt"] .ig-wing{animation:ig_tau_wing 1.8s var(--it) ease-in-out both}
+.ig[data-act="taunt"] .ig-tail{animation:ig_tau_tail 1.8s var(--it) ease-in-out both}
+.ig[data-act="taunt"] .ig-mane{animation:ig_tau_mane 1.8s var(--it) ease-in-out both}
+.ig[data-act="taunt"] .ig-smoke{opacity:1}
+.ig[data-act="taunt"] .ig-smoke circle{animation:ig_smoke 1.8s var(--it) ease-out both}
+@keyframes ig_tau_body{0%,100%{transform:none}20%,72%{transform:translateY(-4px) scale(1.04,1.06)}}
+@keyframes ig_tau_head{0%,100%{transform:none}20%,72%{transform:translateY(-6px) rotate(-6deg)}}
+@keyframes ig_tau_wing{0%,100%{transform:none}20%{transform:rotate(-24deg)}30%{transform:rotate(-12deg)}40%,72%{transform:rotate(-26deg)}}
+@keyframes ig_tau_tail{0%,100%{transform:none}30%{transform:rotate(-14deg)}45%{transform:rotate(6deg)}60%{transform:rotate(-10deg)}}
+@keyframes ig_tau_mane{0%,100%{transform:none}20%,72%{transform:scale(1.25)}}
+@keyframes ig_smoke{0%,74%{opacity:0;transform:scale(.4)}80%{opacity:.9;transform:scale(.8)}100%{opacity:0;transform:translateY(-34px) scale(1.5)}}
+.ig[data-act="attack"] .ig-body{animation:ig_atk_body 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-head{animation:ig_atk_head 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-armwrap-r .ig-arm{animation:ig_atk_r 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-armwrap-l .ig-arm{animation:ig_atk_l 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-tail{animation:ig_atk_tail 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-wing{animation:ig_atk_wing 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-shadow{animation:ig_atk_sh 1.2s var(--it) ease-in-out both}
+.ig[data-act="attack"] .ig-slash{opacity:1}
+.ig[data-act="attack"] .ig-slash path{animation:ig_slash 1.2s var(--it) ease-out both}
+.ig[data-act="attack"] .ig-impact{animation:ig_imp 1.2s var(--it) ease-out both}
+@keyframes ig_atk_body{0%,100%{transform:none}25%{transform:translateY(-8px) scale(.95) rotate(-3deg)}40%{transform:translateY(6px) scale(1.15) rotate(2deg)}70%{transform:translateY(4px) scale(1.12)}}
+@keyframes ig_atk_head{0%,100%{transform:none}25%{transform:translateY(-4px) rotate(4deg)}40%,70%{transform:translateY(6px)}}
+@keyframes ig_atk_r{0%,100%{transform:none}25%{transform:rotate(110deg)}40%,70%{transform:rotate(-40deg)}}
+@keyframes ig_atk_l{0%,100%{transform:none}25%{transform:rotate(30deg)}40%,70%{transform:rotate(-10deg)}}
+@keyframes ig_atk_tail{0%,100%{transform:none}25%{transform:rotate(10deg)}40%,70%{transform:rotate(-12deg)}}
+@keyframes ig_atk_wing{0%,100%{transform:none}25%{transform:rotate(-20deg)}40%,70%{transform:rotate(8deg)}}
+@keyframes ig_atk_sh{0%,100%{transform:none}25%{transform:scale(.9)}40%,70%{transform:scale(1.16)}}
+@keyframes ig_slash{0%,36%{opacity:0;stroke-dashoffset:240}40%{opacity:1}48%{stroke-dashoffset:0;opacity:1}76%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes ig_imp{0%,40%{opacity:0;transform:scale(.3)}48%{opacity:1;transform:scale(1.2)}74%,100%{opacity:0;transform:none}}
+.ig[data-act="special"] .ig-body{animation:ig_sp_body 2.2s var(--it) ease-in-out both}
+.ig[data-act="special"] .ig-head{animation:ig_sp_head 2.2s var(--it) ease-in-out both}
+.ig[data-act="special"] .ig-mane{animation:ig_sp_mane 2.2s var(--it) ease-in-out both}
+.ig[data-act="special"] .ig-wing{animation:ig_sp_wing 2.2s var(--it) ease-in-out both}
+.ig[data-act="special"] .ig-tail{animation:ig_sp_tail 2.2s var(--it) ease-in-out both}
+.ig[data-act="special"] .m-puff{animation:ig_sp_puff 2.2s var(--it) both}
+.ig[data-act="special"] .m-roar{animation:ig_sp_roar 2.2s var(--it) both}
+.ig[data-act="special"] .ig-fire{animation:ig_sp_fire 2.2s var(--it) ease-out both}
+.ig[data-act="special"] .ig-embers{opacity:1}
+.ig[data-act="special"] .ig-embers path{animation:ig_ember 2.2s var(--it) ease-out both}
+@keyframes ig_sp_body{0%,100%{transform:none}32%{transform:translateY(-4px) scale(1.04,1.06)}42%,74%{transform:translateY(4px) scale(1.08)}86%{transform:none}}
+@keyframes ig_sp_head{0%,100%{transform:none}32%{transform:translateY(-10px) rotate(-3deg)}42%,74%{transform:translateY(6px)}86%{transform:none}}
+@keyframes ig_sp_mane{0%,100%{transform:none}30%{transform:scale(.7)}42%,74%{transform:scale(1.35)}}
+@keyframes ig_sp_wing{0%,100%{transform:none}32%{transform:rotate(6deg)}42%,74%{transform:rotate(-14deg)}}
+@keyframes ig_sp_tail{0%,100%{transform:none}32%{transform:rotate(8deg)}44%{transform:rotate(-14deg)}74%{transform:rotate(-8deg)}}
+@keyframes ig_sp_puff{0%,36%{opacity:1}38%,82%{opacity:0}86%,100%{opacity:0}}
+@keyframes ig_sp_roar{0%,36%{opacity:0}38%,80%{opacity:1}84%,100%{opacity:0}}
+@keyframes ig_sp_fire{0%,36%{opacity:0;transform:scale(.05)}44%{opacity:1;transform:scale(.92)}50%{transform:scale(1.05,1.02)}58%{transform:scale(.95,1)}66%{transform:scale(1.08,1.04)}74%{opacity:1;transform:none}86%,100%{opacity:0;transform:scale(1.15)}}
+@keyframes ig_ember{0%,40%{opacity:0;transform:none}48%{opacity:1}92%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(160deg)}}
+.ig[data-act="hit"] .ig-body{animation:ig_hit_body .6s var(--it) ease-out both}
+.ig[data-act="hit"] .ig-head{animation:ig_hit_head .6s var(--it) ease-out both}
+.ig[data-act="hit"] .ig-mane{animation:ig_hit_mane .6s var(--it) ease-out both}
+.ig[data-act="hit"] .ig-wing{animation:ig_hit_wing .6s var(--it) ease-out both}
+.ig[data-act="hit"] .ig-hitstars{animation:ig_imp2 .6s var(--it) ease-out both}
+@keyframes ig_hit_body{0%,100%{transform:none;filter:none}12%{transform:translateX(12px) rotate(3deg);filter:brightness(2.4) saturate(.2)}35%{transform:translateX(16px) rotate(4deg);filter:none}70%{transform:translateX(-3px) rotate(-1deg)}}
+@keyframes ig_hit_head{0%,100%{transform:none}20%,50%{transform:rotate(8deg) translateY(-2px)}}
+@keyframes ig_hit_mane{0%,100%{transform:none}20%,50%{transform:scale(.65)}}
+@keyframes ig_hit_wing{0%,100%{transform:none}20%,50%{transform:rotate(12deg)}}
+@keyframes ig_imp2{0%{opacity:0;transform:scale(.3)}20%{opacity:1;transform:scale(1.2)}70%,100%{opacity:0;transform:none}}
+.ig[data-act="rage"] .ig-body{animation:ig_rg_body 1.8s var(--it) both}
+.ig[data-act="rage"] .ig-mane{animation:ig_rg_mane 1.8s var(--it) ease-out both}
+.ig[data-act="rage"] .ig-rageonly{animation:ig_rg_on 1.8s var(--it) ease-out both}
+.ig[data-act="rage"] .ig-wing{animation:ig_rg_wing 1.8s var(--it) ease-in-out both}
+.ig[data-act="rage"] .ig-eye{animation:ig_rg_eye 1.8s var(--it) both}
+.ig[data-act="rage"] .ig-brow-l{animation:ig_rg_bl 1.8s var(--it) both}
+.ig[data-act="rage"] .ig-brow-r{animation:ig_rg_br 1.8s var(--it) both}
+.ig[data-act="rage"] .ig-ragering{animation:ig_rg_ring 1.8s var(--it) ease-out both}
+@keyframes ig_rg_body{0%,40%{transform:scale(.952)}10%,20%,30%{transform:translateX(-4px) scale(.952)}15%,25%,35%{transform:translateX(4px) scale(.952)}55%{transform:translateY(-6px) scale(1.05)}70%{transform:scale(.99)}85%{transform:scale(1.01)}100%{transform:none}}
+@keyframes ig_rg_mane{0%,40%{transform:scale(.64)}55%{transform:scale(1.2)}100%{transform:none}}
+@keyframes ig_rg_on{0%,42%{opacity:0;transform:scale(.2)}58%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:none}}
+@keyframes ig_rg_wing{0%,42%,100%{transform:none}50%{transform:rotate(-25deg)}58%{transform:rotate(10deg)}68%{transform:rotate(-15deg)}}
+@keyframes ig_rg_eye{0%,30%{fill:#E8F24A}40%{fill:#FFFFFF}55%,100%{fill:#FF5A5A}}
+@keyframes ig_rg_bl{0%,40%{transform:none}55%,100%{transform:rotate(20deg) translateY(2px)}}
+@keyframes ig_rg_br{0%,40%{transform:none}55%,100%{transform:rotate(-20deg) translateY(2px)}}
+@keyframes ig_rg_ring{0%,40%{opacity:0;transform:scale(.3)}50%{opacity:1}90%,100%{opacity:0;transform:scale(3)}}
+.ig[data-act="defeat"] .ig-body{animation:ig_df_body 2.8s var(--it) both}
+.ig[data-act="defeat"] .ig-mane,.ig[data-act="defeat"] .ig-tflame{animation:ig_df_flame 2.8s var(--it) ease-in both}
+.ig[data-act="defeat"] .ig-headwrap{animation:ig_df_head 2.8s var(--it) ease-in-out both}
+.ig[data-act="defeat"] .ig-wingwrap{animation:ig_df_wing 2.8s var(--it) ease-in-out both}
+.ig[data-act="defeat"] .ig-light{animation:ig_df_light 2.8s var(--it) ease-out both}
+.ig[data-act="defeat"] .ig-light .ig-rays{animation:ig_spin 2.8s var(--it) linear both}
+.ig[data-act="defeat"] .ig-spirit{animation:ig_df_spirit 2.8s var(--it) both}
+.ig[data-act="defeat"] .ig-sparks path{animation:ig_df_tw 2.8s var(--it) both}
+.ig[data-act="defeat"] .ig-shadow{animation:ig_df_sh 2.8s var(--it) both}
+.ig[data-phase="rage"][data-act="defeat"] .ig-rageonly,.ig[data-phase="rage"][data-act="defeat"] .ig-rageglow{animation:ig_df_off 2.8s var(--it) both}
+@keyframes ig_df_body{0%{transform:none;opacity:1;filter:none}6%{transform:rotate(-3deg)}12%{transform:rotate(3deg)}18%{transform:rotate(-2deg)}30%{transform:translateY(16px) scale(1.04,.86);opacity:1;filter:sepia(1) saturate(2.4) brightness(1.35)}46%,100%{transform:translateY(30px) scale(1.1,.6);opacity:0;filter:sepia(1) saturate(2.4) brightness(1.7)}}
+@keyframes ig_df_flame{0%{transform:none}28%,100%{transform:scale(0)}}
+@keyframes ig_df_head{0%,14%{transform:none}32%,100%{transform:translateY(14px) rotate(-8deg)}}
+@keyframes ig_df_wing{0%,14%{transform:none}32%,100%{transform:rotate(26deg)}}
+@keyframes ig_df_light{0%,24%{opacity:0;transform:scale(.4)}44%{opacity:1;transform:scale(1.1)}66%,100%{opacity:0;transform:scale(1.4)}}
+@keyframes ig_spin{to{transform:rotate(60deg)}}
+@keyframes ig_df_spirit{0%,48%{opacity:0;transform:scale(.2)}66%{opacity:1;transform:scale(1.12)}78%{transform:scale(.96)}88%,100%{opacity:1;transform:none}}
+@keyframes ig_df_tw{0%,52%{opacity:0;transform:scale(.3)}70%{opacity:1;transform:scale(1.2)}85%,100%{opacity:.8;transform:none}}
+@keyframes ig_df_sh{0%,26%{transform:none;opacity:1}46%{transform:scale(.6);opacity:.4}100%{transform:scale(.45);opacity:.7}}
+@keyframes ig_df_off{0%{opacity:1}24%,100%{opacity:0}}
+</style>
+<defs>
+<linearGradient id="ji-flameG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6B3FF0"/><stop offset=".55" stop-color="#8A5CFF"/><stop offset="1" stop-color="#C4A8FF"/></linearGradient>
+<linearGradient id="ji-flameCG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#E8443C"/><stop offset=".55" stop-color="#FF6B6B"/><stop offset="1" stop-color="#FFB36B"/></linearGradient>
+<linearGradient id="ji-flameYG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFB020"/><stop offset=".6" stop-color="#FFC83D"/><stop offset="1" stop-color="#FFF1B0"/></linearGradient>
+<radialGradient id="ji-goldG"><stop offset="0" stop-color="#FFF6D6" stop-opacity=".95"/><stop offset=".45" stop-color="#FFC83D" stop-opacity=".5"/><stop offset="1" stop-color="#FFC83D" stop-opacity="0"/></radialGradient>
+<radialGradient id="ji-rageG"><stop offset="0" stop-color="#FF6B6B" stop-opacity=".0"/><stop offset=".6" stop-color="#FF6B6B" stop-opacity=".16"/><stop offset="1" stop-color="#FF6B6B" stop-opacity="0"/></radialGradient>
+<radialGradient id="ji-fireOut" cx=".5" cy=".2" r=".9"><stop offset="0" stop-color="#FFB36B"/><stop offset=".55" stop-color="#FF6B6B"/><stop offset="1" stop-color="#E8443C"/></radialGradient>
+<radialGradient id="ji-fireMid" cx=".5" cy=".25" r=".85"><stop offset="0" stop-color="#C4A8FF"/><stop offset="1" stop-color="#8A5CFF"/></radialGradient>
+<clipPath id="ji-cTorso"><path d="M222 228 C206 250 192 300 190 352 C190 382 214 396 260 396 C306 396 330 382 330 352 C328 300 314 250 298 228 Z"/></clipPath>
+<clipPath id="ji-cBelly"><path d="M238 238 C226 270 218 320 220 360 C222 384 238 392 260 392 C282 392 298 384 300 360 C302 320 294 270 282 238 Z"/></clipPath>
+<clipPath id="ji-cHead"><path d="M206 150 C210 122 232 108 260 108 C288 108 310 122 314 150 L320 168 L338 178 L316 188 L330 202 L308 204 C306 226 290 244 260 246 C230 244 214 226 212 204 L190 202 L204 188 L182 178 L200 168 Z"/></clipPath>
+<clipPath id="ji-cEyeL"><ellipse cx="234" cy="168" rx="15" ry="17"/></clipPath>
+<clipPath id="ji-cEyeR"><ellipse cx="286" cy="168" rx="15" ry="17"/></clipPath>
+<g id="ji-flame"><path d="M0 0 C-15 -3 -18 -22 -8 -36 C-7 -27 -1 -25 1 -29 C-1 -41 7 -51 13 -57 C11 -43 21 -33 17 -16 C15 -5 8 0 0 0 Z" fill="url(#ji-flameG)" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/><path d="M1 -5 C-7 -7 -8 -16 -3 -24 C-2 -18 2 -17 3 -20 C3 -28 7 -33 10 -37 C10 -28 14 -22 12 -12 C11 -7 6 -5 1 -5 Z" fill="#E6DBFF"/></g>
+<g id="ji-flameC"><path d="M0 0 C-15 -3 -18 -22 -8 -36 C-7 -27 -1 -25 1 -29 C-1 -41 7 -51 13 -57 C11 -43 21 -33 17 -16 C15 -5 8 0 0 0 Z" fill="url(#ji-flameCG)" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/><path d="M1 -5 C-7 -7 -8 -16 -3 -24 C-2 -18 2 -17 3 -20 C3 -28 7 -33 10 -37 C10 -28 14 -22 12 -12 C11 -7 6 -5 1 -5 Z" fill="#FFE0C2"/></g>
+<g id="ji-flameY"><path d="M0 0 C-15 -3 -18 -22 -8 -36 C-7 -27 -1 -25 1 -29 C-1 -41 7 -51 13 -57 C11 -43 21 -33 17 -16 C15 -5 8 0 0 0 Z" fill="url(#ji-flameYG)" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/><path d="M1 -5 C-7 -7 -8 -16 -3 -24 C-2 -18 2 -17 3 -20 C3 -28 7 -33 10 -37 C10 -28 14 -22 12 -12 C11 -7 6 -5 1 -5 Z" fill="#FFFBEA"/></g>
+<path id="ji-jet" d="M260 230 C240 236 222 256 210 290 C196 300 178 318 170 346 C186 340 192 344 186 362 C176 380 168 396 172 412 C188 398 204 396 210 410 C222 400 234 404 240 418 C250 404 270 404 280 418 C286 404 298 400 310 410 C316 396 332 398 348 412 C352 396 344 380 334 362 C328 344 334 340 350 346 C342 318 324 300 310 290 C298 256 280 236 260 230 Z"/>
+</defs>
+
+
+
+<g class="ig" data-phase="calm" data-act="taunt" style="--it:infinite">
+<g transform="translate(260 428) scale(.86) translate(-260 -428)">
+<ellipse class="ig-shadow" cx="268" cy="421" rx="150" ry="12" fill="#000" fill-opacity=".28"/>
+<circle class="ig-rageglow ig-rageonly" cx="260" cy="260" r="200" fill="url(#ji-rageG)" style="transform-box:fill-box;transform-origin:50% 50%"/>
+
+<g class="ig-body"><g class="ig-size"><g class="ig-breath">
+
+<!-- cola -->
+<g class="ig-tail">
+<path d="M292 394 C350 412 404 398 418 352 C428 318 414 292 424 270" fill="none" stroke="#0E0C2B" stroke-width="30" stroke-linecap="round"/>
+<path d="M292 394 C350 412 404 398 418 352 C428 318 414 292 424 270" fill="none" stroke="#D9483E" stroke-width="23" stroke-linecap="round"/>
+<path d="M312 404 C356 410 394 396 406 364" fill="none" stroke="#F6C68A" stroke-width="6" stroke-linecap="round"/>
+<path d="M428 320 C432 302 424 292 428 278" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<path class="ol2" fill="#A8322F" d="M366 390 l10 -14 4 14z M404 368 l14 -8 -4 14z M420 330 l14 2 -10 10z"/>
+<g transform="translate(424 272) rotate(8)"><g class="ig-tflame">
+<g class="ig-rageonly"><g transform="scale(1.6)"><g class="ig-fl f2"><use href="#ji-flameC"/></g></g></g>
+<g class="ig-fl"><use href="#ji-flame"/></g>
+</g></g>
+</g>
+
+<!-- alas -->
+<g class="ig-wingwrap"><g class="ig-wing">
+<path d="M172 198 L110 146 L116 182 Q126 196 106 212 Z" fill="#D86BC4"/>
+<path d="M172 198 L106 212 Q130 222 124 246 Z" fill="#B5409F"/>
+<path d="M172 198 L124 246 Q150 250 156 274 Q186 270 222 282 L222 262 Z" fill="#82307E"/>
+<path class="ol" fill="none" d="M222 262 L172 198 L110 146 L116 182 Q126 196 106 212 Q130 222 124 246 Q150 250 156 274 Q186 270 222 282 Z"/>
+<path d="M222 262 L172 198 L110 146 M172 198 L106 212 M172 198 L124 246 M172 198 L156 274" fill="none" stroke="#5A1A5A" stroke-width="5" stroke-linecap="round"/>
+<circle class="ol2" cx="172" cy="198" r="6" fill="#B5409F"/>
+<path class="ol2" fill="#EFE3CB" d="M110 146 l-8 -10 12 4z"/>
+<g transform="translate(108 144) rotate(-40)"><g class="ig-rageonly"><g class="ig-fl f3"><use href="#ji-flameC"/></g></g></g>
+</g></g>
+<g transform="translate(520 0) scale(-1 1)"><g class="ig-wingwrap"><g class="ig-wing">
+<path d="M172 198 L110 146 L116 182 Q126 196 106 212 Z" fill="#B5409F"/>
+<path d="M172 198 L106 212 Q130 222 124 246 Z" fill="#94368E"/>
+<path d="M172 198 L124 246 Q150 250 156 274 Q186 270 222 282 L222 262 Z" fill="#6E2670"/>
+<path class="ol" fill="none" d="M222 262 L172 198 L110 146 L116 182 Q126 196 106 212 Q130 222 124 246 Q150 250 156 274 Q186 270 222 282 Z"/>
+<path d="M222 262 L172 198 L110 146 M172 198 L106 212 M172 198 L124 246 M172 198 L156 274" fill="none" stroke="#4A1450" stroke-width="5" stroke-linecap="round"/>
+<path d="M114 160 L116 180 M110 212 L122 240" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<circle class="ol2" cx="172" cy="198" r="6" fill="#94368E"/>
+<path class="ol2" fill="#EFE3CB" d="M110 146 l-8 -10 12 4z"/>
+<g transform="translate(108 144) rotate(-40)"><g class="ig-rageonly"><g class="ig-fl f2"><use href="#ji-flameC"/></g></g></g>
+</g></g></g>
+
+<!-- muslos -->
+<path class="ol" fill="#D9483E" d="M150 380 C146 340 170 318 204 322 C236 326 248 352 244 384 C240 404 160 406 150 380 Z"/>
+<path class="ol" fill="#A8322F" d="M370 380 C374 340 350 318 316 322 C284 326 272 352 276 384 C280 404 360 406 370 380 Z"/>
+<path d="M366 350 C372 362 372 372 368 380" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<path d="M168 344 C176 334 190 330 202 332" fill="none" stroke="#EE6B5B" stroke-width="4" stroke-linecap="round"/>
+
+<!-- torso -->
+<path fill="#D9483E" d="M222 228 C206 250 192 300 190 352 C190 382 214 396 260 396 C306 396 330 382 330 352 C328 300 314 250 298 228 Z"/>
+<g clip-path="url(#ji-cTorso)"><ellipse cx="330" cy="320" rx="46" ry="110" fill="#A8322F"/><ellipse cx="196" cy="300" rx="16" ry="70" fill="#EE6B5B"/></g>
+<path class="ol" fill="none" d="M222 228 C206 250 192 300 190 352 C190 382 214 396 260 396 C306 396 330 382 330 352 C328 300 314 250 298 228 Z"/>
+<path d="M322 288 C328 318 330 344 324 368" fill="none" stroke="#2EE6D6" stroke-width="3.5" stroke-linecap="round" opacity=".85"/>
+<path fill="#F6C68A" d="M238 238 C226 270 218 320 220 360 C222 384 238 392 260 392 C282 392 298 384 300 360 C302 320 294 270 282 238 Z"/>
+<g clip-path="url(#ji-cBelly)"><path d="M200 262 H320 M200 290 H320 M200 318 H320 M200 346 H320 M200 372 H320" stroke="#D9965A" stroke-width="2.6"/><ellipse cx="300" cy="320" rx="16" ry="90" fill="#E3A867" opacity=".7"/></g>
+<path class="ol2" fill="none" d="M238 238 C226 270 218 320 220 360 C222 384 238 392 260 392 C282 392 298 384 300 360 C302 320 294 270 282 238 Z"/>
+
+<!-- llamas de hombro (furia) -->
+<g transform="translate(212 252) rotate(-18)"><g class="ig-rageonly"><g class="ig-fl f2"><use href="#ji-flameC" transform="scale(.9)"/></g><g class="ig-fl f3"><use href="#ji-flame" transform="scale(.6)"/></g></g></g>
+<g transform="translate(308 252) rotate(18)"><g class="ig-rageonly"><g class="ig-fl f3"><use href="#ji-flameC" transform="scale(.9)"/></g><g class="ig-fl"><use href="#ji-flame" transform="scale(.6)"/></g></g></g>
+
+<!-- patas -->
+<path class="ol" fill="#EE6B5B" d="M178 392 C174 410 186 420 204 420 L234 420 C242 420 246 410 240 400 C232 388 194 384 178 392 Z"/>
+<path class="ol" fill="#C23F37" d="M342 392 C346 410 334 420 316 420 L286 420 C278 420 274 410 280 400 C288 388 326 384 342 392 Z"/>
+<path class="ol2" fill="#EFE3CB" d="M190 416 l4 8 5 -8z M206 418 l4 7 5 -7z M222 418 l4 7 5 -7z M298 418 l5 7 4 -7z M314 418 l5 7 4 -7z M330 416 l5 8 4 -8z"/>
+
+<!-- brazos -->
+<g class="ig-armwrap-l"><g class="ig-arm">
+<path d="M234 264 C216 278 210 296 220 308 L240 316" fill="none" stroke="#0E0C2B" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M234 264 C216 278 210 296 220 308 L240 316" fill="none" stroke="#D9483E" stroke-width="14.5" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse class="ol2" cx="244" cy="316" rx="11" ry="10" fill="#EE6B5B"/>
+<path class="ol2" fill="#EFE3CB" d="M250 309 l10 1 -7 6z M252 318 l9 4 -9 3z"/>
+</g></g>
+<g transform="translate(520 0) scale(-1 1)"><g class="ig-armwrap-r"><g class="ig-arm">
+<path d="M234 264 C216 278 210 296 220 308 L240 316" fill="none" stroke="#0E0C2B" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M234 264 C216 278 210 296 220 308 L240 316" fill="none" stroke="#B83A33" stroke-width="14.5" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse class="ol2" cx="244" cy="316" rx="11" ry="10" fill="#D9483E"/>
+<path class="ol2" fill="#EFE3CB" d="M250 309 l10 1 -7 6z M252 318 l9 4 -9 3z"/>
+</g></g></g>
+
+<!-- cabeza -->
+<g class="ig-headwrap"><g class="ig-head">
+<g class="ig-mane">
+<g transform="translate(238 122) rotate(-24)"><g class="ig-rageonly"><g transform="scale(1.2)"><g class="ig-fl f3"><use href="#ji-flameC"/></g></g></g></g>
+<g transform="translate(282 122) rotate(24)"><g class="ig-rageonly"><g transform="scale(1.2)"><g class="ig-fl f2"><use href="#ji-flameC"/></g></g></g></g>
+<g transform="translate(258 116)"><g class="ig-rageonly"><g transform="scale(1.4)"><g class="ig-fl"><use href="#ji-flameC"/></g></g></g></g>
+<g transform="translate(238 122) rotate(-24) scale(.85)"><g class="ig-fl f2"><use href="#ji-flame"/></g></g>
+<g transform="translate(282 122) rotate(24) scale(.85)"><g class="ig-fl f3"><use href="#ji-flame"/></g></g>
+<g transform="translate(258 116) scale(1.15)"><g class="ig-fl"><use href="#ji-flame"/></g></g>
+</g>
+<path class="ol" fill="#EFE3CB" d="M222 122 C212 106 200 98 186 98 C196 108 202 118 206 132 Z"/>
+<path class="ol" fill="#CDBE9F" d="M298 122 C308 106 320 98 334 98 C324 108 318 118 314 132 Z"/>
+<path fill="#D9483E" d="M206 150 C210 122 232 108 260 108 C288 108 310 122 314 150 L320 168 L338 178 L316 188 L330 202 L308 204 C306 226 290 244 260 246 C230 244 214 226 212 204 L190 202 L204 188 L182 178 L200 168 Z"/>
+<g clip-path="url(#ji-cHead)"><ellipse cx="324" cy="190" rx="34" ry="80" fill="#A8322F"/><ellipse cx="226" cy="128" rx="30" ry="12" fill="#EE6B5B" transform="rotate(-20 226 128)"/></g>
+<path class="ol" fill="none" d="M206 150 C210 122 232 108 260 108 C288 108 310 122 314 150 L320 168 L338 178 L316 188 L330 202 L308 204 C306 226 290 244 260 246 C230 244 214 226 212 204 L190 202 L204 188 L182 178 L200 168 Z"/>
+<path d="M316 150 L320 166 M326 182 L314 188" fill="none" stroke="#2EE6D6" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+<path d="M252 124 l8 -6 8 6 -8 6z" fill="#8A5CFF" stroke="#0E0C2B" stroke-width="1.8"/>
+<path fill="#EE7A66" d="M220 210 C220 192 238 186 260 186 C282 186 300 192 300 210 C300 234 284 248 260 248 C236 248 220 234 220 210 Z"/>
+<path fill="#F6C68A" d="M226 226 C232 242 246 248 260 248 C274 248 288 242 294 226 C282 232 270 234 260 234 C250 234 238 232 226 226 Z"/>
+<path class="ol2" fill="none" d="M220 210 C220 192 238 186 260 186 C282 186 300 192 300 210 C300 234 284 248 260 248 C236 248 220 234 220 210 Z"/>
+<path d="M248 202 q3 -4 6 0 M266 202 q3 -4 6 0" fill="none" stroke="#0E0C2B" stroke-width="2.6" stroke-linecap="round"/>
+<g class="ig-m m-calm"><path d="M242 228 Q251 223 260 228 Q269 233 278 227" fill="none" stroke="#0E0C2B" stroke-width="2.8" stroke-linecap="round"/><path d="M268 230 l3 6 3 -5z" fill="#fff" stroke="#0E0C2B" stroke-width="1.2"/></g>
+<g class="ig-m m-smirk"><path d="M240 226 Q262 236 282 220" fill="none" stroke="#0E0C2B" stroke-width="2.8" stroke-linecap="round"/><path d="M272 228 l3 6 3 -6z" fill="#fff" stroke="#0E0C2B" stroke-width="1.2"/></g>
+<g class="ig-m m-puff"><ellipse cx="260" cy="228" rx="10" ry="4" fill="#5A1428" stroke="#0E0C2B" stroke-width="2"/></g>
+<g class="ig-m m-roar"><path class="ol2" fill="#5A1428" d="M234 220 Q260 214 286 220 Q282 248 260 250 Q238 248 234 220 Z"/><path d="M238 221 l4 6 4 -5 M274 221 l4 5 4 -6" fill="#fff" stroke="#0E0C2B" stroke-width="1"/><path d="M248 242 Q260 236 272 242 Q266 248 260 248 Q254 248 248 242 Z" fill="#FF6B6B"/></g>
+<g class="ig-m m-grin"><path class="ol2" fill="#5A1428" d="M234 222 Q260 242 286 222 Q272 236 260 236 Q248 236 234 222 Z"/><path d="M240 224 Q260 234 280 224" fill="none" stroke="#fff" stroke-width="3"/><path d="M272 228 l3 7 3 -7z" fill="#fff" stroke="#0E0C2B" stroke-width="1"/></g>
+<path class="ig-m m-ouch" d="M240 228 L246 223 L252 229 L258 223 L264 229 L270 223 L278 228" fill="none" stroke="#0E0C2B" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="ig-eyeset">
+<g class="ig-eyes-open">
+<ellipse class="ig-eye" cx="234" cy="168" rx="15" ry="17"/><ellipse class="ig-eye" cx="286" cy="168" rx="15" ry="17"/>
+<g clip-path="url(#ji-cEyeL)"><ellipse cx="234" cy="158" rx="20" ry="8" fill="#B8A020" opacity=".35"/></g>
+<g clip-path="url(#ji-cEyeR)"><ellipse cx="286" cy="158" rx="20" ry="8" fill="#B8A020" opacity=".35"/></g>
+<g class="ig-pupil"><ellipse cx="235" cy="169" rx="3.4" ry="12" fill="#2A1406"/><ellipse cx="285" cy="169" rx="3.4" ry="12" fill="#2A1406"/></g>
+<circle cx="229" cy="161" r="3.6" fill="#fff"/><circle cx="281" cy="161" r="3.6" fill="#fff"/><circle cx="239" cy="176" r="1.6" fill="#fff"/><circle cx="291" cy="176" r="1.6" fill="#fff"/>
+<ellipse cx="234" cy="168" rx="15" ry="17" fill="none" stroke="#0E0C2B" stroke-width="2.8"/><ellipse cx="286" cy="168" rx="15" ry="17" fill="none" stroke="#0E0C2B" stroke-width="2.8"/>
+<path class="ig-lid" d="M218 151 H251 V164 Q234 160 218 166 Z M269 151 H302 V166 Q286 160 269 164 Z" fill="#D9483E" stroke="#0E0C2B" stroke-width="2.4" stroke-linejoin="round"/>
+</g>
+<g class="ig-squint" fill="none" stroke="#0E0C2B" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M222 160 L240 168 L222 176"/><path d="M298 160 L280 168 L298 176"/></g>
+</g>
+<path class="ig-brow-l ol2" fill="#A8322F" d="M214 151 L248 140 L250 147 L218 159 Z"/>
+<path class="ig-brow-r ol2" fill="#A8322F" d="M306 151 L272 140 L270 147 L302 159 Z"/>
+</g></g>
+
+</g></g></g>
+
+<!-- forma purificada -->
+<g class="ig-spirit">
+<circle class="ig-spglow" cx="260" cy="246" r="96" fill="url(#ji-goldG)" style="transform-box:fill-box;transform-origin:50% 50%"/>
+<g class="ig-spfloat">
+<path class="ol2" fill="#FFC83D" d="M232 252 L196 226 L204 252 L190 266 L226 266 Z"/>
+<path class="ol2" fill="#E0A520" d="M288 252 L324 226 L316 252 L330 266 L294 266 Z"/>
+<path d="M286 290 C306 296 318 286 318 272" fill="none" stroke="#0E0C2B" stroke-width="12" stroke-linecap="round"/>
+<path d="M286 290 C306 296 318 286 318 272" fill="none" stroke="#FFD978" stroke-width="7" stroke-linecap="round"/>
+<g transform="translate(318 270) scale(.45)"><g class="ig-fl"><use href="#ji-flameY"/></g></g>
+<ellipse class="ol" cx="260" cy="274" rx="34" ry="30" fill="#FFD978"/>
+<ellipse cx="260" cy="282" rx="18" ry="18" fill="#FFF1C4"/>
+<ellipse class="ol2" cx="244" cy="302" rx="10" ry="6" fill="#FFC83D"/><ellipse class="ol2" cx="276" cy="302" rx="10" ry="6" fill="#E0A520"/>
+<g transform="translate(260 186) scale(.6)"><g class="ig-fl"><use href="#ji-flameY"/></g></g>
+<g transform="translate(246 190) rotate(-24) scale(.45)"><g class="ig-fl f2"><use href="#ji-flameY"/></g></g>
+<g transform="translate(274 190) rotate(24) scale(.45)"><g class="ig-fl f3"><use href="#ji-flameY"/></g></g>
+<ellipse class="ol" cx="260" cy="216" rx="38" ry="32" fill="#FFE9A6"/>
+<ellipse cx="260" cy="230" rx="22" ry="13" fill="#FFF1C4"/>
+<path class="ol2" fill="#FFF6D6" d="M236 194 C230 186 226 184 220 184 C224 190 226 196 230 200 Z M284 194 C290 186 294 184 300 184 C296 190 294 196 290 200 Z"/>
+<path d="M243 212 Q250 204 257 212 M263 212 Q270 204 277 212" fill="none" stroke="#0E0C2B" stroke-width="3.4" stroke-linecap="round"/>
+<ellipse cx="240" cy="224" rx="6" ry="3.5" fill="#FF6B6B" opacity=".45"/><ellipse cx="280" cy="224" rx="6" ry="3.5" fill="#FF6B6B" opacity=".45"/>
+<path d="M253 232 Q260 238 267 232" fill="none" stroke="#0E0C2B" stroke-width="2.8" stroke-linecap="round"/>
+</g>
+<g class="ig-sparks" fill="#FFF6D6" stroke="#FFC83D" stroke-width="1.4" stroke-linejoin="round">
+<path d="M186 196 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><path d="M332 176 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z"/><path d="M340 300 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><path d="M178 306 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z"/>
+</g>
+</g>
+
+<!-- efectos -->
+<g class="ig-fx">
+<g class="ig-dust" fill="#E9E6F8"><ellipse cx="172" cy="413" rx="24" ry="9"/><ellipse cx="352" cy="413" rx="24" ry="9"/><ellipse cx="136" cy="406" rx="13" ry="6"/><ellipse cx="388" cy="406" rx="13" ry="6"/></g>
+<g class="ig-smoke" fill="#C9C4E4" stroke="#0E0C2B" stroke-width="1.6"><circle cx="250" cy="194" r="6"/><circle cx="270" cy="194" r="6"/><circle cx="260" cy="186" r="4.5"/></g>
+<g class="ig-slash" fill="none" stroke-linecap="round" stroke-dasharray="240">
+<path d="M346 196 Q290 260 196 300" stroke="#FF6B6B" stroke-width="12"/><path d="M346 196 Q290 260 196 300" stroke="#FFF6D6" stroke-width="4.5"/>
+<path d="M360 224 Q300 290 206 330" stroke="#FF6B6B" stroke-width="12"/><path d="M360 224 Q300 290 206 330" stroke="#FFF6D6" stroke-width="4.5"/>
+<path d="M370 254 Q312 318 220 358" stroke="#FF6B6B" stroke-width="12"/><path d="M370 254 Q312 318 220 358" stroke="#FFF6D6" stroke-width="4.5"/>
+</g>
+<g class="ig-impact"><path d="M232 300 L240 322 L262 316 L246 332 L262 348 L240 342 L232 364 L224 342 L202 348 L218 332 L202 316 L224 322 Z" fill="#FFF6D6" stroke="#FF6B6B" stroke-width="3" stroke-linejoin="round"/></g>
+<g class="ig-fire">
+<use href="#ji-jet" fill="url(#ji-fireOut)" stroke="#0E0C2B" stroke-width="3" stroke-linejoin="round"/>
+<use href="#ji-jet" transform="translate(260 230) scale(.74 .8) translate(-260 -230)" fill="url(#ji-fireMid)" stroke="none"/>
+<use href="#ji-jet" transform="translate(260 230) scale(.46 .58) translate(-260 -230)" fill="#E6DBFF" stroke="none"/>
+<use href="#ji-jet" transform="translate(260 230) scale(.22 .36) translate(-260 -230)" fill="#FFFFFF" stroke="none"/>
+</g>
+<g class="ig-embers" fill="#FFB36B" stroke="#0E0C2B" stroke-width="1.4" stroke-linejoin="round">
+<path d="M250 300 l5 -8 5 8 -5 8z" style="--dx:-150px;--dy:40px"/><path d="M270 300 l5 -8 5 8 -5 8z" style="--dx:150px;--dy:50px"/><path d="M256 320 l4 -7 4 7 -4 7z" style="--dx:-90px;--dy:110px"/><path d="M264 320 l4 -7 4 7 -4 7z" style="--dx:96px;--dy:104px"/><path d="M258 290 l4 -6 4 6 -4 6z" fill="#C4A8FF" style="--dx:-190px;--dy:-30px"/><path d="M262 290 l4 -6 4 6 -4 6z" fill="#C4A8FF" style="--dx:190px;--dy:-20px"/>
+</g>
+<g class="ig-hitstars" fill="#FFF6D6" stroke="#FF6B6B" stroke-width="2" stroke-linejoin="round"><path d="M330 120 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"/><path d="M190 130 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/><path d="M300 86 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/></g>
+<g class="ig-ragering"><circle cx="260" cy="250" r="70" fill="none" stroke="#FF6B6B" stroke-width="6"/><circle cx="260" cy="250" r="54" fill="none" stroke="#8A5CFF" stroke-width="3"/></g>
+<g class="ig-light"><circle cx="260" cy="270" r="120" fill="url(#ji-goldG)"/><g class="ig-rays" stroke="#FFC83D" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M260 130 V170 M260 370 V410 M120 270 H160 M360 270 H400 M161 171 L189 199 M331 341 L359 369 M359 171 L331 199 M189 341 L161 369"/></g></g>
+</g>
+</g>
+</g>
+</svg>

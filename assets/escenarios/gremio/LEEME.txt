@@ -1,0 +1,36 @@
+EL GREMIO · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (dia · noche).
+
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 362 · suelo 652 · alto del personaje 150
+  slot_jugador  x 478 · suelo 648 · alto del personaje 290
+  slot_guia  x 832 · suelo 646 · alto del personaje 320
+  slot_ui_arriba  x 640 · y 22 · 640 × 120
+
+ARCHIVOS
+  gremio-dia.svg  —  Día · Escena completa
+  gremio-dia-vertical.svg  —  Día · Recorte vertical 9:16
+  gremio-dia-cuadrado.svg  —  Día · Recorte cuadrado 1:1
+  gremio-dia-capa-fondo.svg  —  Día · Capa fondo
+  gremio-dia-capa-medio.svg  —  Día · Capa medio
+  gremio-dia-capa-frente.svg  —  Día · Capa frente
+  gremio-dia-capa-particulas.svg  —  Día · Capa partículas
+  gremio-noche.svg  —  Noche · Escena completa
+  gremio-noche-vertical.svg  —  Noche · Recorte vertical 9:16
+  gremio-noche-cuadrado.svg  —  Noche · Recorte cuadrado 1:1
+  gremio-noche-capa-fondo.svg  —  Noche · Capa fondo
+  gremio-noche-capa-medio.svg  —  Noche · Capa medio
+  gremio-noche-capa-frente.svg  —  Noche · Capa frente
+  gremio-noche-capa-particulas.svg  —  Noche · Capa partículas

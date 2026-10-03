@@ -1,0 +1,43 @@
+ARENA DEL GUARDIÁN · Escenario de El Archivo de los Mundos
+
+SVG de 1280 × 720 (16:9) con sus animaciones ambientales en CSS. No necesitan JavaScript.
+Cada estado trae: la escena completa, los recortes vertical (405 × 720) y cuadrado (720 × 720) y las cuatro capas por separado.
+
+CAPAS Y PROFUNDIDAD (parallax)
+  fondo 0.2 · medio 0.5 · (personajes) · frente 1.0 · partículas 1.4
+  Apílalas en ese orden con position:absolute y mueve cada una según el puntero multiplicado por su profundidad.
+  Abre demo.html para verlo funcionando.
+
+ESTADOS
+  En línea: cambia el atributo data-state del <svg> (calma · combate · victoria).
+
+  Como imagen: usa el archivo del estado que quieras.
+
+MARCADORES DE POSICIÓN (coordenadas del viewBox 1280 × 720)
+  slot_aliado_izq  x 214 · suelo 642 · alto del personaje 150
+  slot_jugador  x 384 · suelo 650 · alto del personaje 290
+  slot_jefe  x 904 · suelo 640 · alto del personaje 390
+  slot_ui_arriba  x 640 · y 22 · 640 × 110
+
+ARCHIVOS
+  arena-calma.svg  —  Calma · Escena completa
+  arena-calma-vertical.svg  —  Calma · Recorte vertical 9:16
+  arena-calma-cuadrado.svg  —  Calma · Recorte cuadrado 1:1
+  arena-calma-capa-fondo.svg  —  Calma · Capa fondo
+  arena-calma-capa-medio.svg  —  Calma · Capa medio
+  arena-calma-capa-frente.svg  —  Calma · Capa frente
+  arena-calma-capa-particulas.svg  —  Calma · Capa partículas
+  arena-combate.svg  —  Combate · Escena completa
+  arena-combate-vertical.svg  —  Combate · Recorte vertical 9:16
+  arena-combate-cuadrado.svg  —  Combate · Recorte cuadrado 1:1
+  arena-combate-capa-fondo.svg  —  Combate · Capa fondo
+  arena-combate-capa-medio.svg  —  Combate · Capa medio
+  arena-combate-capa-frente.svg  —  Combate · Capa frente
+  arena-combate-capa-particulas.svg  —  Combate · Capa partículas
+  arena-victoria.svg  —  Victoria · Escena completa
+  arena-victoria-vertical.svg  —  Victoria · Recorte vertical 9:16
+  arena-victoria-cuadrado.svg  —  Victoria · Recorte cuadrado 1:1
+  arena-victoria-capa-fondo.svg  —  Victoria · Capa fondo
+  arena-victoria-capa-medio.svg  —  Victoria · Capa medio
+  arena-victoria-capa-frente.svg  —  Victoria · Capa frente
+  arena-victoria-capa-particulas.svg  —  Victoria · Capa partículas
