@@ -20,7 +20,7 @@ PASO 0 — Lee el artefacto primero y respeta su técnica y diseño de página: 
 1. FORMATO
 - Cada objeto es un SVG de viewBox 256×256, centrado, con margen de 16 px, sin fondo (transparente).
 - Cada objeto tiene tres estados: reposo (bucle suave), destacado (al pasar el puntero o al recibirlo: brilla y rebota) y bloqueado (silueta gris con candado, sin animación).
-- Los poderes llevan además una animación de activación de 1,5 a 2 s sobre un lienzo de 640×480 para superponerla al avatar,, con ids poder_<nombre>_efecto.
+- Los poderes llevan además una animación de activación de 1,5 a 2 s sobre un lienzo de 640×480 para superponerla al avatar, con ids poder_<nombre>_efecto.
 - ids: obj_<categoria>_<nombre> (por ejemplo obj_ayuda_pista, obj_poder_rayo, obj_insignia_racha7, obj_cofre_epico).
 - Cada objeto lleva datos en atributos data-*: data-id, data-nombre, data-categoria, data-rareza, data-precio, data-desbloqueo.
 
