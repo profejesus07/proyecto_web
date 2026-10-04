@@ -6,6 +6,7 @@ import { LinkFamilyForm, SendMessage, UnlinkButton } from "@/components/family-c
 import { GuidePicker } from "@/components/guide-picker";
 import { FAMILY_MESSAGES_PER_DAY, GUARDIANES_HOGAR, guideSrc, type Guide, type GuideAnim } from "@/content/elenco";
 import { Sprite, asset } from "@/components/sprite";
+import { Terrace } from "@/components/terrace";
 import { PageTitle } from "@/components/ui";
 import { daysAgo, lastSeen } from "@/lib/activity";
 import { requireFamily } from "@/lib/auth";
@@ -158,6 +159,18 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
           <Sprite src={guideSrc(guide, "saludar")} alt={`${guide.name}, tu Guardián del Hogar, te saluda`} className="hidden h-48 w-auto sm:block" />
         </div>
       </section>
+
+      {children.length > 0 && (
+        <section aria-labelledby="terraza-t" className="panel space-y-3 p-5 sm:p-6">
+          <h2 id="terraza-t" className="text-xl">La Terraza del Hogar</h2>
+          <Terrace decor={[...new Set(children.flatMap((c) => c.decor))]} state={terraceState()} />
+          <p className="text-sm text-muted">
+            {children.some((c) => c.decor.length)
+              ? `Regalos de ${children.filter((c) => c.decor.length).map((c) => c.name).join(" y ")}: los compraron con las monedas que ganaron aprendiendo.`
+              : "Tus hijos pueden decorarla con las monedas que ganan en sus misiones (en la tienda, sección «Decoración»)."}
+          </p>
+        </section>
+      )}
 
       {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 

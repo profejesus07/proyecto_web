@@ -7,14 +7,17 @@ export type BeatKind = "enter" | "hit" | "miss";
 export interface Enemy {
   slug: string;
   name: string;
+  /** Su jugada especial (animación «especial-…»), la que usa cuando el estudiante falla. */
+  special: string;
 }
 
 const ENEMIES: readonly Enemy[] = [
-  { slug: "slime-confuso", name: "Slime Confuso" },
-  { slug: "duende-enredador", name: "Duende Enredador" },
-  { slug: "sombrita", name: "Sombrita" },
+  { slug: "slime-confuso", name: "Slime Confuso", special: "confundir" },
+  { slug: "duende-enredador", name: "Duende Enredador", special: "enredar" },
+  { slug: "sombrita", name: "Sombrita", special: "desvanecer" },
 ];
-const MIMIC: Enemy = { slug: "cofre-mimico", name: "Cofre Mímico" };
+const MIMIC: Enemy = { slug: "cofre-mimico", name: "Cofre Mímico", special: "enganar" };
+export const ALL_ENEMIES: readonly Enemy[] = [...ENEMIES, MIMIC];
 
 /** Cada pregunta la custodia un enemigo menor; la última de una misión larga es el Cofre Mímico (sorpresa). */
 export function enemyFor(index: number, total: number): Enemy {
@@ -36,13 +39,16 @@ interface BeatInput {
   /** El Guardián está enfurecido porque la respuesta anterior fue un error. */
   fury: boolean;
   firstEnter: boolean;
+  /** Enemigo menor de la pregunta (para su jugada especial). */
+  enemy?: Enemy;
 }
 
-export function foeAnim({ boss, kind, phase, fury, firstEnter }: BeatInput): string {
+export function foeAnim({ boss, kind, phase, fury, firstEnter, enemy }: BeatInput): string {
   if (!boss) {
     if (kind === "enter") return phase === 0 ? "aparecer" : "reposo";
     if (kind === "hit") return phase === 0 ? "recibir-golpe" : "derrota";
-    return phase === 0 ? "burla" : "reposo";
+    // Al fallar: primero su jugada especial (confunde, enreda, se desvanece, engaña) y luego se burla.
+    return phase === 0 ? (enemy ? `especial-${enemy.special}` : "burla") : "burla";
   }
   if (kind === "enter") return firstEnter && phase === 0 ? "aparecer" : fury ? "furia-reposo" : "reposo";
   if (kind === "hit") return phase === 0 ? (fury ? "furia-golpe" : "golpe") : "reposo";

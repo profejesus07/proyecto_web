@@ -52,3 +52,11 @@ open(os.path.join(ROOT, 'src/content/wearable-ids.ts'), 'w', encoding='utf8').wr
     '/** Generado por scripts/build_wearables.py. No editar a mano. El orden fija el código de la URL. */\n'
     'export const WEARABLE_IDS = ' + json.dumps(ids, ensure_ascii=False, indent=1) + ' as const;\n')
 print(len(out), 'objetos;', sum(len(v['art']) for v in out.values()), 'bytes de dibujo')
+
+# Decoración de la Terraza del Hogar: la misma ficha sin el medallón (data-marco="no") para ponerla en la escena.
+for it in cat['objetos']:
+    if it['categoria'] != 'decoracion':
+        continue
+    src = os.path.join(ROOT, 'public/assets/objetos', it['archivo'])
+    s = open(src, encoding='utf8').read().replace('data-marco="si"', 'data-marco="no"', 1)
+    open(src.replace('.svg', '-terraza.svg'), 'w', encoding='utf8').write(s)

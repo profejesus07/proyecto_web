@@ -29,6 +29,7 @@ export default async function ChroniclesPage() {
                 ? <>Tienes <strong>{unread} {unread === 1 ? "capítulo nuevo" : "capítulos nuevos"}</strong> esperándote. Siéntate, que esta historia es larga.</>
                 : "Cada libro de estos estantes guarda una historia. Cruza portales y te contaré más."}
             </SpeechBubble>
+            <Link href="/cronicas/bestiario" className="btn btn-secondary w-fit">📖 Abrir el Bestiario</Link>
           </div>
         </div>
       </section>

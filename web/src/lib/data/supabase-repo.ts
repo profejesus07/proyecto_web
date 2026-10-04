@@ -283,6 +283,7 @@ export function createSupabaseRepo(): Repo {
         courses: { slug: string; title: string; kind: "clase" | "curso"; total: number; lessons: { position: number; title: string; best_score: number; attempts: number; completed: boolean }[] }[];
         classes: { name: string; teacher: string }[];
         certificates: { code: string; course_title: string; hours: number; issued_at: string }[];
+        decor?: string[];
       };
       return ((data as Raw[] | null) ?? []).map((c): FamilyChild => ({
         id: c.id, name: c.name, xp: c.xp, streak: c.streak, lastActive: c.last_active, since: c.since, weekAttempts: c.week_attempts,
@@ -291,6 +292,7 @@ export function createSupabaseRepo(): Repo {
         courses: c.courses.map((k) => ({ ...k, lessons: k.lessons.map((l) => ({ position: l.position, title: l.title, bestScore: l.best_score, attempts: l.attempts, completed: l.completed })) })),
         classes: c.classes,
         certificates: c.certificates.map((x) => ({ code: x.code, courseTitle: x.course_title, hours: x.hours, issuedAt: x.issued_at })),
+        decor: c.decor ?? [],
       }));
     },
 

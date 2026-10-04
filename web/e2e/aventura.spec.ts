@@ -177,6 +177,13 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   // Lo que no tiene no aparece para ponérselo.
   await page.goto("/perfil/avatar");
   await expect(page.getByRole("radio", { name: "Capa real" })).toHaveCount(0);
+
+  // Decoración: un regalo para la Terraza del Hogar, que se ve en el perfil.
+  await page.goto("/tienda?c=decoracion");
+  await card("Macetas en flor").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("Macetas en flor").getByText("¡Conseguiste Macetas en flor!")).toBeVisible();
+  await page.goto("/perfil");
+  await expect(page.getByRole("img", { name: "Macetas en flor" }).first()).toBeVisible();
 });
 
 test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ page }) => {
@@ -401,6 +408,16 @@ test("el docente elige su Maestro del Gremio y lo ve en su informe", async ({ pa
   await context.clearCookies({ name: "umbral-vista" });
 });
 
+test("el Bestiario registra las criaturas encontradas y deja en sombra a los Guardianes sin portal", async ({ page }) => {
+  await page.goto("/cronicas");
+  await page.getByRole("link", { name: /Abrir el Bestiario/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Bestiario" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Slime Confuso" })).toBeVisible();
+  await expect(page.getByText(/Confundir:/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Petrox" })).toBeVisible();
+  await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);
@@ -495,6 +512,9 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   await expect(card.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" })).toBeVisible();
   const portal = card.locator("li").filter({ has: page.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" }) });
   await expect(portal.getByText(/L1 · 100% ✔/)).toBeVisible();
+
+  // La terraza muestra el regalo que el estudiante compró en la tienda.
+  await expect(page.getByRole("region", { name: "La Terraza del Hogar" }).getByRole("img", { name: "Macetas en flor" })).toBeVisible();
 
   // La familia elige su Guardián del Hogar y envía un mensaje de apoyo.
   await page.getByRole("radio", { name: "Papá Kenji" }).check({ force: true });

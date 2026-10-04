@@ -105,6 +105,13 @@ describe("family_overview", () => {
     expect(text).not.toMatch(/@prueba\.co|answers|correct_index/);
   });
 
+  it("incluye la decoración que el estudiante le regaló a la terraza (solo decoración)", async () => {
+    await link(F, await code(S));
+    await h.db.query("insert into public.inventory (user_id, item_id) values ($1, 'obj_decoracion_farol'), ($1, 'obj_cosmetico_capa_hojas'), ($1, 'objXdecoracionXx')", [S]);
+    const [child] = await overview(F);
+    expect((child as unknown as { decor: string[] }).decor).toEqual(["obj_decoracion_farol"]);
+  });
+
   it("una familia no ve a estudiantes que no le dieron su código", async () => {
     await link(F, await code(S));
     expect((await overview(F)).map((c) => c.name)).toEqual(["Luna"]);

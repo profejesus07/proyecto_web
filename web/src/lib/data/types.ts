@@ -199,6 +199,8 @@ export interface FamilyChild {
   courses: { slug: string; title: string; kind: "clase" | "curso"; total: number; lessons: { position: number; title: string; bestScore: number; attempts: number; completed: boolean }[] }[];
   classes: { name: string; teacher: string }[];
   certificates: { code: string; courseTitle: string; hours: number; issuedAt: string }[];
+  /** Decoración que le regaló a la Terraza del Hogar (ids obj_decoracion_*). */
+  decor: string[];
 }
 
 export interface ClassStudent {

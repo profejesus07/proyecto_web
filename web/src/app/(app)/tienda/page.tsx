@@ -4,6 +4,7 @@ import { AvatarFace } from "@/components/avatar-face";
 import { SpeechBubble } from "@/components/dialogue";
 import { BuyButton } from "@/components/profile-client";
 import { Sprite } from "@/components/sprite";
+import { Terrace } from "@/components/terrace";
 import { PageTitle } from "@/components/ui";
 import { WEARABLE_IDS } from "@/content/wearable-ids";
 import { requireViewer } from "@/lib/auth";
@@ -21,6 +22,7 @@ const INTRO: Record<string, string> = {
   foco: "Un objeto mágico para llevar en la mano.",
   marco: "Un marco para tu retrato: se ve en el Gremio, en tu perfil y en el informe de tu docente.",
   companero: "Un compañero que te acompaña en el Gremio y en tu perfil. Las pieles de Kuro crecen contigo al subir de rango.",
+  decoracion: "Un regalo para la Terraza del Hogar de tu familia: lo verán en su panel «Mi familia». Tú también la ves en tu perfil.",
 };
 
 /** Brann atiende cada mostrador con su gesto y una frase. */
@@ -30,6 +32,7 @@ const BRANN: Record<string, { anim: string; line: string }> = {
   foco: { anim: "forjar", line: "Recién salidos de mi yunque." },
   marco: { anim: "forjar", line: "Un buen retrato merece un buen marco." },
   companero: { anim: "saludar", line: "Estos amigos buscan con quién aventurarse." },
+  decoracion: { anim: "mostrar", line: "¿Un detalle para la terraza de tu familia? Les va a encantar." },
 };
 
 const slotOf = (id: string): WearSlot | undefined => WEAR_SLOTS.find((s) => (WEARABLE_IDS[s] as readonly string[]).includes(id));
@@ -56,6 +59,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
       return <Sprite src={src} alt={`Así te queda: ${it.nombre}`} className="absolute inset-0 size-full object-contain p-1" />;
     }
     if (it.categoria === "marco") return <AvatarFace base={viewer.avatarBase} rank={rank} look={{ ...viewer.avatarLook, frame: it.id }} size={76} />;
+    if (it.categoria === "decoracion") return <Terrace decor={[it.id]} className="!rounded-lg" />;
     if (it.categoria === "companero") return <Sprite src={petImage(it.id, rank) ?? itemImage(it)} alt={it.alt} className="absolute inset-0 size-full object-contain p-2" />;
     return <Sprite src={itemImage(it)} alt={it.alt} className="size-24" />;
   }
@@ -98,11 +102,12 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
               const price = priceOf(it)!;
               const aid = aidByItem(it.id);
               const wearable = !!slotOf(it.id) || it.categoria === "marco" || it.categoria === "companero";
+              const decor = it.categoria === "decoracion";
               return (
                 <li key={it.id} className="panel flex flex-col gap-3 p-4" style={{ borderColor: `${r.color}55` }}>
                   <div className="relative grid h-40 place-items-center overflow-hidden rounded-xl bg-bg/40 p-2">
                     {preview(it)}
-                    {slotOf(it.id) && <Sprite src={itemImage(it)} alt="" decorative className="absolute right-1 top-1 size-12" />}
+                    {(slotOf(it.id) || it.categoria === "decoracion") && <Sprite src={itemImage(it)} alt="" decorative className="absolute right-1 top-1 size-12" />}
                   </div>
                   <div className="space-y-1">
                     <p className="text-[0.7rem] font-bold uppercase tracking-wider" style={{ color: r.color }}>{r.label}</p>
@@ -114,7 +119,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
                       stack={{ have: stock[it.id] ?? 0, max: aid.maxStock, dailyCap: aid.dailyCap, locked: viewer.xp < aid.minXp ? aid.minRank : null }} />
                   ) : (
                     <BuyButton itemId={it.id} price={price} coins={viewer.coins} owned={owned.has(it.id)}
-                      use={wearable ? { href: "/perfil/avatar", label: "🎨 Póntelo en el Vestidor" } : undefined} />
+                      use={wearable ? { href: "/perfil/avatar", label: "🎨 Póntelo en el Vestidor" } : decor ? { href: "/perfil#familia-t", label: "🏡 Ver la terraza" } : undefined} />
                   )}</div>
                 </li>
               );

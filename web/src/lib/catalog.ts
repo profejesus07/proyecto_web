@@ -49,9 +49,10 @@ export function priceOf(item: CatalogItem): number | null {
 /**
  * Categorías que se venden en la tienda: solo lo que ya hace algo en el juego.
  * Ayudas (Pista y 50/50, ver lib/game/aids.ts), lo que se viste en el Vestidor (cosméticos y focos),
- * marcos del retrato y compañeros. Poderes, decoración y piezas sueltas de equipo esperan a tener uso.
+ * marcos del retrato, compañeros y decoración para la Terraza del Hogar de su familia.
+ * Poderes y piezas sueltas de equipo esperan a tener uso.
  */
-export const SHOP_CATEGORIES = ["ayuda", "cosmetico", "foco", "marco", "companero"] as const;
+export const SHOP_CATEGORIES = ["ayuda", "cosmetico", "foco", "marco", "companero", "decoracion"] as const;
 
 export function shopItems(): CatalogItem[] {
   return items.filter((i) => priceOf(i) !== null && (SHOP_CATEGORIES as readonly string[]).includes(i.categoria) && (i.categoria !== "ayuda" || !!aidByItem(i.id)));

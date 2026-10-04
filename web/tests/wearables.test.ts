@@ -64,9 +64,9 @@ describe("tienda", () => {
   it("solo vende lo que ya funciona", () => {
     const sale = shopItems();
     const cats = new Set(sale.map((i) => i.categoria));
-    expect([...cats].sort()).toEqual(["ayuda", "companero", "cosmetico", "foco", "marco"]);
+    expect([...cats].sort()).toEqual(["ayuda", "companero", "cosmetico", "decoracion", "foco", "marco"]);
     expect(sale.filter((i) => i.categoria === "ayuda").map((i) => i.id).sort()).toEqual(["obj_ayuda_5050", "obj_ayuda_pista"]);
-    expect(sale.some((i) => i.categoria === "poder" || i.categoria === "decoracion" || i.categoria === "equipo")).toBe(false);
+    expect(sale.some((i) => i.categoria === "poder" || i.categoria === "equipo")).toBe(false);
   });
 
   it("muestra el nombre corto del título y el compañero según el rango", () => {

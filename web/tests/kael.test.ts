@@ -43,3 +43,24 @@ describe("Maestros y Guardianes del Hogar", () => {
     expect(sanitizeLook({ guide: "otro" })).toEqual({});
   });
 });
+
+describe("enemigos y bestiario", () => {
+  it("cada enemigo usa su jugada especial al fallar y tiene su ficha en el bestiario", async () => {
+    const { ALL_ENEMIES, foeAnim } = await import("@/lib/game/battle");
+    const { BEASTS } = await import("@/content/bestiario");
+    for (const e of ALL_ENEMIES) {
+      const anim = foeAnim({ boss: false, kind: "miss", phase: 0, fury: false, firstEnter: false, enemy: e });
+      expect(existsSync(path.join(import.meta.dirname, "../public/assets/enemigos", e.slug, `${e.slug}-${anim}.svg`)), anim).toBe(true);
+      expect(foeAnim({ boss: false, kind: "miss", phase: 1, fury: false, firstEnter: false, enemy: e })).toBe("burla");
+      expect(BEASTS.find((b) => b.slug === e.slug)?.howTo).toBeTruthy();
+    }
+  });
+
+  it("toda la decoración tiene su lugar en la terraza y su dibujo sin medallón", async () => {
+    const { DECOR_IDS } = await import("@/components/terrace");
+    const { allItems } = await import("@/lib/catalog");
+    const decor = allItems().filter((i) => i.categoria === "decoracion").map((i) => i.id).sort();
+    expect([...DECOR_IDS].sort()).toEqual(decor);
+    for (const id of decor) expect(existsSync(path.join(import.meta.dirname, "../public/assets/objetos/decoracion", `${id}-terraza.svg`))).toBe(true);
+  });
+});

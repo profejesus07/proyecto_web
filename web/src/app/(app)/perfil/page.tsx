@@ -5,6 +5,7 @@ import { logoutAction } from "@/app/actions/auth";
 import { FamilyCodeCard, UnlinkButton } from "@/components/family-client";
 import { DisplayNameForm } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
+import { Terrace } from "@/components/terrace";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
 import { allItems, getItem, petImage, titleLabel, type CatalogItem } from "@/lib/catalog";
@@ -136,6 +137,8 @@ export default async function ProfilePage() {
             )}
           </div>
           <div className="space-y-3">
+            <Terrace decor={inventory.map((i) => i.itemId)} />
+            <p className="hint">La Terraza del Hogar de tu familia{families.length ? "" : " (cuando se vinculen)"}. <Link href="/tienda?c=decoracion" className="font-semibold text-cyan underline underline-offset-4">Decórala en la tienda</Link>.</p>
             <FamilyCodeCard />
             <p className="hint">Tu familia lo escribe en su cuenta de UMBRAL (tipo «Familia»), en «Mi familia». Si lo compartiste con quien no debías, cámbialo.</p>
           </div>

@@ -381,6 +381,7 @@ export function createMemoryRepo(): Repo {
         lastActive: rows.length ? todayBogota() : null, since: s.familySince, weekAttempts: rows.reduce((n, r) => n + r.pr.attempts, 0),
         courses, classes,
         certificates: s.certificates.map((c) => ({ code: c.code, courseTitle: c.courseTitle, hours: c.hours, issuedAt: c.issuedAt })),
+        decor: s.inventory.map((i) => i.itemId).filter((id) => id.startsWith("obj_decoracion_")).sort(),
       }];
     },
     async getCourseAccess(userId) {

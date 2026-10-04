@@ -99,7 +99,7 @@ export function Quiz(p: QuizProps) {
   // ----- Escena -----
   const enemy = enemyFor(idx, total);
   const prev = idx > 0 ? results[idx - 1] : null;
-  const foe = foeAnim({ boss: p.isBoss, kind: beat.kind, phase, fury: !!prev && !prev.correct, firstEnter: idx === 0 && beat.n === 0 });
+  const foe = foeAnim({ boss: p.isBoss, kind: beat.kind, phase, fury: !!prev && !prev.correct, firstEnter: idx === 0 && beat.n === 0, enemy });
   const foeSrc = p.isBoss ? asset.boss(p.guardian.slug, foe) : asset.enemy(enemy.slug, foe);
   const kuroSrc = asset.kuro(kuroAnim(res), p.kuroStage);
   const scene = sceneFor(p.isBoss, p.element);
@@ -117,7 +117,7 @@ export function Quiz(p: QuizProps) {
 
   // Precarga las animaciones que vienen para que no parpadeen.
   if (p.isBoss) for (const a of ["golpe", "furia-golpe", "transicion-furia", "furia-reposo", "reposo"]) preload(asset.boss(p.guardian.slug, a), { as: "image" });
-  else for (const a of ["reposo", "recibir-golpe", "derrota", "burla"]) preload(asset.enemy(enemy.slug, a), { as: "image" });
+  else for (const a of ["reposo", "recibir-golpe", "derrota", "burla", `especial-${enemy.special}`]) preload(asset.enemy(enemy.slug, a), { as: "image" });
   for (const a of ["celebrar", "animar"] as const) preload(asset.kuro(a, p.kuroStage), { as: "image" });
 
   function play(kind: BeatKind) {
