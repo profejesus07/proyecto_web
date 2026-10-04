@@ -52,6 +52,16 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 - Para cambiar o añadir cursos, edita o crea `supabase/seed/<curso>.json`, añádelo a `SEEDS` en `supabase/build_setup.py` (con el nombre de su migración), ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL. Los portales se abren en el orden de su `position`: cada uno exige terminar los anteriores.
 - Las claves se rotan desde Supabase; después actualiza la variable en Vercel y vuelve a desplegar.
+- **Cambios en la base de datos.** Cada cambio llega como una migración en `supabase/migrations/` (numeradas). Para aplicarla, copia ese archivo en Supabase → **SQL Editor** y pulsa **Run**; o vuelve a pegar `setup.sql` completo (es seguro repetirlo). En producción están aplicadas de la 0001 a la 0018 (octubre de 2026).
+- **Dibujos de accesorios y decoración.** Si cambian los SVG de `public/assets/objetos` (cosméticos, focos o decoración), ejecuta `python3 web/scripts/build_wearables.py` para regenerar las piezas que se ponen sobre el avatar y en la terraza.
+
+## Cómo funciona cada parte
+
+- **Familias.** El estudiante muestra su código de familia en **Perfil → Mi familia** y la familia lo escribe en **Mi familia**. La familia solo lee el avance (nunca correo, contraseña ni respuestas), puede enviar hasta 5 mensajes de apoyo al día (frases fijas) y ve la decoración que el estudiante le regala a su terraza. Cualquiera de los dos puede desvincularse.
+- **Tienda.** Solo vende lo que funciona: Pista y 50/50, poderes, cosméticos y objetos para la mano (se ven en el avatar), marcos del retrato, compañeros y decoración para la Terraza del Hogar. Todo se paga con monedas del juego, nunca con dinero.
+- **Poderes.** Rayo de Claridad y Escudo de Calma (rango D); Aura de Concentración, Lluvia de Estrellas, Invocación de Kuro y Pulso de Memoria (rango B). La Sombra Dorada y el Segundo Aliento se ganan al llegar al rango S. Cada uno tiene tope diario; las reglas están en `web/src/lib/game/powers.ts` y en la migración 0018.
+- **Guardianes y Crónicas.** Al crear una clase o un curso en el editor eliges su Guardián (8 posibles). Cada Guardián trae tres capítulos de las Crónicas: uno abierto desde el inicio, otro al superar la penúltima misión y otro al vencerlo (la última misión), además de su recompensa y su título. El Bestiario (en el Archivo de Crónicas) muestra a los Guardianes sin portal en sombra.
+- **Vista previa local.** Con `UMBRAL_PREVIEW=1 npm run dev` la plataforma funciona sin Supabase, con datos en memoria. La cookie `umbral-vista` cambia de persona: `docente`, `admin` o `familia` (sin cookie, estudiante).
 
 ## Administración
 
