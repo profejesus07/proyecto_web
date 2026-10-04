@@ -12,7 +12,7 @@ export async function SiteHeader() {
   const rank = viewer ? rankProgress(viewer.xp).rank : null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo href={viewer ? "/gremio" : "/"} />
 
@@ -47,7 +47,7 @@ export async function SiteHeader() {
 /** Cabecera de la portada: no depende de quién mira, así la portada se sirve estática y rápida desde la CDN. */
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo href="/" />
         <nav className="flex items-center gap-2" aria-label="Cuenta">

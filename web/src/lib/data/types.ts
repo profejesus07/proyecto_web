@@ -244,6 +244,37 @@ export interface AdminClass {
   members: number;
 }
 
+// ===== Constancias de asistencia =====
+export type DocType = "CC" | "TI" | "CE" | "PPT" | "PA";
+
+export interface IssuerSettings {
+  issuerName: string | null;
+  issuerTitle: string | null;
+  issuerDoc: string | null;
+  city: string | null;
+  signaturePng: string | null;
+}
+
+export interface Certificate {
+  number: number;
+  code: string;
+  userId: string | null;
+  courseSlug: string;
+  participantName: string;
+  docType: DocType;
+  docNumber: string;
+  courseTitle: string;
+  hours: number;
+  trainerName: string;
+  trainerTitle: string;
+  issuerName: string;
+  issuerTitle: string | null;
+  city: string | null;
+  startedOn: string;
+  finishedOn: string;
+  issuedAt: string;
+}
+
 export type ClassAction = "nuevo_codigo" | "renombrar" | "archivar" | "quitar";
 
 /** Todo lo que el servidor necesita de la base de datos. Una implementación real (Supabase) y otra en memoria (vista previa). */
@@ -296,6 +327,12 @@ export interface Repo {
   adminAssignTeacher(adminId: string, classId: string, teacherId: string): Promise<void>;
   /** Crea una cuenta de docente ya confirmada, con una contraseña temporal. */
   createTeacherAccount(email: string, name: string, password: string): Promise<{ id: string }>;
+  // Constancias
+  getIssuerSettings(): Promise<IssuerSettings>;
+  saveIssuerSettings(input: IssuerSettings): Promise<void>;
+  issueCertificate(userId: string, course: string, name: string, docType: DocType, docNumber: string): Promise<{ code: string; isNew: boolean }>;
+  getCertificate(code: string): Promise<Certificate | null>;
+  listCertificates(filter: { userId?: string; limit?: number }): Promise<Certificate[]>;
   // Editor de contenido (solo lo usa el servidor después de comprobar que quien llama es admin)
   listAllCourses(): Promise<CourseListItem[]>;
   getCourseForEdit(slug: string): Promise<EditableCourse | null>;

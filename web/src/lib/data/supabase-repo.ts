@@ -2,7 +2,7 @@ import "server-only";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminUser, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -25,6 +25,13 @@ const course = (r: Row): Course => ({
   hours: (r.hours as number | null | undefined) ?? null,
   trainerName: (r.trainer_name as string | null | undefined) ?? null,
   trainerTitle: (r.trainer_title as string | null | undefined) ?? null,
+});
+const certificate = (r: Row): Certificate => ({
+  number: r.number as number, code: r.code as string, userId: (r.user_id as string | null) ?? null, courseSlug: r.course_slug as string,
+  participantName: r.participant_name as string, docType: r.doc_type as DocType, docNumber: r.doc_number as string,
+  courseTitle: r.course_title as string, hours: r.hours as number, trainerName: r.trainer_name as string, trainerTitle: r.trainer_title as string,
+  issuerName: r.issuer_name as string, issuerTitle: (r.issuer_title as string | null) ?? null, city: (r.city as string | null) ?? null,
+  startedOn: r.started_on as string, finishedOn: r.finished_on as string, issuedAt: r.issued_at as string,
 });
 const courseRow = (c: CourseInput) => ({
   kind: c.kind, title: c.title, summary: c.summary, element: c.element, guardian: c.guardian,
@@ -336,6 +343,45 @@ export function createSupabaseRepo(): Repo {
       });
       if (error) fail(error, "crear docente");
       return { id: data.user.id };
+    },
+
+    // ===== Constancias =====
+    async getIssuerSettings() {
+      const { data, error } = await db.from("platform_settings").select("*").eq("id", true).maybeSingle();
+      if (error) fail(error, "configuración");
+      return {
+        issuerName: data?.issuer_name ?? null, issuerTitle: data?.issuer_title ?? null, issuerDoc: data?.issuer_doc ?? null,
+        city: data?.city ?? null, signaturePng: data?.signature_png ?? null,
+      };
+    },
+
+    async saveIssuerSettings(input) {
+      const { error } = await db.from("platform_settings").upsert({
+        id: true, issuer_name: input.issuerName, issuer_title: input.issuerTitle, issuer_doc: input.issuerDoc,
+        city: input.city, signature_png: input.signaturePng, updated_at: new Date().toISOString(),
+      });
+      if (error) fail(error, "guardar configuración");
+    },
+
+    async issueCertificate(userId, course, name, docType, docNumber) {
+      const { data, error } = await db.rpc("issue_certificate", { p_user: userId, p_course: course, p_name: name, p_doc_type: docType, p_doc_number: docNumber });
+      if (error) fail(error, "constancia");
+      const r = data as { code: string; new: boolean };
+      return { code: r.code, isNew: r.new };
+    },
+
+    async getCertificate(code) {
+      const { data, error } = await db.from("certificates").select("*").eq("code", code).maybeSingle();
+      if (error) fail(error, "constancia");
+      return data ? certificate(data) : null;
+    },
+
+    async listCertificates({ userId, limit = 100 }) {
+      let q = db.from("certificates").select("*").order("number", { ascending: false }).limit(limit);
+      if (userId) q = q.eq("user_id", userId);
+      const { data, error } = await q;
+      if (error) fail(error, "constancias");
+      return (data ?? []).map(certificate);
     },
 
     // ===== Editor de contenido =====

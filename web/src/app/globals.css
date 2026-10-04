@@ -180,3 +180,12 @@ p { text-wrap: pretty; }
 /* Los SVG animados se ven nítidos y no se pueden arrastrar por accidente */
 .sprite { display: block; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
 }
+
+/* Impresión (constancias): hoja horizontal, fondo blanco y solo el documento. */
+@media print {
+  @page { size: A4 landscape; margin: 8mm; }
+  html, body { background: #fff !important; color: #14123b !important; }
+  body * { visibility: hidden; }
+  .certificate, .certificate * { visibility: visible; }
+  .certificate { position: absolute; inset: 0; margin: 0 auto; }
+}

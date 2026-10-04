@@ -16,6 +16,7 @@ export default function PrivacyPage() {
           <li><strong>Correo electrónico y contraseña</strong>, para que puedas ingresar. La contraseña se guarda cifrada y nadie del equipo puede verla.</li>
           <li><strong>Nombre de aventurero</strong>, que eliges tú. Te pedimos no usar apellidos ni datos que identifiquen a un menor.</li>
           <li><strong>Tu avance en el juego</strong>: misiones completadas, notas, XP, monedas, objetos y racha.</li>
+          <li><strong>Para la constancia de asistencia</strong> de un curso corto (solo si la pides): tu nombre completo y el tipo y número de tu documento de identidad. Quedan guardados con la constancia para poder verificarla.</li>
           <li><strong>Tus cursos activados</strong>: a qué cursos tienes acceso completo y hasta cuándo. Por ahora no guardamos datos de tarjetas ni de pago.</li>
           <li><strong>Tu rol</strong> (estudiante, docente o familia) y la fecha en que aceptaste esta política.</li>
         </ul>
@@ -39,6 +40,7 @@ export default function PrivacyPage() {
         <h2>Quién más ve tus datos</h2>
         <p>Tu perfil es privado: otros estudiantes no ven tu avance.</p>
         <p className="mt-3"><strong>Clases:</strong> si te unes a la clase de un docente con su código, ese docente verá tu nombre de aventurero, tu avatar, tu rango, tu racha, la fecha de tu última actividad, tus notas en cada misión y, sin nombres, qué preguntas cuestan más al grupo. Nunca verá tu correo ni tu contraseña. Puedes salir de la clase cuando quieras desde tu perfil, y el docente también puede quitarte de ella.</p>
+        <p className="mt-3"><strong>Verificación de constancias:</strong> quien tenga el código de tu constancia puede comprobar en línea que es auténtica. Esa página muestra tu nombre, el curso, la intensidad, las fechas y solo los últimos 4 dígitos de tu documento.</p>
         <p className="mt-3"><strong>Administración:</strong> el responsable de la plataforma puede ver tu correo, tu rol, tu avance y los cursos a los que tienes acceso, solo para gestionar cuentas, suscripciones y soporte.</p>
         <p className="mt-3">Usamos <strong>Supabase</strong> para guardar los datos y autenticar a las personas, y <strong>Vercel</strong> para publicar el sitio. Ambos actúan como proveedores y tratan los datos solo para prestar ese servicio.</p>
       </section>

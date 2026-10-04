@@ -3,7 +3,7 @@ import { Logo } from "@/components/logo";
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-line/60 bg-bg-2/60">
+    <footer className="mt-24 border-t border-line/60 bg-bg-2/60 print:hidden">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-3">
           <Logo />
@@ -19,6 +19,7 @@ export function Footer() {
           <p className="font-bold">Confianza</p>
           <Link className="block text-muted hover:text-text" href="/privacidad">Privacidad y datos</Link>
           <Link className="block text-muted hover:text-text" href="/terminos">Términos de uso</Link>
+          <Link className="block text-muted hover:text-text" href="/verificar">Verificar una constancia</Link>
         </nav>
       </div>
       <div className="border-t border-line/40 py-5 text-center text-xs text-muted">© {new Date().getFullYear()} Umbral. Todos los derechos reservados.</div>

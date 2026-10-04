@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AdminUser, AidUseRow, AnswerKeyRow, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -54,6 +54,8 @@ interface State {
   access: Set<string>;
   /** Cursos cuyo acceso llegó por el código de un grupo: curso → grupo. */
   viaClass: Map<string, string>;
+  settings: IssuerSettings;
+  certificates: Certificate[];
   prices: Map<string, number | null>;
   extraTeachers: AdminUser[];
 }
@@ -74,6 +76,8 @@ function state(): State {
       members: [],
       access: new Set(["primer-portal"]),
       viaClass: new Map(),
+      settings: { issuerName: null, issuerTitle: null, issuerDoc: null, city: null, signaturePng: null },
+      certificates: [],
       prices: new Map([["primer-portal", 20000], ["portal-del-primer-intento", 25000]]),
       extraTeachers: [],
     };
@@ -351,6 +355,36 @@ export function createMemoryRepo(): Repo {
       const id = `docente-${s.extraTeachers.length + 1}`;
       s.extraTeachers.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
       return { id };
+    },
+    // ===== Constancias =====
+    async getIssuerSettings() { return { ...state().settings }; },
+    async saveIssuerSettings(input) { state().settings = { ...input }; },
+    async issueCertificate(userId, course, name, docType, docNumber) {
+      const s = state();
+      const prev = s.certificates.find((c) => c.userId === userId && c.courseSlug === course);
+      if (prev) return { code: prev.code, isNew: false };
+      const c = C().courses.find((x) => x.slug === course && x.kind === "curso" && x.published);
+      if (!c) throw new Error("curso_no_encontrado");
+      if (!c.hours || !c.trainerName || !c.trainerTitle) throw new Error("curso_incompleto");
+      const ms = C().missions.filter((m) => m.courseSlug === course);
+      if (!ms.length || ms.some((m) => !s.progress.get(m.id)?.completed)) throw new Error("curso_sin_terminar");
+      if (!s.settings.issuerName || !s.settings.signaturePng) throw new Error("falta_configuracion");
+      const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const part = () => Array.from({ length: 4 }, () => abc[Math.floor(Math.random() * abc.length)]).join("");
+      const today = todayBogota();
+      const cert: Certificate = {
+        number: s.certificates.length + 1, code: `UMB-${part()}-${part()}`, userId, courseSlug: course,
+        participantName: name.trim().replace(/\s+/g, " "), docType, docNumber: docNumber.trim().toUpperCase(),
+        courseTitle: c.title, hours: c.hours, trainerName: c.trainerName, trainerTitle: c.trainerTitle,
+        issuerName: s.settings.issuerName, issuerTitle: s.settings.issuerTitle, city: s.settings.city,
+        startedOn: today, finishedOn: today, issuedAt: new Date().toISOString(),
+      };
+      s.certificates.push(cert);
+      return { code: cert.code, isNew: true };
+    },
+    async getCertificate(code) { return state().certificates.find((c) => c.code === code) ?? null; },
+    async listCertificates({ userId, limit = 100 }) {
+      return state().certificates.filter((c) => !userId || c.userId === userId).slice().reverse().slice(0, limit);
     },
     // ===== Editor de contenido =====
     async listAllCourses() {

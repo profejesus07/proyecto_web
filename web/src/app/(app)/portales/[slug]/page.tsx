@@ -5,6 +5,7 @@ import { Sprite, asset } from "@/components/sprite";
 import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
+import { getRepo } from "@/lib/data";
 import { CHAPTERS, isUnlocked, missionKey } from "@/content/cronicas";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { formatPrice, loadCourseView, type MissionView } from "@/lib/data/queries";
@@ -19,6 +20,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   const viewer = await requireViewer(`/portales/${slug}`);
   const course = await loadCourseView(viewer.id, slug);
   if (!course) notFound();
+  const myCert = course.kind === "curso" ? (await getRepo().listCertificates({ userId: viewer.id })).find((c) => c.courseSlug === slug) : undefined;
   const color = ELEMENT_COLOR[course.element];
   const g = guardianBySlug(course.guardian);
   const normal = course.missions.filter((m) => !m.isBoss);
@@ -53,6 +55,17 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
         </div>
         <Sprite src={asset.boss(course.guardian)} alt={`${g?.name ?? "El Guardián"} custodia este portal`} className="mx-auto h-48 w-auto md:h-56" />
       </header>
+
+      {course.kind === "curso" && course.status === "completado" && (
+        <div role="note" className="panel panel-glow flex flex-wrap items-center gap-4 !border-gold/60 p-5">
+          <span aria-hidden="true" className="text-4xl">🎓</span>
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-xl font-bold">{myCert ? "Tu constancia de asistencia está lista" : "¡Terminaste el curso!"}</p>
+            <p className="text-muted">{myCert ? `Código de verificación: ${myCert.code}` : "Ya puedes solicitar tu constancia de asistencia."}</p>
+          </div>
+          <Link href={myCert ? `/constancia/${myCert.code}` : `/constancia/solicitar/${slug}`} className="btn btn-primary">{myCert ? "Ver mi constancia" : "Solicitar mi constancia"}</Link>
+        </div>
+      )}
 
       {!course.hasAccess && (
         <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-gold/60" : "!border-gold/40"}`}>

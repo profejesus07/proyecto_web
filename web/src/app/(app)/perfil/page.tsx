@@ -22,7 +22,9 @@ const SECTIONS: { key: string; title: string; cats: string[]; showMissing?: bool
 export default async function ProfilePage() {
   const viewer = await requireViewer("/perfil");
   const isStudent = viewer.role === "estudiante";
-  const [inventory, myClasses] = await Promise.all([getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([])]);
+  const [inventory, myClasses, myCerts] = await Promise.all([
+    getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([]), getRepo().listCertificates({ userId: viewer.id }),
+  ]);
   const owned = new Set(inventory.map((i) => i.itemId));
   const p = rankProgress(viewer.xp);
 
@@ -50,6 +52,20 @@ export default async function ProfilePage() {
         <Stat icon="💎" label="Gemas" value={viewer.gems} />
         <Stat icon="🔥" label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
       </div>
+
+      {myCerts.length > 0 && (
+        <section aria-labelledby="const-t" className="panel space-y-3 p-6">
+          <h2 id="const-t" className="text-2xl">Mis constancias</h2>
+          <ul className="space-y-2">
+            {myCerts.map((c) => (
+              <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
+                <span><strong>{c.courseTitle}</strong> <span className="text-sm text-muted">· {c.hours} horas · {c.code}</span></span>
+                <Link href={`/constancia/${c.code}`} className="btn btn-secondary btn-sm">🎓 Ver y descargar</Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {isStudent && (
         <section aria-labelledby="clases-t" className="panel grid gap-6 p-6 md:grid-cols-2">

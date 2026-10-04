@@ -318,6 +318,46 @@ test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita
   await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText(/Lección 1 gratis/)).toBeVisible();
 });
 
+test("al terminar un curso corto se expide la constancia, que se puede verificar públicamente", async ({ page, context }) => {
+  // El administrador completa los datos del curso y configura su firma.
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/contenido/primer-portal");
+  await page.getByLabel("Intensidad (horas)").fill("12");
+  await page.getByLabel("Nombre del formador").fill("Jesús David Álvarez Sáez");
+  await page.getByLabel("Título del formador").fill("Magíster en Educación");
+  await page.getByRole("button", { name: "Guardar datos" }).click();
+  await expect(page.getByText("Guardado.")).toBeVisible();
+  await page.goto("/admin");
+  await page.getByLabel("Ciudad de expedición").fill("Bogotá D. C.");
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", "base64");
+  await page.getByLabel(/^Firma \(PNG/).setInputFiles({ name: "firma.png", mimeType: "image/png", buffer: png });
+  await expect(page.getByAltText("Vista previa de la firma")).toBeVisible();
+  await page.getByRole("button", { name: "Guardar datos del responsable" }).click();
+  await expect(page.getByText("Datos del responsable guardados.")).toBeVisible();
+
+  // El estudiante ya terminó «El Portal de los Pasos Pequeños» en las pruebas anteriores.
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/portales/primer-portal");
+  await page.getByRole("link", { name: "Solicitar mi constancia" }).click();
+  await page.getByLabel(/Nombre completo/).fill("Luna María Pérez Gómez");
+  await page.getByLabel("Número de documento").fill("1012345678");
+  await page.getByLabel(/Confirmo que mis datos son correctos/).check();
+  await page.getByRole("button", { name: "Expedir mi constancia" }).click();
+  await expect(page).toHaveURL(/\/constancia\/UMB-[A-Z2-9]{4}-[A-Z2-9]{4}$/);
+  const doc = page.getByRole("article", { name: "Constancia de asistencia" });
+  await expect(doc.getByText("Luna María Pérez Gómez")).toBeVisible();
+  await expect(doc.getByText(/intensidad de 12 horas/)).toBeVisible();
+  await expect(doc.getByText(/no conduce a título ni a certificado de aptitud ocupacional/)).toBeVisible();
+  const code = page.url().split("/").pop()!;
+
+  // Verificación pública (sin mostrar el documento completo).
+  await page.goto(`/verificar/${code}`);
+  await expect(page.getByRole("heading", { name: "Constancia auténtica" })).toBeVisible();
+  await expect(page.getByText("C.C. ••••••5678")).toBeVisible();
+  await page.goto("/verificar/UMB-AAAA-BBBB");
+  await expect(page.getByRole("heading", { name: "No encontramos esa constancia" })).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);

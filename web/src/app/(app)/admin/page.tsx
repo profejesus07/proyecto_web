@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminNav } from "@/components/admin-nav";
+import { IssuerSettingsForm } from "@/components/issuer-settings-form";
 import { AccessChip, CreateLinkedClassForm, CreateTeacherForm, GrantAccess, PriceForm, RoleSelect, TeacherSelect } from "@/components/admin-client";
 import { PageTitle } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
@@ -15,8 +16,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.slice(0, 80) : "";
   const repo = getRepo();
-  const [users, courses, classes, allCourses, everyone] = await Promise.all([
+  const [users, courses, classes, allCourses, everyone, settings, certs] = await Promise.all([
     repo.adminUsers(viewer.id, q), repo.listCourses(), repo.adminClasses(viewer.id), repo.listAllCourses(), q ? repo.adminUsers(viewer.id, "") : Promise.resolve(null),
+    repo.getIssuerSettings(), repo.listCertificates({ limit: 50 }),
   ]);
   const teachers = (everyone ?? users).filter((u) => u.role === "docente" || u.role === "admin").map((u) => ({ id: u.id, name: u.role === "admin" ? `${u.name} (yo)` : u.name }));
   const clases = allCourses.filter((c) => c.kind === "clase").map((c) => ({ slug: c.slug, title: c.title }));
@@ -131,6 +133,39 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               </li>
             ))}
           </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="const-t" className="space-y-4">
+        <h2 id="const-t" className="text-2xl">Constancias de asistencia</h2>
+        <div className="panel space-y-3 p-5">
+          <h3 className="font-display text-lg font-bold">Responsable y firma</h3>
+          <p className="text-sm text-muted">Aparecen en todas las constancias que se expidan desde ahora. Las ya expedidas no cambian.</p>
+          {(!settings.issuerName || !settings.signaturePng) && <p role="note" className="text-sm font-semibold text-[#ffe3a0]">⚠ Mientras falten el nombre y la firma, los estudiantes no podrán obtener su constancia.</p>}
+          <IssuerSettingsForm settings={settings} />
+        </div>
+        {certs.length === 0 ? (
+          <p className="panel p-5 text-muted">Todavía no se ha expedido ninguna constancia.</p>
+        ) : (
+          <div className="panel overflow-x-auto">
+            <table className="w-full min-w-[40rem] text-left text-sm">
+              <caption className="sr-only">Últimas constancias expedidas</caption>
+              <thead className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                <tr><th className="px-4 py-3">N.º</th><th className="px-3 py-3">Participante</th><th className="px-3 py-3">Curso</th><th className="px-3 py-3">Expedida</th><th className="px-3 py-3">Código</th></tr>
+              </thead>
+              <tbody>
+                {certs.map((c) => (
+                  <tr key={c.code} className="border-b border-line/60 last:border-0">
+                    <td className="px-4 py-2 font-mono">{String(c.number).padStart(6, "0")}</td>
+                    <td className="px-3 py-2">{c.participantName}</td>
+                    <td className="px-3 py-2">{c.courseTitle} · {c.hours} h</td>
+                    <td className="px-3 py-2">{new Date(c.issuedAt).toLocaleDateString("es-CO")}</td>
+                    <td className="px-3 py-2"><Link href={`/constancia/${c.code}`} className="font-mono text-cyan hover:underline">{c.code}</Link></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>

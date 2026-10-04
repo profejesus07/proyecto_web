@@ -1,8 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { hasSupabase } from "@/lib/env";
+import { siteUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { emailSchema, loginSchema, newPasswordSchema, registerSchema, safeNext } from "@/lib/validation";
 
@@ -14,14 +14,6 @@ function firstIssue(error: { issues: { message: string }[] }): string {
   return error.issues[0]?.message ?? "Revisa los datos e inténtalo de nuevo.";
 }
 
-async function siteUrl(): Promise<string> {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configured) return configured.replace(/\/$/, "");
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 export async function registerAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = registerSchema.safeParse({

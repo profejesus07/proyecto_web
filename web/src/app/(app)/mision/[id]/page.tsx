@@ -75,6 +75,7 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
         kuroStage={kuroStage(rankForXp(viewer.xp).key)}
         revealed={revealed}
         nextMissionId={next?.id ?? null}
+        certificateHref={course.kind === "curso" ? `/constancia/solicitar/${course.slug}` : null}
         subscribe={next && !course.hasAccess ? { href: `/suscribirse/${course.slug}`, price: formatPrice(course.price) } : null}
       />
     </div>

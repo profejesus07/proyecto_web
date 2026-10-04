@@ -31,6 +31,8 @@ export interface QuizProps {
   nextMissionId: string | null;
   /** Si la siguiente misión necesita suscripción: a dónde ir para desbloquear el curso. */
   subscribe: { href: string; price: string } | null;
+  /** En un curso corto: dónde solicitar la constancia al terminarlo. */
+  certificateHref: string | null;
   aids: {
     pista: { stock: number; usedToday: number; cap: number; freeAvailable: boolean };
     fifty: { stock: number; usedToday: number; cap: number; unlocked: boolean; minRank: string };
@@ -262,6 +264,9 @@ export function Quiz(p: QuizProps) {
               <p className="max-w-lg rounded-xl border border-gold/50 bg-gold/10 px-5 py-3 text-[#ffe3a0]">
                 ¡Superaste la lección gratis! Para seguir con las demás misiones y enfrentar a {p.guardian.name}, suscríbete al curso ({p.subscribe.price}).
               </p>
+            )}
+            {result.courseDone && p.certificateHref && (
+              <Link href={p.certificateHref} className="btn btn-primary btn-lg">🎓 Solicitar mi constancia de asistencia</Link>
             )}
             {outcome.chronicles.length > 0 && (
               <div className="w-full max-w-xl pt-2 text-left">
