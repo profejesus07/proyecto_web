@@ -9,9 +9,6 @@ export function LegalPage({ title, updated, children }: { title: string; updated
         <p className="eyebrow">Legal</p>
         <h1 className="mt-2 text-4xl sm:text-5xl">{title}</h1>
         <p className="mt-2 text-sm text-muted">Última actualización: {updated}</p>
-        <p role="note" className="mt-6 rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm text-[#ffe3a0]">
-          <strong>Borrador pendiente de revisión.</strong> Este texto describe cómo funciona hoy la plataforma. Antes de publicarla, el responsable debe completar los datos entre corchetes y revisarlo con un asesor legal.
-        </p>
         <div className="mt-8 space-y-8 leading-relaxed text-text/90 [&_a]:text-cyan [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mb-3 [&_h2]:text-2xl [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_ul]:space-y-1.5">
           {children}
         </div>

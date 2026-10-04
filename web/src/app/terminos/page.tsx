@@ -29,7 +29,7 @@ export default function TermsPage() {
       </section>
       <section>
         <h2>Contenido</h2>
-        <p>Los cursos, textos, personajes, ilustraciones y animaciones de Umbral pertenecen a <strong>[NOMBRE DEL TITULAR]</strong>. Puedes usarlos para aprender en la plataforma, pero no copiarlos ni redistribuirlos sin permiso.</p>
+        <p>Los cursos, textos, personajes, ilustraciones y animaciones de Umbral pertenecen a <strong>Mgtr. Jesús David Álvarez Sáez</strong>. Puedes usarlos para aprender en la plataforma, pero no copiarlos ni redistribuirlos sin permiso.</p>
       </section>
       <section>
         <h2>Cursos gratuitos y de pago</h2>

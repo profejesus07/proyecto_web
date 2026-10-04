@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <LegalPage title="Privacidad y datos" updated="octubre de 2026">
       <section>
         <h2>Quién es el responsable</h2>
-        <p>El responsable del tratamiento de los datos es <strong>[NOMBRE DEL RESPONSABLE]</strong>. Puedes escribirnos a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong> para cualquier consulta sobre tus datos.</p>
+        <p>El responsable del tratamiento de los datos es <strong>Mgtr. Jesús David Álvarez Sáez</strong>. Puedes escribirnos a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong> para cualquier consulta sobre tus datos.</p>
       </section>
       <section>
         <h2>Qué datos guardamos</h2>
