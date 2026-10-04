@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AvatarFace } from "@/components/avatar-face";
+import { SpeechBubble } from "@/components/dialogue";
 import { BuyButton } from "@/components/profile-client";
 import { Sprite } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
@@ -20,6 +21,15 @@ const INTRO: Record<string, string> = {
   foco: "Un objeto mágico para llevar en la mano.",
   marco: "Un marco para tu retrato: se ve en el Gremio, en tu perfil y en el informe de tu docente.",
   companero: "Un compañero que te acompaña en el Gremio y en tu perfil. Las pieles de Kuro crecen contigo al subir de rango.",
+};
+
+/** Brann atiende cada mostrador con su gesto y una frase. */
+const BRANN: Record<string, { anim: string; line: string }> = {
+  ayuda: { anim: "mostrar", line: "¿Una pregunta difícil? Llévate una ayuda." },
+  cosmetico: { anim: "mostrar", line: "¡Mira lo bien que te queda!" },
+  foco: { anim: "forjar", line: "Recién salidos de mi yunque." },
+  marco: { anim: "forjar", line: "Un buen retrato merece un buen marco." },
+  companero: { anim: "saludar", line: "Estos amigos buscan con quién aventurarse." },
 };
 
 const slotOf = (id: string): WearSlot | undefined => WEAR_SLOTS.find((s) => (WEARABLE_IDS[s] as readonly string[]).includes(id));
@@ -52,12 +62,19 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <PageTitle eyebrow="Forja de Brann" title="Tienda y Arsenal">
-          <p>Cambia tus monedas por ayudas, accesorios y compañeros. Las monedas se ganan completando misiones; nunca se compran con dinero.</p>
-        </PageTitle>
-        <p className="chip text-base" aria-label={`Tienes ${viewer.coins} monedas`}>🪙 {viewer.coins} monedas</p>
-      </div>
+      <section className="panel relative isolate overflow-hidden rounded-3xl" aria-label="Forja de Brann">
+        <Sprite src="/assets/escenarios/tienda/tienda-forja.svg" alt="" decorative priority className="absolute inset-0 -z-10 size-full object-cover" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-bg/95 via-bg/70 to-bg/10" />
+        <div className="flex items-end justify-between gap-4 p-6 sm:p-8">
+          <div className="space-y-4 md:max-w-lg">
+            <PageTitle eyebrow="Forja de Brann" title="Tienda y Arsenal">
+              <p className="text-text/80">Cambia tus monedas por ayudas, accesorios y compañeros. Las monedas se ganan completando misiones; nunca se compran con dinero.</p>
+            </PageTitle>
+            <p className="chip w-fit text-base" aria-label={`Tienes ${viewer.coins} monedas`}>🪙 {viewer.coins} monedas</p>
+          </div>
+          <Sprite src={`/assets/personajes/brann/brann-${BRANN[cat].anim}.svg`} alt="La Forjadora Brann" className="hidden h-56 w-auto shrink-0 sm:block" />
+        </div>
+      </section>
 
       <nav aria-label="Categorías" className="flex flex-wrap gap-2">
         {SHOP_CATEGORIES.filter((c) => all.some((i) => i.categoria === c)).map((c) => (
@@ -68,7 +85,9 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
         ))}
       </nav>
 
-      <p className="text-muted">{INTRO[cat]}</p>
+      <SpeechBubble name="Forjadora Brann" src={`/assets/personajes/brann/brann-${BRANN[cat].anim}.svg`} alt="La Forjadora Brann" tone="gold">
+        {BRANN[cat].line} <span className="text-muted">{INTRO[cat]}</span>
+      </SpeechBubble>
 
       {groups.map((g) => (
         <section key={g.title ?? "todo"} aria-label={g.title ?? CATEGORY_LABEL[cat]} className="space-y-3">
