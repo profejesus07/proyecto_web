@@ -59,7 +59,7 @@ describe("repositorio de Supabase", () => {
   it("convierte el perfil y sanea un avatar desconocido", async () => {
     tables.profiles = [{ id: "u", role: "docente", display_name: "Ana", avatar: { base: "hacker" }, xp: 5, coins: 6, gems: 7, streak: 2 }];
     const p = await createSupabaseRepo().getProfile("u");
-    expect(p).toEqual({ id: "u", role: "docente", displayName: "Ana", avatarBase: "aria", xp: 5, coins: 6, gems: 7, streak: 2, introSeen: false, chroniclesRead: [] });
+    expect(p).toEqual({ id: "u", role: "docente", displayName: "Ana", avatarBase: "aria", avatarLook: {}, xp: 5, coins: 6, gems: 7, streak: 2, introSeen: false, chroniclesRead: [] });
   });
 
   it("devuelve null si el perfil no existe", async () => {

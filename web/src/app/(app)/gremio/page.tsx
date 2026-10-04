@@ -68,7 +68,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
           </div>
           <div className="relative hidden h-72 md:block" aria-hidden="true">
             <Sprite src={asset.sora("saludar")} alt="" decorative className="absolute bottom-[-6%] right-[6%] h-[110%] w-auto" />
-            <Sprite src={asset.avatar(viewer.avatarBase, rank.key)} alt="" decorative className="absolute bottom-[-8%] right-[38%] h-[105%] w-auto" />
+            <Sprite src={asset.avatar(viewer.avatarBase, rank.key, viewer.avatarLook)} alt="" decorative className="absolute bottom-[-8%] right-[38%] h-[105%] w-auto" />
             <Sprite src={asset.kuro("reposo", kuroStage(rank.key))} alt="" decorative className="absolute bottom-0 right-[66%] h-[42%] w-auto" />
           </div>
         </div>
@@ -135,7 +135,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
           </div>
           {recent.length === 0 ? (
             <div className="panel flex items-center gap-4 p-5">
-              <AvatarFace base={viewer.avatarBase} rank={rank.key} size={56} />
+              <AvatarFace base={viewer.avatarBase} look={viewer.avatarLook} rank={rank.key} size={56} />
               <p className="text-muted">Aún no tienes objetos. Completa tu primera misión y recibirás tu primera insignia.</p>
             </div>
           ) : (

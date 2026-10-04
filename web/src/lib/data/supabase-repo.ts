@@ -1,4 +1,5 @@
 import "server-only";
+import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
@@ -51,11 +52,13 @@ export function createSupabaseRepo(): Repo {
       const { data, error } = await db.from("profiles").select("*").eq("id", userId).maybeSingle();
       if (error) fail(error, "perfil");
       if (!data) return null;
-      const base = (data.avatar as { base?: string } | null)?.base;
+      const avatar = data.avatar as { base?: string; look?: unknown } | null;
+      const base = avatar?.base;
       const p: Profile = {
         // El administrador es un docente con la marca is_admin.
         id: data.id, role: data.is_admin ? "admin" : data.role, displayName: data.display_name,
         avatarBase: (AVATAR_BASES as readonly string[]).includes(base ?? "") ? (base as AvatarBase) : "aria",
+        avatarLook: sanitizeLook(avatar?.look),
         xp: data.xp, coins: data.coins, gems: data.gems, streak: data.streak,
         introSeen: data.intro_seen_at != null, chroniclesRead: (data.chronicles_read as string[] | null) ?? [],
       };
@@ -158,8 +161,8 @@ export function createSupabaseRepo(): Repo {
       return { coins: (data as { coins: number }).coins };
     },
 
-    async setAvatar(userId, base) {
-      const { error } = await db.from("profiles").update({ avatar: { base } }).eq("id", userId);
+    async setAvatar(userId, base, look = {}) {
+      const { error } = await db.from("profiles").update({ avatar: { base, look } }).eq("id", userId);
       if (error) fail(error, "avatar");
     },
 

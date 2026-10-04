@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
+import { canWearGear, sanitizeLook } from "@/lib/avatar-look";
 import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
 import { getRepo } from "@/lib/data";
 import { AVATAR_BASES, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
 import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
 import { PASS_MARK } from "@/lib/game/grading";
-import { ranksReached } from "@/lib/game/ranks";
+import { rankForXp, ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
 import { RARITY, getItem, itemImage, priceOf, SHOP_CATEGORIES } from "@/lib/catalog";
 import { SHOP_OPEN } from "@/lib/features";
@@ -190,10 +191,13 @@ export async function activateAidAction(questionId: string, kind: string): Promi
   }
 }
 
-export async function selectAvatarAction(base: string): Promise<{ ok: boolean }> {
+/** Guarda el avatar del Vestidor: personaje, colores y atuendo (solo de rangos alcanzados). */
+export async function saveAvatarAction(base: string, rawLook: unknown): Promise<{ ok: boolean }> {
   const viewer = await getViewer();
   if (!viewer || !(AVATAR_BASES as readonly string[]).includes(base)) return { ok: false };
-  await getRepo().setAvatar(viewer.id, base as AvatarBase);
+  const look = sanitizeLook(rawLook);
+  if (look.gear && !canWearGear(look.gear, rankForXp(viewer.xp).key)) return { ok: false };
+  await getRepo().setAvatar(viewer.id, base as AvatarBase, look);
   revalidatePath("/", "layout");
   return { ok: true };
 }

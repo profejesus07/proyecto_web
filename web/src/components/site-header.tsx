@@ -25,7 +25,7 @@ export async function SiteHeader() {
                   <span aria-hidden="true">🪙</span> {viewer.coins}
                 </span>
                 <Link href="/perfil" className="flex items-center gap-2 rounded-full border border-line bg-panel/70 py-1 pl-1 pr-3 hover:border-cyan/60" aria-label={`Tu perfil: ${viewer.displayName}, rango ${rank?.key}`}>
-                  <AvatarFace base={viewer.avatarBase} rank={rank?.key ?? "E"} size={36} />
+                  <AvatarFace base={viewer.avatarBase} look={viewer.avatarLook} rank={rank?.key ?? "E"} size={36} />
                   <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank?.color, color: "#14123b" }}>{rank?.key}</span>
                 </Link>
                 <form action={logoutAction}>

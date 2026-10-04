@@ -1,3 +1,5 @@
+import type { AvatarLook } from "@/lib/avatar-look";
+
 export type Role = "estudiante" | "docente" | "familia" | "admin";
 export type AvatarBase = "aria" | "leo" | "tomas" | "nuri";
 export const AVATAR_BASES: readonly AvatarBase[] = ["aria", "leo", "tomas", "nuri"];
@@ -10,6 +12,8 @@ export interface Profile {
   role: Role;
   displayName: string;
   avatarBase: AvatarBase;
+  /** Colores y atuendo elegidos en el Vestidor. */
+  avatarLook: AvatarLook;
   xp: number;
   coins: number;
   gems: number;
@@ -293,7 +297,7 @@ export interface Repo {
   /** Cierra el intento: la nota sale de las respuestas guardadas. */
   finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
-  setAvatar(userId: string, base: AvatarBase): Promise<void>;
+  setAvatar(userId: string, base: AvatarBase, look?: AvatarLook): Promise<void>;
   setDisplayName(userId: string, name: string): Promise<void>;
   markIntroSeen(userId: string): Promise<void>;
   markChapterRead(userId: string, chapterId: string): Promise<void>;

@@ -1,3 +1,5 @@
+import { avatarSrc, type AvatarLook } from "@/lib/avatar-look";
+
 /* Los SVG animados se usan como imagen: conservan su animación y no necesitan JavaScript. */
 /* eslint-disable @next/next/no-img-element */
 export function Sprite({
@@ -25,7 +27,8 @@ export const asset = {
   scene: (name: string, state: string) => `/assets/escenarios/${name}/${name}-${state}.svg`,
   enemy: (slug: string, anim = "reposo") => `/assets/enemigos/${slug}/${slug}-${anim}.svg`,
   boss: (slug: string, anim = "reposo") => `/assets/jefes/${slug}/${slug}-${anim}.svg`,
-  avatar: (base: string, rank: string) => `/assets/avatares/${base}/${base}-rango-${rank.toLowerCase()}-reposo.svg`,
+  /** Con `look`, el SVG sale con los colores y el atuendo del Vestidor. */
+  avatar: (base: string, rank: string, look?: AvatarLook) => avatarSrc(base, rank, look),
   avatarAnim: (base: string, anim: string) => `/assets/avatares/${base}/${base}-${anim}.svg`,
   sora: (anim = "reposo") => `/assets/guias/sora/sora-${anim}.svg`,
   eon: (anim = "reposo") => `/assets/personajes/eon/eon-${anim}.svg`,

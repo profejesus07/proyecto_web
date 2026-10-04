@@ -16,7 +16,7 @@ export const PREVIEW_USER_ID = "00000000-0000-0000-0000-00000000aaaa";
 /** Docente de prueba (en la vista previa se entra como docente con la cookie «umbral-vista=docente»). */
 export const PREVIEW_TEACHER_ID = "00000000-0000-0000-0000-00000000bbbb";
 const TEACHER: Profile = {
-  id: PREVIEW_TEACHER_ID, role: "docente", displayName: "Profe de prueba", avatarBase: "leo", xp: 0, coins: 0, gems: 0, streak: 0, introSeen: true, chroniclesRead: [],
+  id: PREVIEW_TEACHER_ID, role: "docente", displayName: "Profe de prueba", avatarBase: "leo", avatarLook: {}, xp: 0, coins: 0, gems: 0, streak: 0, introSeen: true, chroniclesRead: [],
 };
 
 /** Administrador de prueba (cookie «umbral-vista=admin»). */
@@ -65,7 +65,7 @@ const g = globalThis as unknown as { __umbralPreview?: State };
 function state(): State {
   if (!g.__umbralPreview) {
     g.__umbralPreview = {
-      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", xp: 0, coins: 40, gems: 0, streak: 1, introSeen: false, chroniclesRead: [] },
+      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", avatarLook: {}, xp: 0, coins: 40, gems: 0, streak: 1, introSeen: false, chroniclesRead: [] },
       progress: new Map(),
       bosses: new Set(),
       inventory: [],
@@ -214,7 +214,7 @@ export function createMemoryRepo(): Repo {
       s.inventory.push({ itemId, source: "tienda", acquiredAt: new Date().toISOString() });
       return { coins: s.profile.coins };
     },
-    async setAvatar(_u, base: AvatarBase) { state().profile = { ...state().profile, avatarBase: base }; },
+    async setAvatar(_u, base: AvatarBase, look = {}) { state().profile = { ...state().profile, avatarBase: base, avatarLook: look }; },
     async setDisplayName(_u, name: string) { state().profile = { ...state().profile, displayName: name }; },
     async listTeacherClasses(teacherId) {
       const s = state();

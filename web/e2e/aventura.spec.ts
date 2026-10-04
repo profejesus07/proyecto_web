@@ -390,3 +390,30 @@ test("en el celular se puede editar el perfil y cerrar sesión", async ({ page }
   await headerLogout.click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos no alcanzados están cerrados", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("link", { name: /Personalizar avatar/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Vestidor" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: /Armadura de leyenda, rango S, bloqueado/ })).toBeDisabled();
+
+  await page.getByRole("group", { name: /Cabello/ }).getByRole("radio", { name: "Rubio" }).check({ force: true });
+  await page.getByRole("group", { name: /Chaqueta/ }).getByRole("radio", { name: "Rojo" }).check({ force: true });
+  await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3/);
+  await page.getByRole("button", { name: "Guardar cambios" }).click();
+  await expect(page.getByText("¡Listo! Tu avatar se guardó.")).toBeVisible();
+
+  // La imagen con colores se sirve como SVG.
+  const res = await page.request.get("/avatar/aria/aria-rango-e-reposo.svg?c=h4t3");
+  expect(res.headers()["content-type"]).toContain("image/svg+xml");
+  expect(await res.text()).toContain('fill="#E2B85A"');
+
+  await page.goto("/perfil");
+  await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=h4t3/);
+
+  // Se deja como estaba para las demás pruebas.
+  await page.goto("/perfil/avatar");
+  await page.getByRole("button", { name: "Colores originales" }).click();
+  await page.getByRole("button", { name: "Guardar cambios" }).click();
+  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+});
