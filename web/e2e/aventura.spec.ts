@@ -441,6 +441,9 @@ test("la portada cuenta la filosofía, busca en el catálogo y lleva a los servi
   await expect(page.getByRole("heading", { level: 1 })).toContainText("salvar el mundo");
   await expect(page.getByRole("heading", { name: /No solo cursos/ })).toBeVisible();
   await expect(page.getByText("Próximamente")).toHaveCount(0);
+  // La escena de la portada recorre las tres mazmorras.
+  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^Mazmorra de Agua/ })).toBeVisible({ timeout: 10_000 });
   const programas = page.getByRole("region", { name: "Cursos y clases" });
   await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
   // El buscador lleva al catálogo filtrado.

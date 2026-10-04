@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { PageTransition } from "@/components/page-transition";
 import { SITE_NAME } from "@/lib/env";
 
 const display = localFont({
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="es" data-scroll-behavior="smooth" className={`${display.variable} ${body.variable}`}>
       <body>
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
+        <PageTransition />
         {children}
       </body>
     </html>

@@ -2,9 +2,8 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/icons";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
-import { UniverseArt } from "@/components/universe-art";
+import { DungeonShowcase } from "@/components/dungeon-showcase";
 import { SERVICES } from "@/content/servicios";
-import { UNIVERSES } from "@/content/universos";
 import { loadCatalog } from "@/lib/data/queries";
 
 // El catálogo se vuelve a leer cada 10 minutos.
@@ -27,7 +26,6 @@ const PILLARS: { title: string; text: string; color: string; bg: string }[] = [
 export default async function Home() {
   const catalog = await loadCatalog();
   const featured = catalog.slice(0, 4);
-  const [gremio] = UNIVERSES;
   const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
   const categories: { label: string; href: string; detail: string; icon: IconName; color: string; bg: string }[] = [
     { label: "Cursos cortos", href: "/programas?tipo=curso", detail: count(catalog.filter((c) => c.kind === "curso").length, "programa", "programas"), icon: "lesson", color: "#ff5a36", bg: "#fff0eb" },
@@ -64,17 +62,7 @@ export default async function Home() {
           </div>
 
           <div className="rise relative mx-auto w-full min-w-0 max-w-lg [animation-delay:120ms]">
-            <div className="overflow-hidden rounded-[2rem] border-4 border-white/20 bg-white/10 shadow-2xl shadow-black/30">
-              <UniverseArt u={gremio} className="aspect-[4/3]" />
-            </div>
-            <div className="drift absolute -left-4 top-6 rounded-2xl bg-white px-4 py-3 text-[#17142b] shadow-xl sm:-left-10" style={{ ["--r" as string]: "-4deg" }} aria-hidden="true">
-              <p className="text-xs font-bold uppercase tracking-wider text-[#ff5a36]">Misión superada</p>
-              <p className="font-display text-xl font-extrabold">+60 XP ✨</p>
-            </div>
-            <div className="drift absolute -bottom-5 right-2 rounded-2xl bg-[#ffc233] px-4 py-3 text-[#17142b] shadow-xl [animation-delay:1.5s] sm:-right-6" style={{ ["--r" as string]: "3deg" }} aria-hidden="true">
-              <p className="text-xs font-bold uppercase tracking-wider">Universo</p>
-              <p className="font-display text-base font-extrabold leading-tight">{gremio.name}</p>
-            </div>
+            <DungeonShowcase />
           </div>
         </div>
         {/* Borde ondulado hacia la siguiente sección. */}

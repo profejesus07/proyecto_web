@@ -324,3 +324,7 @@ p { text-wrap: pretty; }
 .theme-console .input { background: #0f1218; border-radius: 0.55rem; min-height: 2.6rem; }
 .theme-console .eyebrow { color: var(--muted); letter-spacing: 0.1em; }
 .theme-console .chip { border-radius: 0.4rem; }
+
+/* Cambio de página con recarga completa (formularios, redirecciones): fundido del navegador. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
