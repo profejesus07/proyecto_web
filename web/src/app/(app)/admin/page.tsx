@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminNav } from "@/components/admin-nav";
-import { AccessChip, CreateTeacherForm, GrantAccess, PriceForm, RoleSelect } from "@/components/admin-client";
+import { AccessChip, CreateLinkedClassForm, CreateTeacherForm, GrantAccess, PriceForm, RoleSelect, TeacherSelect } from "@/components/admin-client";
 import { PageTitle } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
@@ -15,7 +15,11 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.slice(0, 80) : "";
   const repo = getRepo();
-  const [users, courses, classes] = await Promise.all([repo.adminUsers(viewer.id, q), repo.listCourses(), repo.adminClasses(viewer.id)]);
+  const [users, courses, classes, allCourses, everyone] = await Promise.all([
+    repo.adminUsers(viewer.id, q), repo.listCourses(), repo.adminClasses(viewer.id), repo.listAllCourses(), q ? repo.adminUsers(viewer.id, "") : Promise.resolve(null),
+  ]);
+  const teachers = (everyone ?? users).filter((u) => u.role === "docente" || u.role === "admin").map((u) => ({ id: u.id, name: u.role === "admin" ? `${u.name} (yo)` : u.name }));
+  const clases = allCourses.filter((c) => c.kind === "clase").map((c) => ({ slug: c.slug, title: c.title }));
   const title = new Map(courses.map((c) => [c.slug, c.title]));
   const count = (role: string) => users.filter((u) => u.role === role).length;
   const activeAccess = users.reduce((n, u) => n + u.access.filter((a) => isAccessActive(a.expiresAt)).length, 0);
@@ -105,17 +109,25 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       </section>
 
       <section aria-labelledby="clases-t" className="space-y-4">
-        <h2 id="clases-t" className="text-2xl">Todas las clases</h2>
+        <h2 id="clases-t" className="text-2xl">Grupos y códigos</h2>
+        <div className="panel space-y-3 p-5">
+          <h3 className="font-display text-lg font-bold">Crear grupo para una clase</h3>
+          <p className="text-sm text-muted">Quien se une con el código del grupo entra gratis a la clase hasta el fin del año lectivo. El docente que elijas lo gestiona y ve el avance de sus estudiantes.</p>
+          <CreateLinkedClassForm clases={clases} teachers={teachers} />
+        </div>
         {classes.length === 0 ? (
-          <p className="panel p-6 text-muted">Todavía no hay clases.</p>
+          <p className="panel p-6 text-muted">Todavía no hay grupos.</p>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="space-y-2">
             {classes.map((c) => (
-              <li key={c.id}>
-                <Link href={`/maestro/${c.id}`} className="panel flex h-full flex-col gap-1 p-4 transition hover:border-cyan/50">
-                  <span className="font-semibold">{c.name}{c.archived ? " · archivada" : ""}</span>
-                  <span className="text-sm text-muted">{c.teacher} · {c.members} estudiantes · código <span className="font-mono">{c.code}</span></span>
-                </Link>
+              <li key={c.id} className="panel flex flex-wrap items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <Link href={`/maestro/${c.id}`} className="font-semibold text-cyan hover:underline">{c.name}{c.archived ? " · archivado" : ""}</Link>
+                  <p className="text-sm text-muted">
+                    {c.courseTitle ? <>Da acceso a <strong className="text-text">{c.courseTitle}</strong></> : "Grupo propio del docente (no da acceso)"} · {c.members} estudiantes · código <span className="font-mono font-bold text-gold">{c.code}</span>
+                  </p>
+                </div>
+                {c.courseSlug ? <TeacherSelect classId={c.id} teacherId={c.teacherId} teachers={teachers} name={c.name} /> : <span className="text-sm text-muted">{c.teacher}</span>}
               </li>
             ))}
           </ul>

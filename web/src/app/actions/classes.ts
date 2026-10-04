@@ -47,6 +47,8 @@ export async function manageClassAction(classId: string, action: ClassAction, ar
   if (typeof classId !== "string" || !["nuevo_codigo", "renombrar", "archivar", "quitar"].includes(action)) return { ok: false, error: "Acción no válida." };
   try {
     await getRepo().manageClass(viewer.id, classId, action, typeof arg === "string" ? arg : undefined);
+    // Al retirar a un estudiante, pierde el acceso a la clase que le dio el código del grupo.
+    if (action === "quitar" && typeof arg === "string") await getRepo().revokeClassAccess(arg, classId);
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos guardar el cambio. Inténtalo de nuevo.") };
   }
@@ -62,6 +64,11 @@ export async function joinClassAction(_prev: ClassFormState, formData: FormData)
   try {
     const c = await getRepo().joinClass(viewer.id, code);
     revalidatePath("/perfil");
+    revalidatePath("/portales", "layout");
+    if (c.courseTitle) {
+      const until = c.expiresAt ? ` hasta el ${new Date(new Date(c.expiresAt).getTime() - 1000).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Bogota" })}` : "";
+      return { message: `¡Listo! Ya estás en «${c.name}» y tienes acceso a «${c.courseTitle}»${until}.` };
+    }
     return { message: `¡Listo! Ya estás en la clase «${c.name}».` };
   } catch (e) {
     return { error: friendly(e, "No pudimos unirte a la clase. Inténtalo de nuevo.") };
@@ -72,6 +79,8 @@ export async function leaveClassAction(classId: string): Promise<{ ok: boolean }
   const viewer = await getViewer();
   if (!viewer || typeof classId !== "string") return { ok: false };
   await getRepo().leaveClass(viewer.id, classId);
+  await getRepo().revokeClassAccess(viewer.id, classId);
   revalidatePath("/perfil");
+  revalidatePath("/portales", "layout");
   return { ok: true };
 }

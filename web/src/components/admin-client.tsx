@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { createTeacherAction, grantAccessAction, revokeAccessAction, setPriceAction, setRoleAction, type AdminFormState } from "@/app/actions/admin";
+import {
+  assignTeacherAction, createLinkedClassAction, createTeacherAction, grantAccessAction, revokeAccessAction, setPriceAction, setRoleAction, type AdminFormState,
+} from "@/app/actions/admin";
 
 function Submit({ children, pending, className = "btn btn-primary" }: { children: React.ReactNode; pending: string; className?: string }) {
   const { pending: busy } = useFormStatus();
@@ -117,6 +119,7 @@ export function GrantAccess({ userId, name, courses }: { userId: string; name: s
       <label htmlFor={`m-${userId}`} className="sr-only">Duración</label>
       <select id={`m-${userId}`} value={months} onChange={(e) => setMonths(e.target.value)} className="input !w-auto !py-1.5 text-sm">
         <option value="0">Sin vencimiento</option>
+        <option value="-1">Hasta fin del año lectivo (clases)</option>
         <option value="1">1 mes</option>
         <option value="6">6 meses</option>
         <option value="12">1 año</option>
@@ -139,5 +142,44 @@ export function PriceForm({ course, title, price }: { course: string; title: str
       <Submit pending="Guardando…" className="btn btn-secondary btn-sm">Guardar</Submit>
       <Notice state={state} />
     </form>
+  );
+}
+
+export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: string; title: string }[]; teachers: { id: string; name: string }[] }) {
+  const [state, action] = useActionState(createLinkedClassAction, undefined);
+  if (!clases.length) return <p className="text-sm text-muted">Primero crea una clase en «Contenido».</p>;
+  return (
+    <form action={action} className="space-y-3">
+      <div className="grid gap-3 md:grid-cols-[1.4fr_1fr_1fr_auto] md:items-end">
+        <label className="block space-y-1"><span className="label">Clase</span>
+          <select name="course" className="input">{clases.map((c) => <option key={c.slug} value={c.slug}>{c.title}</option>)}</select>
+        </label>
+        <label className="block space-y-1"><span className="label">Nombre del grupo</span>
+          <input name="name" required minLength={2} maxLength={60} placeholder="6.° A" className="input" />
+        </label>
+        <label className="block space-y-1"><span className="label">Docente que lo gestiona</span>
+          <select name="teacher" className="input">{teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
+        </label>
+        <Submit pending="Creando…">Crear grupo</Submit>
+      </div>
+      <div aria-live="polite">
+        {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
+        {state?.message && <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-[#b6f5cb]">✔ {state.message}</p>}
+      </div>
+    </form>
+  );
+}
+
+export function TeacherSelect({ classId, teacherId, teachers, name }: { classId: string; teacherId: string; teachers: { id: string; name: string }[]; name: string }) {
+  const { pending, error, run } = useRun();
+  return (
+    <div>
+      <label htmlFor={`doc-${classId}`} className="sr-only">Docente de {name}</label>
+      <select id={`doc-${classId}`} defaultValue={teacherId} disabled={pending} className="input !w-auto !py-1.5 text-sm"
+        onChange={(e) => run(() => assignTeacherAction(classId, e.target.value))}>
+        {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+      </select>
+      {error && <p role="alert" className="mt-1 text-xs text-[#ffb3b3]">{error}</p>}
+    </div>
   );
 }

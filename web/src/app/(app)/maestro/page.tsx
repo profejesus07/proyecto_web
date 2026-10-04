@@ -40,7 +40,7 @@ export default async function TeacherPage() {
               <li key={c.id}>
                 <Link href={`/maestro/${c.id}`} className="panel flex h-full flex-col gap-3 p-5 transition hover:-translate-y-0.5 hover:border-cyan/50">
                   <h3 className="font-display text-xl font-bold leading-tight">{c.name}</h3>
-                  <p className="text-sm text-muted">{c.members} {c.members === 1 ? "estudiante" : "estudiantes"}</p>
+                  <p className="text-sm text-muted">{c.members} {c.members === 1 ? "estudiante" : "estudiantes"}{c.courseTitle ? ` · ${c.courseTitle}` : ""}</p>
                   <p className="mt-auto flex items-center justify-between gap-2">
                     <span className="font-mono text-lg font-bold tracking-[0.25em] text-gold" aria-label={`Código ${c.code.split("").join(" ")}`}>{c.code}</span>
                     <span className="text-sm font-semibold text-cyan">Ver informe →</span>

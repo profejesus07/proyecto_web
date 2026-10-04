@@ -71,11 +71,19 @@ export async function setRoleAction(userId: string, role: string): Promise<{ ok:
   return { ok: true };
 }
 
+/** months: null = sin vencimiento; -1 = hasta el fin del año lectivo de la clase; 1..36 = meses. */
 export async function grantAccessAction(userId: string, course: string, months: number | null): Promise<{ ok: boolean; error?: string }> {
   const viewer = await admin();
   if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
-  if (months !== null && (!Number.isInteger(months) || months < 1 || months > 36)) return { ok: false, error: "Duración no válida." };
-  const expires = months === null ? null : new Date(Date.now() + months * 30.44 * 86_400_000).toISOString();
+  if (months !== null && months !== -1 && (!Number.isInteger(months) || months < 1 || months > 36)) return { ok: false, error: "Duración no válida." };
+  let expires: string | null = null;
+  if (months === -1) {
+    const c = (await getRepo().listAllCourses()).find((x) => x.slug === course);
+    if (!c?.accessUntil) return { ok: false, error: "Esa clase no tiene fecha de fin del año lectivo. Ponla en el editor de contenido." };
+    expires = new Date(`${c.accessUntil}T23:59:59-05:00`).toISOString();
+  } else if (months !== null) {
+    expires = new Date(Date.now() + months * 30.44 * 86_400_000).toISOString();
+  }
   try {
     await getRepo().adminGrantAccess(viewer.id, userId, course, expires);
   } catch (e) {
@@ -111,4 +119,35 @@ export async function setPriceAction(_prev: AdminFormState, formData: FormData):
   }
   revalidatePath("/", "layout");
   return { message: "Precio guardado." };
+}
+
+export async function createLinkedClassAction(_prev: AdminFormState, formData: FormData): Promise<AdminFormState> {
+  const viewer = await admin();
+  if (!viewer) return { error: MESSAGES.solo_admin };
+  const course = String(formData.get("course") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const teacher = String(formData.get("teacher") ?? "");
+  if (name.length < 2 || name.length > 60) return { error: "El nombre del grupo debe tener entre 2 y 60 caracteres." };
+  try {
+    const r = await getRepo().adminCreateClass(viewer.id, course, name, teacher);
+    revalidatePath("/admin");
+    return { message: `Grupo «${name}» creado. Código: ${r.code}` };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    if (msg.includes("curso_no_encontrado")) return { error: "Elige una clase (no un curso corto)." };
+    if (msg.includes("solo_docentes")) return { error: "Elige un docente." };
+    return { error: "No pudimos crear el grupo." };
+  }
+}
+
+export async function assignTeacherAction(classId: string, teacherId: string): Promise<{ ok: boolean; error?: string }> {
+  const viewer = await admin();
+  if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
+  try {
+    await getRepo().adminAssignTeacher(viewer.id, classId, teacherId);
+  } catch {
+    return { ok: false, error: "No pudimos cambiar el docente." };
+  }
+  revalidatePath("/admin");
+  return { ok: true };
 }

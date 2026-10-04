@@ -56,12 +56,12 @@ export default async function ProfilePage() {
           <div className="space-y-3">
             <h2 id="clases-t" className="text-2xl">Mis clases</h2>
             {myClasses.length === 0 ? (
-              <p className="text-muted">Si tu docente usa UMBRAL, te dará un código de 6 caracteres para unirte a su clase.</p>
+              <p className="text-muted">Si tu docente o tu colegio usan UMBRAL, te darán un código de 6 caracteres. Con él te unes a tu grupo y, si es una clase, entras gratis durante el año lectivo.</p>
             ) : (
               <ul className="space-y-2">
                 {myClasses.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
-                    <span><strong>{c.name}</strong> <span className="text-sm text-muted">· {c.teacherName}</span></span>
+                    <span><strong>{c.name}</strong> <span className="text-sm text-muted">· {c.teacherName}{c.courseTitle ? ` · ${c.courseTitle}` : ""}</span></span>
                     <LeaveClassButton classId={c.id} name={c.name} />
                   </li>
                 ))}

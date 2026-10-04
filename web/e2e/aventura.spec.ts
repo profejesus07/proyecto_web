@@ -292,6 +292,32 @@ test("el administrador crea una clase con el editor, la publica y un estudiante 
   await expect(page.getByText("Los árboles nacen, crecen y se reproducen.")).toBeVisible();
 });
 
+test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin");
+  await page.getByRole("combobox", { name: /^Clase/ }).selectOption({ label: "Ciencias 5.° · 2027" });
+  await page.getByLabel("Nombre del grupo").fill("5.° A");
+  await page.getByLabel("Docente que lo gestiona").selectOption({ label: "Profe de prueba" });
+  await page.getByRole("button", { name: "Crear grupo" }).click();
+  const msg = await page.getByText(/Grupo «5\.° A» creado\. Código: [A-Z2-9]{6}/).textContent();
+  const code = msg!.match(/Código: ([A-Z2-9]{6})/)![1];
+
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/perfil");
+  await page.getByLabel("Código de la clase").fill(code);
+  await page.getByRole("button", { name: "Unirme" }).click();
+  await expect(page.getByText(/tienes acceso a «Ciencias 5\.° · 2027» hasta el 30 de noviembre de 2027/)).toBeVisible();
+  await page.goto("/portales");
+  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText("✔ Acceso anual activo")).toBeVisible();
+
+  await page.goto("/perfil");
+  page.once("dialog", (d) => d.accept());
+  await page.locator("li", { hasText: "5.° A" }).getByRole("button", { name: "Salir" }).click();
+  await expect(page.locator("li", { hasText: "5.° A" })).toHaveCount(0);
+  await page.goto("/portales");
+  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText(/Lección 1 gratis/)).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);

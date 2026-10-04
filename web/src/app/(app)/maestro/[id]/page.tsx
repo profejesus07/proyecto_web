@@ -10,6 +10,7 @@ import type { ClassReport, CourseDetail } from "@/lib/data/types";
 import { PASS_MARK } from "@/lib/game/grading";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
+import { isAdmin } from "@/lib/roles";
 
 export const metadata: Metadata = { title: "Informe de la clase" };
 
@@ -34,9 +35,13 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
     notFound();
   }
   // El administrador puede ver cualquier clase, pero solo su docente la gestiona.
-  const mine = (await repo.listTeacherClasses(viewer.id)).some((c) => c.id === id);
+  const own = await repo.listTeacherClasses(viewer.id);
+  const mine = own.some((c) => c.id === id);
   const editable = mine && !report.class.archived;
-  const courses = (await Promise.all((await repo.listCourses()).map((c) => repo.getCourse(c.slug)))).filter((c): c is CourseDetail => !!c);
+  // Si el grupo está ligado a una clase, el informe muestra solo esa clase.
+  const linked = (mine ? own : isAdmin(viewer.role) ? await repo.adminClasses(viewer.id) : []).find((c) => c.id === id)?.courseSlug ?? null;
+  const allCourses = (await Promise.all((await repo.listCourses()).map((c) => repo.getCourse(c.slug)))).filter((c): c is CourseDetail => !!c);
+  const courses = linked ? allCourses.filter((c) => c.slug === linked) : allCourses;
   const missions = courses.flatMap((c) => c.missions);
   const { students } = report;
 
@@ -67,6 +72,7 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
         <div className="space-y-3">
           <p className="eyebrow">Maestro del Gremio{report.class.archived ? " · Archivada" : ""}</p>
           <h1 className="text-3xl leading-tight sm:text-4xl">{report.class.name}</h1>
+          {linked && courses[0] && <p className="text-muted">Clase: <strong className="text-text">{courses[0].title}</strong> · el código da acceso hasta el fin del año lectivo.</p>}
           {editable && <ClassActions classId={report.class.id} name={report.class.name} />}
         </div>
         {editable && (

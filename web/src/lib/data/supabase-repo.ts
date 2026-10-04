@@ -193,10 +193,11 @@ export function createSupabaseRepo(): Repo {
     },
 
     async listTeacherClasses(teacherId) {
-      const { data, error } = await db.from("classes").select("id,name,code,created_at,archived_at,class_members(count)").eq("teacher_id", teacherId).order("created_at");
+      const { data, error } = await db.from("classes").select("id,name,code,created_at,archived_at,course_slug,courses(title),class_members(count)").eq("teacher_id", teacherId).order("created_at");
       if (error) fail(error, "clases");
       return (data ?? []).map((r): ClassSummary => ({
         id: r.id, name: r.name, code: r.code, createdAt: r.created_at, archived: r.archived_at !== null,
+        courseSlug: (r.course_slug as string | null) ?? null, courseTitle: (r.courses as unknown as { title: string } | null)?.title ?? null,
         members: (r.class_members as { count: number }[] | null)?.[0]?.count ?? 0,
       }));
     },
@@ -234,22 +235,28 @@ export function createSupabaseRepo(): Repo {
     },
 
     async listStudentClasses(studentId) {
-      const { data, error } = await db.from("class_members").select("classes(id,name,teacher_id,archived_at)").eq("student_id", studentId);
+      const { data, error } = await db.from("class_members").select("classes(id,name,teacher_id,archived_at,courses(title))").eq("student_id", studentId);
       if (error) fail(error, "clases");
       const classes = (data ?? [])
-        .map((r) => r.classes as unknown as { id: string; name: string; teacher_id: string; archived_at: string | null } | null)
+        .map((r) => r.classes as unknown as { id: string; name: string; teacher_id: string; archived_at: string | null; courses: { title: string } | null } | null)
         .filter((c): c is NonNullable<typeof c> => !!c && c.archived_at === null);
       if (!classes.length) return [];
       const { data: teachers, error: e2 } = await db.from("profiles").select("id,display_name").in("id", [...new Set(classes.map((c) => c.teacher_id))]);
       if (e2) fail(e2, "docentes");
       const names = new Map((teachers ?? []).map((t) => [t.id as string, t.display_name as string]));
-      return classes.map((c) => ({ id: c.id, name: c.name, teacherName: names.get(c.teacher_id) ?? "Tu docente" }));
+      return classes.map((c) => ({ id: c.id, name: c.name, teacherName: names.get(c.teacher_id) ?? "Tu docente", courseTitle: c.courses?.title ?? null }));
     },
 
     async joinClass(studentId, code) {
       const { data, error } = await db.rpc("join_class", { p_student: studentId, p_code: code });
       if (error) fail(error, "unirse");
-      return data as { id: string; name: string };
+      const r = data as { id: string; name: string; course_slug: string | null; course_title: string | null; expires_at: string | null };
+      return { id: r.id, name: r.name, courseSlug: r.course_slug ?? null, courseTitle: r.course_title ?? null, expiresAt: r.expires_at ?? null };
+    },
+
+    async revokeClassAccess(studentId, classId) {
+      const { error } = await db.rpc("revoke_class_access", { p_student: studentId, p_class: classId });
+      if (error) fail(error, "acceso de la clase");
     },
 
     async leaveClass(studentId, classId) {
@@ -306,7 +313,20 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "clases");
       return ((data ?? []) as Record<string, unknown>[]).map((c): AdminClass => ({
         id: c.id as string, name: c.name as string, code: c.code as string, archived: c.archived as boolean, teacher: c.teacher as string, members: c.members as number,
+        teacherId: c.teacher_id as string, courseSlug: (c.course_slug as string | null) ?? null, courseTitle: (c.course_title as string | null) ?? null,
       }));
+    },
+
+    async adminCreateClass(adminId, course, name, teacherId) {
+      const { data, error } = await db.rpc("admin_create_class", { p_admin: adminId, p_course: course, p_name: name, p_teacher: teacherId });
+      if (error) fail(error, "crear grupo");
+      const r = data as { id: string; code: string };
+      return { id: r.id, code: r.code };
+    },
+
+    async adminAssignTeacher(adminId, classId, teacherId) {
+      const { error } = await db.rpc("admin_assign_teacher", { p_admin: adminId, p_class: classId, p_teacher: teacherId });
+      if (error) fail(error, "asignar docente");
     },
 
     async createTeacherAccount(email, name, password) {

@@ -149,6 +149,9 @@ export interface ClassSummary {
   id: string;
   name: string;
   code: string;
+  /** Clase (forma 1) a la que da acceso el código; null = grupo propio del docente. */
+  courseSlug: string | null;
+  courseTitle: string | null;
   members: number;
   archived: boolean;
   createdAt: string;
@@ -158,6 +161,15 @@ export interface StudentClass {
   id: string;
   name: string;
   teacherName: string;
+  courseTitle: string | null;
+}
+
+export interface JoinResult {
+  id: string;
+  name: string;
+  courseSlug: string | null;
+  courseTitle: string | null;
+  expiresAt: string | null;
 }
 
 export interface ClassStudent {
@@ -226,6 +238,9 @@ export interface AdminClass {
   code: string;
   archived: boolean;
   teacher: string;
+  teacherId: string;
+  courseSlug: string | null;
+  courseTitle: string | null;
   members: number;
 }
 
@@ -262,7 +277,9 @@ export interface Repo {
   manageClass(teacherId: string, classId: string, action: ClassAction, arg?: string): Promise<void>;
   classReport(teacherId: string, classId: string): Promise<ClassReport>;
   listStudentClasses(studentId: string): Promise<StudentClass[]>;
-  joinClass(studentId: string, code: string): Promise<{ id: string; name: string }>;
+  joinClass(studentId: string, code: string): Promise<JoinResult>;
+  /** Revoca el acceso a la clase que dio este grupo (al salir o ser retirado). */
+  revokeClassAccess(studentId: string, classId: string): Promise<void>;
   leaveClass(studentId: string, classId: string): Promise<void>;
   // Suscripciones
   /** Cursos con acceso completo (docentes y admin: todos). */
@@ -274,6 +291,9 @@ export interface Repo {
   adminRevokeAccess(adminId: string, userId: string, course: string): Promise<void>;
   adminSetPrice(adminId: string, course: string, price: number | null): Promise<void>;
   adminClasses(adminId: string): Promise<AdminClass[]>;
+  /** Grupo ligado a una clase: su código da acceso hasta el fin del año lectivo. */
+  adminCreateClass(adminId: string, course: string, name: string, teacherId: string): Promise<{ id: string; code: string }>;
+  adminAssignTeacher(adminId: string, classId: string, teacherId: string): Promise<void>;
   /** Crea una cuenta de docente ya confirmada, con una contraseña temporal. */
   createTeacherAccount(email: string, name: string, password: string): Promise<{ id: string }>;
   // Editor de contenido (solo lo usa el servidor después de comprobar que quien llama es admin)

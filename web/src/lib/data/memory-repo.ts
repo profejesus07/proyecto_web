@@ -24,7 +24,7 @@ export const PREVIEW_ADMIN_ID = "00000000-0000-0000-0000-00000000cccc";
 const ADMIN: Profile = { ...TEACHER, id: PREVIEW_ADMIN_ID, role: "admin", displayName: "Admin de prueba" };
 const STAFF = new Set([PREVIEW_TEACHER_ID, PREVIEW_ADMIN_ID]);
 
-interface PreviewClass { id: string; name: string; code: string; teacherId: string; archived: boolean; createdAt: string }
+interface PreviewClass { id: string; name: string; code: string; teacherId: string; archived: boolean; createdAt: string; courseSlug: string | null }
 
 // Estudiantes de ejemplo que se suman a cada clase de la vista previa, para que el informe no salga vacío.
 const done = (id: string, bestScore: number, attempts = 1): ProgressRow => ({ missionId: id, bestScore, attempts, completed: bestScore >= 70 });
@@ -52,6 +52,8 @@ interface State {
   members: { classId: string; studentId: string; joinedAt: string }[];
   /** Cursos con acceso completo del estudiante de prueba (el primero viene «pagado» para poder probarlo entero). */
   access: Set<string>;
+  /** Cursos cuyo acceso llegó por el código de un grupo: curso → grupo. */
+  viaClass: Map<string, string>;
   prices: Map<string, number | null>;
   extraTeachers: AdminUser[];
 }
@@ -71,6 +73,7 @@ function state(): State {
       classes: [],
       members: [],
       access: new Set(["primer-portal"]),
+      viaClass: new Map(),
       prices: new Map([["primer-portal", 20000], ["portal-del-primer-intento", 25000]]),
       extraTeachers: [],
     };
@@ -212,6 +215,7 @@ export function createMemoryRepo(): Repo {
       const s = state();
       return s.classes.filter((c) => c.teacherId === teacherId).map((c) => ({
         id: c.id, name: c.name, code: c.code, archived: c.archived, createdAt: c.createdAt, members: s.members.filter((m) => m.classId === c.id).length,
+        courseSlug: c.courseSlug, courseTitle: c.courseSlug ? C().courses.find((x) => x.slug === c.courseSlug)?.title ?? null : null,
       }));
     },
     async createClass(teacherId, name) {
@@ -219,7 +223,7 @@ export function createMemoryRepo(): Repo {
       const n = name.trim();
       if (n.length < 2 || n.length > 60) throw new Error("nombre_invalido");
       const s = state();
-      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: n, code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString() };
+      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: n, code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: null };
       s.classes.push(c);
       for (const d of DEMO_STUDENTS) s.members.push({ classId: c.id, studentId: d.id, joinedAt: c.createdAt });
       return { id: c.id, name: c.name, code: c.code };
@@ -258,7 +262,7 @@ export function createMemoryRepo(): Repo {
       const s = state();
       return s.members.filter((m) => m.studentId === studentId).flatMap((m) => {
         const c = s.classes.find((x) => x.id === m.classId && !x.archived);
-        return c ? [{ id: c.id, name: c.name, teacherName: TEACHER.displayName }] : [];
+        return c ? [{ id: c.id, name: c.name, teacherName: TEACHER.displayName, courseTitle: c.courseSlug ? C().courses.find((x) => x.slug === c.courseSlug)?.title ?? null : null }] : [];
       });
     },
     async joinClass(studentId, code) {
@@ -268,7 +272,16 @@ export function createMemoryRepo(): Repo {
       const c = s.classes.find((x) => x.code === norm && !x.archived);
       if (!c) throw new Error("codigo_invalido");
       if (!s.members.some((m) => m.classId === c.id && m.studentId === studentId)) s.members.push({ classId: c.id, studentId, joinedAt: new Date().toISOString() });
-      return { id: c.id, name: c.name };
+      const course = c.courseSlug ? C().courses.find((x) => x.slug === c.courseSlug) : undefined;
+      if (course && (!s.access.has(course.slug) || s.viaClass.has(course.slug))) {
+        s.access.add(course.slug);
+        s.viaClass.set(course.slug, c.id);
+      }
+      return { id: c.id, name: c.name, courseSlug: course?.slug ?? null, courseTitle: course?.title ?? null, expiresAt: course?.accessUntil ? `${course.accessUntil}T23:59:59-05:00` : null };
+    },
+    async revokeClassAccess(_studentId, classId) {
+      const s = state();
+      for (const [course, cls] of s.viaClass) if (cls === classId) { s.access.delete(course); s.viaClass.delete(course); }
     },
     async leaveClass(studentId, classId) {
       const s = state();
@@ -311,7 +324,26 @@ export function createMemoryRepo(): Repo {
     async adminClasses(adminId) {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
       const s = state();
-      return s.classes.map((c) => ({ id: c.id, name: c.name, code: c.code, archived: c.archived, teacher: TEACHER.displayName, members: s.members.filter((m) => m.classId === c.id).length }));
+      return s.classes.map((c) => ({
+        id: c.id, name: c.name, code: c.code, archived: c.archived, members: s.members.filter((m) => m.classId === c.id).length,
+        teacher: c.teacherId === PREVIEW_ADMIN_ID ? ADMIN.displayName : TEACHER.displayName, teacherId: c.teacherId,
+        courseSlug: c.courseSlug, courseTitle: c.courseSlug ? C().courses.find((x) => x.slug === c.courseSlug)?.title ?? null : null,
+      }));
+    },
+    async adminCreateClass(adminId, course, name, teacherId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      if (!C().courses.some((c) => c.slug === course && c.kind === "clase")) throw new Error("curso_no_encontrado");
+      if (!STAFF.has(teacherId)) throw new Error("solo_docentes");
+      const s = state();
+      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: name.trim(), code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: course };
+      s.classes.push(c);
+      return { id: c.id, code: c.code };
+    },
+    async adminAssignTeacher(adminId, classId, teacherId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const c = state().classes.find((x) => x.id === classId);
+      if (!c) throw new Error("clase_no_encontrada");
+      c.teacherId = teacherId;
     },
     async createTeacherAccount(email, name) {
       const s = state();
