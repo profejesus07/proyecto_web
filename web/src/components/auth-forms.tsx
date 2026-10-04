@@ -170,7 +170,13 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
   return (
     <>
       <form action={action} className="space-y-5">
-        {notice === "enlace" && (
+        {notice === "confirmado" && (
+        <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-3 text-sm font-medium text-[#b6f5cb]">✔ Tu correo quedó confirmado. Ingresa con tu correo y tu contraseña.</p>
+      )}
+      {notice === "recuperar-otro-navegador" && (
+        <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-[#ffe3a0]">Abre el enlace para cambiar la contraseña en el mismo navegador donde lo pediste, o pide uno nuevo desde «¿Olvidaste tu contraseña?».</p>
+      )}
+      {notice === "enlace" && (
           <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-[#ffe3a0]">Ese enlace ya no es válido. Ingresa con tu correo y contraseña o crea tu cuenta de nuevo.</p>
         )}
         <input type="hidden" name="siguiente" value={next ?? ""} />
