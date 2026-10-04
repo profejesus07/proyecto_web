@@ -41,7 +41,7 @@ export async function createPreference(
     items: [{ id: o.courseSlug, title: o.title.slice(0, 250), quantity: 1, currency_id: "COP", unit_price: o.amountCop }],
     external_reference: o.reference,
     back_urls: { success: o.returnUrl, pending: o.returnUrl, failure: o.returnUrl },
-    statement_descriptor: "UMBRAL",
+    statement_descriptor: "ACADEMIA UMBRAL",
   };
   // Mercado Pago solo acepta volver solo y avisar a direcciones públicas (https).
   if (https) body.auto_return = "approved";

@@ -21,7 +21,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
               <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-green text-2xl text-ink">✓</span>
               <div>
                 <h1 className="text-2xl">Constancia auténtica</h1>
-                <p className="text-sm text-muted">Expedida por UMBRAL. Código <strong className="font-mono text-text">{cert.code}</strong> · N.º {String(cert.number).padStart(6, "0")}</p>
+                <p className="text-sm text-muted">Expedida por la Academia Virtual Umbral. Código <strong className="font-mono text-text">{cert.code}</strong> · N.º {String(cert.number).padStart(6, "0")}</p>
               </div>
             </div>
             <dl className="panel grid gap-x-6 gap-y-3 p-5 sm:grid-cols-[auto_1fr]">
@@ -41,7 +41,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
               <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-2xl text-ink">✕</span>
               <div>
                 <h1 className="text-2xl">No encontramos esa constancia</h1>
-                <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por UMBRAL.</p>
+                <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por la Academia Virtual Umbral.</p>
               </div>
             </div>
             <Link href="/verificar" className="btn btn-secondary">Probar con otro código</Link>

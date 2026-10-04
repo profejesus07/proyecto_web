@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { SiteHeader } from "@/components/site-header";
 
-export const metadata: Metadata = { title: "Verificar constancia", description: "Comprueba que una constancia de asistencia de UMBRAL es auténtica." };
+export const metadata: Metadata = { title: "Verificar constancia", description: "Comprueba que una constancia de asistencia de la Academia Virtual Umbral es auténtica." };
 
 export default async function VerifyFormPage({ searchParams }: PageProps<"/verificar">) {
   const sp = await searchParams;

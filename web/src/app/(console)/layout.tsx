@@ -11,7 +11,7 @@ export default async function ConsoleLayout({ children }: LayoutProps<"/">) {
     <div className="theme-console">
       <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur print:hidden">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
-          <Link href="/admin" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Consola de administración">
+          <Link href="/admin" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Academia Virtual Umbral · Consola de administración">
             <Emblem size={26} />
             <span>UMBRAL</span>
             <span className="rounded-md border border-line px-1.5 py-0.5 text-[0.7rem] font-semibold uppercase tracking-wider text-muted">Consola</span>

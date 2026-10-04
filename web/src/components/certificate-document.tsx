@@ -20,7 +20,8 @@ export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { c
               <circle cx="24" cy="24" r="3" fill="#2ee6d6" />
             </svg>
             <div>
-              <p className="font-display text-2xl font-extrabold tracking-wide">UMBRAL</p>
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-[#5b5788]">Academia Virtual</p>
+              <p className="font-display text-2xl font-extrabold leading-none tracking-wide">UMBRAL</p>
               <p className="text-xs text-[#5b5788]">Cursos que se viven como una aventura</p>
             </div>
           </div>

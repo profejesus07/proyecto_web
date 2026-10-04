@@ -42,11 +42,11 @@ export default async function Home() {
       <section className="brand-hero relative isolate overflow-hidden">
         <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-24 pt-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pb-28 lg:pt-20">
-          <div className="rise space-y-7">
+          <div className="rise min-w-0 space-y-7">
             <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">
-              <span className="size-2 rounded-full bg-[#ffc233]" aria-hidden="true" /> Educación con historia
+              <span className="size-2 rounded-full bg-[#ffc233]" aria-hidden="true" /> Academia Virtual Umbral<span className="hidden sm:inline"> · Educación con historia</span>
             </p>
-            <h1 className="text-[2.9rem] font-extrabold leading-[1] sm:text-7xl">
+            <h1 className="text-[2.6rem] font-extrabold min-[380px]:text-[2.9rem] leading-[1] sm:text-7xl">
               Aprender es <span className="text-[#ffc233]">salvar</span> el mundo.
             </h1>
             <p className="max-w-lg text-lg text-white/85 sm:text-xl">Cursos y clases donde cada lección es una aventura y cada estudiante, el protagonista.</p>
@@ -63,7 +63,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="rise relative mx-auto w-full max-w-lg [animation-delay:120ms]">
+          <div className="rise relative mx-auto w-full min-w-0 max-w-lg [animation-delay:120ms]">
             <div className="overflow-hidden rounded-[2rem] border-4 border-white/20 bg-white/10 shadow-2xl shadow-black/30">
               <UniverseArt u={gremio} className="aspect-[4/3]" />
             </div>
@@ -121,7 +121,7 @@ export default async function Home() {
       </section>
 
       {/* ===== Valores ===== */}
-      <section aria-label="Por qué UMBRAL" className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section aria-label="Por qué la Academia Virtual Umbral" className="mx-auto max-w-6xl px-4 sm:px-6">
         <ul className="grid gap-4 rounded-[2rem] bg-panel-2 p-6 sm:grid-cols-2 sm:p-8 lg:grid-cols-4">
           {VALUES.map((v) => (
             <li key={v.title} className="flex items-start gap-3">

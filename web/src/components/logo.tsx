@@ -16,11 +16,15 @@ export function Emblem({ size = 32 }: { size?: number }) {
   );
 }
 
-export function Logo({ href = "/" }: { href?: string }) {
+/** compact: en pantallas pequeñas se ve solo «UMBRAL» (cabecera del juego, con monedas y avatar). */
+export function Logo({ href = "/", compact = false }: { href?: string; compact?: boolean }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-2.5 font-display text-xl font-extrabold tracking-tight" aria-label="Umbral, ir al inicio">
+    <Link href={href} className="inline-flex items-center gap-2.5 font-display tracking-tight" aria-label="Academia Virtual Umbral, ir al inicio">
       <Emblem />
-      <span>UMBRAL</span>
+      <span className={`flex flex-col leading-none ${compact ? "max-[379px]:sr-only" : ""}`}>
+        <span className={`whitespace-nowrap text-[0.6rem] font-bold uppercase tracking-[0.1em] opacity-70 sm:tracking-[0.22em] ${compact ? "hidden sm:block" : ""}`}>Academia Virtual</span>
+        <span className="text-xl font-extrabold">UMBRAL</span>
+      </span>
     </Link>
   );
 }

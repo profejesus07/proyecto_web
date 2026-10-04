@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ForgotPasswordForm } from "@/components/auth-forms";
 import { Sprite, asset } from "@/components/sprite";
 
-export const metadata: Metadata = { title: "Recuperar contraseña", description: "Crea una contraseña nueva para tu cuenta de Umbral." };
+export const metadata: Metadata = { title: "Recuperar contraseña", description: "Crea una contraseña nueva para tu cuenta de la Academia Virtual Umbral." };
 
 export default function ForgotPasswordPage() {
   return (

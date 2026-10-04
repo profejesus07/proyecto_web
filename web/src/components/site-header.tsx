@@ -21,22 +21,22 @@ export async function SiteHeader() {
     <>
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Logo href={viewer ? homePath(viewer.role) : "/"} />
+          <Logo href={viewer ? homePath(viewer.role) : "/"} compact={!!viewer} />
 
           {viewer ? (
             <>
               <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-1 sm:gap-3">
                 <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
                   <span aria-hidden="true">🪙</span> {viewer.coins}
                 </span>
-                <Link href="/perfil" className="flex items-center gap-2 rounded-full border border-line bg-panel/70 py-1 pl-1 pr-3 hover:border-cyan/60" aria-label={`Tu perfil: ${viewer.displayName}, rango ${rank?.key}`}>
+                <Link href="/perfil" className="flex items-center gap-2 rounded-full border border-line bg-panel/70 py-1 pl-1 pr-2 hover:border-cyan/60 sm:pr-3" aria-label={`Tu perfil: ${viewer.displayName}, rango ${rank?.key}`}>
                   {adultGuide ? <GuideFace guide={adultGuide} size={36} /> : <AvatarFace base={viewer.avatarBase} look={viewer.avatarLook} rank={rank?.key ?? "E"} size={36} />}
                   <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank?.color, color: "#14123b" }}>{rank?.key}</span>
                 </Link>
                 <form action={logoutAction}>
-                  <button className="btn btn-ghost btn-sm" type="submit" aria-label="Salir" title="Salir">
+                  <button className="btn btn-ghost btn-sm max-sm:px-2" type="submit" aria-label="Salir" title="Salir">
                     <span aria-hidden="true" className="sm:hidden">🚪</span>
                     <span className="hidden sm:inline">Salir</span>
                   </button>

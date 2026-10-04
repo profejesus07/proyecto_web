@@ -18,7 +18,7 @@ export async function checkoutUrl(start: PaymentStart, provider: PaymentProvider
   const cfg = mercadoPagoConfig();
   if (!cfg) throw new Error("pasarela_no_disponible");
   return createPreference(cfg, {
-    reference: start.reference, title: `UMBRAL · ${start.title}`, courseSlug, amountCop: start.amount, returnUrl,
+    reference: start.reference, title: `Academia Virtual Umbral · ${start.title}`, courseSlug, amountCop: start.amount, returnUrl,
     notificationUrl: `${site}/api/pagos/mercadopago?source_news=webhooks`, email,
   });
 }

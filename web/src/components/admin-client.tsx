@@ -48,7 +48,7 @@ export function CreateTeacherForm() {
           </dl>
           <button type="button" className="btn btn-secondary btn-sm" onClick={async () => {
             try {
-              await navigator.clipboard.writeText(`UMBRAL — tu cuenta de docente\nIngresa en: ${location.origin}/ingresar\nCorreo: ${state.email}\nContraseña temporal: ${state.password}\nCámbiala en Perfil → Cambiar mi contraseña.`);
+              await navigator.clipboard.writeText(`Academia Virtual Umbral — tu cuenta de docente\nIngresa en: ${location.origin}/ingresar\nCorreo: ${state.email}\nContraseña temporal: ${state.password}\nCámbiala en Perfil → Cambiar mi contraseña.`);
               setCopied(true);
             } catch { setCopied(false); }
           }}>{copied ? "✔ Copiado" : "Copiar mensaje para enviar"}</button>

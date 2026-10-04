@@ -27,4 +27,4 @@ export function isPreviewAnon(): boolean {
   return isPreview() && process.env.UMBRAL_PREVIEW === "anon";
 }
 
-export const SITE_NAME = "Umbral";
+export const SITE_NAME = "Academia Virtual Umbral";

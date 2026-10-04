@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/auth-forms";
 import { Sprite, asset } from "@/components/sprite";
 import { safeNext } from "@/lib/validation";
 
-export const metadata: Metadata = { title: "Ingresar", description: "Ingresa a tu cuenta de Umbral y continúa tu aventura." };
+export const metadata: Metadata = { title: "Ingresar", description: "Ingresa a tu cuenta de la Academia Virtual Umbral y continúa tu aventura." };
 
 export default async function LoginPage({ searchParams }: PageProps<"/ingresar">) {
   const sp = await searchParams;

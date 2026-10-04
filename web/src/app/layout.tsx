@@ -20,10 +20,10 @@ const base = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRO
 
 export const metadata: Metadata = {
   metadataBase: new URL(base),
-  title: { default: `${SITE_NAME} · Academia digital`, template: `%s · ${SITE_NAME}` },
+  title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
   description: "Academia digital de cursos cortos y clases: lecciones breves, práctica con retroalimentación inmediata y constancias verificables. La primera lección es gratis.",
   applicationName: SITE_NAME,
-  openGraph: { type: "website", locale: "es_CO", siteName: SITE_NAME, title: `${SITE_NAME} · Academia digital`, description: "Cursos cortos y clases en línea que se viven como una aventura." },
+  openGraph: { type: "website", locale: "es_CO", siteName: SITE_NAME, title: SITE_NAME, description: "Cursos cortos y clases en línea que se viven como una aventura." },
   robots: { index: true, follow: true },
 };
 

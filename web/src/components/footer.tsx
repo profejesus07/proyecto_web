@@ -3,7 +3,7 @@ import { Logo } from "@/components/logo";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 const COLUMNS = [
-  { title: "UMBRAL", links: [["/programas", "Cursos y clases"], ["/servicios", "Para instituciones"], ["/#filosofia", "Filosofía"]] },
+  { title: "La academia", links: [["/programas", "Cursos y clases"], ["/servicios", "Para instituciones"], ["/#filosofia", "Filosofía"]] },
   { title: "Tu cuenta", links: [["/registro", "Crear cuenta"], ["/ingresar", "Ingresar"], ["/verificar", "Verificar una constancia"]] },
   { title: "Confianza", links: [["/privacidad", "Privacidad y datos"], ["/terminos", "Términos de uso"]] },
 ] as const;
@@ -27,7 +27,7 @@ export function Footer() {
         ))}
       </div>
       <div className="border-t border-line/40">
-        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">© {new Date().getFullYear()} Umbral · Mgtr. Jesús David Álvarez Sáez. Todos los derechos reservados.</p>
+        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">© {new Date().getFullYear()} Academia Virtual Umbral · Mgtr. Jesús David Álvarez Sáez. Todos los derechos reservados.</p>
       </div>
     </footer>
   );
