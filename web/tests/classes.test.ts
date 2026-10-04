@@ -20,8 +20,8 @@ const report = (teacher: string, cls: string) => call<{
 
 beforeEach(async () => {
   h = await makeDb();
-  await h.addUser(T, { role: "docente", display_name: "Profe Ana" });
-  await h.addUser(T2, { role: "docente", display_name: "Profe Beto" });
+  await h.addUser(T, { display_name: "Profe Ana" }, { role: "docente" });
+  await h.addUser(T2, { display_name: "Profe Beto" }, { role: "docente" });
   await h.addUser(S, { role: "estudiante", display_name: "Luna" });
   await h.addUser(S2, { role: "estudiante", display_name: "Sol" });
 });

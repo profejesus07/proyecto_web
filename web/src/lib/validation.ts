@@ -34,7 +34,8 @@ export const registerSchema = z.object({
   displayName,
   email: z.string().trim().toLowerCase().pipe(z.email("Escribe un correo válido.")),
   password: newPassword,
-  role: z.enum(["estudiante", "docente", "familia"], { error: "Elige quién eres." }),
+  // Las cuentas de docente solo las crea el administrador.
+  role: z.enum(["estudiante", "familia"], { error: "Elige quién eres." }),
   avatar: z.enum(["aria", "leo", "tomas", "nuri"]).default("aria"),
   consent: z.literal("on", { error: "Necesitamos tu confirmación para continuar." }),
 });

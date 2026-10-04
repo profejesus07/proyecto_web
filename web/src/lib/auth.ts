@@ -4,7 +4,8 @@ import { connection } from "next/server";
 import { cache } from "react";
 import { getRepo } from "@/lib/data";
 import { cookies } from "next/headers";
-import { PREVIEW_TEACHER_ID, PREVIEW_USER_ID } from "@/lib/data/memory-repo";
+import { PREVIEW_ADMIN_ID, PREVIEW_TEACHER_ID, PREVIEW_USER_ID } from "@/lib/data/memory-repo";
+import { isAdmin, isStaff } from "@/lib/roles";
 import type { Profile } from "@/lib/data/types";
 import { hasSupabase, isPreview, isPreviewAnon } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -15,9 +16,9 @@ export const getViewer = cache(async (): Promise<Profile | null> => {
   await connection();
   if (isPreviewAnon()) return null;
   if (isPreview()) {
-    // Solo en la vista previa local: la cookie «umbral-vista=docente» entra como el docente de prueba.
-    const asTeacher = (await cookies()).get("umbral-vista")?.value === "docente";
-    return getRepo().getProfile(asTeacher ? PREVIEW_TEACHER_ID : PREVIEW_USER_ID);
+    // Solo en la vista previa local: la cookie «umbral-vista» entra como el docente o el admin de prueba.
+    const as = (await cookies()).get("umbral-vista")?.value;
+    return getRepo().getProfile(as === "docente" ? PREVIEW_TEACHER_ID : as === "admin" ? PREVIEW_ADMIN_ID : PREVIEW_USER_ID);
   }
   if (!hasSupabase()) return null;
   const supabase = await createClient();
@@ -32,9 +33,16 @@ export async function requireViewer(next?: string): Promise<Profile> {
   return viewer;
 }
 
-/** Páginas del Maestro del Gremio: solo para cuentas de docente. */
+/** Páginas del Maestro del Gremio: docentes y administrador. */
 export async function requireTeacher(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
-  if (viewer.role !== "docente") redirect("/gremio");
+  if (!isStaff(viewer.role)) redirect("/gremio");
+  return viewer;
+}
+
+/** Panel de administración: solo el administrador. */
+export async function requireAdmin(next: string): Promise<Profile> {
+  const viewer = await requireViewer(next);
+  if (!isAdmin(viewer.role)) redirect("/gremio");
   return viewer;
 }

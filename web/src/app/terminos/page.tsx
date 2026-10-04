@@ -32,12 +32,21 @@ export default function TermsPage() {
         <p>Los cursos, textos, personajes, ilustraciones y animaciones de Umbral pertenecen a <strong>[NOMBRE DEL TITULAR]</strong>. Puedes usarlos para aprender en la plataforma, pero no copiarlos ni redistribuirlos sin permiso.</p>
       </section>
       <section>
+        <h2>Cursos gratuitos y de pago</h2>
+        <ul>
+          <li>Crear una cuenta es gratis, y la primera lección de cada curso también.</li>
+          <li>Para continuar con el resto de un curso hay que suscribirse a ese curso. Su precio se muestra antes de suscribirte, en pesos colombianos.</li>
+          <li>Mientras no haya pagos en línea, el acceso se activa a mano después de acordar el pago por correo. La duración del acceso (sin vencimiento o por un tiempo) se informa al activarlo.</li>
+          <li>Tu avance se conserva: si te suscribes después, sigues donde quedaste.</li>
+        </ul>
+      </section>
+      <section>
         <h2>Monedas, gemas y objetos</h2>
         <p>Son elementos del juego sin valor en dinero. No se pueden cambiar por dinero ni transferir entre cuentas. Las ayudas de aprendizaje tienen límites para que el juego sea justo.</p>
       </section>
       <section>
         <h2>Cambios y contacto</h2>
-        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong><a href="mailto:jesuspunksaez@gmail.com" className="text-cyan underline underline-offset-4">jesuspunksaez@gmail.com</a></strong> si tienes dudas.</p>
+        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong> si tienes dudas.</p>
       </section>
     </LegalPage>
   );

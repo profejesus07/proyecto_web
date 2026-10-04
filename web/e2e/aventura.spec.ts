@@ -57,13 +57,13 @@ test("no se puede saltar a una misión bloqueada", async ({ page }) => {
   await expect(page).toHaveURL(/\/portales\/primer-portal$/);
 });
 
-test("el segundo portal está cerrado hasta vencer a Petrox", async ({ page }) => {
+test("la primera lección de cada curso es gratis y la segunda pide suscribirse", async ({ page }) => {
   await page.goto("/portales");
-  await expect(page.getByText("Se abre al vencer a Petrox")).toBeVisible();
-  await page.goto("/mision/c2m1");
+  await expect(page.getByText(/Lección 1 gratis · completo: \$\s?25\.000/)).toBeVisible();
+  await page.goto("/mision/c2m2");
   await expect(page).toHaveURL(/\/portales\/portal-del-primer-intento$/);
-  await expect(page.getByText("Este portal todavía está cerrado")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Empezar/ })).toHaveCount(0);
+  await expect(page.getByText("La primera lección es gratis")).toBeVisible();
+  await expect(page.getByText("Incluida en la suscripción al curso.").first()).toBeVisible();
 });
 
 test("fallar no da premio y se puede reintentar", async ({ page }) => {
@@ -126,7 +126,6 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await play(page, "m4", CORRECT.m4);
   await expect(page.getByRole("heading", { name: "¡Purificaste a Petrox!" })).toBeVisible();
   await expect(page.getByRole("link", { name: /El constructor despierta/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /La llama que tiembla/ })).toBeVisible();
   for (const name of ["Capa de Musgo", "Sello de Naturaleza", "Certificado «Sello del Portal»"]) {
     await expect(page.getByText(name).first()).toBeVisible();
   }
@@ -135,13 +134,12 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await expect(page.getByText("¡Tienes un certificado!")).toBeVisible();
 });
 
-test("vencer a Petrox abre el Portal del Primer Intento", async ({ page }) => {
-  await page.goto("/gremio");
-  await expect(page.getByText("¡Se abrió un nuevo portal")).toBeVisible();
-  await page.goto("/portales/portal-del-primer-intento");
-  await expect(page.getByText("Este portal todavía está cerrado")).toHaveCount(0);
+test("al superar la lección gratis se ofrece desbloquear el curso", async ({ page }) => {
   await play(page, "c2m1", CORRECT.c2m1);
-  await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
+  await expect(page.getByText("¡Superaste la lección gratis!")).toBeVisible();
+  await page.getByRole("link", { name: /Desbloquear el curso/ }).click();
+  await expect(page).toHaveURL(/\/suscribirse\/portal-del-primer-intento$/);
+  await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:profejesus365@gmail\.com/);
 });
 
 test("la tienda vende Pista y 50/50; lo demás sigue cerrado", async ({ page }) => {
@@ -225,6 +223,31 @@ test("desde el ingreso se llega a recuperar la contraseña, y el cambio de contr
   await expect(page.locator("#password-rules [data-cumple]")).toHaveCount(2);
   await page.goto("/perfil");
   await expect(page.getByRole("link", { name: /Cambiar mi contraseña/ })).toBeVisible();
+});
+
+test("el administrador crea docentes, activa cursos y pone precios", async ({ page, context }) => {
+  await page.goto("/admin");
+  await expect(page).toHaveURL(/\/gremio$/); // un estudiante no entra al panel
+
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin");
+  await expect(page.getByRole("heading", { name: "Administración" })).toBeVisible();
+
+  await page.getByLabel("Nombre que verán sus estudiantes").fill("Profe Ana");
+  await page.getByLabel("Correo del docente").fill("ana@colegio.edu.co");
+  await page.getByRole("button", { name: "Crear cuenta" }).click();
+  await expect(page.getByText("Contraseña temporal")).toBeVisible();
+  await expect(page.getByText("ana@colegio.edu.co").first()).toBeVisible();
+
+  // Activa el segundo curso para el estudiante de prueba.
+  const student = page.locator("li", { hasText: "estudiante@vista-previa.co" });
+  await student.getByLabel(/Curso para/).selectOption("portal-del-primer-intento");
+  await student.getByRole("button", { name: "Activar" }).click();
+  await expect(student.getByRole("button", { name: /Quitar acceso a El Portal del Primer Intento/ })).toBeVisible();
+
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/mision/c2m2");
+  await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
 });
 
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {

@@ -4,6 +4,7 @@ import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
 import { getViewer } from "@/lib/auth";
 import { rankProgress } from "@/lib/game/ranks";
+import { isAdmin, isStaff } from "@/lib/roles";
 import { NavLinks } from "./nav-links";
 
 export async function SiteHeader() {
@@ -17,7 +18,7 @@ export async function SiteHeader() {
 
         {viewer ? (
           <>
-            <NavLinks className="hidden md:flex" teacher={viewer.role === "docente"} />
+            <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} />
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
                 <span aria-hidden="true">🪙</span> {viewer.coins}
@@ -38,7 +39,7 @@ export async function SiteHeader() {
           </nav>
         )}
       </div>
-      {viewer && <NavLinks mobile className="md:hidden" teacher={viewer.role === "docente"} />}
+      {viewer && <NavLinks mobile className="md:hidden" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} />}
     </header>
   );
 }

@@ -34,9 +34,9 @@ describe("Crónicas", () => {
 
   it("se abren al avanzar", () => {
     const none = new Set<string>();
-    expect(CHAPTERS.filter((c) => isUnlocked(c, none)).map((c) => c.id)).toEqual(["prologo", "petrox-1"]);
+    expect(CHAPTERS.filter((c) => isUnlocked(c, none)).map((c) => c.id)).toEqual(["prologo", "petrox-1", "ignaris-1"]);
     const afterPetrox = new Set([1, 2, 3, 4].map((n) => missionKey("primer-portal", n)));
     expect(CHAPTERS.filter((c) => isUnlocked(c, afterPetrox)).map((c) => c.id)).toEqual(["prologo", "petrox-1", "petrox-2", "petrox-3", "ignaris-1"]);
-    expect(chaptersUnlockedBy("primer-portal", 4).map((c) => c.id)).toEqual(["petrox-3", "ignaris-1"]);
+    expect(chaptersUnlockedBy("primer-portal", 4).map((c) => c.id)).toEqual(["petrox-3"]);
   });
 });

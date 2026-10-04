@@ -6,7 +6,7 @@ import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
 import { CHAPTERS, isUnlocked, missionKey } from "@/content/cronicas";
-import { loadCourseView } from "@/lib/data/queries";
+import { formatPrice, loadCourseView, type MissionView } from "@/lib/data/queries";
 
 export async function generateMetadata({ params }: PageProps<"/portales/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -22,7 +22,6 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   const g = guardianBySlug(course.guardian);
   const normal = course.missions.filter((m) => !m.isBoss);
   const boss = course.missions.find((m) => m.isBoss);
-  const before = course.lockedBy ? guardianBySlug(course.lockedBy.guardian) : undefined;
   const done = new Set(course.missions.filter((m) => m.state === "completada").map((m) => missionKey(course.slug, m.position)));
   const chapters = CHAPTERS.filter((c) => c.course === course.slug);
 
@@ -44,14 +43,16 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
         <Sprite src={asset.boss(course.guardian)} alt={`${g?.name ?? "El Guardián"} custodia este portal`} className="mx-auto h-48 w-auto md:h-56" />
       </header>
 
-      {course.lockedBy && (
-        <div role="note" className="panel flex flex-wrap items-center gap-4 !border-gold/50 p-5">
-          {before && <Sprite src={asset.boss(course.lockedBy.guardian)} alt={before.name} className="h-20 w-auto" />}
+      {!course.hasAccess && (
+        <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-gold/60" : "!border-gold/40"}`}>
+          <span aria-hidden="true" className="text-4xl">🔑</span>
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-display text-xl font-bold">🔒 Este portal todavía está cerrado</p>
-            <p className="text-muted">Termina «{course.lockedBy.title}» y vence a {before?.name ?? "su Guardián"} para abrirlo.</p>
+            <p className="font-display text-xl font-bold">{course.needsSubscription ? "¡Superaste la lección gratis!" : "La primera lección es gratis"}</p>
+            <p className="text-muted">
+              Suscríbete a este curso para abrir todas sus misiones y enfrentar a {g?.name ?? "su Guardián"}. Curso completo: <strong className="text-text">{formatPrice(course.price)}</strong>.
+            </p>
           </div>
-          <Link href={`/portales/${course.lockedBy.slug}`} className="btn btn-primary">Ir a ese portal</Link>
+          <Link href={`/suscribirse/${course.slug}`} className="btn btn-primary">Desbloquear el curso</Link>
         </div>
       )}
 
@@ -60,7 +61,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
         <ol className="space-y-3">
           {normal.map((m) => (
             <li key={m.id}>
-              <MissionRow m={m} index={m.position} portalLocked={course.locked} />
+              <MissionRow m={m} index={m.position} />
             </li>
           ))}
         </ol>
@@ -79,7 +80,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
                 {g && <p className="text-muted"><strong className="text-text">{g.obstacle}</strong> · se vence con: {g.weakness.toLowerCase()}.</p>}
                 <p className="text-sm text-muted">{boss.xpReward} XP · 6 preguntas · necesitas 70% para purificarlo.</p>
                 {boss.state === "bloqueada" ? (
-                  <p className="inline-flex items-center gap-2 rounded-xl border border-line bg-bg/60 px-4 py-2 text-sm font-semibold"><span aria-hidden="true">🔒</span> Termina las {normal.length} misiones para desbloquearlo</p>
+                  <p className="inline-flex items-center gap-2 rounded-xl border border-line bg-bg/60 px-4 py-2 text-sm font-semibold"><span aria-hidden="true">{boss.lock === "suscripcion" ? "🔑" : "🔒"}</span> {boss.lock === "suscripcion" ? "Incluido en la suscripción al curso" : `Termina las ${normal.length} misiones para desbloquearlo`}</p>
                 ) : boss.state === "completada" ? (
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Purificado · mejor nota {boss.bestScore}%</span>
@@ -103,8 +104,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
           </div>
           <ol className="grid gap-3 md:grid-cols-3">
             {chapters.map((ch, i) => {
-              // En un portal cerrado, sus capítulos pueden abrirse por el portal anterior (p. ej. el primero).
-              const open = isUnlocked(ch, done) || (ch.unlock.kind === "mision" && ch.unlock.course !== course.slug && !course.locked);
+              const open = isUnlocked(ch, done);
               return (
                 <li key={ch.id}>
                   {open ? (
@@ -128,16 +128,16 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   );
 }
 
-function MissionRow({ m, index, portalLocked }: { portalLocked: boolean; m: { id: string; title: string; intro: string; xpReward: number; state: "bloqueada" | "disponible" | "completada"; bestScore: number | null; attempts: number }; index: number }) {
+function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const locked = m.state === "bloqueada";
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
       <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-gold text-ink" : "bg-white/10 text-muted"}`} aria-hidden="true">
-        {m.state === "completada" ? "✔" : locked ? "🔒" : index}
+        {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : index}
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-display text-lg font-bold leading-tight">{m.title}</p>
-        <p className="text-sm text-muted">{locked ? (portalLocked ? "Se abre cuando abras este portal." : "Termina la misión anterior para abrirla.") : m.intro}</p>
+        <p className="text-sm text-muted">{m.lock === "suscripcion" ? "Incluida en la suscripción al curso." : locked ? "Termina la misión anterior para abrirla." : m.intro}</p>
       </div>
       <div className="shrink-0 text-right text-sm">
         {m.state === "completada" ? (

@@ -28,6 +28,7 @@ beforeEach(async () => {
   h = await makeDb();
   await h.addUser(U);
   await h.addUser(V);
+  await h.grant(U);
   const r = await h.db.query<(typeof qs)[number]>(`
     select q.id, q.mission_id, m.position as mpos, q.correct_index, q.hint, jsonb_array_length(q.options) as n
       from public.questions q join public.missions m on m.id = q.mission_id

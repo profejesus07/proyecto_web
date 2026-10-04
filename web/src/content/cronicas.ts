@@ -104,8 +104,8 @@ export const CHAPTERS: readonly Chapter[] = [
     teaser: "Un dragón que nunca ha echado a volar.",
     scene: "calma",
     guest: { src: "/assets/jefes/ignaris/ignaris-reposo.svg", alt: "Ignaris, el dragón joven" },
-    unlock: { kind: "mision", course: "primer-portal", position: 4 },
-    hint: "Se abre al purificar a Petrox.",
+    unlock: { kind: "inicio" },
+    hint: "Disponible desde el primer día.",
     pages: [
       "Ignaris nació en el nido más alto de la Biblioteca, donde los dragones aprendían a encender las lámparas del Saber. Su fuego era el más brillante de todos.",
       "Pero el día de su primer vuelo, la niebla del Olvido le hizo una pregunta: «¿Y si te caes? ¿Y si todos te ven fallar?».",

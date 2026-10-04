@@ -35,6 +35,7 @@ export type SubmitOutcome =
 
 const MESSAGES: Record<string, string> = {
   mision_bloqueada: "Esta misión todavía está bloqueada. Termina primero las anteriores.",
+  requiere_suscripcion: "Esta misión es parte del curso completo. Suscríbete al curso para continuar.",
   mision_no_encontrada: "No encontramos esa misión.",
   respuestas_incompletas: "Falta responder alguna pregunta.",
   sin_intento: "Empieza la misión respondiendo la primera pregunta.",
@@ -166,6 +167,7 @@ const AID_MESSAGES: Record<string, string> = {
   sin_pista: "Esta pregunta no tiene pista.",
   no_aplica: "Esta ayuda no sirve en esta pregunta.",
   mision_bloqueada: MESSAGES.mision_bloqueada,
+  requiere_suscripcion: MESSAGES.requiere_suscripcion,
   pregunta_no_encontrada: "No encontramos esa pregunta.",
 };
 

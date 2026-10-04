@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminUser, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -18,6 +18,11 @@ export const PREVIEW_TEACHER_ID = "00000000-0000-0000-0000-00000000bbbb";
 const TEACHER: Profile = {
   id: PREVIEW_TEACHER_ID, role: "docente", displayName: "Profe de prueba", avatarBase: "leo", xp: 0, coins: 0, gems: 0, streak: 0, introSeen: true, chroniclesRead: [],
 };
+
+/** Administrador de prueba (cookie «umbral-vista=admin»). */
+export const PREVIEW_ADMIN_ID = "00000000-0000-0000-0000-00000000cccc";
+const ADMIN: Profile = { ...TEACHER, id: PREVIEW_ADMIN_ID, role: "admin", displayName: "Admin de prueba" };
+const STAFF = new Set([PREVIEW_TEACHER_ID, PREVIEW_ADMIN_ID]);
 
 interface PreviewClass { id: string; name: string; code: string; teacherId: string; archived: boolean; createdAt: string }
 
@@ -45,6 +50,10 @@ interface State {
   aidUses: (AidUseRow & { day: string })[];
   classes: PreviewClass[];
   members: { classId: string; studentId: string; joinedAt: string }[];
+  /** Cursos con acceso completo del estudiante de prueba (el primero viene «pagado» para poder probarlo entero). */
+  access: Set<string>;
+  prices: Map<string, number | null>;
+  extraTeachers: AdminUser[];
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -61,6 +70,9 @@ function state(): State {
       aidUses: [],
       classes: [],
       members: [],
+      access: new Set(["primer-portal"]),
+      prices: new Map([["primer-portal", 20000], ["portal-del-primer-intento", 25000]]),
+      extraTeachers: [],
     };
   }
   return g.__umbralPreview;
@@ -69,7 +81,7 @@ function state(): State {
 type Seed = typeof primer;
 // Ids de la vista previa: el primer portal usa m1..m4 y los siguientes c2m1.., c3m1..
 const SEEDS: { seed: Seed; prefix: string }[] = [{ seed: primer, prefix: "m" }, { seed: intento as Seed, prefix: "c2m" }];
-const courses: Course[] = SEEDS.map(({ seed }) => ({ ...(seed.course as Course) }));
+const courses: Course[] = SEEDS.map(({ seed }) => ({ ...(seed.course as Omit<Course, "price">), price: null }));
 const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => ({
   id: `${prefix}${m.position}`, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss,
 })));
@@ -79,14 +91,16 @@ const questions = (id: string) => {
   return seed?.missions.find((x) => x.position === m?.position)?.questions ?? [];
 };
 const courseOf = (slug: string) => courses.find((c) => c.slug === slug)!;
-/** Misma regla que public.mission_is_locked: portales anteriores terminados y misiones anteriores del portal también. */
-function isLocked(s: State, m: MissionSummary): boolean {
-  const pos = courseOf(m.courseSlug).position;
-  return missions.some((p) => {
-    const cp = courseOf(p.courseSlug).position;
-    const before = cp < pos || (p.courseSlug === m.courseSlug && p.position < m.position);
-    return before && !s.progress.get(p.id)?.completed;
-  });
+const withPrice = (c: Course): Course => ({ ...c, price: state().prices.get(c.slug) ?? null });
+function hasAccess(userId: string, slug: string): boolean {
+  const s = state();
+  return STAFF.has(userId) || s.profile.role === "docente" || s.profile.role === "admin" || s.access.has(slug);
+}
+/** Misma regla que public.mission_is_locked: misiones en orden dentro del curso; la primera gratis, el resto con acceso. */
+function isLocked(s: State, m: MissionSummary, userId: string): boolean {
+  if (missions.some((p) => p.courseSlug === m.courseSlug && p.position < m.position && !s.progress.get(p.id)?.completed)) return true;
+  if (m.position > 1 && !hasAccess(userId, m.courseSlug)) throw new Error("requiere_suscripcion");
+  return false;
 }
 
 function previewCode(): string {
@@ -99,7 +113,7 @@ function complete(_u: string, id: string, score: number, passMark: number, items
   const s = state();
   const m = missions.find((x) => x.id === id);
   if (!m) throw new Error("mision_no_encontrada");
-  if (isLocked(s, m)) throw new Error("mision_bloqueada");
+  if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
   const passed = score >= passMark;
   const prev = s.progress.get(id);
   const first = passed && !prev?.completed;
@@ -119,11 +133,11 @@ function complete(_u: string, id: string, score: number, passMark: number, items
 
 export function createMemoryRepo(): Repo {
   return {
-    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : { ...state().profile }; },
-    async listCourses() { return [...courses]; },
+    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : id === PREVIEW_ADMIN_ID ? { ...ADMIN } : { ...state().profile }; },
+    async listCourses() { return courses.map(withPrice); },
     async getCourse(slug): Promise<CourseDetail | null> {
       const c = courses.find((x) => x.slug === slug);
-      return c ? { ...c, missions: missions.filter((m) => m.courseSlug === slug) } : null;
+      return c ? { ...withPrice(c), missions: missions.filter((m) => m.courseSlug === slug) } : null;
     },
     async getProgress() { return [...state().progress.values()]; },
     async getBossDefeats() { return [...state().bosses]; },
@@ -131,7 +145,7 @@ export function createMemoryRepo(): Repo {
     async getMissionPlay(id): Promise<MissionPlay | null> {
       const mission = missions.find((m) => m.id === id);
       if (!mission) return null;
-      return { mission, course: courseOf(mission.courseSlug), questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
+      return { mission, course: withPrice(courseOf(mission.courseSlug)), questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
     },
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
       return questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, correctIndex: q.correct_index, explanation: q.explanation }));
@@ -144,7 +158,7 @@ export function createMemoryRepo(): Repo {
       const s = state();
       const m = missions.find((x) => x.id === id);
       if (!m) throw new Error("mision_no_encontrada");
-      if (isLocked(s, m)) throw new Error("mision_bloqueada");
+      if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
       const qs = questions(id);
       if (!Number.isInteger(index) || index < 0 || index >= qs.length) throw new Error("pregunta_invalida");
       if (!Number.isInteger(choice) || choice < 0 || choice >= qs[index].options.length) throw new Error("respuesta_invalida");
@@ -183,7 +197,7 @@ export function createMemoryRepo(): Repo {
       }));
     },
     async createClass(teacherId, name) {
-      if (teacherId !== PREVIEW_TEACHER_ID) throw new Error("solo_docentes");
+      if (!STAFF.has(teacherId)) throw new Error("solo_docentes");
       const n = name.trim();
       if (n.length < 2 || n.length > 60) throw new Error("nombre_invalido");
       const s = state();
@@ -206,7 +220,7 @@ export function createMemoryRepo(): Repo {
     },
     async classReport(teacherId, classId): Promise<ClassReport> {
       const s = state();
-      const c = s.classes.find((x) => x.id === classId && x.teacherId === teacherId);
+      const c = s.classes.find((x) => x.id === classId && (x.teacherId === teacherId || teacherId === PREVIEW_ADMIN_ID));
       if (!c) throw new Error("clase_no_encontrada");
       const students = s.members.filter((m) => m.classId === classId).flatMap((m): ClassStudent[] => {
         if (m.studentId === PREVIEW_USER_ID) {
@@ -242,6 +256,52 @@ export function createMemoryRepo(): Repo {
       const s = state();
       s.members = s.members.filter((m) => !(m.classId === classId && m.studentId === studentId));
     },
+    async getCourseAccess(userId) {
+      return new Set(courses.filter((c) => hasAccess(userId, c.slug)).map((c) => c.slug));
+    },
+    async adminUsers(adminId, query) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const s = state();
+      const p = s.profile;
+      const all: AdminUser[] = [
+        { id: p.id, email: "estudiante@vista-previa.co", name: p.displayName, role: p.role, xp: p.xp, createdAt: "2026-10-01T00:00:00Z", lastSignInAt: null,
+          access: [...s.access].map((course) => ({ course, source: "admin", expiresAt: null })) },
+        { id: PREVIEW_TEACHER_ID, email: "docente@vista-previa.co", name: TEACHER.displayName, role: "docente", xp: 0, createdAt: "2026-09-30T00:00:00Z", lastSignInAt: null, access: [] },
+        { id: PREVIEW_ADMIN_ID, email: "admin@vista-previa.co", name: ADMIN.displayName, role: "admin", xp: 0, createdAt: "2026-09-29T00:00:00Z", lastSignInAt: null, access: [] },
+        ...s.extraTeachers,
+      ];
+      const q = query.trim().toLowerCase();
+      return q ? all.filter((u) => u.email.includes(q) || u.name.toLowerCase().includes(q)) : all;
+    },
+    async adminSetRole(adminId, userId, role) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      if (userId === PREVIEW_USER_ID) state().profile = { ...state().profile, role };
+      else throw new Error("no_permitido");
+    },
+    async adminGrantAccess(adminId, userId, course) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      if (userId === PREVIEW_USER_ID) state().access.add(course);
+    },
+    async adminRevokeAccess(adminId, userId, course) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      if (userId === PREVIEW_USER_ID) state().access.delete(course);
+    },
+    async adminSetPrice(adminId, course, price) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      state().prices.set(course, price);
+    },
+    async adminClasses(adminId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const s = state();
+      return s.classes.map((c) => ({ id: c.id, name: c.name, code: c.code, archived: c.archived, teacher: TEACHER.displayName, members: s.members.filter((m) => m.classId === c.id).length }));
+    },
+    async createTeacherAccount(email, name) {
+      const s = state();
+      if (s.extraTeachers.some((t) => t.email === email)) throw new Error("already been registered");
+      const id = `docente-${s.extraTeachers.length + 1}`;
+      s.extraTeachers.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
+      return { id };
+    },
     async markIntroSeen() { state().profile = { ...state().profile, introSeen: true }; },
     async markChapterRead(_u, id) {
       const p = state().profile;
@@ -268,7 +328,7 @@ export function createMemoryRepo(): Repo {
       const m = missions.find((x) => x.id === missionId);
       const q = questions(missionId)[Number(n) - 1];
       if (!m || !q) throw new Error("pregunta_no_encontrada");
-      if (isLocked(s, m)) throw new Error("mision_bloqueada");
+      if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
       const left = () => s.consumables.get(itemId) ?? 0;
       const prev = s.aidUses.find((u) => u.day === day && u.itemId === itemId && u.questionId === questionId);
       if (prev) return { hint: prev.hint, removed: prev.removed, free: prev.free, charged: false, left: left() };

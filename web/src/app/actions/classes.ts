@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import type { ClassAction } from "@/lib/data/types";
+import { isStaff } from "@/lib/roles";
 
 export type ClassFormState = { error?: string; message?: string } | undefined;
 
@@ -27,7 +28,7 @@ function friendly(e: unknown, fallback: string): string {
 export async function createClassAction(_prev: ClassFormState, formData: FormData): Promise<ClassFormState> {
   const viewer = await getViewer();
   if (!viewer) return { error: "Tu sesión terminó. Vuelve a ingresar." };
-  if (viewer.role !== "docente") return { error: MESSAGES.solo_docentes };
+  if (!isStaff(viewer.role)) return { error: MESSAGES.solo_docentes };
   const name = String(formData.get("name") ?? "").trim();
   if (name.length < 2 || name.length > 60) return { error: MESSAGES.nombre_invalido };
   let id: string;
@@ -42,7 +43,7 @@ export async function createClassAction(_prev: ClassFormState, formData: FormDat
 
 export async function manageClassAction(classId: string, action: ClassAction, arg?: string): Promise<{ ok: boolean; error?: string }> {
   const viewer = await getViewer();
-  if (!viewer || viewer.role !== "docente") return { ok: false, error: MESSAGES.solo_docentes };
+  if (!viewer || !isStaff(viewer.role)) return { ok: false, error: MESSAGES.solo_docentes };
   if (typeof classId !== "string" || !["nuevo_codigo", "renombrar", "archivar", "quitar"].includes(action)) return { ok: false, error: "Acción no válida." };
   try {
     await getRepo().manageClass(viewer.id, classId, action, typeof arg === "string" ? arg : undefined);

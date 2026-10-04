@@ -27,6 +27,7 @@ async function mission(pos: number) {
 beforeEach(async () => {
   h = await makeDb();
   await h.addUser(U);
+  await h.grant(U);
   m1 = await mission(1);
   boss = await mission(4);
 });

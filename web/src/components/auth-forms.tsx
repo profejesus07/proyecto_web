@@ -66,7 +66,6 @@ const PASSWORD_PATTERN = "(?=.*[A-Za-z])(?=.*[0-9]).{8,72}";
 
 const ROLES = [
   { value: "estudiante", title: "Estudiante", text: "Voy a aprender" },
-  { value: "docente", title: "Docente", text: "Acompaño a un grupo" },
   { value: "familia", title: "Familia", text: "Acompaño a mi hijo o hija" },
 ] as const;
 
@@ -103,7 +102,7 @@ export function RegisterForm() {
     <form action={action} className="space-y-6" noValidate={false}>
       <fieldset className="space-y-3">
         <legend className="label">¿Quién eres?</legend>
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2">
           {ROLES.map((r) => (
             <label key={r.value} className="cursor-pointer">
               <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="peer sr-only" required />
@@ -114,6 +113,7 @@ export function RegisterForm() {
             </label>
           ))}
         </div>
+        <p className="hint">¿Eres docente? Las cuentas de Maestro del Gremio las crea el administrador: escribe a <a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a>.</p>
       </fieldset>
 
       <fieldset className="space-y-3">

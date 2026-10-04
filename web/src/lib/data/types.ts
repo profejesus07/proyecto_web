@@ -1,4 +1,4 @@
-export type Role = "estudiante" | "docente" | "familia";
+export type Role = "estudiante" | "docente" | "familia" | "admin";
 export type AvatarBase = "aria" | "leo" | "tomas" | "nuri";
 export const AVATAR_BASES: readonly AvatarBase[] = ["aria", "leo", "tomas", "nuri"];
 export const AVATAR_NAMES: Record<AvatarBase, string> = { aria: "Aria", leo: "Leo", tomas: "Tomás", nuri: "Nuri" };
@@ -27,6 +27,8 @@ export interface Course {
   element: Element;
   guardian: string;
   position: number;
+  /** Precio en pesos colombianos (null = aún sin precio). */
+  price: number | null;
 }
 
 export interface MissionSummary {
@@ -161,6 +163,26 @@ export interface ClassReport {
   questions: { missionId: string; position: number; answered: number; right: number }[];
 }
 
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  xp: number;
+  createdAt: string;
+  lastSignInAt: string | null;
+  access: { course: string; source: string; expiresAt: string | null }[];
+}
+
+export interface AdminClass {
+  id: string;
+  name: string;
+  code: string;
+  archived: boolean;
+  teacher: string;
+  members: number;
+}
+
 export type ClassAction = "nuevo_codigo" | "renombrar" | "archivar" | "quitar";
 
 /** Todo lo que el servidor necesita de la base de datos. Una implementación real (Supabase) y otra en memoria (vista previa). */
@@ -196,4 +218,16 @@ export interface Repo {
   listStudentClasses(studentId: string): Promise<StudentClass[]>;
   joinClass(studentId: string, code: string): Promise<{ id: string; name: string }>;
   leaveClass(studentId: string, classId: string): Promise<void>;
+  // Suscripciones
+  /** Cursos con acceso completo (docentes y admin: todos). */
+  getCourseAccess(userId: string): Promise<Set<string>>;
+  // Administración (cada función comprueba en la base de datos que quien llama es admin)
+  adminUsers(adminId: string, query: string): Promise<AdminUser[]>;
+  adminSetRole(adminId: string, userId: string, role: "estudiante" | "familia" | "docente"): Promise<void>;
+  adminGrantAccess(adminId: string, userId: string, course: string, expiresAt: string | null): Promise<void>;
+  adminRevokeAccess(adminId: string, userId: string, course: string): Promise<void>;
+  adminSetPrice(adminId: string, course: string, price: number | null): Promise<void>;
+  adminClasses(adminId: string): Promise<AdminClass[]>;
+  /** Crea una cuenta de docente ya confirmada, con una contraseña temporal. */
+  createTeacherAccount(email: string, name: string, password: string): Promise<{ id: string }>;
 }

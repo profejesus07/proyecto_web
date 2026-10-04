@@ -33,6 +33,9 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
   } catch {
     notFound();
   }
+  // El administrador puede ver cualquier clase, pero solo su docente la gestiona.
+  const mine = (await repo.listTeacherClasses(viewer.id)).some((c) => c.id === id);
+  const editable = mine && !report.class.archived;
   const courses = (await Promise.all((await repo.listCourses()).map((c) => repo.getCourse(c.slug)))).filter((c): c is CourseDetail => !!c);
   const missions = courses.flatMap((c) => c.missions);
   const { students } = report;
@@ -64,9 +67,9 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
         <div className="space-y-3">
           <p className="eyebrow">Maestro del Gremio{report.class.archived ? " · Archivada" : ""}</p>
           <h1 className="text-3xl leading-tight sm:text-4xl">{report.class.name}</h1>
-          {!report.class.archived && <ClassActions classId={report.class.id} name={report.class.name} />}
+          {editable && <ClassActions classId={report.class.id} name={report.class.name} />}
         </div>
-        {!report.class.archived && (
+        {editable && (
           <div className="space-y-2">
             <p className="text-sm font-semibold text-muted">Código para unirse</p>
             <CodeCard code={report.class.code} />
@@ -105,14 +108,14 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
                   {courses.map((c) => (
                     <th key={c.slug} scope="colgroup" colSpan={c.missions.length} className="border-l border-line px-3 py-3 text-center">{guardianBySlug(c.guardian)?.name ?? c.title}</th>
                   ))}
-                  {!report.class.archived && <th scope="col" className="px-3 py-3"><span className="sr-only">Acciones</span></th>}
+                  {editable && <th scope="col" className="px-3 py-3"><span className="sr-only">Acciones</span></th>}
                 </tr>
                 <tr>
                   <th colSpan={3} />
                   {courses.flatMap((c) => c.missions.map((m, i) => (
                     <th key={m.id} scope="col" title={m.title} className={`px-1 pb-2 text-center font-semibold ${i === 0 ? "border-l border-line" : ""}`}>{m.isBoss ? "👑" : `M${m.position}`}</th>
                   )))}
-                  {!report.class.archived && <th />}
+                  {editable && <th />}
                 </tr>
               </thead>
               <tbody>
@@ -136,7 +139,7 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
                           </td>
                         );
                       }))}
-                      {!report.class.archived && <td className="px-3 py-2 text-right"><RemoveStudentButton classId={report.class.id} studentId={s.id} name={s.name} /></td>}
+                      {editable && <td className="px-3 py-2 text-right"><RemoveStudentButton classId={report.class.id} studentId={s.id} name={s.name} /></td>}
                     </tr>
                   );
                 })}

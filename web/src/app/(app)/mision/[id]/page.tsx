@@ -8,7 +8,7 @@ import { getRepo } from "@/lib/data";
 import { AIDS } from "@/lib/game/aids";
 import { kuroStage } from "@/lib/game/battle";
 import { rankForXp } from "@/lib/game/ranks";
-import { loadCourseView } from "@/lib/data/queries";
+import { formatPrice, loadCourseView } from "@/lib/data/queries";
 
 export const metadata: Metadata = { title: "Misión" };
 
@@ -75,6 +75,7 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
         kuroStage={kuroStage(rankForXp(viewer.xp).key)}
         revealed={revealed}
         nextMissionId={next?.id ?? null}
+        subscribe={next && !course.hasAccess ? { href: `/suscribirse/${course.slug}`, price: formatPrice(course.price) } : null}
       />
     </div>
   );

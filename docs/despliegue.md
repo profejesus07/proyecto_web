@@ -52,3 +52,16 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 - Para cambiar o añadir cursos, edita o crea `supabase/seed/<curso>.json`, añádelo a `SEEDS` en `supabase/build_setup.py` (con el nombre de su migración), ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL. Los portales se abren en el orden de su `position`: cada uno exige terminar los anteriores.
 - Las claves se rotan desde Supabase; después actualiza la variable en Vercel y vuelve a desplegar.
+
+## Administración
+
+- **Quién es administrador:** una cuenta de docente con la marca `is_admin`. Hoy lo es `profejesus365@gmail.com`. Para marcar otra cuenta, en Supabase → **SQL Editor** ejecuta:
+
+  ```sql
+  update public.profiles set is_admin = true, role = 'docente'
+   where id = (select id from auth.users where email = 'correo@ejemplo.com');
+  ```
+
+- **Cuentas de docente:** solo se crean desde **Admin → Crear cuenta de docente** (o cambiando el rol de una cuenta existente). El registro público solo crea cuentas de estudiante o familia.
+- **Cursos:** la primera lección de cada curso es gratis. El resto se abre con acceso al curso, que el administrador activa en **Admin → Personas** (sin vencimiento, 1 mes, 6 meses o 1 año). Quitar un acceso no borra el registro: queda marcado como revocado.
+- **Precios:** en **Admin → Cursos y precios**, en pesos colombianos.

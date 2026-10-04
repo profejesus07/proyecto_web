@@ -2,7 +2,7 @@ import "server-only";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminUser, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -16,6 +16,7 @@ function fail(error: { message: string } | null, what: string): never {
 const course = (r: Row): Course => ({
   slug: r.slug as string, title: r.title as string, summary: r.summary as string,
   element: r.element as Course["element"], guardian: r.guardian as string, position: r.position as number,
+  price: (r.price_cop as number | null | undefined) ?? null,
 });
 const mission = (r: Row): MissionSummary => ({
   id: r.id as string, courseSlug: r.course_slug as string, position: r.position as number, title: r.title as string,
@@ -31,7 +32,8 @@ export function createSupabaseRepo(): Repo {
       if (!data) return null;
       const base = (data.avatar as { base?: string } | null)?.base;
       const p: Profile = {
-        id: data.id, role: data.role, displayName: data.display_name,
+        // El administrador es un docente con la marca is_admin.
+        id: data.id, role: data.is_admin ? "admin" : data.role, displayName: data.display_name,
         avatarBase: (AVATAR_BASES as readonly string[]).includes(base ?? "") ? (base as AvatarBase) : "aria",
         xp: data.xp, coins: data.coins, gems: data.gems, streak: data.streak,
         introSeen: data.intro_seen_at != null, chroniclesRead: (data.chronicles_read as string[] | null) ?? [],
@@ -239,6 +241,67 @@ export function createSupabaseRepo(): Repo {
     async leaveClass(studentId, classId) {
       const { error } = await db.rpc("leave_class", { p_student: studentId, p_class: classId });
       if (error) fail(error, "salir de la clase");
+    },
+
+    async getCourseAccess(userId) {
+      const { data: p, error } = await db.from("profiles").select("role,is_admin").eq("id", userId).maybeSingle();
+      if (error) fail(error, "acceso");
+      if (p && (p.role === "docente" || p.is_admin)) {
+        const { data: all, error: e2 } = await db.from("courses").select("slug");
+        if (e2) fail(e2, "acceso");
+        return new Set((all ?? []).map((c) => c.slug as string));
+      }
+      const { data, error: e3 } = await db.from("course_access").select("course_slug,expires_at").eq("user_id", userId).is("revoked_at", null);
+      if (e3) fail(e3, "acceso");
+      const now = Date.now();
+      return new Set((data ?? []).filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > now).map((a) => a.course_slug as string));
+    },
+
+    async adminUsers(adminId, query) {
+      const { data, error } = await db.rpc("admin_users", { p_admin: adminId, p_query: query });
+      if (error) fail(error, "personas");
+      return ((data ?? []) as Record<string, unknown>[]).map((u): AdminUser => ({
+        id: u.id as string, email: u.email as string, name: u.name as string, role: u.role as AdminUser["role"], xp: u.xp as number,
+        createdAt: u.created_at as string, lastSignInAt: (u.last_sign_in_at as string | null) ?? null,
+        access: ((u.access ?? []) as { course: string; source: string; expires_at: string | null }[]).map((a) => ({ course: a.course, source: a.source, expiresAt: a.expires_at })),
+      }));
+    },
+
+    async adminSetRole(adminId, userId, role) {
+      const { error } = await db.rpc("admin_set_role", { p_admin: adminId, p_user: userId, p_role: role });
+      if (error) fail(error, "rol");
+    },
+
+    async adminGrantAccess(adminId, userId, course, expiresAt) {
+      const { error } = await db.rpc("admin_grant_access", { p_admin: adminId, p_user: userId, p_course: course, p_expires: expiresAt });
+      if (error) fail(error, "acceso");
+    },
+
+    async adminRevokeAccess(adminId, userId, course) {
+      const { error } = await db.rpc("admin_revoke_access", { p_admin: adminId, p_user: userId, p_course: course });
+      if (error) fail(error, "acceso");
+    },
+
+    async adminSetPrice(adminId, course, price) {
+      const { error } = await db.rpc("admin_set_price", { p_admin: adminId, p_course: course, p_price: price });
+      if (error) fail(error, "precio");
+    },
+
+    async adminClasses(adminId) {
+      const { data, error } = await db.rpc("admin_classes", { p_admin: adminId });
+      if (error) fail(error, "clases");
+      return ((data ?? []) as Record<string, unknown>[]).map((c): AdminClass => ({
+        id: c.id as string, name: c.name as string, code: c.code as string, archived: c.archived as boolean, teacher: c.teacher as string, members: c.members as number,
+      }));
+    },
+
+    async createTeacherAccount(email, name, password) {
+      // app_metadata solo lo escribe el servidor: así la base de datos sabe que es una cuenta de docente.
+      const { data, error } = await db.auth.admin.createUser({
+        email, password, email_confirm: true, app_metadata: { role: "docente" }, user_metadata: { display_name: name },
+      });
+      if (error) fail(error, "crear docente");
+      return { id: data.user.id };
     },
 
     async useAid(userId, questionId, itemId, dailyCap, minXp) {

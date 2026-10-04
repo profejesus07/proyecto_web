@@ -29,6 +29,8 @@ export interface QuizProps {
   guardian: { slug: string; name: string };
   questions: { id: string; prompt: string; options: string[]; hasHint: boolean }[];
   nextMissionId: string | null;
+  /** Si la siguiente misión necesita suscripción: a dónde ir para desbloquear el curso. */
+  subscribe: { href: string; price: string } | null;
   aids: {
     pista: { stock: number; usedToday: number; cap: number; freeAvailable: boolean };
     fifty: { stock: number; usedToday: number; cap: number; unlocked: boolean; minRank: string };
@@ -256,6 +258,11 @@ export function Quiz(p: QuizProps) {
                 </ul>
               </div>
             )}
+            {win && p.subscribe && (
+              <p className="max-w-lg rounded-xl border border-gold/50 bg-gold/10 px-5 py-3 text-[#ffe3a0]">
+                ¡Superaste la lección gratis! Para seguir con las demás misiones y enfrentar a {p.guardian.name}, suscríbete al curso ({p.subscribe.price}).
+              </p>
+            )}
             {outcome.chronicles.length > 0 && (
               <div className="w-full max-w-xl pt-2 text-left">
                 <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet">
@@ -269,7 +276,8 @@ export function Quiz(p: QuizProps) {
               </div>
             )}
             <div className="flex flex-wrap justify-center gap-3 pt-2">
-              {win && p.nextMissionId && <Link href={`/mision/${p.nextMissionId}`} className="btn btn-primary btn-lg">Siguiente misión</Link>}
+              {win && p.nextMissionId && !p.subscribe && <Link href={`/mision/${p.nextMissionId}`} className="btn btn-primary btn-lg">Siguiente misión</Link>}
+              {win && p.subscribe && <Link href={p.subscribe.href} className="btn btn-primary btn-lg">🔑 Desbloquear el curso</Link>}
               {!win && <button type="button" onClick={retry} className="btn btn-primary btn-lg">Intentarlo de nuevo</button>}
               <Link href={`/portales/${p.courseSlug}`} className="btn btn-secondary btn-lg">Volver al portal</Link>
             </div>

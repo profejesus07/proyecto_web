@@ -24,6 +24,8 @@ beforeEach(async () => {
   h = await makeDb();
   await h.addUser(U, { display_name: "Ursula" });
   await h.addUser(V, { display_name: "Víctor" });
+  await h.grant(U);
+  await h.grant(V);
   const m = await h.db.query<{ id: string; position: number; is_boss: boolean }>("select id, position, is_boss from public.missions where course_slug = 'primer-portal' order by position");
   missions = m.rows;
 });
@@ -115,27 +117,38 @@ describe("complete_mission", () => {
   });
 });
 
-describe("orden de los portales", () => {
+describe("cursos independientes: primera lección gratis, el resto con suscripción", () => {
   const second = async () => (await h.db.query<{ id: string; position: number; is_boss: boolean }>(
     "select id, position, is_boss from public.missions where course_slug = 'portal-del-primer-intento' order by position")).rows;
 
-  it("el segundo portal está cerrado hasta terminar el primero, Guardián incluido", async () => {
+  it("la primera lección de cualquier curso es gratis, aunque no se haya terminado otro curso", async () => {
     const [i1] = await second();
-    await expect(complete(U, i1.id, 100)).rejects.toThrow(/mision_bloqueada/);
-    for (const m of missions.filter((x) => !x.is_boss)) await complete(U, m.id, 100);
-    await expect(complete(U, i1.id, 100)).rejects.toThrow(/mision_bloqueada/);
-    await complete(U, missions.find((m) => m.is_boss)!.id, 100);
     await expect(complete(U, i1.id, 100)).resolves.toMatchObject({ first: true, xp_gain: 60 });
   });
 
-  it("las ayudas tampoco sirven en un portal cerrado", async () => {
-    const [i1] = await second();
-    const q = await h.db.query<{ id: string }>("select id from public.questions where mission_id = $1 limit 1", [i1.id]);
-    await expect(h.db.query("select public.use_aid($1, $2, 'obj_ayuda_pista', 10, 0)", [U, q.rows[0].id])).rejects.toThrow(/mision_bloqueada/);
+  it("sin suscripción, la segunda lección pide suscribirse (también para las ayudas)", async () => {
+    const [i1, i2] = await second();
+    await complete(U, i1.id, 100);
+    await expect(complete(U, i2.id, 100)).rejects.toThrow(/requiere_suscripcion/);
+    const q = await h.db.query<{ id: string }>("select id from public.questions where mission_id = $1 limit 1", [i2.id]);
+    await expect(h.db.query("select public.use_aid($1, $2, 'obj_ayuda_pista', 10, 0)", [U, q.rows[0].id])).rejects.toThrow(/requiere_suscripcion/);
   });
 
-  it("vencer a Ignaris da su recompensa y su sello", async () => {
-    for (const m of missions) await complete(U, m.id, 100);
+  it("dentro de un curso las lecciones siguen en orden, aun con suscripción", async () => {
+    await h.grant(U, "portal-del-primer-intento");
+    const [, i2] = await second();
+    await expect(complete(U, i2.id, 100)).rejects.toThrow(/mision_bloqueada/);
+  });
+
+  it("un acceso vencido ya no sirve", async () => {
+    const [i1, i2] = await second();
+    await h.db.query("insert into public.course_access (user_id, course_slug, expires_at) values ($1, 'portal-del-primer-intento', now() - interval '1 day')", [U]);
+    await complete(U, i1.id, 100);
+    await expect(complete(U, i2.id, 100)).rejects.toThrow(/requiere_suscripcion/);
+  });
+
+  it("con suscripción se puede vencer a Ignaris", async () => {
+    await h.grant(U, "portal-del-primer-intento");
     const ms = await second();
     for (const m of ms.filter((x) => !x.is_boss)) await complete(U, m.id, 100);
     const r = await complete(U, ms.find((m) => m.is_boss)!.id, 100, ["obj_recompensa_brasas", "obj_titulo_valiente", "obj_sello_fuego"]);
@@ -143,7 +156,7 @@ describe("orden de los portales", () => {
     expect(r.granted).toEqual(expect.arrayContaining(["obj_recompensa_brasas", "obj_titulo_valiente", "obj_sello_fuego"]));
   });
 
-  it("la regla de orden no se puede consultar desde el navegador", async () => {
+  it("la regla no se puede consultar desde el navegador", async () => {
     await expect(h.as("authenticated", U, "select public.mission_is_locked($1, $2)", [U, missions[0].id])).rejects.toThrow(/permission denied/);
   });
 });

@@ -5,3 +5,6 @@
  * Las ayudas que ya funcionan (Pista y 50/50, ver lib/game/aids.ts) se venden siempre.
  */
 export const SHOP_OPEN = process.env.NEXT_PUBLIC_SHOP_OPEN === "1";
+
+/** Correo de contacto y administración de la plataforma. */
+export const SUPPORT_EMAIL = "profejesus365@gmail.com";

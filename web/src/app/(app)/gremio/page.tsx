@@ -11,6 +11,7 @@ import { getRepo } from "@/lib/data";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
 import { kuroStage } from "@/lib/game/battle";
+import { isStaff } from "@/lib/roles";
 import { rankProgress } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "El Gremio" };
@@ -27,19 +28,23 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
   const unread = unreadCount(shelves);
   const newest = shelves.flatMap((s) => s.chapters).filter((c) => c.unlocked && !c.read).at(-1);
   const rank = rankProgress(viewer.xp).rank;
-  const pending = courses.find((c) => c.next);
-  const allDone = courses.length > 0 && !pending;
+  // Primero el curso que ya va en camino; si no, el siguiente que se puede empezar.
+  const pending = courses.find((c) => c.next && c.status === "en-curso") ?? courses.find((c) => c.next);
+  const started = courses.some((c) => c.done > 0);
+  const toSubscribe = courses.find((c) => c.needsSubscription);
   const recent = inventory.slice(0, 6).map((i) => getItem(i.itemId)).filter((i): i is NonNullable<typeof i> => !!i);
 
   const greeting = pending?.next
-    ? pending.status === "nuevo"
-      ? pending === courses[0]
-        ? `¡Bienvenido, ${viewer.displayName}! Tu primer portal te espera: «${pending.title}».`
-        : `¡Se abrió un nuevo portal, ${viewer.displayName}! Te espera «${pending.title}».`
-      : `Muy bien, ${viewer.displayName}. Tu próxima misión es «${pending.next.title}».`
-    : allDone
-      ? `¡Increíble, ${viewer.displayName}! Cruzaste todos los portales abiertos. Pronto habrá más.`
-      : `Hola, ${viewer.displayName}. Todavía no hay portales abiertos.`;
+    ? pending.status === "en-curso"
+      ? `Muy bien, ${viewer.displayName}. Tu próxima misión es «${pending.next.title}».`
+      : !started
+        ? `¡Bienvenido, ${viewer.displayName}! Tu primer portal te espera: «${pending.title}». La primera lección es gratis.`
+        : `Te espera «${pending.title}», ${viewer.displayName}. Su primera lección es gratis.`
+    : toSubscribe
+      ? `¡Gran trabajo, ${viewer.displayName}! Terminaste las lecciones gratis. Suscríbete a «${toSubscribe.title}» para seguir la aventura.`
+      : courses.length > 0
+        ? `¡Increíble, ${viewer.displayName}! Cruzaste todos los portales abiertos. Pronto habrá más.`
+        : `Hola, ${viewer.displayName}. Todavía no hay portales abiertos.`;
 
   return (
     <div className="space-y-8">
@@ -55,6 +60,8 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
             </div>
             {pending?.next ? (
               <Link href={`/mision/${pending.next.id}`} className="btn btn-primary btn-lg">Continuar aventura</Link>
+            ) : toSubscribe ? (
+              <Link href={`/suscribirse/${toSubscribe.slug}`} className="btn btn-primary btn-lg">Desbloquear «{toSubscribe.title}»</Link>
             ) : (
               <Link href="/portales" className="btn btn-primary btn-lg">Ir a la Sala de Portales</Link>
             )}
@@ -69,9 +76,9 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
-      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={viewer.role === "docente"} />}
+      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={isStaff(viewer.role)} />}
 
-      {viewer.role === "docente" && (
+      {isStaff(viewer.role) && (
         <section aria-label="Maestro del Gremio" className="panel flex flex-wrap items-center justify-between gap-4 !border-gold/40 p-5">
           <p><strong className="font-display text-lg">🧑‍🏫 Maestro del Gremio.</strong> <span className="text-muted">Crea clases y sigue el avance de tus estudiantes.</span></p>
           <Link href="/maestro" className="btn btn-primary">Ir a mis clases</Link>
@@ -108,11 +115,11 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
               {courses.map((c) => (
                 <li key={c.slug}>
                   <Link href={`/portales/${c.slug}`} className="panel flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:border-cyan/50">
-                    <Sprite src={asset.boss(c.guardian)} alt="" decorative className={`size-16 shrink-0 object-contain ${c.locked ? "brightness-50 grayscale" : ""}`} />
+                    <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-16 shrink-0 object-contain" />
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <p className="font-display text-lg font-bold leading-tight">{c.title}</p>
                       <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={c.total} aria-valuenow={c.done} aria-label="Misiones completadas"><i style={{ width: `${(c.done / Math.max(c.total, 1)) * 100}%` }} /></div>
-                      <p className="text-sm text-muted">{c.locked ? "🔒 Se abre al terminar el portal anterior" : `${c.done} de ${c.total} misiones${c.bossDefeated ? " · Guardián vencido ✔" : ""}`}</p>
+                      <p className="text-sm text-muted">{c.done} de {c.total} misiones{c.bossDefeated ? " · Guardián vencido ✔" : ""}{c.needsSubscription ? " · 🔓 Suscríbete para continuar" : ""}</p>
                     </div>
                   </Link>
                 </li>

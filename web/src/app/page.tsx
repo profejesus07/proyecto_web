@@ -135,8 +135,9 @@ export default function Home() {
               <ul className="space-y-3 text-muted">
                 <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Contenido creado y revisado por docentes, con retroalimentación clara después de cada misión.</span></li>
                 <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Datos mínimos: solo un correo y un nombre de aventurero. Nada de ubicación, fotos ni mensajes públicos.</span></li>
-                <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Cada perfil es privado: nadie más ve tu avance. Puedes leer cómo cuidamos tus datos en la <Link className="text-cyan underline underline-offset-4" href="/privacidad">página de privacidad</Link>.</span></li>
-                <li className="flex gap-3"><span aria-hidden="true">⏳</span><span><strong className="text-text">Próximamente:</strong> paneles para que docentes y familias vean el avance y envíen mensajes de ánimo.</span></li>
+                <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Cada perfil es privado: solo tu docente ve tu avance, y únicamente si te unes a su clase. Puedes leer cómo cuidamos tus datos en la <Link className="text-cyan underline underline-offset-4" href="/privacidad">página de privacidad</Link>.</span></li>
+                <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Panel para docentes: el avance de cada estudiante y las preguntas que más le cuestan al grupo.</span></li>
+                <li className="flex gap-3"><span aria-hidden="true">✔</span><span>Crear la cuenta es gratis y la primera lección de cada curso también.</span></li>
               </ul>
             </div>
             <div className="relative mx-auto h-72 w-full max-w-sm">

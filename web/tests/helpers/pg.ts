@@ -11,7 +11,10 @@ export async function makeDb() {
   await db.exec(`
     create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
     create schema auth;
-    create table auth.users (id uuid primary key, raw_user_meta_data jsonb default '{}'::jsonb);
+    create table auth.users (
+      id uuid primary key, email text, raw_user_meta_data jsonb default '{}'::jsonb, raw_app_meta_data jsonb default '{}'::jsonb,
+      created_at timestamptz default now(), last_sign_in_at timestamptz
+    );
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     grant usage on schema auth to anon, authenticated, service_role;
     grant execute on function auth.uid() to anon, authenticated, service_role;
@@ -28,8 +31,13 @@ export async function makeDb() {
       await db.exec("reset role;");
     }
   }
-  async function addUser(id: string, meta: Record<string, string> = {}) {
-    await db.query("insert into auth.users (id, raw_user_meta_data) values ($1, $2::jsonb)", [id, JSON.stringify(meta)]);
+  /** Crea una persona. `app` simula el app_metadata que solo escribe el servidor (p. ej. { role: "docente" }). */
+  async function addUser(id: string, meta: Record<string, string> = {}, app: Record<string, string> = {}, email = `${id.slice(0, 8)}@prueba.co`) {
+    await db.query("insert into auth.users (id, email, raw_user_meta_data, raw_app_meta_data) values ($1, $2, $3::jsonb, $4::jsonb)", [id, email, JSON.stringify(meta), JSON.stringify(app)]);
   }
-  return { db, as, addUser };
+  /** Da acceso completo a un curso (como haría el administrador o un pago). */
+  async function grant(user: string, course = "primer-portal") {
+    await db.query("insert into public.course_access (user_id, course_slug) values ($1, $2) on conflict do nothing", [user, course]);
+  }
+  return { db, as, addUser, grant };
 }
