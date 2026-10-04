@@ -30,7 +30,7 @@ export default async function BestiaryPage() {
       <PageTitle eyebrow="Archivo de Crónicas" title="Bestiario">
         <p className="text-muted">Las criaturas de las mazmorras y los Guardianes de los portales. Las que aún no conoces siguen en sombra.</p>
       </PageTitle>
-      <SpeechBubble name="Archivista Eon" src={asset.eon("pensar")} alt="El Archivista Eon" tone="violet" className="max-w-3xl">
+      <SpeechBubble name="Archivista Eon" src={asset.eon("pensar")} alt="El Archivista Eon" tone="violet" className="max-w-3xl" auto>
         {played
           ? `Llevas ${found} de ${ALL_ENEMIES.length + GUARDIANS.length} criaturas registradas. Ninguna es malvada: cada una es un tropiezo pequeño que se vence aprendiendo.`
           : "Este libro se escribe con tus aventuras. Termina tu primera misión y anotaré las criaturas que encuentres."}

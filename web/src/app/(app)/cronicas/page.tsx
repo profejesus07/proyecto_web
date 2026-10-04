@@ -24,7 +24,7 @@ export default async function ChroniclesPage() {
             <PageTitle eyebrow="Biblioteca infinita" title="Archivo de Crónicas">
               <p className="text-text/80">La historia de los Portales y sus Guardianes. Cada capítulo se abre cuando avanzas en tu aventura.</p>
             </PageTitle>
-            <SpeechBubble name="Archivista Eon" src={asset.eon("saludar")} alt="El Archivista Eon" tone="violet">
+            <SpeechBubble name="Archivista Eon" src={asset.eon("saludar")} alt="El Archivista Eon" tone="violet" auto>
               {unread > 0
                 ? <>Tienes <strong>{unread} {unread === 1 ? "capítulo nuevo" : "capítulos nuevos"}</strong> esperándote. Siéntate, que esta historia es larga.</>
                 : "Cada libro de estos estantes guarda una historia. Cruza portales y te contaré más."}

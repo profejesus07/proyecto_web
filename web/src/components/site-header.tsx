@@ -8,6 +8,7 @@ import { getViewer } from "@/lib/auth";
 import { rankProgress } from "@/lib/game/ranks";
 import { homePath, isAdmin, isStaff } from "@/lib/roles";
 import { NavLinks } from "./nav-links";
+import { SoundControl } from "./sound";
 
 export async function SiteHeader() {
   const viewer = await getViewer();
@@ -25,6 +26,7 @@ export async function SiteHeader() {
             <>
               <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />
               <div className="flex items-center gap-2 sm:gap-3">
+                <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
                   <span aria-hidden="true">🪙</span> {viewer.coins}
                 </span>

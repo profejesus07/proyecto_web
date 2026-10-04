@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { markChapterReadAction } from "@/app/actions/game";
+import { SpeakButton } from "@/components/sound";
 import { Sprite, asset } from "@/components/sprite";
+import { sfx } from "@/lib/audio/music";
 
 /** Lector de un capítulo: Eon narra página a página sobre el escenario del Archivo. */
 export function ChapterReader({
@@ -21,6 +23,7 @@ export function ChapterReader({
   }, [id, alreadyRead]);
 
   function go(to: number) {
+    sfx("pagina");
     setPage(to);
     requestAnimationFrame(() => textRef.current?.focus({ preventScroll: true }));
   }
@@ -40,9 +43,13 @@ export function ChapterReader({
         {guest && <Sprite src={guest.src} alt={guest.alt} className="absolute bottom-[4%] right-[4%] h-[48%] w-auto sm:right-[12%]" />}
       </div>
 
-      <div className="panel space-y-5 !border-violet/40 p-6 sm:p-8">
+      <div data-bubble className="panel space-y-5 !border-violet/40 p-6 sm:p-8">
+        <div className="flex justify-end">
+          {/* El Archivista Eon narra cada página con su voz. */}
+          <SpeakButton key={page} name="Archivista Eon" text={pages[page]} auto />
+        </div>
         <div ref={textRef} tabIndex={-1} aria-live="polite" className="min-h-28 outline-none">
-          <p className="font-display text-xl leading-relaxed sm:text-2xl">{pages[page]}</p>
+          <p key={page} className="pop font-display text-xl leading-relaxed sm:text-2xl">{pages[page]}</p>
         </div>
         <div className="flex gap-1.5" aria-hidden="true">
           {pages.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= page ? "bg-violet" : "bg-white/15"}`} />)}

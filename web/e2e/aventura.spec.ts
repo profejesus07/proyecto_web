@@ -814,3 +814,25 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   await expect(page.getByRole("heading", { name: "Ignaris", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Crónicas de Ignaris" })).toBeVisible();
 });
+
+test("el sonido se configura desde la cabecera y los personajes se pueden escuchar", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/cronicas");
+  await expect(page.getByRole("button", { name: "Escuchar a Archivista Eon" })).toBeVisible();
+  // Tocar la página activa el audio (música del Archivo) sin errores.
+  await page.getByRole("button", { name: "Escuchar a Archivista Eon" }).click();
+  const sound = page.locator("summary[aria-label=Sonido]");
+  await sound.click();
+  const music = page.getByLabel("🎵 Música de fondo");
+  await expect(music).toBeChecked();
+  await music.uncheck();
+  await page.reload();
+  await page.locator("summary[aria-label=Sonido]").click();
+  await expect(page.getByLabel("🎵 Música de fondo")).not.toBeChecked();
+  await page.getByLabel("🎵 Música de fondo").check();
+  // En la misión, Sora y Kael traen su voz.
+  await page.goto("/mision/m1");
+  await expect(page.getByRole("button", { name: "Escuchar a Maestra Sora" }).or(page.getByRole("button", { name: "Escuchar a Kuro" })).first()).toBeVisible();
+  expect(errors).toEqual([]);
+});

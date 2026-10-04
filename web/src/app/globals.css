@@ -192,3 +192,40 @@ p { text-wrap: pretty; }
 
 /* Efecto de un poder al aparecer sobre la escena de la misión. */
 @keyframes fadein { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+
+/* ===== Voces y animaciones de los personajes ===== */
+.bubble { animation: bubble-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.bubble .bubble-body { transform-origin: left bottom; }
+/* Mientras un personaje habla: su retrato se mece y su globo brilla. */
+.bubble[data-speaking] .portrait { animation: talk 0.42s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.bubble[data-speaking] .bubble-body { box-shadow: 0 0 0 1px rgb(46 230 214 / 0.35), 0 0 24px -6px rgb(46 230 214 / 0.45); }
+.voice-wave { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
+.voice-wave i { display: block; width: 2px; height: 100%; border-radius: 2px; background: var(--cyan); animation: wave 0.9s ease-in-out infinite; }
+.voice-wave i:nth-child(2) { animation-delay: 0.15s; }
+.voice-wave i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bubble-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes talk { from { transform: translateY(0) rotate(-1deg) scaleY(1); } to { transform: translateY(-3px) rotate(1deg) scaleY(1.015); } }
+@keyframes wave { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+
+/* Batalla: golpe certero, error y victoria. */
+.hit-flash { animation: hit-flash 0.5s ease-out; }
+.shake { animation: shake 0.45s ease-in-out; }
+.pop { animation: pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+.float-up { animation: float-up 1.2s ease-out forwards; }
+@keyframes hit-flash { 0% { filter: brightness(1.9) saturate(1.4); } 100% { filter: none; } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
+@keyframes float-up { 0% { opacity: 0; transform: translateY(8px) scale(0.9); } 15% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-48px) scale(1); } }
+
+/* Confeti de victoria (solo CSS). */
+.confetti { pointer-events: none; position: absolute; inset: 0; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 8px; height: 14px; border-radius: 2px; opacity: 0; animation: confetti 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) forwards; }
+@keyframes confetti {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate3d(var(--dx), 460px, 0) rotate(var(--rot)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble, .bubble[data-speaking] .portrait, .voice-wave i, .hit-flash, .shake, .pop, .float-up, .confetti i { animation: none !important; }
+  .confetti { display: none; }
+}

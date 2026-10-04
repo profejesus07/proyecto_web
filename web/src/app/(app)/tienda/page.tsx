@@ -93,7 +93,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
         ))}
       </nav>
 
-      <SpeechBubble name="Forjadora Brann" src={`/assets/personajes/brann/brann-${BRANN[cat].anim}.svg`} alt="La Forjadora Brann" tone="gold">
+      <SpeechBubble name="Forjadora Brann" src={`/assets/personajes/brann/brann-${BRANN[cat].anim}.svg`} alt="La Forjadora Brann" tone="gold" auto>
         {BRANN[cat].line} <span className="text-muted">{INTRO[cat]}</span>
       </SpeechBubble>
 

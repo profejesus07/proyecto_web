@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { markIntroSeenAction } from "@/app/actions/game";
+import { SpeakButton } from "@/components/sound";
 import { Sprite, asset } from "@/components/sprite";
 
 interface Step {
@@ -57,13 +58,16 @@ export function SoraWelcome({ name, firstPortal, teacher = false }: { name: stri
         <Sprite src={asset.scene("gremio", "dia")} alt="" decorative className="absolute inset-0 -z-10 size-full object-cover opacity-40" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-panel via-panel/70 to-transparent" />
         <div className="flex items-end justify-center gap-4 px-6 pt-6">
-          <Sprite key={s.anim} src={asset.sora(s.anim)} alt="La Maestra Sora" className="h-44 w-auto sm:h-52" />
+          <Sprite key={s.anim} src={asset.sora(s.anim)} alt="La Maestra Sora" className="pop h-44 w-auto sm:h-52" />
           {s.extra && <Sprite src={s.extra.src} alt={s.extra.alt} className="h-28 w-auto sm:h-32" />}
         </div>
       </div>
       <div className="space-y-4 p-6 pt-4">
-        <div aria-live="polite" className="space-y-2">
-          <p className="text-xs font-bold uppercase tracking-wider text-cyan">Maestra Sora · {step + 1} de {steps.length}</p>
+        <div aria-live="polite" data-bubble className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-cyan">Maestra Sora · {step + 1} de {steps.length}</p>
+            <SpeakButton key={step} name="Maestra Sora" text={`${s.title} ${s.text}`} auto />
+          </div>
           <h2 id="sora-title" className="text-2xl leading-tight sm:text-3xl">{s.title}</h2>
           <p className="text-muted sm:text-lg">{s.text}</p>
         </div>

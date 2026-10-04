@@ -5,6 +5,10 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { preload } from "react-dom";
 import { activateAidAction, answerQuestionAction, submitMissionAction, activatePowerAction, type SubmitOutcome } from "@/app/actions/game";
 import { SpeechBubble } from "@/components/dialogue";
+import { SceneTheme, SpeakButton } from "@/components/sound";
+import { guardianBySlug } from "@/content/guardians";
+import { sfx } from "@/lib/audio/music";
+import { speak } from "@/lib/audio/voices";
 import { Sprite, asset } from "@/components/sprite";
 import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
 import { PASS_MARK } from "@/lib/game/grading";
@@ -95,19 +99,24 @@ export interface QuizPowerState {
   lluvia?: boolean;
 }
 
-/** Kuro dice la pista «con su propia voz» (si el navegador sabe hablar). */
+/** Kuro dice la pista con su voz (si el navegador sabe hablar y las voces están activadas). */
 function kuroSays(text: string) {
-  try {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "es-CO";
-    u.pitch = 1.6;
-    u.rate = 1.05;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  } catch {
-    // Sin voz: la pista igual se ve escrita.
-  }
+  void speak(text, "Kuro", "kuro-pista");
+}
+
+/** Confeti de victoria (piezas fijas para que no cambie entre renders). */
+function Confetti() {
+  const colors = ["#2ee6d6", "#8a5cff", "#ffc83d", "#ff6b6b", "#4ade80"];
+  return (
+    <div className="confetti" aria-hidden="true">
+      {Array.from({ length: 36 }, (_, i) => (
+        <i key={i} style={{
+          left: `${(i * 37) % 100}%`, background: colors[i % colors.length], animationDelay: `${(i % 9) * 0.08}s`,
+          ["--dx" as string]: `${((i * 53) % 120) - 60}px`, ["--rot" as string]: `${(i * 97) % 720}deg`,
+        }} />
+      ))}
+    </div>
+  );
 }
 
 /** Pregunta con las palabras del Rayo de Claridad resaltadas. */
@@ -240,6 +249,7 @@ export function Quiz(p: QuizProps) {
         return;
       }
       if (r.shielded) {
+        sfx("poder");
         // El Escudo de Calma paró el error: la respuesta no quedó fija; se puede volver a intentar.
         setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], escudo: false } }));
         setFx({ src: POWERS.escudo.fx, n: Date.now() });
@@ -255,6 +265,7 @@ export function Quiz(p: QuizProps) {
       setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], lluvia: false } }));
       setResults((all) => all.map((x, i) => (i === at ? { choice: r.choice, correct: r.correct, correctIndex: r.correctIndex, explanation: r.explanation, solution: r.solution, response: sent } : x)));
       play(r.correct ? "hit" : "miss");
+      sfx(r.correct ? "acierto" : "error");
       // Lleva la vista a la escena para ver la reacción; la explicación queda justo debajo.
       requestAnimationFrame(() => {
         stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -283,7 +294,11 @@ export function Quiz(p: QuizProps) {
     setError(null);
     startTransition(async () => {
       const r = await submitMissionAction(p.missionId);
-      if (r.ok) setOutcome(r);
+      if (r.ok) {
+        setOutcome(r);
+        if (r.newRanks.length) sfx("rango");
+        else if (r.result.passed) sfx("victoria");
+      }
       else setError(r.error);
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
@@ -332,6 +347,7 @@ export function Quiz(p: QuizProps) {
         return;
       }
       const rule = POWERS[kind];
+      sfx("poder");
       setFx({ src: rule.fx, n: Date.now() });
       if (r.charged) setPowers((all) => all.map((x) => (x.kind === kind ? { ...x, have: rule.permanent ? x.have : r.left, usedToday: x.usedToday + 1 } : x)));
       const patch = (st: QuizPowerState) => setPstate((all) => ({ ...all, [qid]: { ...all[qid], ...st } }));
@@ -404,6 +420,7 @@ export function Quiz(p: QuizProps) {
     return (
       <div className="space-y-6" aria-live="polite">
         <section className="panel panel-glow relative isolate overflow-hidden rounded-3xl text-center">
+          {win && <Confetti />}
           <Sprite src={asset.scene("arena", bossWin ? "victoria" : "calma")} alt="" decorative className="absolute inset-0 -z-10 size-full object-cover opacity-70" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-bg/60 to-bg/90" />
           <div className="flex flex-col items-center gap-4 px-6 py-10">
@@ -427,6 +444,13 @@ export function Quiz(p: QuizProps) {
                   : `Necesitas ${outcome.passMark}% para superarla. Repasa las explicaciones de abajo y vuelve a intentarlo: equivocarse es parte de aprender.`}
             </p>
 
+            {bossWin && guardianBySlug(p.guardian.slug) && (
+              <div className="w-full max-w-xl text-left">
+                <SpeechBubble name={p.guardian.name} src={asset.boss(p.guardian.slug, "purificado")} alt={`${p.guardian.name} purificado`} tone="gold" auto>
+                  {guardianBySlug(p.guardian.slug)!.thanks}
+                </SpeechBubble>
+              </div>
+            )}
             <div className="w-full max-w-xl text-left">
               <SpeechBubble name="Kael" src={`/assets/personajes/kael/kael-${duelOutcome === "gana" ? "derrota" : duelOutcome === "empata" ? "dar-la-mano" : "retar"}.svg`} alt="Kael, tu rival" tone="coral">
                 {duelOutcome === "gana"
@@ -438,7 +462,7 @@ export function Quiz(p: QuizProps) {
             </div>
 
             {result.first && (
-              <ul className="flex flex-wrap justify-center gap-2" aria-label="Recompensas">
+              <ul className="pop flex flex-wrap justify-center gap-2" aria-label="Recompensas">
                 {result.xpGain > 0 && <li className="chip !border-violet/60 !bg-violet/20 text-base">✨ +{result.xpGain} XP</li>}
                 {result.coinsGain > 0 && <li className="chip !border-gold/60 !bg-gold/15 text-base">🪙 +{result.coinsGain}</li>}
                 {result.gemsGain > 0 && <li className="chip !border-cyan/60 !bg-cyan/15 text-base">💎 +{result.gemsGain}</li>}
@@ -522,21 +546,28 @@ export function Quiz(p: QuizProps) {
   }
 
   // ===== Misión en curso =====
+  const g = guardianBySlug(p.guardian.slug);
   return (
     <div className="space-y-5">
+      {p.isBoss && <SceneTheme theme="jefe" />}
       <header className="space-y-1">
         <p className="eyebrow">{p.isBoss ? `Prueba de ${p.guardian.name}` : p.courseTitle}</p>
         <h1 className="text-2xl leading-tight sm:text-3xl">{p.title}</h1>
       </header>
 
       {answeredCount === 0 && (
-        <SpeechBubble name="Maestra Sora" src={asset.sora(p.isBoss ? "alerta" : "hablar")} alt="La Maestra Sora" tone={p.isBoss ? "coral" : "cyan"}>
+        <SpeechBubble name="Maestra Sora" src={asset.sora(p.isBoss ? "alerta" : "hablar")} alt="La Maestra Sora" tone={p.isBoss ? "coral" : "cyan"} auto={!p.isBoss}>
           <p>{p.intro}</p>
           <p className="mt-1.5 text-sm text-muted">
             {p.isBoss
               ? `Necesitas ${needed} aciertos de ${total} para purificarlo. Si te equivocas, no pasa nada: Kuro te explica y sigues.`
               : `${total} enemigos custodian esta sala. Elige tu respuesta y pulsa «Responder»; si fallas, Kuro te cuenta por qué.`}
           </p>
+        </SpeechBubble>
+      )}
+      {answeredCount === 0 && p.isBoss && g && (
+        <SpeechBubble name={g.name} src={asset.boss(g.slug, "reposo")} alt={g.name} tone="coral" auto>
+          {g.taunt}
         </SpeechBubble>
       )}
       {answeredCount === 0 && (
@@ -546,7 +577,8 @@ export function Quiz(p: QuizProps) {
       )}
 
       {/* Escena: Kuro a la izquierda, el enemigo o el Guardián a la derecha. */}
-      <section ref={stageRef} aria-label={p.isBoss ? `Batalla contra ${p.guardian.name}` : "Mazmorra"} className="panel relative scroll-mt-20 isolate aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9]">
+      <section ref={stageRef} key={`stage-${beat.kind === "miss" ? beat.n : "x"}`} aria-label={p.isBoss ? `Batalla contra ${p.guardian.name}` : "Mazmorra"}
+        className={`panel relative scroll-mt-20 isolate aspect-[4/3] overflow-hidden rounded-3xl sm:aspect-[16/9] ${beat.kind === "miss" && beat.n > 0 ? "shake" : ""}`}>
         <Sprite src={asset.scene(scene.name, scene.state)} alt="" decorative priority className="absolute inset-0 -z-10 size-full object-cover" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-bg/70 to-transparent" />
 
@@ -569,7 +601,12 @@ export function Quiz(p: QuizProps) {
 
         <Sprite key={kuroSrc} src={kuroSrc} alt={res ? (res.correct ? "Kuro celebra" : "Kuro te anima") : "Kuro piensa contigo"} className="absolute bottom-[3%] left-[6%] h-[34%] w-auto sm:left-[18%]" />
         <Sprite key={`${foeSrc}-${beat.n}`} src={foeSrc} alt={p.isBoss ? p.guardian.name : enemy.name}
-          className={`absolute bottom-[4%] w-auto ${p.isBoss ? "right-[2%] h-[66%] sm:right-[12%]" : "right-[8%] h-[40%] sm:right-[22%]"}`} />
+          className={`absolute bottom-[4%] w-auto ${beat.kind === "hit" && phase === 0 ? "hit-flash" : ""} ${p.isBoss ? "right-[2%] h-[66%] sm:right-[12%]" : "right-[8%] h-[40%] sm:right-[22%]"}`} />
+        {res && beat.kind === "hit" && (
+          <span key={`xp-${beat.n}`} aria-hidden="true" className="float-up absolute right-[22%] top-[28%] font-display text-2xl font-extrabold text-gold drop-shadow">
+            {p.isBoss ? "¡Golpe!" : "+1"}
+          </span>
+        )}
         {fx && <Sprite key={fx.n} src={fx.src} alt="" decorative priority className="pointer-events-none absolute inset-0 m-auto h-full w-auto animate-[fadein_.2s_ease-out]" />}
         {(ps.escudo || ps.lluvia) && !res && (
           <span className="absolute bottom-3 left-3 flex gap-1.5">
@@ -580,7 +617,11 @@ export function Quiz(p: QuizProps) {
       </section>
 
       {res && (
-        <div id="feedback" tabIndex={-1} role="status" className={`space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-gold/50 bg-gold/10"}`}>
+        <div id="feedback" data-bubble tabIndex={-1} role="status" className={`pop space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-gold/50 bg-gold/10"}`}>
+          <div className="flex justify-end">
+            <SpeakButton name="Kuro" auto key={`${q.id}-${res.correct}`}
+              text={`${res.correct ? CHEERS[idx % CHEERS.length] : "No era esa, pero tranquilo."} ${res.explanation}`} />
+          </div>
           <p className="font-display text-xl font-bold">
             {res.correct
               ? p.isBoss ? `${CHEERS[idx % CHEERS.length]} ${p.guardian.name} pierde fuerza.` : `${CHEERS[idx % CHEERS.length]} El ${enemy.name} se desvanece en luz.`

@@ -104,7 +104,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
               const fm = FAMILY_MESSAGES[m.message];
               return fm ? (
                 <li key={m.id}>
-                  <SpeechBubble name={m.from} src={guideSrc(g, fm.anim)} alt={g.name} tone="cyan">{fm.text}</SpeechBubble>
+                  <SpeechBubble name={m.from} voice={g.name} src={guideSrc(g, fm.anim)} alt={g.name} tone="cyan" auto>{fm.text}</SpeechBubble>
                 </li>
               ) : null;
             })}
