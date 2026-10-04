@@ -6,6 +6,7 @@ import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
 import { CHAPTERS, isUnlocked, missionKey } from "@/content/cronicas";
+import { INFORMAL_NOTICE } from "@/lib/content";
 import { formatPrice, loadCourseView, type MissionView } from "@/lib/data/queries";
 
 export async function generateMetadata({ params }: PageProps<"/portales/[slug]">): Promise<Metadata> {
@@ -32,12 +33,22 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
       <header className="panel relative isolate grid gap-6 overflow-hidden p-6 sm:p-8 md:grid-cols-[1fr_auto]" style={{ borderColor: `${color}88` }}>
         <div className="absolute inset-0 -z-10" style={{ background: `radial-gradient(60% 90% at 90% 50%, ${color}30, transparent 70%)` }} />
         <div className="space-y-3">
-          <p className="text-xs font-bold uppercase tracking-wider" style={{ color }}>Portal de {ELEMENT_LABEL[course.element]}</p>
+          <p className="text-xs font-bold uppercase tracking-wider" style={{ color }}>
+            {course.kind === "clase" ? [course.area, course.grade, course.schoolYear].filter(Boolean).join(" · ") || "Clase" : "Curso corto"} · Portal de {ELEMENT_LABEL[course.element]}
+          </p>
           <h1 className="text-4xl sm:text-5xl">{course.title}</h1>
           <p className="max-w-2xl text-lg text-muted">{course.summary}</p>
+          {course.kind === "curso" && (
+            <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+              {course.hours && <div><dt className="inline text-muted">Intensidad: </dt><dd className="inline font-semibold">{course.hours} horas</dd></div>}
+              {course.trainerName && <div><dt className="inline text-muted">Formador: </dt><dd className="inline font-semibold">{course.trainerName}{course.trainerTitle ? `, ${course.trainerTitle}` : ""}</dd></div>}
+              <div><dt className="inline text-muted">Modalidad: </dt><dd className="inline font-semibold">virtual</dd></div>
+            </dl>
+          )}
+          {course.kind === "clase" && course.accessUntil && <p className="text-sm text-muted">Año lectivo hasta el {new Date(`${course.accessUntil}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" })}.</p>}
           <div className="max-w-md space-y-2 pt-2">
-            <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={course.total} aria-valuenow={course.done} aria-label="Misiones completadas"><i style={{ width: `${(course.done / Math.max(course.total, 1)) * 100}%` }} /></div>
-            <p className="text-sm font-semibold">{course.done} de {course.total} misiones{course.bossDefeated ? " · ¡Guardián vencido!" : ""}</p>
+            <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={course.total} aria-valuenow={course.done} aria-label="Lecciones completadas"><i style={{ width: `${(course.done / Math.max(course.total, 1)) * 100}%` }} /></div>
+            <p className="text-sm font-semibold">{course.done} de {course.total} lecciones{course.bossDefeated ? " · ¡Guardián vencido!" : ""}</p>
           </div>
         </div>
         <Sprite src={asset.boss(course.guardian)} alt={`${g?.name ?? "El Guardián"} custodia este portal`} className="mx-auto h-48 w-auto md:h-56" />
@@ -49,7 +60,9 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
           <div className="min-w-0 flex-1 space-y-1">
             <p className="font-display text-xl font-bold">{course.needsSubscription ? "¡Superaste la lección gratis!" : "La primera lección es gratis"}</p>
             <p className="text-muted">
-              Suscríbete a este curso para abrir todas sus misiones y enfrentar a {g?.name ?? "su Guardián"}. Curso completo: <strong className="text-text">{formatPrice(course.price)}</strong>.
+              {course.kind === "clase"
+                ? <>Suscríbete para abrir todas las lecciones del año. Acceso anual: <strong className="text-text">{formatPrice(course.price)}</strong>. Si tu docente o colegio te dio un código, úsalo en tu perfil.</>
+                : <>Suscríbete a este curso para abrir todas sus lecciones, enfrentar a {g?.name ?? "su Guardián"} y recibir tu constancia de asistencia. Curso completo: <strong className="text-text">{formatPrice(course.price)}</strong>.</>}
             </p>
           </div>
           <Link href={`/suscribirse/${course.slug}`} className="btn btn-primary">Desbloquear el curso</Link>
@@ -57,14 +70,28 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
       )}
 
       <section aria-labelledby="misiones-t" className="space-y-4">
-        <h2 id="misiones-t" className="text-2xl">Misiones</h2>
-        <ol className="space-y-3">
-          {normal.map((m) => (
-            <li key={m.id}>
-              <MissionRow m={m} index={m.position} />
-            </li>
-          ))}
-        </ol>
+        <h2 id="misiones-t" className="text-2xl">Lecciones</h2>
+        {course.kind === "clase" ? (
+          // En una clase, las lecciones se agrupan por periodo académico.
+          [1, 2, 3, 4, null].map((period) => {
+            const list = normal.filter((m) => m.period === period);
+            if (!list.length) return null;
+            return (
+              <div key={period ?? "sin"} className="space-y-3">
+                <h3 className="font-display text-lg font-bold text-cyan">{period ? `${period}.° periodo` : "Sin periodo"}</h3>
+                <ol className="space-y-3">{list.map((m) => <li key={m.id}><MissionRow m={m} index={m.position} /></li>)}</ol>
+              </div>
+            );
+          })
+        ) : (
+          <ol className="space-y-3">
+            {normal.map((m) => (
+              <li key={m.id}>
+                <MissionRow m={m} index={m.position} />
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
 
       {boss && (
@@ -95,6 +122,8 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
           </div>
         </section>
       )}
+
+      {course.kind === "curso" && <p className="text-sm text-muted">ℹ️ {INFORMAL_NOTICE}</p>}
 
       {chapters.length > 0 && (
         <section aria-labelledby="cronicas-t" className="space-y-4">

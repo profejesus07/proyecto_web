@@ -2,7 +2,7 @@ import "server-only";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminUser, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminUser, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -17,10 +17,24 @@ const course = (r: Row): Course => ({
   slug: r.slug as string, title: r.title as string, summary: r.summary as string,
   element: r.element as Course["element"], guardian: r.guardian as string, position: r.position as number,
   price: (r.price_cop as number | null | undefined) ?? null,
+  kind: (r.kind as Course["kind"] | undefined) ?? "curso",
+  area: (r.area as string | null | undefined) ?? null,
+  grade: (r.grade as string | null | undefined) ?? null,
+  schoolYear: (r.school_year as number | null | undefined) ?? null,
+  accessUntil: (r.access_until as string | null | undefined) ?? null,
+  hours: (r.hours as number | null | undefined) ?? null,
+  trainerName: (r.trainer_name as string | null | undefined) ?? null,
+  trainerTitle: (r.trainer_title as string | null | undefined) ?? null,
+});
+const courseRow = (c: CourseInput) => ({
+  kind: c.kind, title: c.title, summary: c.summary, element: c.element, guardian: c.guardian,
+  area: c.area, grade: c.grade, school_year: c.schoolYear, access_until: c.accessUntil,
+  hours: c.hours, trainer_name: c.trainerName, trainer_title: c.trainerTitle, updated_at: new Date().toISOString(),
 });
 const mission = (r: Row): MissionSummary => ({
   id: r.id as string, courseSlug: r.course_slug as string, position: r.position as number, title: r.title as string,
   intro: r.intro as string, xpReward: r.xp_reward as number, isBoss: r.is_boss as boolean,
+  period: (r.period as number | null | undefined) ?? null,
 });
 
 export function createSupabaseRepo(): Repo {
@@ -302,6 +316,127 @@ export function createSupabaseRepo(): Repo {
       });
       if (error) fail(error, "crear docente");
       return { id: data.user.id };
+    },
+
+    // ===== Editor de contenido =====
+    async listAllCourses() {
+      const { data, error } = await db.from("courses").select("*, missions(count)").order("position");
+      if (error) fail(error, "portales");
+      return (data ?? []).map((r): CourseListItem => ({
+        ...course(r), published: r.published as boolean, missionCount: (r.missions as { count: number }[] | null)?.[0]?.count ?? 0,
+      }));
+    },
+
+    async getCourseForEdit(slug) {
+      const { data: c, error } = await db.from("courses").select("*").eq("slug", slug).maybeSingle();
+      if (error) fail(error, "portal");
+      if (!c) return null;
+      const { data: ms, error: e2 } = await db.from("missions").select("*").eq("course_slug", slug).order("position");
+      if (e2) fail(e2, "lecciones");
+      const ids = (ms ?? []).map((m) => m.id as string);
+      const [{ data: qs, error: e3 }, { data: prog, error: e4 }] = await Promise.all([
+        ids.length ? db.from("questions").select("*").in("mission_id", ids).order("position") : Promise.resolve({ data: [], error: null }),
+        ids.length ? db.from("mission_progress").select("mission_id").in("mission_id", ids).limit(1000) : Promise.resolve({ data: [], error: null }),
+      ]);
+      if (e3) fail(e3, "preguntas");
+      if (e4) fail(e4, "avance");
+      const withProgress = new Set((prog ?? []).map((p) => p.mission_id as string));
+      const out: EditableCourse = {
+        ...course(c), published: c.published as boolean,
+        missions: (ms ?? []).map((m) => ({
+          ...mission(m), hasProgress: withProgress.has(m.id as string),
+          questions: (qs ?? []).filter((q) => q.mission_id === m.id).map((q): EditableQuestion => ({
+            id: q.id, position: q.position, prompt: q.prompt, options: q.options as string[], correctIndex: q.correct_index, hint: q.hint, explanation: q.explanation,
+          })),
+        })),
+      };
+      return out;
+    },
+
+    async createCourse(slug, input) {
+      const { data: last } = await db.from("courses").select("position").order("position", { ascending: false }).limit(1).maybeSingle();
+      const { error } = await db.from("courses").insert({ slug, ...courseRow(input), position: ((last?.position as number | undefined) ?? 0) + 1, published: false });
+      if (error) fail(error, "crear portal");
+    },
+
+    async updateCourse(slug, input) {
+      const { error } = await db.from("courses").update(courseRow(input)).eq("slug", slug);
+      if (error) fail(error, "guardar portal");
+    },
+
+    async setCoursePublished(slug, published) {
+      const { error } = await db.from("courses").update({ published, updated_at: new Date().toISOString() }).eq("slug", slug);
+      if (error) fail(error, "publicar");
+    },
+
+    async createMission(courseSlug, input) {
+      const { data: last } = await db.from("missions").select("position").eq("course_slug", courseSlug).order("position", { ascending: false }).limit(1).maybeSingle();
+      const { data, error } = await db.from("missions").insert({
+        course_slug: courseSlug, position: ((last?.position as number | undefined) ?? 0) + 1,
+        title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period,
+      }).select("id").single();
+      if (error) fail(error, "crear lección");
+      return { id: data.id as string };
+    },
+
+    async updateMission(missionId, input) {
+      const { error } = await db.from("missions").update({ title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period }).eq("id", missionId);
+      if (error) fail(error, "guardar lección");
+    },
+
+    async deleteMission(missionId) {
+      const { count, error: e1 } = await db.from("mission_progress").select("mission_id", { count: "exact", head: true }).eq("mission_id", missionId);
+      if (e1) fail(e1, "lección");
+      if ((count ?? 0) > 0) throw new Error("tiene_avance");
+      const { error } = await db.from("missions").delete().eq("id", missionId);
+      if (error) fail(error, "borrar lección");
+    },
+
+    async moveMission(missionId, direction) {
+      const { data: m } = await db.from("missions").select("id,course_slug,position").eq("id", missionId).maybeSingle();
+      if (!m) throw new Error("leccion_no_encontrada");
+      const q = db.from("missions").select("id,position").eq("course_slug", m.course_slug);
+      const { data: other } = await (direction < 0 ? q.lt("position", m.position).order("position", { ascending: false }) : q.gt("position", m.position).order("position")).limit(1).maybeSingle();
+      if (!other) return;
+      // Intercambio en tres pasos para no chocar con la regla de posiciones únicas.
+      await db.from("missions").update({ position: -1 }).eq("id", m.id);
+      await db.from("missions").update({ position: m.position }).eq("id", other.id);
+      const { error } = await db.from("missions").update({ position: other.position }).eq("id", m.id);
+      if (error) fail(error, "mover lección");
+    },
+
+    async createQuestion(missionId, input) {
+      const { data: last } = await db.from("questions").select("position").eq("mission_id", missionId).order("position", { ascending: false }).limit(1).maybeSingle();
+      const { data, error } = await db.from("questions").insert({
+        mission_id: missionId, position: ((last?.position as number | undefined) ?? 0) + 1,
+        prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation,
+      }).select("id").single();
+      if (error) fail(error, "crear pregunta");
+      return { id: data.id as string };
+    },
+
+    async updateQuestion(questionId, input) {
+      const { error } = await db.from("questions").update({
+        prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation,
+      }).eq("id", questionId);
+      if (error) fail(error, "guardar pregunta");
+    },
+
+    async deleteQuestion(questionId) {
+      const { error } = await db.from("questions").delete().eq("id", questionId);
+      if (error) fail(error, "borrar pregunta");
+    },
+
+    async moveQuestion(questionId, direction) {
+      const { data: x } = await db.from("questions").select("id,mission_id,position").eq("id", questionId).maybeSingle();
+      if (!x) throw new Error("pregunta_no_encontrada");
+      const q = db.from("questions").select("id,position").eq("mission_id", x.mission_id);
+      const { data: other } = await (direction < 0 ? q.lt("position", x.position).order("position", { ascending: false }) : q.gt("position", x.position).order("position")).limit(1).maybeSingle();
+      if (!other) return;
+      await db.from("questions").update({ position: -1 }).eq("id", x.id);
+      await db.from("questions").update({ position: x.position }).eq("id", other.id);
+      const { error } = await db.from("questions").update({ position: other.position }).eq("id", x.id);
+      if (error) fail(error, "mover pregunta");
     },
 
     async useAid(userId, questionId, itemId, dailyCap, minXp) {

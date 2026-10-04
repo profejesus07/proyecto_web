@@ -250,6 +250,48 @@ test("el administrador crea docentes, activa cursos y pone precios", async ({ pa
   await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
 });
 
+test("el administrador crea una clase con el editor, la publica y un estudiante juega la lección gratis", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/contenido");
+  await page.getByLabel("Título").fill("Ciencias 5.° · 2027");
+  await page.getByRole("button", { name: "Crear y editar" }).click();
+  await expect(page.getByRole("heading", { name: "Ciencias 5.° · 2027" })).toBeVisible();
+
+  // Datos de la clase
+  await page.getByLabel("Área").fill("Ciencias Naturales");
+  await page.getByLabel("Grado").selectOption("5.°");
+  await page.getByLabel("Fin del año lectivo").fill("2027-11-30");
+  await page.getByRole("button", { name: "Guardar datos" }).click();
+  await expect(page.getByText("Guardado.")).toBeVisible();
+
+  // Primera lección con una pregunta
+  await page.getByLabel("Título de la lección").fill("Los seres vivos");
+  await page.getByLabel("Periodo").selectOption("1");
+  await page.getByRole("button", { name: "Crear lección" }).click();
+  await page.locator("summary", { hasText: "Los seres vivos" }).click();
+  await page.getByText("+ Agregar pregunta").click();
+  await page.getByLabel("Pregunta", { exact: true }).fill("¿Cuál de estos es un ser vivo?");
+  await page.getByLabel("Opción 1", { exact: true }).fill("Una piedra");
+  await page.getByLabel("Opción 2", { exact: true }).fill("Un árbol");
+  await page.getByLabel("La opción 2 es la correcta").check();
+  await page.getByLabel("Explicación (se muestra al responder)").fill("Los árboles nacen, crecen y se reproducen.");
+  await page.getByRole("button", { name: "Agregar pregunta" }).click();
+  await expect(page.getByText("Pregunta agregada.")).toBeVisible();
+
+  await page.getByRole("button", { name: "Publicar" }).click();
+  await expect(page.getByText("¡Publicado!")).toBeVisible();
+
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/portales");
+  await expect(page.getByRole("heading", { name: "Clases" })).toBeVisible();
+  await page.getByRole("link", { name: /Ciencias 5\.° · 2027/ }).click();
+  await expect(page.getByText("1.° periodo")).toBeVisible();
+  await page.getByRole("link", { name: /Los seres vivos/ }).click();
+  await page.locator("label:has(input[type=radio])").nth(1).click();
+  await page.getByRole("button", { name: "Responder" }).click();
+  await expect(page.getByText("Los árboles nacen, crecen y se reproducen.")).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);

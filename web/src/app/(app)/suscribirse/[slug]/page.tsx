@@ -8,6 +8,7 @@ import { CHAPTERS } from "@/content/cronicas";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
 import { formatPrice, loadCourseView } from "@/lib/data/queries";
+import { INFORMAL_NOTICE } from "@/lib/content";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 export const metadata: Metadata = { title: "Desbloquear curso" };
@@ -31,18 +32,21 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
       <section className="panel relative isolate grid gap-6 overflow-hidden p-6 sm:p-8 md:grid-cols-[1fr_auto]" style={{ borderColor: `${color}88` }}>
         <div className="absolute inset-0 -z-10" style={{ background: `radial-gradient(60% 90% at 90% 50%, ${color}30, transparent 70%)` }} />
         <div className="space-y-4">
-          <p className="eyebrow">Curso completo</p>
+          <p className="eyebrow">{course.kind === "clase" ? "Acceso anual a la clase" : "Curso completo"}</p>
           <h1 className="text-3xl leading-tight sm:text-4xl">{course.title}</h1>
           <p className="font-display text-4xl font-extrabold text-gold">{formatPrice(course.price)}</p>
           <ul className="space-y-2 text-muted">
-            <li>✔ Las {course.total - 1} misiones que siguen a la lección gratis</li>
+            <li>✔ Las {course.total - 1} lecciones que siguen a la lección gratis</li>
             <li>✔ La batalla final contra {g?.name ?? "el Guardián"} y su recompensa</li>
             {chapters > 0 && <li>✔ Los {chapters} capítulos de sus Crónicas</li>}
-            <li>✔ Su sello y el certificado «Sello del Portal»</li>
+            {course.kind === "curso"
+              ? <li>✔ Tu constancia de asistencia{course.hours ? ` por ${course.hours} horas` : ""}, verificable en línea</li>
+              : <li>✔ Acceso a todos los periodos{course.accessUntil ? ` hasta el ${new Date(`${course.accessUntil}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" })}` : " durante el año lectivo"}</li>}
             <li>✔ Tu avance se conserva: sigues donde quedaste</li>
           </ul>
         </div>
         <Sprite src={asset.boss(course.guardian)} alt={g?.name ?? "El Guardián"} className="mx-auto h-44 w-auto" />
+        {course.kind === "curso" && <p className="text-sm text-muted md:col-span-2">ℹ️ {INFORMAL_NOTICE}</p>}
       </section>
 
       {course.hasAccess ? (

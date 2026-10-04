@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AdminNav } from "@/components/admin-nav";
 import { AccessChip, CreateTeacherForm, GrantAccess, PriceForm, RoleSelect } from "@/components/admin-client";
 import { PageTitle } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
@@ -24,6 +25,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       <PageTitle eyebrow="Panel del administrador" title="Administración">
         <p>Cuentas de docente, acceso a los cursos, precios y todas las clases.</p>
       </PageTitle>
+      <AdminNav current="general" />
 
       <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[

@@ -38,6 +38,14 @@ describe("esquema", () => {
     ]);
   });
 
+  it("un curso de educación informal no puede tener 160 horas o más", async () => {
+    await expect(db.query("update public.courses set hours = 160 where slug = 'primer-portal'")).rejects.toThrow(/check/i);
+    await expect(db.query("update public.courses set hours = 159 where slug = 'primer-portal'")).resolves.toBeTruthy();
+    await expect(db.query("update public.courses set kind = 'otro' where slug = 'primer-portal'")).rejects.toThrow(/check/i);
+    await expect(db.query("update public.missions set period = 5 where course_slug = 'primer-portal' and position = 1")).rejects.toThrow(/check/i);
+    await db.query("update public.courses set hours = null where slug = 'primer-portal'");
+  });
+
   it("cada pregunta tiene una respuesta correcta válida", async () => {
     const r = await db.query<{ n: number }>("select count(*)::int n from public.questions where correct_index >= jsonb_array_length(options)");
     expect(r.rows[0].n).toBe(0);

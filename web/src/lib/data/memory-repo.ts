@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AdminUser, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminUser, AidUseRow, AnswerKeyRow, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -81,24 +81,41 @@ function state(): State {
 type Seed = typeof primer;
 // Ids de la vista previa: el primer portal usa m1..m4 y los siguientes c2m1.., c3m1..
 const SEEDS: { seed: Seed; prefix: string }[] = [{ seed: primer, prefix: "m" }, { seed: intento as Seed, prefix: "c2m" }];
-const courses: Course[] = SEEDS.map(({ seed }) => ({ ...(seed.course as Omit<Course, "price">), price: null }));
-const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => ({
-  id: `${prefix}${m.position}`, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss,
-})));
-const questions = (id: string) => {
-  const m = missions.find((x) => x.id === id);
-  const seed = SEEDS.find((s) => s.seed.course.slug === m?.courseSlug)?.seed;
-  return seed?.missions.find((x) => x.position === m?.position)?.questions ?? [];
+interface QRow { id: string; prompt: string; options: string[]; correct_index: number; hint: string; explanation: string }
+/** Contenido editable de la vista previa (empieza con los cursos de ejemplo). */
+interface Content { courses: (Course & { published: boolean })[]; missions: MissionSummary[]; questions: Map<string, QRow[]>; seq: number }
+const gc = globalThis as unknown as { __umbralContent?: Content };
+function C(): Content {
+  if (!gc.__umbralContent) {
+    const blank = { kind: "curso" as const, area: null, grade: null, schoolYear: null, accessUntil: null, hours: null, trainerName: null, trainerTitle: null };
+    const questions = new Map<string, QRow[]>();
+    const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => {
+      const id = `${prefix}${m.position}`;
+      questions.set(id, m.questions.map((q, i) => ({ id: `${id}q${i + 1}`, ...q })));
+      return { id, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss, period: null };
+    }));
+    gc.__umbralContent = {
+      courses: SEEDS.map(({ seed }) => ({ ...(seed.course as Omit<Course, "price" | keyof typeof blank>), ...blank, price: null, published: true })),
+      missions, questions, seq: 1,
+    };
+  }
+  return gc.__umbralContent;
+}
+const questions = (id: string) => C().questions.get(id) ?? [];
+const courseOf = (slug: string) => C().courses.find((c) => c.slug === slug)!;
+const plain = (c: Course & { published: boolean }): Course => {
+  const out: Course & { published?: boolean } = { ...c };
+  delete out.published;
+  return out;
 };
-const courseOf = (slug: string) => courses.find((c) => c.slug === slug)!;
-const withPrice = (c: Course): Course => ({ ...c, price: state().prices.get(c.slug) ?? null });
+const withPrice = (c: Course & { published?: boolean }): Course => ({ ...plain({ published: true, ...c }), price: state().prices.get(c.slug) ?? null });
 function hasAccess(userId: string, slug: string): boolean {
   const s = state();
   return STAFF.has(userId) || s.profile.role === "docente" || s.profile.role === "admin" || s.access.has(slug);
 }
 /** Misma regla que public.mission_is_locked: misiones en orden dentro del curso; la primera gratis, el resto con acceso. */
 function isLocked(s: State, m: MissionSummary, userId: string): boolean {
-  if (missions.some((p) => p.courseSlug === m.courseSlug && p.position < m.position && !s.progress.get(p.id)?.completed)) return true;
+  if (C().missions.some((p) => p.courseSlug === m.courseSlug && p.position < m.position && !s.progress.get(p.id)?.completed)) return true;
   if (m.position > 1 && !hasAccess(userId, m.courseSlug)) throw new Error("requiere_suscripcion");
   return false;
 }
@@ -111,7 +128,7 @@ function previewCode(): string {
 /** Misma lógica que public.complete_mission (0003/0006). */
 function complete(_u: string, id: string, score: number, passMark: number, items: string[]): CompleteResult {
   const s = state();
-  const m = missions.find((x) => x.id === id);
+  const m = C().missions.find((x) => x.id === id);
   if (!m) throw new Error("mision_no_encontrada");
   if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
   const passed = score >= passMark;
@@ -127,28 +144,29 @@ function complete(_u: string, id: string, score: number, passMark: number, items
     for (const it of items) if (!s.inventory.some((i) => i.itemId === it)) { s.inventory.push({ itemId: it, source: "logro", acquiredAt: new Date().toISOString() }); granted.push(it); }
   }
   s.profile = { ...s.profile, xp: s.profile.xp + xpGain, coins: s.profile.coins + coinsGain, gems: s.profile.gems + gemsGain };
-  const courseDone = missions.filter((x) => x.courseSlug === m.courseSlug).every((x) => s.progress.get(x.id)?.completed);
+  const courseDone = C().missions.filter((x) => x.courseSlug === m.courseSlug).every((x) => s.progress.get(x.id)?.completed);
   return { passed, first, score, xpGain, coinsGain, gemsGain, xp: s.profile.xp, coins: s.profile.coins, gems: s.profile.gems, streak: s.profile.streak, bossDefeated: first && m.isBoss, courseDone, granted };
 }
 
 export function createMemoryRepo(): Repo {
   return {
     async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : id === PREVIEW_ADMIN_ID ? { ...ADMIN } : { ...state().profile }; },
-    async listCourses() { return courses.map(withPrice); },
+    async listCourses() { return C().courses.filter((c) => c.published).map(withPrice); },
     async getCourse(slug): Promise<CourseDetail | null> {
-      const c = courses.find((x) => x.slug === slug);
-      return c ? { ...withPrice(c), missions: missions.filter((m) => m.courseSlug === slug) } : null;
+      const c = C().courses.find((x) => x.slug === slug && x.published);
+      return c ? { ...withPrice(c), missions: C().missions.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position) } : null;
     },
     async getProgress() { return [...state().progress.values()]; },
     async getBossDefeats() { return [...state().bosses]; },
     async getInventory() { return [...state().inventory]; },
     async getMissionPlay(id): Promise<MissionPlay | null> {
-      const mission = missions.find((m) => m.id === id);
+      const mission = C().missions.find((m) => m.id === id);
       if (!mission) return null;
-      return { mission, course: withPrice(courseOf(mission.courseSlug)), questions: questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
+      if (!courseOf(mission.courseSlug).published) return null;
+      return { mission, course: withPrice(courseOf(mission.courseSlug)), questions: questions(id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
     },
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
-      return questions(id).map((q, i) => ({ id: `${id}q${i + 1}`, correctIndex: q.correct_index, explanation: q.explanation }));
+      return questions(id).map((q) => ({ id: q.id, correctIndex: q.correct_index, explanation: q.explanation }));
     },
     async getOpenAttempt(_u, id) {
       const a = state().attempts.get(id);
@@ -156,7 +174,7 @@ export function createMemoryRepo(): Repo {
     },
     async answerQuestion(_u, id, index, choice): Promise<AnswerResult> {
       const s = state();
-      const m = missions.find((x) => x.id === id);
+      const m = C().missions.find((x) => x.id === id);
       if (!m) throw new Error("mision_no_encontrada");
       if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
       const qs = questions(id);
@@ -257,7 +275,7 @@ export function createMemoryRepo(): Repo {
       s.members = s.members.filter((m) => !(m.classId === classId && m.studentId === studentId));
     },
     async getCourseAccess(userId) {
-      return new Set(courses.filter((c) => hasAccess(userId, c.slug)).map((c) => c.slug));
+      return new Set(C().courses.filter((c) => hasAccess(userId, c.slug)).map((c) => c.slug));
     },
     async adminUsers(adminId, query) {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
@@ -302,6 +320,81 @@ export function createMemoryRepo(): Repo {
       s.extraTeachers.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
       return { id };
     },
+    // ===== Editor de contenido =====
+    async listAllCourses() {
+      return C().courses.map((c) => ({ ...withPrice(c), published: c.published, missionCount: C().missions.filter((m) => m.courseSlug === c.slug).length }));
+    },
+    async getCourseForEdit(slug): Promise<EditableCourse | null> {
+      const c = C().courses.find((x) => x.slug === slug);
+      if (!c) return null;
+      const s = state();
+      return {
+        ...withPrice(c), published: c.published,
+        missions: C().missions.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position).map((m) => ({
+          ...m, hasProgress: s.progress.has(m.id),
+          questions: questions(m.id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, options: q.options, correctIndex: q.correct_index, hint: q.hint, explanation: q.explanation })),
+        })),
+      };
+    },
+    async createCourse(slug, input: CourseInput) {
+      const c = C();
+      c.courses.push({ ...input, slug, position: c.courses.length + 1, price: null, published: false });
+    },
+    async updateCourse(slug, input) {
+      const c = C().courses.find((x) => x.slug === slug);
+      if (c) Object.assign(c, input);
+    },
+    async setCoursePublished(slug, published) {
+      const c = C().courses.find((x) => x.slug === slug);
+      if (c) c.published = published;
+    },
+    async createMission(courseSlug, input) {
+      const c = C();
+      const id = `x${c.seq++}`;
+      const pos = Math.max(0, ...c.missions.filter((m) => m.courseSlug === courseSlug).map((m) => m.position)) + 1;
+      c.missions.push({ id, courseSlug, position: pos, ...input });
+      c.questions.set(id, []);
+      return { id };
+    },
+    async updateMission(missionId, input) {
+      const m = C().missions.find((x) => x.id === missionId);
+      if (m) Object.assign(m, input);
+    },
+    async deleteMission(missionId) {
+      if (state().progress.has(missionId)) throw new Error("tiene_avance");
+      const c = C();
+      c.missions = c.missions.filter((m) => m.id !== missionId);
+      c.questions.delete(missionId);
+    },
+    async moveMission(missionId, direction) {
+      const c = C();
+      const m = c.missions.find((x) => x.id === missionId);
+      if (!m) return;
+      const sibs = c.missions.filter((x) => x.courseSlug === m.courseSlug).sort((a, b) => a.position - b.position);
+      const other = sibs[sibs.indexOf(m) + direction];
+      if (other) [m.position, other.position] = [other.position, m.position];
+    },
+    async createQuestion(missionId, input) {
+      const c = C();
+      const id = `${missionId}q${c.seq++}`;
+      c.questions.set(missionId, [...questions(missionId), { id, prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation }]);
+      return { id };
+    },
+    async updateQuestion(questionId, input) {
+      for (const qs of C().questions.values()) {
+        const q = qs.find((x) => x.id === questionId);
+        if (q) Object.assign(q, { prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation });
+      }
+    },
+    async deleteQuestion(questionId) {
+      for (const [k, qs] of C().questions) C().questions.set(k, qs.filter((x) => x.id !== questionId));
+    },
+    async moveQuestion(questionId, direction) {
+      for (const qs of C().questions.values()) {
+        const i = qs.findIndex((x) => x.id === questionId);
+        if (i >= 0 && qs[i + direction]) [qs[i], qs[i + direction]] = [qs[i + direction], qs[i]];
+      }
+    },
     async markIntroSeen() { state().profile = { ...state().profile, introSeen: true }; },
     async markChapterRead(_u, id) {
       const p = state().profile;
@@ -324,9 +417,9 @@ export function createMemoryRepo(): Repo {
     async useAid(_u, questionId, itemId, dailyCap, minXp) {
       const s = state();
       const day = todayBogota();
-      const [, missionId = "", n = "0"] = /^(.*)q(\d+)$/.exec(questionId) ?? [];
-      const m = missions.find((x) => x.id === missionId);
-      const q = questions(missionId)[Number(n) - 1];
+      const missionId = [...C().questions.entries()].find(([, qs]) => qs.some((x) => x.id === questionId))?.[0] ?? "";
+      const m = C().missions.find((x) => x.id === missionId);
+      const q = questions(missionId).find((x) => x.id === questionId);
       if (!m || !q) throw new Error("pregunta_no_encontrada");
       if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
       const left = () => s.consumables.get(itemId) ?? 0;

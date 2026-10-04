@@ -29,7 +29,20 @@ export interface Course {
   position: number;
   /** Precio en pesos colombianos (null = aún sin precio). */
   price: number | null;
+  /** «clase»: por área y periodos, acceso anual. «curso»: curso corto de educación informal. */
+  kind: CourseKind;
+  area: string | null;
+  grade: string | null;
+  schoolYear: number | null;
+  /** Último día de acceso de una clase (AAAA-MM-DD). */
+  accessUntil: string | null;
+  /** Intensidad horaria de un curso corto (menos de 160). */
+  hours: number | null;
+  trainerName: string | null;
+  trainerTitle: string | null;
 }
+
+export type CourseKind = "clase" | "curso";
 
 export interface MissionSummary {
   id: string;
@@ -39,6 +52,8 @@ export interface MissionSummary {
   intro: string;
   xpReward: number;
   isBoss: boolean;
+  /** Periodo académico (1 a 4) en una clase. */
+  period: number | null;
 }
 
 export interface CourseDetail extends Course {
@@ -163,6 +178,37 @@ export interface ClassReport {
   questions: { missionId: string; position: number; answered: number; right: number }[];
 }
 
+// ===== Editor de contenido =====
+export interface EditableQuestion {
+  id: string;
+  position: number;
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  hint: string;
+  explanation: string;
+}
+
+export interface EditableMission extends MissionSummary {
+  questions: EditableQuestion[];
+  /** Hay estudiantes con avance: no se puede borrar. */
+  hasProgress: boolean;
+}
+
+export interface EditableCourse extends Course {
+  published: boolean;
+  missions: EditableMission[];
+}
+
+export interface CourseListItem extends Course {
+  published: boolean;
+  missionCount: number;
+}
+
+export type CourseInput = Omit<Course, "slug" | "position" | "price">;
+export type MissionInput = { title: string; intro: string; xpReward: number; isBoss: boolean; period: number | null };
+export type QuestionInput = { prompt: string; options: string[]; correctIndex: number; hint: string; explanation: string };
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -230,4 +276,18 @@ export interface Repo {
   adminClasses(adminId: string): Promise<AdminClass[]>;
   /** Crea una cuenta de docente ya confirmada, con una contraseña temporal. */
   createTeacherAccount(email: string, name: string, password: string): Promise<{ id: string }>;
+  // Editor de contenido (solo lo usa el servidor después de comprobar que quien llama es admin)
+  listAllCourses(): Promise<CourseListItem[]>;
+  getCourseForEdit(slug: string): Promise<EditableCourse | null>;
+  createCourse(slug: string, input: CourseInput): Promise<void>;
+  updateCourse(slug: string, input: CourseInput): Promise<void>;
+  setCoursePublished(slug: string, published: boolean): Promise<void>;
+  createMission(courseSlug: string, input: MissionInput): Promise<{ id: string }>;
+  updateMission(missionId: string, input: MissionInput): Promise<void>;
+  deleteMission(missionId: string): Promise<void>;
+  moveMission(missionId: string, direction: -1 | 1): Promise<void>;
+  createQuestion(missionId: string, input: QuestionInput): Promise<{ id: string }>;
+  updateQuestion(questionId: string, input: QuestionInput): Promise<void>;
+  deleteQuestion(questionId: string): Promise<void>;
+  moveQuestion(questionId: string, direction: -1 | 1): Promise<void>;
 }
