@@ -1,3 +1,4 @@
+import { RANK_S_POWERS } from "./powers";
 import { ranksReached } from "./ranks";
 
 /** Qué obtiene el estudiante al vencer a cada Guardián. */
@@ -32,7 +33,11 @@ export function itemsOnFirstCompletion(ctx: FirstCompletionContext): string[] {
     items.add("obj_insignia_primera_mision");
     items.add("obj_rango_e");
   }
-  for (const r of ranksReached(ctx.xpBefore, ctx.xpBefore + ctx.xpGain)) items.add(`obj_rango_${r.key.toLowerCase()}`);
+  for (const r of ranksReached(ctx.xpBefore, ctx.xpBefore + ctx.xpGain)) {
+    items.add(`obj_rango_${r.key.toLowerCase()}`);
+    // Llegar a rango S regala los dos poderes legendarios.
+    if (r.key === "S") for (const id of RANK_S_POWERS) items.add(id);
+  }
   if (ctx.isBoss) {
     const reward = GUARDIAN_REWARDS[ctx.guardian];
     if (reward) {

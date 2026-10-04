@@ -120,7 +120,25 @@ export interface AnswerResult {
   answered: number;
   right: number;
   total: number;
+  /** El Escudo de Calma paró el error: la respuesta no quedó fija (choice/correctIndex = -1). */
+  shielded?: boolean;
+  /** XP extra de la Lluvia de Estrellas. */
+  bonusXp?: number;
 }
+
+/** Lo que devuelve (y guarda) un poder al usarse. */
+export interface PowerPayload {
+  stems?: string[];
+  lead?: string | null;
+  spent?: boolean;
+  bonus?: number;
+  hint?: string | null;
+  removed?: number[];
+  hints?: Record<string, string>;
+  choice?: number;
+  reset?: boolean;
+}
+export interface PowerResult extends PowerPayload { charged: boolean; left: number }
 
 export interface FinishResult extends CompleteResult {
   /** Respuestas guardadas del intento, en orden. */
@@ -141,6 +159,8 @@ export interface AidUseRow {
   free: boolean;
   hint?: string;
   removed?: number[];
+  /** Lo que guardó un poder (ver PowerPayload). */
+  payload?: PowerPayload;
 }
 
 export interface AidResult {
@@ -335,6 +355,7 @@ export interface Repo {
   getAidUsesToday(userId: string): Promise<AidUseRow[]>;
   buyConsumable(userId: string, itemId: string, price: number, maxStock: number): Promise<{ coins: number; quantity: number }>;
   useAid(userId: string, questionId: string, itemId: string, dailyCap: number, minXp: number): Promise<AidResult>;
+  usePower(userId: string, missionId: string, index: number, itemId: string, dailyCap: number, minXp: number): Promise<PowerResult>;
   // Clases (Maestro del Gremio)
   listTeacherClasses(teacherId: string): Promise<ClassSummary[]>;
   createClass(teacherId: string, name: string): Promise<{ id: string; name: string; code: string }>;

@@ -2,9 +2,10 @@ import intento from "@/content/portal-del-primer-intento.json";
 import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
+import { powerByItem, stemOf } from "@/lib/game/powers";
 import type { AvatarLook } from "@/lib/avatar-look";
 import type {
-  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, PowerPayload, PowerResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -52,6 +53,8 @@ interface State {
   consumables: Map<string, number>;
   attempts: Map<string, number[]>;
   aidUses: (AidUseRow & { day: string })[];
+  /** Intentos ya terminados por misión (para la Sombra Dorada). */
+  pastAttempts: Map<string, number[][]>;
   classes: PreviewClass[];
   members: { classId: string; studentId: string; joinedAt: string }[];
   /** Cursos con acceso completo del estudiante de prueba (el primero viene «pagado» para poder probarlo entero). */
@@ -82,6 +85,7 @@ function state(): State {
       consumables: new Map(),
       attempts: new Map(),
       aidUses: [],
+      pastAttempts: new Map(),
       classes: [],
       members: [],
       access: new Set(["primer-portal"]),
@@ -206,12 +210,27 @@ export function createMemoryRepo(): Repo {
       if (!Number.isInteger(choice) || choice < 0 || choice >= qs[index].options.length) throw new Error("respuesta_invalida");
       let a = s.attempts.get(id);
       if (!a || a.length !== qs.length) s.attempts.set(id, (a = Array(qs.length).fill(-1)));
-      if (a[index] === -1) a[index] = choice;
       const q = qs[index];
-      return {
-        index, choice: a[index], correct: a[index] === q.correct_index, correctIndex: q.correct_index, explanation: q.explanation,
-        answered: a.filter((x) => x >= 0).length, right: a.filter((x, i) => x === qs[i].correct_index).length, total: qs.length,
-      };
+      const counts = () => ({ answered: a!.filter((x) => x >= 0).length, right: a!.filter((x, i) => x === qs[i].correct_index).length, total: qs.length });
+      const activePower = (item: string) => s.aidUses.find((u) => u.day === todayBogota() && u.itemId === item && u.questionId === q.id && u.payload && !u.payload.spent);
+      let bonus = 0;
+      if (a[index] === -1) {
+        const shield = choice !== q.correct_index ? activePower("obj_poder_escudo") : undefined;
+        if (shield) {
+          shield.payload = { ...shield.payload, spent: true };
+          return { index, choice: -1, correct: false, correctIndex: -1, explanation: "", shielded: true, ...counts() };
+        }
+        a[index] = choice;
+        const rain = activePower("obj_poder_lluvia");
+        if (rain) {
+          if (choice === q.correct_index) {
+            bonus = 15;
+            s.profile = { ...s.profile, xp: s.profile.xp + bonus };
+          }
+          rain.payload = { ...rain.payload, spent: true, bonus };
+        }
+      }
+      return { index, choice: a[index], correct: a[index] === q.correct_index, correctIndex: q.correct_index, explanation: q.explanation, ...counts(), bonusXp: bonus || undefined };
     },
     async finishAttempt(u, id, passMark, items): Promise<FinishResult> {
       const s = state();
@@ -221,6 +240,7 @@ export function createMemoryRepo(): Repo {
       if (a.length !== qs.length || a.includes(-1)) throw new Error("respuestas_incompletas");
       const score = Math.round((100 * a.filter((x, i) => x === qs[i].correct_index).length) / qs.length);
       s.attempts.delete(id);
+      s.pastAttempts.set(id, [...(s.pastAttempts.get(id) ?? []), a]);
       return { ...complete(u, id, score, passMark, items), answers: a };
     },
     async purchaseItem(_u, itemId, price) {
@@ -597,6 +617,82 @@ export function createMemoryRepo(): Repo {
       const use = { itemId, missionId, questionId, free, hint: isHint ? q.hint : undefined, removed, day };
       s.aidUses.push(use);
       return { hint: use.hint, removed, free, charged: !free, left: left() };
+    },
+    async usePower(_u, missionId, index, itemId, dailyCap, minXp): Promise<PowerResult> {
+      const s = state();
+      const day = todayBogota();
+      const m = C().missions.find((x) => x.id === missionId);
+      if (!m) throw new Error("mision_no_encontrada");
+      if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
+      const rule = powerByItem(itemId);
+      if (!rule) throw new Error("poder_invalido");
+      const qs = questions(missionId);
+      if (!Number.isInteger(index) || index < 0 || index >= qs.length) throw new Error("pregunta_invalida");
+      const q = qs[index];
+      const att = s.attempts.get(missionId);
+      const answered = !!att && att.length === qs.length && att[index] >= 0;
+      const left = () => s.consumables.get(itemId) ?? 0;
+      const prev = s.aidUses.find((u) => u.day === day && u.itemId === itemId && u.questionId === q.id);
+      if (prev) {
+        if (rule.kind === "aliento") throw new Error("ya_usado");
+        return { ...prev.payload, charged: false, left: left() };
+      }
+      if (s.profile.xp < minXp) throw new Error("rango_insuficiente");
+      if (rule.permanent && !s.inventory.some((i) => i.itemId === itemId)) throw new Error("no_lo_tienes");
+      const words = (t: string) => new Set(t.split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4).map(stemOf));
+      let payload: PowerPayload;
+      switch (rule.kind) {
+        case "rayo": {
+          if (answered) throw new Error("ya_respondida");
+          if (!q.hint.trim()) throw new Error("sin_pista");
+          const hint = words(q.hint);
+          const stems = [...words(q.prompt)].filter((w) => hint.has(w));
+          payload = { stems, lead: stems.length ? null : `${q.hint.trim().split(/\s+/).slice(0, 6).join(" ")}…` };
+          break;
+        }
+        case "escudo": case "lluvia":
+          if (answered) throw new Error("ya_respondida");
+          payload = { spent: false };
+          break;
+        case "aura":
+          if (answered) throw new Error("ya_respondida");
+          if ((att ? att.filter((x, i) => x === -1 && i !== index).length : qs.length - 1) === 0) throw new Error("no_aplica");
+          payload = {};
+          break;
+        case "kuro": {
+          if (answered) throw new Error("ya_respondida");
+          const wrong = q.options.map((_, i) => i).filter((i) => i !== q.correct_index).sort(() => Math.random() - 0.5);
+          payload = { hint: q.hint.trim() || null, removed: wrong.length >= 2 ? [wrong[0]] : [] };
+          if (!payload.hint && !payload.removed!.length) throw new Error("no_aplica");
+          break;
+        }
+        case "pulso": {
+          const seen = new Set(s.aidUses.filter((u) => u.itemId === "obj_ayuda_pista" || u.itemId === "obj_poder_kuro").map((u) => u.questionId));
+          const hints = Object.fromEntries(qs.filter((x) => seen.has(x.id) && x.hint.trim()).map((x) => [x.id, x.hint]));
+          if (!Object.keys(hints).length) throw new Error("sin_recuerdos");
+          payload = { hints };
+          break;
+        }
+        case "sombra": {
+          if (answered) throw new Error("ya_respondida");
+          const past = (s.pastAttempts.get(missionId) ?? []).filter((a) => a.length === qs.length && a[index] === q.correct_index);
+          if (!past.length) throw new Error("sin_jugada");
+          payload = { choice: q.correct_index };
+          break;
+        }
+        case "aliento":
+          if (!att || !answered || att[index] === q.correct_index) throw new Error("no_aplica");
+          att[index] = -1;
+          payload = { reset: true };
+          break;
+      }
+      if (s.aidUses.filter((u) => u.day === day && u.itemId === itemId).length >= dailyCap) throw new Error("tope_diario");
+      if (!rule.permanent) {
+        if (left() < 1) throw new Error("sin_unidades");
+        s.consumables.set(itemId, left() - 1);
+      }
+      s.aidUses.push({ itemId, missionId, questionId: q.id, free: false, payload, day });
+      return { ...payload, charged: true, left: left() };
     },
   };
 }

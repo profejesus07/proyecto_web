@@ -1,5 +1,6 @@
 import catalogJson from "../../public/assets/objetos/catalogo.json";
 import { aidByItem } from "@/lib/game/aids";
+import { powerByItem } from "@/lib/game/powers";
 
 export type Rarity = "comun" | "poco" | "raro" | "epico" | "legendario";
 
@@ -49,13 +50,20 @@ export function priceOf(item: CatalogItem): number | null {
 /**
  * Categorías que se venden en la tienda: solo lo que ya hace algo en el juego.
  * Ayudas (Pista y 50/50, ver lib/game/aids.ts), lo que se viste en el Vestidor (cosméticos y focos),
- * marcos del retrato, compañeros y decoración para la Terraza del Hogar de su familia.
- * Poderes y piezas sueltas de equipo esperan a tener uso.
+ * marcos del retrato, compañeros, decoración para la Terraza del Hogar de su familia y poderes
+ * (ver lib/game/powers.ts). Las piezas sueltas de equipo esperan a tener uso.
  */
-export const SHOP_CATEGORIES = ["ayuda", "cosmetico", "foco", "marco", "companero", "decoracion"] as const;
+export const SHOP_CATEGORIES = ["ayuda", "poder", "cosmetico", "foco", "marco", "companero", "decoracion"] as const;
 
 export function shopItems(): CatalogItem[] {
-  return items.filter((i) => priceOf(i) !== null && (SHOP_CATEGORIES as readonly string[]).includes(i.categoria) && (i.categoria !== "ayuda" || !!aidByItem(i.id)));
+  return items.filter((i) => priceOf(i) !== null && (SHOP_CATEGORIES as readonly string[]).includes(i.categoria)
+    && (i.categoria !== "ayuda" || !!aidByItem(i.id)) && (i.categoria !== "poder" || !!powerByItem(i.id)));
+}
+
+/** Reglas de los objetos que se gastan (ayudas y poderes): se acumulan hasta maxStock y tienen tope diario. */
+export function consumableRule(itemId: string): { dailyCap: number; maxStock: number; minXp: number; minRank: string } | undefined {
+  const p = powerByItem(itemId);
+  return aidByItem(itemId) ?? (p && !p.permanent ? p : undefined);
 }
 
 export function isForSale(item: CatalogItem): boolean {

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { preload } from "react-dom";
-import { activateAidAction, answerQuestionAction, submitMissionAction, type SubmitOutcome } from "@/app/actions/game";
+import { activateAidAction, answerQuestionAction, submitMissionAction, activatePowerAction, type SubmitOutcome } from "@/app/actions/game";
 import { SpeechBubble } from "@/components/dialogue";
 import { Sprite, asset } from "@/components/sprite";
 import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
 import { PASS_MARK } from "@/lib/game/grading";
 import { duel, kaelScore } from "@/lib/game/kael";
+import { POWERS, stemOf, type PowerKind } from "@/lib/game/powers";
 import { RANKS } from "@/lib/game/ranks";
 
 export interface AnsweredQuestion {
@@ -42,7 +43,49 @@ export interface QuizProps {
   revealed: Record<string, { hint?: string; removed?: number[] }>;
   /** Respuestas ya dadas en el intento abierto (para continuar donde quedó). */
   resume: (AnsweredQuestion | null)[];
+  /** Poderes del estudiante: unidades (o 1 si es de rango S y lo tiene), usos de hoy y si su rango alcanza. */
+  powers: { kind: PowerKind; have: number; usedToday: number; cap: number; unlocked: boolean }[];
+  /** Lo que los poderes ya hicieron hoy en esta misión, por id de pregunta. */
+  powerState: Record<string, QuizPowerState>;
+  /** Pistas recuperadas con el Pulso de Memoria, por id de pregunta. */
+  memory: Record<string, string>;
   kuroStage: "cachorro" | "joven" | "majestuoso";
+}
+
+export interface QuizPowerState {
+  rayo?: { stems: string[]; lead: string | null };
+  kuro?: { hint: string | null; removed: number[] };
+  sombra?: number;
+  escudo?: boolean;
+  lluvia?: boolean;
+}
+
+/** Kuro dice la pista «con su propia voz» (si el navegador sabe hablar). */
+function kuroSays(text: string) {
+  try {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "es-CO";
+    u.pitch = 1.6;
+    u.rate = 1.05;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch {
+    // Sin voz: la pista igual se ve escrita.
+  }
+}
+
+/** Pregunta con las palabras del Rayo de Claridad resaltadas. */
+function Highlighted({ text, stems }: { text: string; stems: string[] }) {
+  if (!stems.length) return <>{text}</>;
+  const set = new Set(stems);
+  return (
+    <>
+      {text.split(/(\s+)/).map((w, i) => (set.has(stemOf(w)) && stemOf(w).length >= 4
+        ? <mark key={i} className="rounded bg-gold/30 px-0.5 text-inherit">{w}</mark>
+        : <span key={i}>{w}</span>))}
+    </>
+  );
 }
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -84,6 +127,12 @@ export function Quiz(p: QuizProps) {
   const [pista, setPista] = useState(p.aids.pista);
   const [fifty, setFifty] = useState(p.aids.fifty);
   const [aidMsg, setAidMsg] = useState<string | null>(null);
+  const [powers, setPowers] = useState(p.powers);
+  const [pstate, setPstate] = useState(p.powerState);
+  const [memory, setMemory] = useState(p.memory);
+  const [powerMsg, setPowerMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [fx, setFx] = useState<{ src: string; n: number } | null>(null);
+  const [bonus, setBonus] = useState<number | null>(null);
   const [aidPending, startAid] = useTransition();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stageRef = useRef<HTMLElement>(null);
@@ -94,7 +143,9 @@ export function Quiz(p: QuizProps) {
   const rightCount = results.filter((r) => r?.correct).length;
   const wrongCount = results.filter((r) => r && !r.correct).length;
   const shown = revealed[q.id] ?? {};
-  const removed = shown.removed ?? [];
+  const ps = pstate[q.id] ?? {};
+  const removed = [...new Set([...(shown.removed ?? []), ...(ps.kuro?.removed ?? [])])];
+  const hintText = shown.hint ?? ps.kuro?.hint ?? memory[q.id];
 
   // ----- Escena -----
   const enemy = enemyFor(idx, total);
@@ -114,6 +165,13 @@ export function Quiz(p: QuizProps) {
     const t = setTimeout(() => setPhase(1), ms);
     return () => clearTimeout(t);
   }, [beat, idx, p.isBoss]);
+
+  // El efecto del poder se ve un momento sobre la escena.
+  useEffect(() => {
+    if (!fx) return;
+    const t = setTimeout(() => setFx(null), 1800);
+    return () => clearTimeout(t);
+  }, [fx]);
 
   // Precarga las animaciones que vienen para que no parpadeen.
   if (p.isBoss) for (const a of ["golpe", "furia-golpe", "transicion-furia", "furia-reposo", "reposo"]) preload(asset.boss(p.guardian.slug, a), { as: "image" });
@@ -135,6 +193,20 @@ export function Quiz(p: QuizProps) {
         setError(r.error);
         return;
       }
+      if (r.shielded) {
+        // El Escudo de Calma paró el error: la respuesta no quedó fija; se puede volver a intentar.
+        setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], escudo: false } }));
+        setFx({ src: POWERS.escudo.fx, n: Date.now() });
+        setPowerMsg({ ok: true, text: "🛡️ ¡El Escudo de Calma te protegió! Esa no era: piénsalo otra vez." });
+        setSelected(-1);
+        play("miss");
+        return;
+      }
+      if (r.bonusXp) {
+        setBonus(r.bonusXp);
+        setFx({ src: POWERS.lluvia.fx, n: Date.now() });
+      }
+      setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], lluvia: false } }));
       setResults((all) => all.map((x, i) => (i === at ? { choice: r.choice, correct: r.correct, correctIndex: r.correctIndex, explanation: r.explanation } : x)));
       play(r.correct ? "hit" : "miss");
       // Lleva la vista a la escena para ver la reacción; la explicación queda justo debajo.
@@ -152,6 +224,8 @@ export function Quiz(p: QuizProps) {
     setIdx(target);
     setSelected(-1);
     setAidMsg(null);
+    setPowerMsg(null);
+    setBonus(null);
     play("enter");
     requestAnimationFrame(() => {
       stageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -197,6 +271,74 @@ export function Quiz(p: QuizProps) {
       }
     });
   }
+
+  function activatePower(kind: PowerKind) {
+    const at = idx;
+    const qid = q.id;
+    setPowerMsg(null);
+    startAid(async () => {
+      const r = await activatePowerAction(p.missionId, at, kind);
+      if (!r.ok) {
+        setPowerMsg({ ok: false, text: r.error });
+        return;
+      }
+      const rule = POWERS[kind];
+      setFx({ src: rule.fx, n: Date.now() });
+      if (r.charged) setPowers((all) => all.map((x) => (x.kind === kind ? { ...x, have: rule.permanent ? x.have : r.left, usedToday: x.usedToday + 1 } : x)));
+      const patch = (st: QuizPowerState) => setPstate((all) => ({ ...all, [qid]: { ...all[qid], ...st } }));
+      switch (kind) {
+        case "rayo":
+          patch({ rayo: { stems: r.stems ?? [], lead: r.lead ?? null } });
+          setPowerMsg({ ok: true, text: r.stems?.length ? "⚡ El Rayo de Claridad ilumina las palabras clave de la pregunta." : `⚡ El Rayo de Claridad te susurra: «${r.lead ?? ""}»` });
+          break;
+        case "escudo":
+          patch({ escudo: true });
+          setPowerMsg({ ok: true, text: "🛡️ Escudo de Calma activo: si fallas esta pregunta, podrás intentarlo otra vez." });
+          break;
+        case "lluvia":
+          patch({ lluvia: true });
+          setPowerMsg({ ok: true, text: "🌠 Lluvia de Estrellas lista: si aciertas, ganas 15 XP extra." });
+          break;
+        case "kuro":
+          patch({ kuro: { hint: r.hint ?? null, removed: r.removed ?? [] } });
+          if (r.removed?.includes(selected)) setSelected(-1);
+          if (r.hint) kuroSays(r.hint);
+          setPowerMsg({ ok: true, text: "🐾 ¡Kuro acude a tu llamada! Te dice la pista y descarta una opción." });
+          break;
+        case "pulso":
+          setMemory((m) => ({ ...m, ...(r.hints ?? {}) }));
+          setPowerMsg({ ok: true, text: `💫 El Pulso de Memoria recupera ${Object.keys(r.hints ?? {}).length} ${Object.keys(r.hints ?? {}).length === 1 ? "pista" : "pistas"} que ya habías visto.` });
+          break;
+        case "sombra":
+          if (r.choice !== undefined) patch({ sombra: r.choice });
+          setPowerMsg({ ok: true, text: "👤 Tu Sombra Dorada recuerda la respuesta que elegiste la última vez." });
+          break;
+        case "aura":
+          setPowerMsg(null);
+          next();
+          setPowerMsg({ ok: true, text: "🌀 Aura de Concentración: esa pregunta te espera al final. Piénsala con calma." });
+          break;
+        case "aliento":
+          setResults((all) => all.map((x, i) => (i === at ? null : x)));
+          setSelected(-1);
+          setPowerMsg({ ok: true, text: "💖 ¡Segundo Aliento! Puedes responder esta pregunta otra vez." });
+          play("enter");
+          break;
+      }
+    });
+  }
+
+  const powerOf = (kind: PowerKind) => powers.find((x) => x.kind === kind);
+  const canUse = (kind: PowerKind) => {
+    const x = powerOf(kind);
+    return !!x && x.unlocked && x.have > 0 && x.usedToday < x.cap;
+  };
+  const otherOpen = results.some((r, i) => !r && i !== idx);
+  // Poderes que se ofrecen antes de responder (el Segundo Aliento aparece al fallar).
+  const prePowers = powers.filter((x) => x.kind !== "aliento" && x.have > 0 && x.unlocked
+    && !(x.kind === "rayo" && (!q.hasHint || ps.rayo)) && !(x.kind === "escudo" && ps.escudo) && !(x.kind === "lluvia" && ps.lluvia)
+    && !(x.kind === "kuro" && ps.kuro) && !(x.kind === "sombra" && ps.sombra !== undefined) && !(x.kind === "aura" && !otherOpen)
+    && !(x.kind === "pulso" && Object.keys(memory).length > 0));
 
   const pistaCapped = pista.usedToday >= pista.cap;
   const pistaReady = pista.freeAvailable || (pista.stock > 0 && !pistaCapped);
@@ -370,6 +512,13 @@ export function Quiz(p: QuizProps) {
         <Sprite key={kuroSrc} src={kuroSrc} alt={res ? (res.correct ? "Kuro celebra" : "Kuro te anima") : "Kuro piensa contigo"} className="absolute bottom-[3%] left-[6%] h-[34%] w-auto sm:left-[18%]" />
         <Sprite key={`${foeSrc}-${beat.n}`} src={foeSrc} alt={p.isBoss ? p.guardian.name : enemy.name}
           className={`absolute bottom-[4%] w-auto ${p.isBoss ? "right-[2%] h-[66%] sm:right-[12%]" : "right-[8%] h-[40%] sm:right-[22%]"}`} />
+        {fx && <Sprite key={fx.n} src={fx.src} alt="" decorative priority className="pointer-events-none absolute inset-0 m-auto h-full w-auto animate-[fadein_.2s_ease-out]" />}
+        {(ps.escudo || ps.lluvia) && !res && (
+          <span className="absolute bottom-3 left-3 flex gap-1.5">
+            {ps.escudo && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm">🛡️ Escudo activo</span>}
+            {ps.lluvia && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-gold backdrop-blur-sm">🌠 Lluvia activa</span>}
+          </span>
+        )}
       </section>
 
       {res && (
@@ -380,6 +529,13 @@ export function Quiz(p: QuizProps) {
               : p.isBoss ? `¡Uy! ${p.guardian.name} se crece un momento. Kuro te explica:` : "¡Uy, no era esa! Kuro te explica:"}
           </p>
           <p className={res.correct ? "text-muted" : "text-[#ffe3a0]"}>💡 {res.explanation}</p>
+          {bonus && res.correct && <p className="font-bold text-gold">🌠 ¡La Lluvia de Estrellas te da +{bonus} XP!</p>}
+          {!res.correct && canUse("aliento") && (
+            <button type="button" onClick={() => activatePower("aliento")} disabled={aidPending || pending} className="btn btn-secondary btn-sm">
+              {POWERS.aliento.icon} Segundo Aliento · responder otra vez
+            </button>
+          )}
+          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-[#d9c9ff]" : "text-[#ffb3b3]"}`}>{powerMsg.text}</p>}
           {p.isBoss && !res.correct && !stillPossible && (
             <p className="text-sm text-muted">Esta vez no alcanzarás el {PASS_MARK}%, pero termina la prueba: cada respuesta te prepara para la revancha.</p>
           )}
@@ -407,10 +563,13 @@ export function Quiz(p: QuizProps) {
 
       <fieldset className="panel space-y-5 p-5 sm:p-7" disabled={pending}>
         <legend className="text-sm font-semibold text-muted">Pregunta {idx + 1} de {total}</legend>
-        <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">{q.prompt}</h2>
+        <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">
+          {!res && ps.rayo ? <Highlighted text={q.prompt} stems={ps.rayo.stems} /> : q.prompt}
+        </h2>
         <div className="grid gap-3" role="radiogroup" aria-label="Opciones">
           {q.options.map((opt, i) => {
             const out = !res && removed.includes(i);
+            const shadow = !res && ps.sombra === i;
             const isRight = res && i === res.correctIndex;
             const isWrongPick = res && i === res.choice && !res.correct;
             const tone = isRight
@@ -430,6 +589,7 @@ export function Quiz(p: QuizProps) {
                     {isRight ? "✓" : isWrongPick ? "✕" : out ? "✕" : LETTERS[i]}
                   </span>
                   <span className={`font-medium ${out ? "line-through" : ""}`}>{opt}</span>
+                  {shadow && <span className="ml-auto shrink-0 rounded-md bg-gold/20 px-2 py-0.5 text-xs font-bold text-gold">👤 Tu sombra eligió esta</span>}
                   {out && <span className="sr-only"> (descartada por el 50/50)</span>}
                   {isRight && <span className="sr-only"> (respuesta correcta)</span>}
                   {isWrongPick && <span className="sr-only"> (tu respuesta)</span>}
@@ -441,10 +601,11 @@ export function Quiz(p: QuizProps) {
 
         {!res && (
           <>
-            {shown.hint && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">💡 {shown.hint}</p>}
+            {hintText && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
+            {ps.rayo?.lead && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-sm">⚡ Fíjate en esto: «{ps.rayo.lead}»</p>}
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
               <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
-              {q.hasHint && !shown.hint && (
+              {q.hasHint && !hintText && (
                 <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
                   title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
                   💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
@@ -464,6 +625,22 @@ export function Quiz(p: QuizProps) {
               {needShop && <Link href="/tienda?c=ayuda" className="text-sm font-semibold text-cyan underline-offset-4 hover:underline">Conseguir más en la tienda</Link>}
             </div>
             <p aria-live="polite" className="text-sm font-medium text-[#ffb3b3] empty:hidden">{aidMsg}</p>
+            {prePowers.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Poderes">
+                <span className="mr-1 text-sm font-bold text-muted">Poderes:</span>
+                {prePowers.map((x) => {
+                  const rule = POWERS[x.kind];
+                  const capped = x.usedToday >= x.cap;
+                  return (
+                    <button key={x.kind} type="button" onClick={() => activatePower(x.kind)} disabled={capped || aidPending || pending} title={rule.effect}
+                      className="btn btn-ghost btn-sm !border-violet/50">
+                      {rule.icon} {rule.name}{rule.permanent ? "" : ` · ${x.have}`}{capped ? " · tope de hoy" : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-[#d9c9ff]" : "text-[#ffb3b3]"}`}>{powerMsg?.text}</p>
           </>
         )}
       </fieldset>

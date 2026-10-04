@@ -3,7 +3,7 @@ import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -135,8 +135,9 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "responder");
       const r = data as Record<string, unknown>;
       const out: AnswerResult = {
-        index: r.index as number, choice: r.choice as number, correct: r.correct as boolean, correctIndex: r.correct_index as number,
-        explanation: r.explanation as string, answered: r.answered as number, right: r.right as number, total: r.total as number,
+        index: r.index as number, choice: (r.choice as number | undefined) ?? -1, correct: r.correct as boolean, correctIndex: (r.correct_index as number | undefined) ?? -1,
+        explanation: (r.explanation as string | undefined) ?? "", answered: r.answered as number, right: r.right as number, total: r.total as number,
+        shielded: r.shielded === true || undefined, bonusXp: (r.bonus_xp as number | undefined) || undefined,
       };
       return out;
     },
@@ -195,9 +196,15 @@ export function createSupabaseRepo(): Repo {
       const { data, error } = await db.from("aid_uses").select("item_id,mission_id,question_id,free,payload").eq("user_id", userId).eq("used_on", todayBogota());
       if (error) fail(error, "ayudas usadas");
       return (data ?? []).map((r): AidUseRow => {
-        const pl = (r.payload ?? {}) as { hint?: string; removed?: number[] };
-        return { itemId: r.item_id, missionId: r.mission_id, questionId: r.question_id, free: r.free, hint: pl.hint, removed: pl.removed };
+        const pl = (r.payload ?? {}) as PowerPayload & { hint?: string };
+        return { itemId: r.item_id, missionId: r.mission_id, questionId: r.question_id, free: r.free, hint: pl.hint ?? undefined, removed: pl.removed, payload: pl };
       });
+    },
+
+    async usePower(userId, missionId, index, itemId, dailyCap, minXp) {
+      const { data, error } = await db.rpc("use_power", { p_user: userId, p_mission: missionId, p_index: index, p_item: itemId, p_daily_cap: dailyCap, p_min_xp: minXp });
+      if (error) fail(error, "poder");
+      return data as PowerResult;
     },
 
     async buyConsumable(userId, itemId, price, maxStock) {

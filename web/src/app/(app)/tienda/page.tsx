@@ -9,15 +9,16 @@ import { PageTitle } from "@/components/ui";
 import { WEARABLE_IDS } from "@/content/wearable-ids";
 import { requireViewer } from "@/lib/auth";
 import { WEAR_LABEL, WEAR_SLOTS, avatarSrc, type WearSlot } from "@/lib/avatar-look";
-import { CATEGORY_LABEL, RARITY, itemImage, petImage, priceOf, shopItems, SHOP_CATEGORIES, type CatalogItem } from "@/lib/catalog";
+import { CATEGORY_LABEL, RARITY, consumableRule, itemImage, petImage, priceOf, shopItems, SHOP_CATEGORIES, type CatalogItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
-import { aidByItem } from "@/lib/game/aids";
+import { powerByItem } from "@/lib/game/powers";
 import { rankForXp } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "Tienda y Arsenal" };
 
 const INTRO: Record<string, string> = {
   ayuda: "Úsalas durante las misiones cuando una pregunta se resista.",
+  poder: "Poderes para las misiones: cada uno se usa en una pregunta y tiene su efecto. Se acumulan en tu mochila.",
   cosmetico: "Capas, alas, auras, bufandas, gafas y sombreros. Después de comprarlos, póntelos en el Vestidor.",
   foco: "Un objeto mágico para llevar en la mano.",
   marco: "Un marco para tu retrato: se ve en el Gremio, en tu perfil y en el informe de tu docente.",
@@ -28,6 +29,7 @@ const INTRO: Record<string, string> = {
 /** Brann atiende cada mostrador con su gesto y una frase. */
 const BRANN: Record<string, { anim: string; line: string }> = {
   ayuda: { anim: "mostrar", line: "¿Una pregunta difícil? Llévate una ayuda." },
+  poder: { anim: "forjar", line: "Poderes recién forjados. Úsalos con cabeza: cada uno tiene su momento." },
   cosmetico: { anim: "mostrar", line: "¡Mira lo bien que te queda!" },
   foco: { anim: "forjar", line: "Recién salidos de mi yunque." },
   marco: { anim: "forjar", line: "Un buen retrato merece un buen marco." },
@@ -60,6 +62,8 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
     }
     if (it.categoria === "marco") return <AvatarFace base={viewer.avatarBase} rank={rank} look={{ ...viewer.avatarLook, frame: it.id }} size={76} />;
     if (it.categoria === "decoracion") return <Terrace decor={[it.id]} className="!rounded-lg" />;
+    const pw = powerByItem(it.id);
+    if (pw) return <Sprite src={pw.fx} alt={`Efecto de ${pw.name}`} className="absolute inset-0 size-full object-contain" />;
     if (it.categoria === "companero") return <Sprite src={petImage(it.id, rank) ?? itemImage(it)} alt={it.alt} className="absolute inset-0 size-full object-contain p-2" />;
     return <Sprite src={itemImage(it)} alt={it.alt} className="size-24" />;
   }
@@ -100,19 +104,19 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
             {g.items.map((it) => {
               const r = RARITY[it.rareza];
               const price = priceOf(it)!;
-              const aid = aidByItem(it.id);
+              const aid = consumableRule(it.id);
               const wearable = !!slotOf(it.id) || it.categoria === "marco" || it.categoria === "companero";
               const decor = it.categoria === "decoracion";
               return (
                 <li key={it.id} className="panel flex flex-col gap-3 p-4" style={{ borderColor: `${r.color}55` }}>
                   <div className="relative grid h-40 place-items-center overflow-hidden rounded-xl bg-bg/40 p-2">
                     {preview(it)}
-                    {(slotOf(it.id) || it.categoria === "decoracion") && <Sprite src={itemImage(it)} alt="" decorative className="absolute right-1 top-1 size-12" />}
+                    {(slotOf(it.id) || it.categoria === "decoracion" || it.categoria === "poder") && <Sprite src={itemImage(it)} alt="" decorative className="absolute right-1 top-1 size-12" />}
                   </div>
                   <div className="space-y-1">
                     <p className="text-[0.7rem] font-bold uppercase tracking-wider" style={{ color: r.color }}>{r.label}</p>
                     <h3 className="text-lg leading-tight">{it.nombre}</h3>
-                    <p className="text-sm text-muted">{it.descripcion}</p>
+                    <p className="text-sm text-muted">{powerByItem(it.id)?.effect ?? it.descripcion}</p>
                   </div>
                   <div className="mt-auto">{aid ? (
                     <BuyButton itemId={it.id} price={price} coins={viewer.coins} owned={false}

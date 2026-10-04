@@ -153,7 +153,7 @@ test("al superar la lección gratis se ofrece desbloquear el curso", async ({ pa
 test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en el Vestidor", async ({ page }) => {
   await page.goto("/tienda");
   const nav = page.getByRole("navigation", { name: "Categorías" });
-  await expect(nav.getByRole("link", { name: "Poderes" })).toHaveCount(0);
+  await expect(nav.getByRole("link", { name: "Poderes" })).toBeVisible();
   await expect(page.getByText(/Próximamente/)).toHaveCount(0);
   const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
   await card("50/50").getByRole("button", { name: /Comprar/ }).click();
@@ -184,6 +184,23 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await expect(card("Macetas en flor").getByText("¡Conseguiste Macetas en flor!")).toBeVisible();
   await page.goto("/perfil");
   await expect(page.getByRole("img", { name: "Macetas en flor" }).first()).toBeVisible();
+});
+
+test("los poderes se compran en la tienda y el Rayo de Claridad ilumina la pregunta", async ({ page }) => {
+  await page.goto("/tienda?c=poder");
+  const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
+  await expect(card("Sombra Dorada")).toHaveCount(0);
+  await expect(card("Aura de Concentración").getByText(/Se desbloquea en rango B/)).toBeVisible();
+  await card("Rayo de Claridad").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("Rayo de Claridad").getByText("Ahora tienes 1")).toBeVisible();
+
+  await page.goto("/mision/m1");
+  const poderes = page.getByRole("group", { name: "Poderes" });
+  await poderes.getByRole("button", { name: /Rayo de Claridad · 1/ }).click();
+  await expect(page.getByText(/El Rayo de Claridad (ilumina|te susurra)/)).toBeVisible();
+  await expect(page.locator("h2 mark").first().or(page.getByText(/Fíjate en esto/))).toBeVisible();
+  // Ya no quedan unidades: el botón desaparece.
+  await expect(poderes).toHaveCount(0);
 });
 
 test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ page }) => {

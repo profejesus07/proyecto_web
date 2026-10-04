@@ -5,12 +5,13 @@ import { getViewer } from "@/lib/auth";
 import { FREE_FRAME, canWearGear, equippedItems, sanitizeLook } from "@/lib/avatar-look";
 import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
 import { getRepo } from "@/lib/data";
-import { AVATAR_BASES, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
-import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
+import { AVATAR_BASES, type PowerResult, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
+import { AIDS, type AidKind } from "@/lib/game/aids";
 import { PASS_MARK } from "@/lib/game/grading";
+import { POWERS, type PowerKind } from "@/lib/game/powers";
 import { rankForXp, ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
-import { RARITY, getItem, isForSale, itemImage, priceOf } from "@/lib/catalog";
+import { RARITY, consumableRule, getItem, isForSale, itemImage, priceOf } from "@/lib/catalog";
 import { answerSchema, displayName, submitSchema } from "@/lib/validation";
 
 export interface ReviewRow {
@@ -117,7 +118,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
 export type BuyOutcome = { ok: true; coins: number; name: string; quantity?: number } | { ok: false; error: string };
 
 export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
-  const aid = typeof itemId === "string" ? aidByItem(itemId) : undefined;
+  const aid = typeof itemId === "string" ? consumableRule(itemId) : undefined;
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const item = typeof itemId === "string" ? getItem(itemId) : undefined;
@@ -185,6 +186,41 @@ export async function activateAidAction(questionId: string, kind: string): Promi
     const msg = e instanceof Error ? e.message : "";
     for (const [k, v] of Object.entries(AID_MESSAGES)) if (msg.includes(k)) return { ok: false, error: v };
     return { ok: false, error: "No pudimos usar esa ayuda. Inténtalo de nuevo." };
+  }
+}
+
+const POWER_MESSAGES: Record<string, string> = {
+  rango_insuficiente: "Todavía no tienes el rango para usar ese poder.",
+  sin_unidades: "No te quedan unidades de ese poder. Consíguelas en la tienda.",
+  tope_diario: "Ya usaste ese poder las veces permitidas hoy. ¡Mañana puedes volver a usarlo!",
+  ya_respondida: "Ese poder se usa antes de responder la pregunta.",
+  no_aplica: "Ese poder no sirve en esta pregunta.",
+  sin_pista: "Esta pregunta no tiene pista que iluminar.",
+  sin_recuerdos: "Aún no has visto pistas en esta misión: no hay nada que recordar.",
+  sin_jugada: "Tu sombra no recuerda esta pregunta: todavía no la habías acertado.",
+  no_lo_tienes: "Ese poder se gana al llegar al rango S.",
+  ya_usado: "Ya usaste el Segundo Aliento en esta pregunta hoy.",
+  mision_bloqueada: "Esta misión todavía está bloqueada.",
+};
+
+export type PowerOutcome = ({ ok: true; kind: PowerKind } & PowerResult) | { ok: false; error: string };
+
+/** Usa un poder en una pregunta de la misión (la base de datos aplica todas las reglas). */
+export async function activatePowerAction(missionId: string, index: number, kind: string): Promise<PowerOutcome> {
+  if (typeof missionId !== "string" || missionId.length > 64 || !Number.isInteger(index) || index < 0 || !(kind in POWERS)) {
+    return { ok: false, error: "No pudimos usar ese poder." };
+  }
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
+  const rule = POWERS[kind as PowerKind];
+  try {
+    const r = await getRepo().usePower(viewer.id, missionId, index, rule.itemId, rule.dailyCap, rule.minXp);
+    if (r.charged) revalidatePath("/tienda");
+    return { ok: true, kind: rule.kind, ...r };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    for (const [k, v] of Object.entries(POWER_MESSAGES)) if (msg.includes(k)) return { ok: false, error: v };
+    return { ok: false, error: "No pudimos usar ese poder. Inténtalo de nuevo." };
   }
 }
 
