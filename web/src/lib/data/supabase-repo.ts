@@ -2,7 +2,7 @@ import "server-only";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AidResult, AidUseRow, AnswerKeyRow, AnswerResult, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -174,6 +174,71 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "compra");
       const r = data as { coins: number; quantity: number };
       return { coins: r.coins, quantity: r.quantity };
+    },
+
+    async listTeacherClasses(teacherId) {
+      const { data, error } = await db.from("classes").select("id,name,code,created_at,archived_at,class_members(count)").eq("teacher_id", teacherId).order("created_at");
+      if (error) fail(error, "clases");
+      return (data ?? []).map((r): ClassSummary => ({
+        id: r.id, name: r.name, code: r.code, createdAt: r.created_at, archived: r.archived_at !== null,
+        members: (r.class_members as { count: number }[] | null)?.[0]?.count ?? 0,
+      }));
+    },
+
+    async createClass(teacherId, name) {
+      const { data, error } = await db.rpc("create_class", { p_teacher: teacherId, p_name: name });
+      if (error) fail(error, "crear clase");
+      return data as { id: string; name: string; code: string };
+    },
+
+    async manageClass(teacherId, classId, action, arg) {
+      const { error } = await db.rpc("manage_class", { p_teacher: teacherId, p_class: classId, p_action: action, p_arg: arg ?? null });
+      if (error) fail(error, "clase");
+    },
+
+    async classReport(teacherId, classId) {
+      const { data, error } = await db.rpc("class_report", { p_teacher: teacherId, p_class: classId });
+      if (error) fail(error, "informe");
+      const r = data as {
+        class: { id: string; name: string; code: string; created_at: string; archived: boolean };
+        students: { id: string; name: string; avatar: string; xp: number; streak: number; last_active: string | null; joined_at: string;
+          progress: { mission_id: string; best_score: number; attempts: number; completed: boolean }[] }[];
+        questions: { mission_id: string; position: number; answered: number; right: number }[];
+      };
+      const out: ClassReport = {
+        class: { id: r.class.id, name: r.class.name, code: r.class.code, createdAt: r.class.created_at, archived: r.class.archived },
+        students: r.students.map((st) => ({
+          id: st.id, name: st.name, xp: st.xp, streak: st.streak, lastActive: st.last_active, joinedAt: st.joined_at,
+          avatar: (AVATAR_BASES as readonly string[]).includes(st.avatar) ? (st.avatar as AvatarBase) : "aria",
+          progress: st.progress.map((p) => ({ missionId: p.mission_id, bestScore: p.best_score, attempts: p.attempts, completed: p.completed })),
+        })),
+        questions: r.questions.map((q) => ({ missionId: q.mission_id, position: q.position, answered: q.answered, right: q.right })),
+      };
+      return out;
+    },
+
+    async listStudentClasses(studentId) {
+      const { data, error } = await db.from("class_members").select("classes(id,name,teacher_id,archived_at)").eq("student_id", studentId);
+      if (error) fail(error, "clases");
+      const classes = (data ?? [])
+        .map((r) => r.classes as unknown as { id: string; name: string; teacher_id: string; archived_at: string | null } | null)
+        .filter((c): c is NonNullable<typeof c> => !!c && c.archived_at === null);
+      if (!classes.length) return [];
+      const { data: teachers, error: e2 } = await db.from("profiles").select("id,display_name").in("id", [...new Set(classes.map((c) => c.teacher_id))]);
+      if (e2) fail(e2, "docentes");
+      const names = new Map((teachers ?? []).map((t) => [t.id as string, t.display_name as string]));
+      return classes.map((c) => ({ id: c.id, name: c.name, teacherName: names.get(c.teacher_id) ?? "Tu docente" }));
+    },
+
+    async joinClass(studentId, code) {
+      const { data, error } = await db.rpc("join_class", { p_student: studentId, p_code: code });
+      if (error) fail(error, "unirse");
+      return data as { id: string; name: string };
+    },
+
+    async leaveClass(studentId, classId) {
+      const { error } = await db.rpc("leave_class", { p_student: studentId, p_class: classId });
+      if (error) fail(error, "salir de la clase");
     },
 
     async useAid(userId, questionId, itemId, dailyCap, minXp) {

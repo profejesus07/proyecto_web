@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JoinClassForm, LeaveClassButton } from "@/components/classes-client";
 import { AvatarPicker } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
@@ -20,7 +21,8 @@ const SECTIONS: { key: string; title: string; cats: string[]; showMissing?: bool
 
 export default async function ProfilePage() {
   const viewer = await requireViewer("/perfil");
-  const inventory = await getRepo().getInventory(viewer.id);
+  const isStudent = viewer.role === "estudiante";
+  const [inventory, myClasses] = await Promise.all([getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([])]);
   const owned = new Set(inventory.map((i) => i.itemId));
   const p = rankProgress(viewer.xp);
 
@@ -47,6 +49,30 @@ export default async function ProfilePage() {
         <Stat icon="💎" label="Gemas" value={viewer.gems} />
         <Stat icon="🔥" label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
       </div>
+
+      {isStudent && (
+        <section aria-labelledby="clases-t" className="panel grid gap-6 p-6 md:grid-cols-2">
+          <div className="space-y-3">
+            <h2 id="clases-t" className="text-2xl">Mis clases</h2>
+            {myClasses.length === 0 ? (
+              <p className="text-muted">Si tu docente usa UMBRAL, te dará un código de 6 caracteres para unirte a su clase.</p>
+            ) : (
+              <ul className="space-y-2">
+                {myClasses.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
+                    <span><strong>{c.name}</strong> <span className="text-sm text-muted">· {c.teacherName}</span></span>
+                    <LeaveClassButton classId={c.id} name={c.name} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="space-y-3">
+            <JoinClassForm />
+            <p className="hint">Al unirte, tu docente verá tu nombre de aventurero, tu rango y tu avance en los portales. Nunca verá tu correo ni tu contraseña. Puedes salir cuando quieras.</p>
+          </div>
+        </section>
+      )}
 
       {hasCertificate && (
         <section className="panel flex flex-wrap items-center gap-4 p-5" aria-label="Certificado">

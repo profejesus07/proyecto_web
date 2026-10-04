@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AidUseRow, AnswerKeyRow, AnswerResult, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -13,6 +13,27 @@ import type {
  * las reglas reales están probadas contra esa base de datos en tests/game.test.ts.
  */
 export const PREVIEW_USER_ID = "00000000-0000-0000-0000-00000000aaaa";
+/** Docente de prueba (en la vista previa se entra como docente con la cookie «umbral-vista=docente»). */
+export const PREVIEW_TEACHER_ID = "00000000-0000-0000-0000-00000000bbbb";
+const TEACHER: Profile = {
+  id: PREVIEW_TEACHER_ID, role: "docente", displayName: "Profe de prueba", avatarBase: "leo", xp: 0, coins: 0, gems: 0, streak: 0, introSeen: true, chroniclesRead: [],
+};
+
+interface PreviewClass { id: string; name: string; code: string; teacherId: string; archived: boolean; createdAt: string }
+
+// Estudiantes de ejemplo que se suman a cada clase de la vista previa, para que el informe no salga vacío.
+const done = (id: string, bestScore: number, attempts = 1): ProgressRow => ({ missionId: id, bestScore, attempts, completed: bestScore >= 70 });
+const DEMO_STUDENTS: ClassStudent[] = [
+  { id: "demo-1", name: "Valentina (demo)", avatar: "nuri", xp: 340, streak: 4, lastActive: null, joinedAt: "", progress: [done("m1", 100), done("m2", 100), done("m3", 75, 2), done("m4", 83)] },
+  { id: "demo-2", name: "Samuel (demo)", avatar: "tomas", xp: 120, streak: 1, lastActive: null, joinedAt: "", progress: [done("m1", 75), done("m2", 75, 3), done("m3", 50, 2)] },
+  { id: "demo-3", name: "Mariana (demo)", avatar: "aria", xp: 0, streak: 0, lastActive: null, joinedAt: "", progress: [] },
+];
+// Aciertos de ejemplo por pregunta: [misión, posición, respondidas, acertadas].
+const DEMO_QUESTIONS: [string, number, number, number][] = [
+  ["m1", 1, 3, 3], ["m1", 2, 3, 2], ["m1", 3, 3, 3], ["m1", 4, 3, 2],
+  ["m2", 1, 5, 2], ["m2", 2, 5, 4], ["m2", 3, 5, 5], ["m2", 4, 5, 3],
+  ["m3", 1, 4, 1], ["m3", 2, 4, 3], ["m3", 3, 4, 4], ["m3", 4, 4, 2],
+];
 
 interface State {
   profile: Profile;
@@ -22,6 +43,8 @@ interface State {
   consumables: Map<string, number>;
   attempts: Map<string, number[]>;
   aidUses: (AidUseRow & { day: string })[];
+  classes: PreviewClass[];
+  members: { classId: string; studentId: string; joinedAt: string }[];
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -36,6 +59,8 @@ function state(): State {
       consumables: new Map(),
       attempts: new Map(),
       aidUses: [],
+      classes: [],
+      members: [],
     };
   }
   return g.__umbralPreview;
@@ -64,6 +89,11 @@ function isLocked(s: State, m: MissionSummary): boolean {
   });
 }
 
+function previewCode(): string {
+  const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 6 }, () => abc[Math.floor(Math.random() * abc.length)]).join("");
+}
+
 /** Misma lógica que public.complete_mission (0003/0006). */
 function complete(_u: string, id: string, score: number, passMark: number, items: string[]): CompleteResult {
   const s = state();
@@ -89,7 +119,7 @@ function complete(_u: string, id: string, score: number, passMark: number, items
 
 export function createMemoryRepo(): Repo {
   return {
-    async getProfile() { return { ...state().profile }; },
+    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : { ...state().profile }; },
     async listCourses() { return [...courses]; },
     async getCourse(slug): Promise<CourseDetail | null> {
       const c = courses.find((x) => x.slug === slug);
@@ -146,6 +176,72 @@ export function createMemoryRepo(): Repo {
       return { coins: s.profile.coins };
     },
     async setAvatar(_u, base: AvatarBase) { state().profile = { ...state().profile, avatarBase: base }; },
+    async listTeacherClasses(teacherId) {
+      const s = state();
+      return s.classes.filter((c) => c.teacherId === teacherId).map((c) => ({
+        id: c.id, name: c.name, code: c.code, archived: c.archived, createdAt: c.createdAt, members: s.members.filter((m) => m.classId === c.id).length,
+      }));
+    },
+    async createClass(teacherId, name) {
+      if (teacherId !== PREVIEW_TEACHER_ID) throw new Error("solo_docentes");
+      const n = name.trim();
+      if (n.length < 2 || n.length > 60) throw new Error("nombre_invalido");
+      const s = state();
+      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: n, code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString() };
+      s.classes.push(c);
+      for (const d of DEMO_STUDENTS) s.members.push({ classId: c.id, studentId: d.id, joinedAt: c.createdAt });
+      return { id: c.id, name: c.name, code: c.code };
+    },
+    async manageClass(teacherId, classId, action, arg) {
+      const s = state();
+      const c = s.classes.find((x) => x.id === classId && x.teacherId === teacherId);
+      if (!c) throw new Error("clase_no_encontrada");
+      if (action === "nuevo_codigo") c.code = previewCode();
+      else if (action === "archivar") c.archived = true;
+      else if (action === "renombrar") {
+        const n = (arg ?? "").trim();
+        if (n.length < 2 || n.length > 60) throw new Error("nombre_invalido");
+        c.name = n;
+      } else if (action === "quitar") s.members = s.members.filter((m) => !(m.classId === classId && m.studentId === arg));
+    },
+    async classReport(teacherId, classId): Promise<ClassReport> {
+      const s = state();
+      const c = s.classes.find((x) => x.id === classId && x.teacherId === teacherId);
+      if (!c) throw new Error("clase_no_encontrada");
+      const students = s.members.filter((m) => m.classId === classId).flatMap((m): ClassStudent[] => {
+        if (m.studentId === PREVIEW_USER_ID) {
+          const p = s.profile;
+          return [{ id: p.id, name: p.displayName, avatar: p.avatarBase, xp: p.xp, streak: p.streak, lastActive: todayBogota(), joinedAt: m.joinedAt, progress: [...s.progress.values()] }];
+        }
+        const d = DEMO_STUDENTS.find((x) => x.id === m.studentId);
+        return d ? [{ ...d, joinedAt: m.joinedAt }] : [];
+      }).sort((a, b) => a.name.localeCompare(b.name, "es"));
+      return {
+        class: { id: c.id, name: c.name, code: c.code, createdAt: c.createdAt, archived: c.archived },
+        students,
+        questions: DEMO_QUESTIONS.map(([missionId, position, answered, right]) => ({ missionId, position, answered, right })),
+      };
+    },
+    async listStudentClasses(studentId) {
+      const s = state();
+      return s.members.filter((m) => m.studentId === studentId).flatMap((m) => {
+        const c = s.classes.find((x) => x.id === m.classId && !x.archived);
+        return c ? [{ id: c.id, name: c.name, teacherName: TEACHER.displayName }] : [];
+      });
+    },
+    async joinClass(studentId, code) {
+      if (studentId !== PREVIEW_USER_ID) throw new Error("solo_estudiantes");
+      const s = state();
+      const norm = code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const c = s.classes.find((x) => x.code === norm && !x.archived);
+      if (!c) throw new Error("codigo_invalido");
+      if (!s.members.some((m) => m.classId === c.id && m.studentId === studentId)) s.members.push({ classId: c.id, studentId, joinedAt: new Date().toISOString() });
+      return { id: c.id, name: c.name };
+    },
+    async leaveClass(studentId, classId) {
+      const s = state();
+      s.members = s.members.filter((m) => !(m.classId === classId && m.studentId === studentId));
+    },
     async markIntroSeen() { state().profile = { ...state().profile, introSeen: true }; },
     async markChapterRead(_u, id) {
       const p = state().profile;

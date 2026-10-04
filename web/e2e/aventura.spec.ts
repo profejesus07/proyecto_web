@@ -184,6 +184,38 @@ test("el registro muestra qué le falta a la contraseña", async ({ page }) => {
   expect(await pass.evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(true);
 });
 
+test("el docente crea una clase, el estudiante se une con el código y aparece en el informe", async ({ page, context }) => {
+  // Un estudiante no puede entrar al panel del docente.
+  await page.goto("/maestro");
+  await expect(page).toHaveURL(/\/gremio$/);
+
+  // En la vista previa, esta cookie entra como el docente de prueba.
+  const asTeacher = { name: "umbral-vista", value: "docente", url: "http://localhost:3200" };
+  await context.addCookies([asTeacher]);
+  await page.goto("/maestro");
+  await expect(page.getByRole("heading", { name: "Tus clases" })).toBeVisible();
+  await page.getByLabel("Nombre de la clase").fill("6.º B · Ciencias");
+  await page.getByRole("button", { name: "Crear clase" }).click();
+  await expect(page.getByRole("heading", { name: "6.º B · Ciencias" })).toBeVisible();
+  const code = (await page.getByLabel(/^Código de la clase/).textContent())!.trim();
+  expect(code).toMatch(/^[A-Z2-9]{6}$/);
+
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/perfil");
+  await page.getByLabel("Código de la clase").fill(code.toLowerCase());
+  await page.getByRole("button", { name: "Unirme" }).click();
+  await expect(page.getByText("¡Listo! Ya estás en la clase «6.º B · Ciencias».")).toBeVisible();
+
+  await context.addCookies([asTeacher]);
+  await page.goto("/maestro");
+  await page.getByRole("link", { name: /6\.º B · Ciencias/ }).click();
+  await expect(page.getByRole("rowheader", { name: /Despertado/ })).toBeVisible();
+  await expect(page.getByRole("rowheader", { name: /Valentina \(demo\)/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Preguntas que más cuestan" })).toBeVisible();
+  await expect(page.getByText("Respuesta correcta:").first()).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);

@@ -36,7 +36,9 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>Quién más ve tus datos</h2>
-        <p>Tu perfil es privado: otros estudiantes no ven tu avance. Usamos <strong>Supabase</strong> para guardar los datos y autenticar a las personas, y <strong>Vercel</strong> para publicar el sitio. Ambos actúan como proveedores y tratan los datos solo para prestar ese servicio.</p>
+        <p>Tu perfil es privado: otros estudiantes no ven tu avance.</p>
+        <p className="mt-3"><strong>Clases:</strong> si te unes a la clase de un docente con su código, ese docente verá tu nombre de aventurero, tu avatar, tu rango, tu racha, la fecha de tu última actividad, tus notas en cada misión y, sin nombres, qué preguntas cuestan más al grupo. Nunca verá tu correo ni tu contraseña. Puedes salir de la clase cuando quieras desde tu perfil, y el docente también puede quitarte de ella.</p>
+        <p className="mt-3">Usamos <strong>Supabase</strong> para guardar los datos y autenticar a las personas, y <strong>Vercel</strong> para publicar el sitio. Ambos actúan como proveedores y tratan los datos solo para prestar ese servicio.</p>
       </section>
       <section>
         <h2>Tus derechos</h2>

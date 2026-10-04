@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseConfig } from "@/lib/env";
 
-const PROTECTED = ["/gremio", "/portales", "/mision", "/perfil", "/tienda", "/cronicas"];
+const PROTECTED = ["/gremio", "/portales", "/mision", "/perfil", "/tienda", "/cronicas", "/maestro"];
 // Quien ya inició sesión no necesita ver la portada ni los formularios de entrada.
 const AUTH_PAGES = ["/", "/ingresar", "/registro"];
 

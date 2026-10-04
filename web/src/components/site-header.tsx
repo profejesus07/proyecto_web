@@ -17,7 +17,7 @@ export async function SiteHeader() {
 
         {viewer ? (
           <>
-            <NavLinks className="hidden md:flex" />
+            <NavLinks className="hidden md:flex" teacher={viewer.role === "docente"} />
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
                 <span aria-hidden="true">🪙</span> {viewer.coins}
@@ -38,7 +38,7 @@ export async function SiteHeader() {
           </nav>
         )}
       </div>
-      {viewer && <NavLinks mobile className="md:hidden" />}
+      {viewer && <NavLinks mobile className="md:hidden" teacher={viewer.role === "docente"} />}
     </header>
   );
 }

@@ -66,7 +66,14 @@ export default async function GremioPage() {
         </div>
       </section>
 
-      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} />}
+      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={viewer.role === "docente"} />}
+
+      {viewer.role === "docente" && (
+        <section aria-label="Maestro del Gremio" className="panel flex flex-wrap items-center justify-between gap-4 !border-gold/40 p-5">
+          <p><strong className="font-display text-lg">🧑‍🏫 Maestro del Gremio.</strong> <span className="text-muted">Crea clases y sigue el avance de tus estudiantes.</span></p>
+          <Link href="/maestro" className="btn btn-primary">Ir a mis clases</Link>
+        </section>
+      )}
 
       {newest && (
         <section aria-label="Crónicas nuevas" className="panel flex flex-wrap items-center gap-4 !border-violet/40 p-4 sm:p-5">

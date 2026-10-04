@@ -128,6 +128,41 @@ export interface AidResult {
   left: number;
 }
 
+export interface ClassSummary {
+  id: string;
+  name: string;
+  code: string;
+  members: number;
+  archived: boolean;
+  createdAt: string;
+}
+
+export interface StudentClass {
+  id: string;
+  name: string;
+  teacherName: string;
+}
+
+export interface ClassStudent {
+  id: string;
+  name: string;
+  avatar: AvatarBase;
+  xp: number;
+  streak: number;
+  lastActive: string | null;
+  joinedAt: string;
+  progress: ProgressRow[];
+}
+
+export interface ClassReport {
+  class: { id: string; name: string; code: string; createdAt: string; archived: boolean };
+  students: ClassStudent[];
+  /** Aciertos por pregunta en intentos terminados de los estudiantes de la clase. */
+  questions: { missionId: string; position: number; answered: number; right: number }[];
+}
+
+export type ClassAction = "nuevo_codigo" | "renombrar" | "archivar" | "quitar";
+
 /** Todo lo que el servidor necesita de la base de datos. Una implementación real (Supabase) y otra en memoria (vista previa). */
 export interface Repo {
   getProfile(userId: string): Promise<Profile | null>;
@@ -153,4 +188,12 @@ export interface Repo {
   getAidUsesToday(userId: string): Promise<AidUseRow[]>;
   buyConsumable(userId: string, itemId: string, price: number, maxStock: number): Promise<{ coins: number; quantity: number }>;
   useAid(userId: string, questionId: string, itemId: string, dailyCap: number, minXp: number): Promise<AidResult>;
+  // Clases (Maestro del Gremio)
+  listTeacherClasses(teacherId: string): Promise<ClassSummary[]>;
+  createClass(teacherId: string, name: string): Promise<{ id: string; name: string; code: string }>;
+  manageClass(teacherId: string, classId: string, action: ClassAction, arg?: string): Promise<void>;
+  classReport(teacherId: string, classId: string): Promise<ClassReport>;
+  listStudentClasses(studentId: string): Promise<StudentClass[]>;
+  joinClass(studentId: string, code: string): Promise<{ id: string; name: string }>;
+  leaveClass(studentId: string, classId: string): Promise<void>;
 }
