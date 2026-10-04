@@ -4,6 +4,7 @@ import { AvatarFace } from "@/components/avatar-face";
 import { SpeechBubble } from "@/components/dialogue";
 import { LinkFamilyForm, SendMessage, UnlinkButton } from "@/components/family-client";
 import { GuidePicker } from "@/components/guide-picker";
+import { PayButtons, type PayOption } from "@/components/pay-buttons";
 import { FAMILY_MESSAGES_PER_DAY, GUARDIANES_HOGAR, guideSrc, type Guide, type GuideAnim } from "@/content/elenco";
 import { Sprite, asset } from "@/components/sprite";
 import { Terrace } from "@/components/terrace";
@@ -13,7 +14,9 @@ import { requireFamily } from "@/lib/auth";
 import { titleLabel } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import { guideFor } from "@/lib/guides";
-import type { FamilyChild } from "@/lib/data/types";
+import { formatPrice } from "@/lib/data/queries";
+import type { Course, FamilyChild, Payment } from "@/lib/data/types";
+import { isRecentPending, payOptions } from "@/lib/payments/config";
 import { PASS_MARK } from "@/lib/game/grading";
 import { rankProgress } from "@/lib/game/ranks";
 
@@ -37,7 +40,38 @@ function nudge(c: FamilyChild): { text: string; anim: GuideAnim } {
   return { anim: "animar", text: "Hace más de una semana que no entra. Acompáñale en la próxima lección; equivocarse también es parte de aprender." };
 }
 
-function ChildCard({ c, guide, left }: { c: FamilyChild; guide: Guide; left: number }) {
+interface PayInfo { options: PayOption[]; test: boolean; courses: Course[]; access: Set<string>; pending: Payment[] }
+
+/** Cursos que ya empezó, sin acceso completo y con precio: la familia puede pagarlos aquí. */
+function Unlock({ c, pay }: { c: FamilyChild; pay: PayInfo }) {
+  const price = new Map(pay.courses.map((k) => [k.slug, k.price]));
+  const locked = c.courses.filter((k) => !pay.access.has(k.slug) && (price.get(k.slug) ?? 0) > 0);
+  if (!locked.length) return null;
+  return (
+    <section aria-label="Desbloquear cursos" className="space-y-3">
+      <h3 className="text-lg">Desbloquear un curso</h3>
+      <p className="text-sm text-muted">La primera lección es gratis. Con el curso completo, {c.name} sigue con el resto de lecciones y la batalla final.</p>
+      <ul className="space-y-3">
+        {locked.map((k) => {
+          const waiting = pay.pending.find((p) => p.userId === c.id && p.courseSlug === k.slug);
+          return (
+            <li key={k.slug} className="space-y-3 rounded-xl border border-line bg-bg/40 p-4">
+              <p className="flex flex-wrap items-baseline justify-between gap-2 font-bold">{k.title} <span className="font-display text-xl text-gold">{formatPrice(price.get(k.slug) ?? null)}</span></p>
+              {waiting && (
+                <p role="status" className="text-sm text-[#ffe3a0]">⏳ Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
+              )}
+              {pay.options.length
+                ? <PayButtons course={k.slug} student={c.id} options={pay.options} test={pay.test} />
+                : <p className="text-sm text-muted">Los pagos en línea llegan muy pronto. Mientras tanto, escríbenos y lo activamos a mano.</p>}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left: number; pay: PayInfo }) {
   const tip = nudge(c);
   const p = rankProgress(c.xp);
   const done = c.courses.reduce((n, k) => n + k.lessons.filter((l) => l.completed).length, 0);
@@ -106,6 +140,8 @@ function ChildCard({ c, guide, left }: { c: FamilyChild; guide: Guide; left: num
         <p className="hint">Una lección se supera con {PASS_MARK}% o más. Puede repetirla las veces que quiera.</p>
       </section>
 
+      <Unlock c={c} pay={pay} />
+
       {(c.classes.length > 0 || c.certificates.length > 0) && (
         <div className="grid gap-4 md:grid-cols-2">
           {c.classes.length > 0 && (
@@ -142,7 +178,13 @@ function ChildCard({ c, guide, left }: { c: FamilyChild; guide: Guide; left: num
 export default async function FamilyPage({ searchParams }: PageProps<"/familia">) {
   const viewer = await requireFamily("/familia");
   const passwordChanged = (await searchParams).aviso === "clave";
-  const [children, left] = await Promise.all([getRepo().familyOverview(viewer.id), getRepo().familyMessagesLeft(viewer.id)]);
+  const repo = getRepo();
+  const [children, left, courses, payments] = await Promise.all([
+    repo.familyOverview(viewer.id), repo.familyMessagesLeft(viewer.id), repo.listCourses(), repo.listPayments(viewer.id),
+  ]);
+  const access = new Map(await Promise.all(children.map(async (c) => [c.id, await repo.getCourseAccess(c.id)] as const)));
+  const { options, test } = payOptions();
+  const pending = payments.filter(isRecentPending);
   const guide = guideFor(viewer)!;
 
   return (
@@ -174,7 +216,8 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
 
       {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
-      {children.map((c) => <ChildCard key={c.id} c={c} guide={guide} left={left[c.id] ?? FAMILY_MESSAGES_PER_DAY} />)}
+      {children.map((c) => <ChildCard key={c.id} c={c} guide={guide} left={left[c.id] ?? FAMILY_MESSAGES_PER_DAY}
+        pay={{ options, test, courses, access: access.get(c.id) ?? new Set(), pending }} />)}
 
       <section className="panel grid gap-6 p-5 sm:p-6 md:grid-cols-2" aria-labelledby="vincular-t">
         <div className="space-y-2">

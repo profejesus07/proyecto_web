@@ -8,6 +8,70 @@ import { requireAdmin } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
 import { ROLE_LABEL, isAccessActive } from "@/lib/roles";
+import { PROVIDER_LABEL, isTestMode, providerMode } from "@/lib/payments/config";
+import { siteUrl } from "@/lib/site";
+import type { AdminPayment, PaymentProvider, PaymentStatus } from "@/lib/data/types";
+
+const STATUS_LABEL: Record<PaymentStatus, string> = { aprobado: "✔ Aprobado", pendiente: "⏳ Pendiente", rechazado: "✖ Rechazado", anulado: "↩ Anulado", error: "⚠ Error" };
+const STATUS_CLASS: Record<PaymentStatus, string> = {
+  aprobado: "text-[#b6f5cb]", pendiente: "text-[#ffe3a0]", rechazado: "text-muted", anulado: "text-[#ffb3b3]", error: "text-[#ffb3b3]",
+};
+
+/** Estado de las pasarelas y últimos pagos. */
+function Payments({ payments, site }: { payments: AdminPayment[]; site: string }) {
+  const providers: { id: PaymentProvider; env: string; hook: string }[] = [
+    { id: "wompi", env: "WOMPI_PUBLIC_KEY, WOMPI_INTEGRITY_SECRET y WOMPI_EVENTS_SECRET", hook: `${site}/api/pagos/wompi` },
+    { id: "mercadopago", env: "MERCADOPAGO_ACCESS_TOKEN (y MERCADOPAGO_WEBHOOK_SECRET)", hook: `${site}/api/pagos/mercadopago` },
+  ];
+  const fmt = (iso: string) => new Date(iso).toLocaleString("es-CO", { timeZone: "America/Bogota", dateStyle: "short", timeStyle: "short" });
+  const approved = payments.filter((p) => p.status === "aprobado").reduce((n, p) => n + p.amount, 0);
+  return (
+    <section aria-labelledby="pagos-t" className="space-y-4">
+      <h2 id="pagos-t" className="text-2xl">Pagos en línea</h2>
+      <ul className="grid gap-3 md:grid-cols-2">
+        {providers.map((p) => {
+          const mode = providerMode(p.id);
+          return (
+            <li key={p.id} className="panel space-y-1 p-4 text-sm">
+              <p className="font-bold">{PROVIDER_LABEL[p.id]}{" "}
+                <span className={mode ? "text-[#b6f5cb]" : "text-muted"}>
+                  · {mode === "simulado" ? "simulado (vista previa)" : mode ? (isTestMode(p.id) ? "activo en modo de prueba" : "activo") : "sin configurar"}
+                </span>
+              </p>
+              {!mode && <p className="text-muted">Pon {p.env} en Vercel → Settings → Environment Variables.</p>}
+              <p className="text-muted">URL de avisos (webhook): <code className="break-all text-text">{p.hook}</code></p>
+            </li>
+          );
+        })}
+      </ul>
+      {payments.length === 0 ? (
+        <p className="panel p-5 text-muted">Todavía no hay pagos.</p>
+      ) : (
+        <div className="panel overflow-x-auto p-0">
+          <table className="w-full min-w-[720px] text-left text-sm">
+            <caption className="p-4 text-left text-muted">Últimos {payments.length} pagos · aprobados en esta lista: {formatPrice(approved)}</caption>
+            <thead className="border-b border-line text-xs uppercase tracking-wide text-muted">
+              <tr><th className="p-3">Fecha</th><th className="p-3">Estudiante</th><th className="p-3">Curso</th><th className="p-3">Valor</th><th className="p-3">Pasarela</th><th className="p-3">Estado</th><th className="p-3">Referencia</th></tr>
+            </thead>
+            <tbody>
+              {payments.map((p) => (
+                <tr key={p.reference} className="border-b border-line/60 last:border-0">
+                  <td className="p-3 whitespace-nowrap">{fmt(p.createdAt)}</td>
+                  <td className="p-3">{p.student}{p.payer && <span className="block text-xs text-muted">pagó {p.payer}</span>}</td>
+                  <td className="p-3">{p.courseTitle}</td>
+                  <td className="p-3 whitespace-nowrap">{formatPrice(p.amount)}</td>
+                  <td className="p-3">{PROVIDER_LABEL[p.provider]}</td>
+                  <td className={`p-3 font-semibold ${STATUS_CLASS[p.status]}`} title={p.detail ?? undefined}>{STATUS_LABEL[p.status]}</td>
+                  <td className="p-3 font-mono text-xs">{p.reference}{p.providerRef && <span className="block text-muted">{p.providerRef}</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
 
 export const metadata: Metadata = { title: "Administración" };
 
@@ -16,9 +80,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.slice(0, 80) : "";
   const repo = getRepo();
-  const [users, courses, classes, allCourses, everyone, settings, certs] = await Promise.all([
+  const [users, courses, classes, allCourses, everyone, settings, certs, payments, site] = await Promise.all([
     repo.adminUsers(viewer.id, q), repo.listCourses(), repo.adminClasses(viewer.id), repo.listAllCourses(), q ? repo.adminUsers(viewer.id, "") : Promise.resolve(null),
-    repo.getIssuerSettings(), repo.listCertificates({ limit: 50 }),
+    repo.getIssuerSettings(), repo.listCertificates({ limit: 50 }), repo.adminPayments(viewer.id), siteUrl(),
   ]);
   const teachers = (everyone ?? users).filter((u) => u.role === "docente" || u.role === "admin").map((u) => ({ id: u.id, name: u.role === "admin" ? `${u.name} (yo)` : u.name }));
   const clases = allCourses.filter((c) => c.kind === "clase").map((c) => ({ slug: c.slug, title: c.title }));
@@ -46,6 +110,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </div>
         ))}
       </dl>
+
+      <Payments payments={payments} site={site} />
 
       <section aria-labelledby="docente-t" className="panel space-y-3 p-6">
         <h2 id="docente-t" className="text-2xl">Crear cuenta de docente</h2>

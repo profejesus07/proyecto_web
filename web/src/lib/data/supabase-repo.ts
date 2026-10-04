@@ -3,7 +3,7 @@ import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminPayment, AdminUser, Payment, PaymentProvider, PaymentStatus, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -26,6 +26,10 @@ const course = (r: Row): Course => ({
   hours: (r.hours as number | null | undefined) ?? null,
   trainerName: (r.trainer_name as string | null | undefined) ?? null,
   trainerTitle: (r.trainer_title as string | null | undefined) ?? null,
+});
+const payment = (r: Row): Payment => ({
+  reference: r.reference as string, provider: r.provider as PaymentProvider, amount: r.amount_cop as number, status: r.status as PaymentStatus,
+  courseSlug: r.course_slug as string, userId: r.user_id as string, payerId: r.payer_id as string, createdAt: r.created_at as string,
 });
 const certificate = (r: Row): Certificate => ({
   number: r.number as number, code: r.code as string, userId: (r.user_id as string | null) ?? null, courseSlug: r.course_slug as string,
@@ -367,6 +371,48 @@ export function createSupabaseRepo(): Repo {
       if (e3) fail(e3, "acceso");
       const now = Date.now();
       return new Set((data ?? []).filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > now).map((a) => a.course_slug as string));
+    },
+
+    async startPayment(payerId, studentId, course, provider) {
+      const { data, error } = await db.rpc("start_payment", { p_payer: payerId, p_student: studentId, p_course: course, p_provider: provider });
+      if (error) fail(error, "pago");
+      const r = data as Row;
+      return { reference: r.reference as string, amount: r.amount as number, title: r.title as string, student: r.student as string };
+    },
+
+    async settlePayment(u) {
+      const { data, error } = await db.rpc("settle_payment", {
+        p_reference: u.reference, p_provider: u.provider, p_provider_ref: u.providerRef, p_status: u.status,
+        p_amount_cop: u.amount, p_currency: u.currency, p_detail: u.detail,
+      });
+      if (error) fail(error, "pago");
+      const r = data as Row;
+      return { status: r.status as PaymentStatus, userId: r.user_id as string, course: r.course as string };
+    },
+
+    async getPayment(reference) {
+      const { data, error } = await db.from("payments").select("*").eq("reference", reference).maybeSingle();
+      if (error) fail(error, "pago");
+      return data ? payment(data) : null;
+    },
+
+    async listPayments(userId) {
+      if (!/^[0-9a-f-]{36}$/i.test(userId)) return [];
+      const { data, error } = await db.from("payments").select("*").or(`user_id.eq.${userId},payer_id.eq.${userId}`)
+        .order("created_at", { ascending: false }).limit(30);
+      if (error) fail(error, "pagos");
+      return (data ?? []).map(payment);
+    },
+
+    async adminPayments(adminId) {
+      const { data, error } = await db.rpc("admin_payments", { p_admin: adminId, p_limit: 100 });
+      if (error) fail(error, "pagos");
+      return ((data ?? []) as Row[]).map((r): AdminPayment => ({
+        reference: r.reference as string, provider: r.provider as PaymentProvider, amount: r.amount as number, status: r.status as PaymentStatus,
+        detail: (r.detail as string | null) ?? null, providerRef: (r.provider_ref as string | null) ?? null,
+        createdAt: r.created_at as string, approvedAt: (r.approved_at as string | null) ?? null,
+        courseTitle: r.course_title as string, student: r.student as string, payer: (r.payer as string | null) ?? null,
+      }));
     },
 
     async adminUsers(adminId, query) {

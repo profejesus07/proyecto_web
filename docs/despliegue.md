@@ -52,7 +52,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 - Para cambiar o añadir cursos, edita o crea `supabase/seed/<curso>.json`, añádelo a `SEEDS` en `supabase/build_setup.py` (con el nombre de su migración), ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL. Los portales se abren en el orden de su `position`: cada uno exige terminar los anteriores.
 - Las claves se rotan desde Supabase; después actualiza la variable en Vercel y vuelve a desplegar.
-- **Cambios en la base de datos.** Cada cambio llega como una migración en `supabase/migrations/` (numeradas). Para aplicarla, copia ese archivo en Supabase → **SQL Editor** y pulsa **Run**; o vuelve a pegar `setup.sql` completo (es seguro repetirlo). En producción están aplicadas de la 0001 a la 0019 (octubre de 2026).
+- **Cambios en la base de datos.** Cada cambio llega como una migración en `supabase/migrations/` (numeradas). Para aplicarla, copia ese archivo en Supabase → **SQL Editor** y pulsa **Run**; o vuelve a pegar `setup.sql` completo (es seguro repetirlo). En producción están aplicadas de la 0001 a la 0020 (octubre de 2026).
 - **Dibujos de accesorios y decoración.** Si cambian los SVG de `public/assets/objetos` (cosméticos, focos o decoración), ejecuta `python3 web/scripts/build_wearables.py` para regenerar las piezas que se ponen sobre el avatar y en la terraza.
 
 ## Cómo funciona cada parte
@@ -73,5 +73,28 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
   ```
 
 - **Cuentas de docente:** solo se crean desde **Admin → Crear cuenta de docente** (o cambiando el rol de una cuenta existente). El registro público solo crea cuentas de estudiante o familia.
-- **Cursos:** la primera lección de cada curso es gratis. El resto se abre con acceso al curso, que el administrador activa en **Admin → Personas** (sin vencimiento, 1 mes, 6 meses o 1 año). Quitar un acceso no borra el registro: queda marcado como revocado.
+- **Cursos:** la primera lección de cada curso es gratis. El resto se abre con un pago en línea (ver abajo) o con acceso que el administrador activa en **Admin → Personas** (sin vencimiento, 1 mes, 6 meses o 1 año). Quitar un acceso no borra el registro: queda marcado como revocado.
 - **Precios:** en **Admin → Cursos y precios**, en pesos colombianos.
+
+## Pagos en línea (Wompi y Mercado Pago)
+
+El código ya está listo; solo faltan tus cuentas y llaves. Mientras una pasarela no tenga llaves, no aparece, y si ninguna tiene llaves la página del curso sigue ofreciendo escribir por correo. Primero todo en **modo de prueba** (sin dinero real); al final se cambian las llaves por las de producción.
+
+**Cómo funciona.** En «Desbloquear curso» (o en **Mi familia**, si paga la familia) se elige la pasarela. El servidor crea el pago con el precio de la base de datos y una referencia `UMB-…`, y lleva al checkout de la pasarela. Cuando la pasarela avisa que el pago se aprobó, el servidor lo verifica (firma y consulta directa a la pasarela) y comprueba que el valor coincida antes de abrir el curso. Un curso corto queda sin vencimiento y una clase, hasta el fin de su año lectivo. Si el pago se anula o se reembolsa, se retira ese acceso. Todos los pagos aparecen en **Admin → Pagos en línea**.
+
+### Wompi
+
+1. Crea la cuenta de comercio en [comercios.wompi.co](https://comercios.wompi.co) (como persona natural basta el RUT y una cuenta bancaria).
+2. En **Desarrolladores → Llaves del API**, en el ambiente de **Pruebas**, copia la llave pública (`pub_test_…`), el secreto de integridad (`test_integrity_…`) y el secreto de eventos (`test_events_…`).
+3. En Vercel → **Settings → Environment Variables** crea `WOMPI_PUBLIC_KEY`, `WOMPI_INTEGRITY_SECRET` y `WOMPI_EVENTS_SECRET` con esos valores. Vuelve a desplegar.
+4. En Wompi, en **Desarrolladores → Seguimiento de transacciones (URL de eventos)**, pon `https://TU-SITIO/api/pagos/wompi` (Admin → Pagos en línea muestra la dirección exacta).
+5. Prueba con las tarjetas y cuentas de prueba de la documentación de Wompi. Cuando funcione, repite 2–4 con las llaves de **Producción** (`pub_prod_…`, `prod_integrity_…`, `prod_events_…`).
+
+### Mercado Pago
+
+1. Entra a [mercadopago.com.co/developers](https://www.mercadopago.com.co/developers) → **Tus integraciones → Crear aplicación** (producto: *Pagos online*, Checkout Pro).
+2. En **Credenciales de prueba** copia el **Access Token**. Crea en Vercel `MERCADOPAGO_ACCESS_TOKEN` con ese valor (y `MERCADOPAGO_TEST=1` si el token de prueba empieza con `APP_USR-`).
+3. En **Webhooks**, pon `https://TU-SITIO/api/pagos/mercadopago`, marca el evento **Pagos** y copia la **clave secreta** en `MERCADOPAGO_WEBHOOK_SECRET`. Vuelve a desplegar.
+4. Prueba con los usuarios y tarjetas de prueba de Mercado Pago. Cuando funcione, cambia `MERCADOPAGO_ACCESS_TOKEN` por el de **Credenciales de producción** y quita `MERCADOPAGO_TEST`.
+
+**Nunca** pegues estas llaves en un chat, en el código ni con el prefijo `NEXT_PUBLIC_`. Si una llave se filtra, genérala de nuevo en la pasarela y actualízala en Vercel.

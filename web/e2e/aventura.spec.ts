@@ -564,3 +564,56 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   await expect(page.getByRole("article")).toHaveCount(0);
   await context.clearCookies({ name: "umbral-vista" });
 });
+
+test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado abre el curso al momento", async ({ page, context }) => {
+  const asAdmin = { name: "umbral-vista", value: "admin", url: "http://localhost:3200" };
+  // El administrador quita el acceso que dio a mano en una prueba anterior.
+  await context.addCookies([asAdmin]);
+  await page.goto("/admin");
+  const student = page.locator("li", { hasText: "estudiante@vista-previa.co" });
+  page.once("dialog", (d) => d.accept());
+  await student.getByRole("button", { name: /Quitar acceso a El Portal del Primer Intento/ }).click();
+  await expect(student.getByRole("button", { name: /Quitar acceso a El Portal del Primer Intento/ })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Pagos en línea" })).toBeVisible();
+  await expect(page.getByText("Todavía no hay pagos.")).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
+
+  // Primer intento: la pasarela lo rechaza.
+  await page.goto("/suscribirse/portal-del-primer-intento");
+  await expect(page.getByText(/25\.000/).first()).toBeVisible();
+  await expect(page.getByText(/Modo de prueba/)).toBeVisible();
+  await page.getByRole("button", { name: "Pagar con Wompi" }).click();
+  await expect(page).toHaveURL(/\/pago\/simulado\?ref=UMB-/);
+  await page.getByRole("button", { name: "Rechazarlo" }).click();
+  await expect(page.getByRole("heading", { name: /El pago no se aprobó/ })).toBeVisible();
+  await page.goto("/mision/c2m2");
+  await expect(page).toHaveURL(/\/portales\/portal-del-primer-intento$/);
+
+  // Segundo intento con Mercado Pago: queda pendiente y luego se aprueba.
+  await page.goto("/suscribirse/portal-del-primer-intento");
+  await page.getByRole("button", { name: "Pagar con Mercado Pago" }).click();
+  await page.getByRole("button", { name: "Dejarlo pendiente" }).click();
+  await expect(page.getByRole("heading", { name: /Tu pago está en proceso/ })).toBeVisible();
+  const ref = page.url().split("/pago/")[1];
+  await page.goto("/suscribirse/portal-del-primer-intento");
+  await expect(page.getByText(/Tienes un pago en proceso/)).toBeVisible();
+  await page.goto(`/pago/simulado?ref=${ref}`);
+  await page.getByRole("button", { name: "Aprobar el pago" }).click();
+  await expect(page.getByRole("heading", { name: /¡Pago aprobado!/ })).toBeVisible();
+  await expect(page.getByText(ref)).toBeVisible();
+  await page.getByRole("link", { name: "Continuar el curso" }).click();
+  await page.goto("/mision/c2m2");
+  await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
+  await page.goto("/suscribirse/portal-del-primer-intento");
+  await expect(page.getByText("✔ Ya tienes este curso completo.")).toBeVisible();
+
+  // Nadie más ve el estado de ese pago, y el administrador lo ve en su lista.
+  await context.addCookies([asAdmin]);
+  await page.goto(`/pago/${ref}`);
+  await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
+  await page.goto("/admin");
+  const table = page.getByRole("table");
+  await expect(table.getByRole("row").filter({ hasText: ref })).toContainText("Aprobado");
+  await expect(table.getByRole("row").filter({ hasText: "Wompi" })).toContainText("Rechazado");
+  await context.clearCookies({ name: "umbral-vista" });
+});

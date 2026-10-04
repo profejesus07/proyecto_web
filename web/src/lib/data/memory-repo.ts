@@ -5,7 +5,7 @@ import { rankForXp } from "@/lib/game/ranks";
 import { powerByItem, stemOf } from "@/lib/game/powers";
 import type { AvatarLook } from "@/lib/avatar-look";
 import type {
-  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, PowerPayload, PowerResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminPayment, AdminUser, Payment, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, PowerPayload, PowerResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -71,6 +71,7 @@ interface State {
   familyMessages: { id: string; message: string; createdAt: string; read: boolean }[];
   /** Aspecto guardado por el docente, el admin y la familia de prueba (su Maestro o Guardián). */
   adultLooks: Record<string, AvatarLook>;
+  payments: (Payment & { detail: string | null; providerRef: string | null; approvedAt: string | null })[];
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -98,6 +99,7 @@ function state(): State {
       familySince: null,
       familyMessages: [],
       adultLooks: {},
+      payments: [],
     };
   }
   return g.__umbralPreview;
@@ -406,6 +408,51 @@ export function createMemoryRepo(): Repo {
     },
     async getCourseAccess(userId) {
       return new Set(C().courses.filter((c) => hasAccess(userId, c.slug)).map((c) => c.slug));
+    },
+    async startPayment(payerId, studentId, course, provider) {
+      const s = state();
+      const student = studentId && studentId !== payerId ? studentId : payerId;
+      if (student === payerId && payerId !== PREVIEW_USER_ID) throw new Error("solo_estudiantes");
+      if (student !== payerId && (payerId !== PREVIEW_FAMILY_ID || student !== PREVIEW_USER_ID || !s.familySince)) throw new Error("no_vinculado");
+      const c = C().courses.find((x) => x.slug === course && x.published);
+      if (!c) throw new Error("curso_no_encontrado");
+      const amount = s.prices.get(course) ?? 0;
+      if (amount <= 0) throw new Error("sin_precio");
+      if (s.access.has(course)) throw new Error("ya_tiene_acceso");
+      const reference = `UMB-${crypto.randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase()}`;
+      s.payments.unshift({ reference, provider, amount, status: "pendiente", courseSlug: course, userId: student, payerId, createdAt: new Date().toISOString(), detail: null, providerRef: null, approvedAt: null });
+      return { reference, amount, title: c.title, student };
+    },
+    async settlePayment(u) {
+      const s = state();
+      const p = s.payments.find((x) => x.reference === u.reference && x.provider === u.provider);
+      if (!p) throw new Error("pago_no_encontrado");
+      if (p.status === "aprobado") {
+        if (u.status === "anulado") { p.status = "anulado"; s.access.delete(p.courseSlug); }
+        return { status: p.status, userId: p.userId, course: p.courseSlug };
+      }
+      let status = u.status;
+      if (status === "aprobado" && (u.currency?.toUpperCase() !== "COP" || u.amount === null || Math.round(u.amount) !== p.amount)) status = "error";
+      Object.assign(p, { status, detail: u.detail, providerRef: u.providerRef ?? p.providerRef, approvedAt: status === "aprobado" ? new Date().toISOString() : p.approvedAt });
+      if (status === "aprobado") s.access.add(p.courseSlug);
+      return { status, userId: p.userId, course: p.courseSlug };
+    },
+    async getPayment(reference) {
+      const p = state().payments.find((x) => x.reference === reference);
+      return p ? { reference: p.reference, provider: p.provider, amount: p.amount, status: p.status, courseSlug: p.courseSlug, userId: p.userId, payerId: p.payerId, createdAt: p.createdAt } : null;
+    },
+    async listPayments(userId) {
+      return state().payments.filter((p) => p.userId === userId || p.payerId === userId).slice(0, 30)
+        .map((p) => ({ reference: p.reference, provider: p.provider, amount: p.amount, status: p.status, courseSlug: p.courseSlug, userId: p.userId, payerId: p.payerId, createdAt: p.createdAt }));
+    },
+    async adminPayments(adminId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const s = state();
+      return s.payments.map((p): AdminPayment => ({
+        reference: p.reference, provider: p.provider, amount: p.amount, status: p.status, detail: p.detail, providerRef: p.providerRef,
+        createdAt: p.createdAt, approvedAt: p.approvedAt, courseTitle: courseOf(p.courseSlug)?.title ?? p.courseSlug,
+        student: s.profile.displayName, payer: p.payerId === p.userId ? null : "Familia de prueba",
+      }));
     },
     async adminUsers(adminId, query) {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");

@@ -329,6 +329,52 @@ export interface Certificate {
 
 export type ClassAction = "nuevo_codigo" | "renombrar" | "archivar" | "quitar";
 
+export type PaymentProvider = "wompi" | "mercadopago";
+export const PAYMENT_PROVIDERS: readonly PaymentProvider[] = ["wompi", "mercadopago"];
+export type PaymentStatus = "pendiente" | "aprobado" | "rechazado" | "anulado" | "error";
+
+/** Un pago recién creado: la referencia viaja a la pasarela y el valor sale de la base de datos. */
+export interface PaymentStart { reference: string; amount: number; title: string; student: string }
+
+export interface Payment {
+  reference: string;
+  provider: PaymentProvider;
+  amount: number;
+  status: PaymentStatus;
+  courseSlug: string;
+  /** Quien recibe el curso. */
+  userId: string;
+  /** Quien paga (el mismo estudiante o su familia). */
+  payerId: string;
+  createdAt: string;
+}
+
+/** Lo que dijo la pasarela, ya verificado por el servidor. */
+export interface PaymentUpdate {
+  reference: string;
+  provider: PaymentProvider;
+  providerRef: string | null;
+  status: PaymentStatus;
+  amount: number | null;
+  currency: string | null;
+  detail: string | null;
+}
+
+export interface AdminPayment {
+  reference: string;
+  provider: PaymentProvider;
+  amount: number;
+  status: PaymentStatus;
+  detail: string | null;
+  providerRef: string | null;
+  createdAt: string;
+  approvedAt: string | null;
+  courseTitle: string;
+  student: string;
+  /** Familia que pagó (null si pagó el mismo estudiante). */
+  payer: string | null;
+}
+
 /** Todo lo que el servidor necesita de la base de datos. Una implementación real (Supabase) y otra en memoria (vista previa). */
 export interface Repo {
   getProfile(userId: string): Promise<Profile | null>;
@@ -382,6 +428,13 @@ export interface Repo {
   // Suscripciones
   /** Cursos con acceso completo (docentes y admin: todos). */
   getCourseAccess(userId: string): Promise<Set<string>>;
+  // Pagos en línea
+  startPayment(payerId: string, studentId: string | null, course: string, provider: PaymentProvider): Promise<PaymentStart>;
+  settlePayment(update: PaymentUpdate): Promise<{ status: PaymentStatus; userId: string; course: string }>;
+  getPayment(reference: string): Promise<Payment | null>;
+  /** Pagos recientes donde la persona pagó o recibió el curso. */
+  listPayments(userId: string): Promise<Payment[]>;
+  adminPayments(adminId: string): Promise<AdminPayment[]>;
   // Administración (cada función comprueba en la base de datos que quien llama es admin)
   adminUsers(adminId: string, query: string): Promise<AdminUser[]>;
   adminSetRole(adminId: string, userId: string, role: "estudiante" | "familia" | "docente"): Promise<void>;

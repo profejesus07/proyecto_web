@@ -3,13 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpeechBubble } from "@/components/dialogue";
 import { Sprite, asset } from "@/components/sprite";
+import { PayButtons } from "@/components/pay-buttons";
 import { BackLink } from "@/components/ui";
 import { CHAPTERS } from "@/content/cronicas";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
+import { getRepo } from "@/lib/data";
 import { formatPrice, loadCourseView } from "@/lib/data/queries";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { SUPPORT_EMAIL } from "@/lib/features";
+import { isRecentPending, payOptions } from "@/lib/payments/config";
 
 export const metadata: Metadata = { title: "Desbloquear curso" };
 
@@ -24,6 +27,9 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
   const subject = `Quiero suscribirme a «${course.title}»`;
   const body = `Hola. Quiero activar el curso completo «${course.title}».\nMi nombre de aventurero en UMBRAL es: ${viewer.displayName}\nEl correo de mi cuenta es: `;
   const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const { options, test } = payOptions();
+  const canPay = options.length > 0 && (course.price ?? 0) > 0 && viewer.role === "estudiante";
+  const pending = canPay ? (await getRepo().listPayments(viewer.id)).find((p) => p.courseSlug === course.slug && p.userId === viewer.id && isRecentPending(p)) : undefined;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -57,13 +63,37 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
       ) : (
         <section aria-labelledby="como-t" className="panel space-y-4 p-6">
           <h2 id="como-t" className="text-2xl">¿Cómo me suscribo?</h2>
-          <SpeechBubble name="Forjadora Brann" src="/assets/personajes/brann/brann-hablar.svg" alt="La Forjadora Brann" tone="gold">
-            Los pagos en línea llegan muy pronto. Mientras tanto, escríbenos y activamos tu curso a mano. Si eres menor de edad, pídele a tu acudiente que nos escriba.
-          </SpeechBubble>
-          <div className="flex flex-wrap items-center gap-3">
-            <a href={mailto} className="btn btn-primary">✉️ Escribir para suscribirme</a>
-            <span className="text-sm text-muted">o escribe a <strong className="text-text">{SUPPORT_EMAIL}</strong> con tu nombre de aventurero y el correo de tu cuenta.</span>
-          </div>
+          {canPay ? (
+            <>
+              <SpeechBubble name="Forjadora Brann" src="/assets/personajes/brann/brann-hablar.svg" alt="La Forjadora Brann" tone="gold">
+                Elige cómo pagar. Apenas la pasarela confirme el pago, el curso se abre solo. Si eres menor de edad, hazlo con tu acudiente.
+              </SpeechBubble>
+              {pending && (
+                <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 p-3 text-sm">
+                  ⏳ Tienes un pago en proceso (referencia <span className="font-mono">{pending.reference}</span>).{" "}
+                  <Link href={`/pago/${pending.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link>
+                </p>
+              )}
+              <PayButtons course={course.slug} options={options} test={test} />
+              <p className="text-sm text-muted">
+                ¿Prefieres otro medio? <a href={mailto} className="font-semibold text-cyan underline underline-offset-4">Escribir para suscribirme</a> a <strong className="text-text">{SUPPORT_EMAIL}</strong>.
+              </p>
+            </>
+          ) : (
+            <>
+              <SpeechBubble name="Forjadora Brann" src="/assets/personajes/brann/brann-hablar.svg" alt="La Forjadora Brann" tone="gold">
+                {viewer.role === "familia"
+                  ? "Para pagar un curso de tu hijo o hija, entra a «Mi familia»: allí aparece el botón de pago junto a su avance."
+                  : "Los pagos en línea llegan muy pronto. Mientras tanto, escríbenos y activamos tu curso a mano. Si eres menor de edad, pídele a tu acudiente que nos escriba."}
+              </SpeechBubble>
+              <div className="flex flex-wrap items-center gap-3">
+                {viewer.role === "familia"
+                  ? <Link href="/familia" className="btn btn-primary">Ir a Mi familia</Link>
+                  : <a href={mailto} className="btn btn-primary">✉️ Escribir para suscribirme</a>}
+                <span className="text-sm text-muted">o escribe a <strong className="text-text">{SUPPORT_EMAIL}</strong> con tu nombre de aventurero y el correo de tu cuenta.</span>
+              </div>
+            </>
+          )}
         </section>
       )}
     </div>

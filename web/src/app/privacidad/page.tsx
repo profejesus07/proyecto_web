@@ -17,7 +17,8 @@ export default function PrivacyPage() {
           <li><strong>Nombre de aventurero</strong>, que eliges tú. Te pedimos no usar apellidos ni datos que identifiquen a un menor.</li>
           <li><strong>Tu avance en el juego</strong>: misiones completadas, notas, XP, monedas, objetos y racha.</li>
           <li><strong>Para la constancia de asistencia</strong> de un curso corto (solo si la pides): tu nombre completo y el tipo y número de tu documento de identidad. Quedan guardados con la constancia para poder verificarla.</li>
-          <li><strong>Tus cursos activados</strong>: a qué cursos tienes acceso completo y hasta cuándo. Por ahora no guardamos datos de tarjetas ni de pago.</li>
+          <li><strong>Tus cursos activados</strong>: a qué cursos tienes acceso completo y hasta cuándo. </li>
+          <li><strong>Tus pagos</strong>: la referencia, el curso, el valor, la pasarela, la fecha y el estado de cada pago. Nunca vemos ni guardamos los datos de tu tarjeta ni las claves de tu banco.</li>
           <li><strong>Tu rol</strong> (estudiante, docente o familia) y la fecha en que aceptaste esta política.</li>
         </ul>
         <p className="mt-3">No pedimos fotos, ubicación, teléfono, documento de identidad ni datos de salud. No hay chat público ni mensajes entre usuarios.</p>
@@ -44,6 +45,7 @@ export default function PrivacyPage() {
         <p className="mt-3"><strong>Verificación de constancias:</strong> quien tenga el código de tu constancia puede comprobar en línea que es auténtica. Esa página muestra tu nombre, el curso, la intensidad, las fechas y solo los últimos 4 dígitos de tu documento.</p>
         <p className="mt-3"><strong>Administración:</strong> el responsable de la plataforma puede ver tu correo, tu rol, tu avance y los cursos a los que tienes acceso, solo para gestionar cuentas, suscripciones y soporte.</p>
         <p className="mt-3">Usamos <strong>Supabase</strong> para guardar los datos y autenticar a las personas, y <strong>Vercel</strong> para publicar el sitio. Ambos actúan como proveedores y tratan los datos solo para prestar ese servicio.</p>
+        <p className="mt-3"><strong>Pagos:</strong> si pagas un curso, lo haces en la página de <strong>Wompi</strong> (Bancolombia) o de <strong>Mercado Pago</strong>, que tratan tus datos de pago según sus propias políticas. A ellas solo les enviamos la referencia del pago, el nombre del curso y el valor; ellas nos devuelven si el pago se aprobó.</p>
       </section>
       <section>
         <h2>Tus derechos</h2>
