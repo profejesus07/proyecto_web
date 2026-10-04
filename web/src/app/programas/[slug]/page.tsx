@@ -11,6 +11,7 @@ import { getViewer } from "@/lib/auth";
 import { INFORMAL_NOTICE, KIND_LABEL } from "@/lib/content";
 import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
+import { groupByModule } from "@/lib/modules";
 import type { CourseDetail } from "@/lib/data/types";
 
 async function load(slug: string): Promise<CourseDetail | null> {
@@ -33,13 +34,15 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
   if (!c) notFound();
   const g = guardianBySlug(c.guardian);
   const color = ELEMENT_COLOR[c.element] ?? "#8a5cff";
-  const chapters = CHAPTERS.filter((x) => x.guardian === c.guardian).length;
+  const storyGuardians = new Set(c.modules.length ? c.modules.map((m) => m.guardian) : [c.guardian]);
+  const chapters = CHAPTERS.filter((x) => x.guardian !== null && storyGuardians.has(x.guardian)).length;
   const facts = [
     { icon: "lesson" as const, label: "Lecciones", value: String(c.missions.length) },
     c.kind === "curso" && c.hours ? { icon: "clock" as const, label: "Intensidad", value: `${c.hours} horas` } : null,
     c.kind === "clase" && c.grade ? { icon: "people" as const, label: "Grado", value: c.grade } : null,
-    { icon: "play" as const, label: "Primera lección", value: "Gratis" },
-    { icon: "target" as const, label: "Programa completo", value: formatPrice(c.price) },
+    c.isFree ? null : { icon: "play" as const, label: "Primera lección", value: "Gratis" },
+    c.modules.length > 1 ? { icon: "seal" as const, label: "Módulos", value: String(c.modules.length) } : null,
+    { icon: "target" as const, label: "Programa completo", value: c.isFree ? "Gratis" : formatPrice(c.price) },
   ].filter((f): f is NonNullable<typeof f> => f !== null);
 
   return (
@@ -83,27 +86,37 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
         <div className="mt-12 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
           <section aria-labelledby="contenido-t" className="space-y-4">
             <h2 id="contenido-t" className="text-2xl">Contenido</h2>
-            <ol className="divide-y divide-line/70 rounded-2xl border border-line/70 bg-panel/40">
-              {c.missions.map((m) => (
-                <li key={m.id} className="flex items-center gap-4 px-5 py-4">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
-                  <span className="flex-1 font-medium">{m.title}</span>
-                  {m.position === 1 ? <span className="rounded-full bg-green/15 px-2.5 py-0.5 text-xs font-semibold text-[#b6f5cb]">Gratis</span>
-                    : m.isBoss ? <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-semibold text-[#ffe3a0]">Reto final</span> : null}
-                </li>
-              ))}
-            </ol>
+            {groupByModule(c.modules, c.missions).map(({ module: mod, missions }, gi) => (
+              <div key={mod?.id ?? "todas"} className="space-y-2">
+                {mod && c.modules.length > 0 && (
+                  <h3 className="text-lg">
+                    <span className="text-muted">Módulo {gi + 1} · </span>{mod.title}
+                    <span className="ml-2 text-sm font-normal text-muted">Guardián: {guardianBySlug(mod.guardian)?.name ?? mod.guardian}</span>
+                  </h3>
+                )}
+                <ol className="divide-y divide-line/70 rounded-2xl border border-line/70 bg-panel/40">
+                  {missions.map((m) => (
+                    <li key={m.id} className="flex items-center gap-4 px-5 py-4">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
+                      <span className="flex-1 font-medium">{m.title}</span>
+                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-green/15 px-2.5 py-0.5 text-xs font-semibold text-[#b6f5cb]">Gratis</span>}
+                      {m.isBoss && <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-semibold text-[#ffe3a0]">Reto del Guardián</span>}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
           </section>
 
           <aside className="space-y-5">
-            {g && (
-              <section aria-labelledby="guardian-t" className="rounded-2xl border border-line/70 bg-panel/40 p-6">
-                <h2 id="guardian-t" className="text-xl">El reto final: {g.name}</h2>
-                <p className="mt-2 text-muted">{g.blurb}</p>
-                <p className="mt-3 text-sm"><span className="text-muted">Representa: </span><strong>{g.obstacle}</strong></p>
-                <p className="text-sm"><span className="text-muted">Se supera con: </span><strong>{g.weakness}</strong></p>
+            {(c.modules.length > 1 ? c.modules.map((m) => guardianBySlug(m.guardian)) : [g]).filter((x, i, all) => x && all.indexOf(x) === i).map((gg) => gg && (
+              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line/70 bg-panel/40 p-6">
+                <h2 className="text-xl">{c.modules.length > 1 ? `Guardián: ${gg.name}` : `El reto final: ${gg.name}`}</h2>
+                <p className="mt-2 text-muted">{gg.blurb}</p>
+                <p className="mt-3 text-sm"><span className="text-muted">Representa: </span><strong>{gg.obstacle}</strong></p>
+                <p className="text-sm"><span className="text-muted">Se supera con: </span><strong>{gg.weakness}</strong></p>
               </section>
-            )}
+            ))}
             <section aria-labelledby="incluye-t" className="rounded-2xl border border-line/70 bg-panel/40 p-6">
               <h2 id="incluye-t" className="text-xl">Incluye</h2>
               <ul className="mt-3 space-y-2 text-sm">
@@ -112,6 +125,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                   "Diploma del programa al superar el reto final",
                   c.kind === "curso" ? "Constancia de asistencia verificable en línea" : "Acceso durante el año lectivo",
                   chapters ? `${chapters} capítulos de las Crónicas` : null,
+                  "Actividades variadas: selección, verdadero o falso, completar, ordenar y relacionar",
                   c.trainerName ? `Formador: ${c.trainerName}${c.trainerTitle ? `, ${c.trainerTitle}` : ""}` : null,
                 ].filter(Boolean).map((t) => <li key={t} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-cyan" />{t}</li>)}
               </ul>

@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
 import { FREE_FRAME, canWearGear, equippedItems, sanitizeLook } from "@/lib/avatar-look";
 import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
+import type { ActivityKind, ActivityResponse, Solution } from "@/lib/activities";
+import { segmentOf } from "@/lib/modules";
 import { getRepo } from "@/lib/data";
 import { AVATAR_BASES, type PowerResult, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
 import { AIDS, type AidKind } from "@/lib/game/aids";
@@ -19,6 +21,9 @@ export interface ReviewRow {
   chosen: number;
   correctIndex: number;
   explanation: string;
+  kind: ActivityKind;
+  /** Solución de las actividades que no son de opciones. */
+  solution?: Solution;
 }
 
 export interface GrantedItem {
@@ -41,7 +46,7 @@ const MESSAGES: Record<string, string> = {
   respuestas_incompletas: "Falta responder alguna pregunta.",
   sin_intento: "Empieza la misión respondiendo la primera pregunta.",
   pregunta_invalida: "Esa pregunta no existe.",
-  respuesta_invalida: "Esa opción no existe.",
+  respuesta_invalida: "No pudimos leer tu respuesta. Revísala e inténtalo otra vez.",
   sin_preguntas: "Esta misión aún no tiene preguntas.",
 };
 
@@ -53,14 +58,14 @@ function friendly(e: unknown, fallback: string): string {
 
 export type AnswerOutcome = ({ ok: true } & AnswerResult) | { ok: false; error: string };
 
-/** Responde una pregunta. El servidor la revisa al momento y la respuesta queda fija. */
-export async function answerQuestionAction(missionId: string, index: number, choice: number): Promise<AnswerOutcome> {
-  const parsed = answerSchema.safeParse({ missionId, index, choice });
+/** Responde una actividad (de cualquier tipo). El servidor la revisa al momento y la respuesta queda fija. */
+export async function answerQuestionAction(missionId: string, index: number, response: ActivityResponse): Promise<AnswerOutcome> {
+  const parsed = answerSchema.safeParse({ missionId, index, response });
   if (!parsed.success) return { ok: false, error: "No pudimos leer tu respuesta." };
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
   try {
-    const r = await getRepo().answerQuestion(viewer.id, parsed.data.missionId, parsed.data.index, parsed.data.choice);
+    const r = await getRepo().answerActivity(viewer.id, parsed.data.missionId, parsed.data.index, parsed.data.response);
     return { ok: true, ...r };
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos guardar tu respuesta. Inténtalo de nuevo.") };
@@ -80,11 +85,14 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
     const play = await repo.getMissionPlay(parsed.data.missionId);
     if (!play) return { ok: false, error: MESSAGES.mision_no_encontrada };
     const key = await repo.getAnswerKey(parsed.data.missionId);
-    const total = (await repo.getCourse(play.course.slug))?.missions.length ?? play.mission.position;
+    const detail = await repo.getCourse(play.course.slug);
+    // Con módulos, cada módulo tiene su Guardián y su parte de la historia.
+    const seg = (detail && segmentOf(detail, play.mission.id)) ?? { guardian: play.course.guardian, position: play.mission.position, total: play.mission.position, courseEnd: true, module: null };
     const progress = await repo.getProgress(viewer.id);
     const items = itemsOnFirstCompletion({
       isBoss: play.mission.isBoss,
-      guardian: play.course.guardian,
+      courseEnd: seg.courseEnd,
+      guardian: seg.guardian,
       element: play.course.element,
       xpBefore: viewer.xp,
       xpGain: play.mission.xpReward,
@@ -102,10 +110,10 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
     return {
       ok: true,
       passMark: PASS_MARK,
-      review: key.map((k, i) => ({ correct: answers[i] === k.correctIndex, chosen: answers[i] ?? -1, correctIndex: k.correctIndex, explanation: k.explanation })),
+      review: key.map((k, i) => ({ correct: answers[i] === k.correctIndex, chosen: answers[i] ?? -1, correctIndex: k.correctIndex, explanation: k.explanation, kind: k.kind, ...(k.solution !== undefined && { solution: k.solution }) })),
       result: rest,
       newRanks: result.first ? ranksReached(viewer.xp, result.xp).map((r) => r.key) : [],
-      chronicles: result.first ? chaptersUnlockedBy(play.course.guardian, play.mission.position, total).map((c) => ({ id: c.id, title: c.title })) : [],
+      chronicles: result.first ? chaptersUnlockedBy(seg.guardian, seg.position, seg.total).map((c) => ({ id: c.id, title: c.title })) : [],
       items: result.granted.flatMap((id) => {
         const it = getItem(id);
         return it ? [{ id, name: it.nombre, alt: it.alt, image: itemImage(it), rarity: RARITY[it.rareza].label, color: RARITY[it.rareza].color }] : [];

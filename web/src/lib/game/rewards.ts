@@ -15,6 +15,8 @@ export const GUARDIAN_REWARDS: Record<string, { item: string; title: string }> =
 
 export interface FirstCompletionContext {
   isBoss: boolean;
+  /** Es la última lección del curso (con módulos, solo el último jefe cierra el curso). */
+  courseEnd?: boolean;
   guardian: string;
   element: string;
   xpBefore: number;
@@ -39,12 +41,16 @@ export function itemsOnFirstCompletion(ctx: FirstCompletionContext): string[] {
     if (r.key === "S") for (const id of RANK_S_POWERS) items.add(id);
   }
   if (ctx.isBoss) {
+    // Cada Guardián vencido (el de cada módulo) da su recompensa y su título.
     const reward = GUARDIAN_REWARDS[ctx.guardian];
     if (reward) {
       items.add(reward.item);
       items.add(reward.title);
     }
     items.add("obj_insignia_primer_guardian");
+  }
+  if (ctx.isBoss && ctx.courseEnd !== false) {
+    // Cerrar el curso: sello del elemento y certificado del portal.
     items.add("obj_insignia_primer_portal");
     items.add(`obj_sello_${ctx.element}`);
     items.add("obj_sello_completado");

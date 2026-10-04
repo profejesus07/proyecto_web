@@ -5,7 +5,8 @@ import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createCourseAction, type EditorState } from "@/app/actions/content";
 import { GRADES, PERIODS } from "@/lib/content";
-import type { CourseKind, EditableQuestion, MissionSummary } from "@/lib/data/types";
+import { ACTIVITY_KINDS, ACTIVITY_LABEL, type ActivityKind } from "@/lib/activities";
+import type { CourseKind, EditableQuestion, MissionSummary, Module } from "@/lib/data/types";
 
 type FormAction = (prev: EditorState, fd: FormData) => Promise<EditorState>;
 type Quick = () => Promise<EditorState>;
@@ -164,12 +165,23 @@ export function PublishBar({ published, publish, unpublish }: { published: boole
   );
 }
 
-export function MissionForm({ action, kind, mission, submitLabel }: { action: FormAction; kind: CourseKind; mission?: MissionSummary; submitLabel: string }) {
+export function MissionForm({ action, kind, mission, submitLabel, modules = [], moduleId = null }: {
+  action: FormAction; kind: CourseKind; mission?: MissionSummary; submitLabel: string;
+  /** Módulos del curso corto (para elegir o cambiar el módulo de la lección). */
+  modules?: Pick<Module, "id" | "title">[]; moduleId?: string | null;
+}) {
   const [state, run] = useActionState(action, undefined);
   return (
     <form action={run} className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
         <Field label="Título de la lección"><input name="title" defaultValue={mission?.title ?? ""} required minLength={3} maxLength={120} className="input" /></Field>
+        {kind === "curso" && modules.length > 0 && (
+          <Field label="Módulo">
+            <select name="moduleId" defaultValue={mission?.moduleId ?? moduleId ?? modules[0].id} className="input">
+              {modules.map((m, i) => <option key={m.id} value={m.id}>{i + 1}. {m.title}</option>)}
+            </select>
+          </Field>
+        )}
         {kind === "clase" && (
           <Field label="Periodo">
             <select name="period" defaultValue={mission?.period ?? ""} className="input">
@@ -183,7 +195,9 @@ export function MissionForm({ action, kind, mission, submitLabel }: { action: Fo
       <Field label="Introducción (la dice Sora antes de empezar)"><textarea name="intro" defaultValue={mission?.intro ?? ""} maxLength={400} rows={2} className="input" /></Field>
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="isBoss" defaultChecked={mission?.isBoss ?? false} className="size-4 accent-[#2ee6d6]" />
-        Es la prueba final contra el Guardián (debe ser la última lección)
+        {kind === "curso" && modules.length > 0
+          ? "Es la prueba del Guardián del módulo (debe ser la última lección del módulo)"
+          : "Es la prueba final contra el Guardián (debe ser la última lección)"}
       </label>
       <div className="flex flex-wrap items-center gap-3">
         <Submit pending="Guardando…">{submitLabel}</Submit>
@@ -207,21 +221,79 @@ export function RowActions({ up, down, remove, removeConfirm, canUp, canDown, la
   );
 }
 
+const KIND_HELP: Record<ActivityKind, string> = {
+  opcion: "Escribe de 2 a 6 opciones y marca la correcta.",
+  vf: "Escribe una afirmación y marca si es verdadera o falsa.",
+  completar: "El estudiante escribe la respuesta. Pon una respuesta aceptada por línea (no importan mayúsculas ni tildes).",
+  ordenar: "Escribe los pasos en el orden correcto, uno por línea (2 a 6). El estudiante los verá desordenados.",
+  relacionar: "Escribe de 2 a 6 parejas. El estudiante verá la columna derecha desordenada.",
+};
+
 export function QuestionForm({ action, question, submitLabel }: { action: FormAction; question?: EditableQuestion; submitLabel: string }) {
   const [state, run] = useActionState(action, undefined);
-  const opts = [...(question?.options ?? []), "", "", "", "", "", ""].slice(0, 6);
+  const [kind, setKind] = useState<ActivityKind>(question?.kind ?? "opcion");
+  const same = question?.kind === kind;
+  const opts = [...(same ? question!.options : []), "", "", "", "", "", ""].slice(0, 6);
+  const rights = [...(same ? question!.right : []), "", "", "", "", "", ""].slice(0, 6);
+  const unique = same ? [...new Set(question!.options)] : [];
   return (
     <form action={run} className="space-y-3">
-      <Field label="Pregunta"><textarea name="prompt" defaultValue={question?.prompt ?? ""} required minLength={5} maxLength={400} rows={2} className="input" /></Field>
-      <fieldset className="space-y-2">
-        <legend className="label">Opciones (de 2 a 6) · marca la correcta</legend>
-        {opts.map((o, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <input type="radio" name="correct" value={i} defaultChecked={question ? question.correctIndex === i : i === 0} aria-label={`La opción ${i + 1} es la correcta`} className="size-4 shrink-0 accent-[#4ade80]" />
-            <input name={`option${i}`} defaultValue={o} maxLength={200} placeholder={i < 2 ? `Opción ${i + 1}` : `Opción ${i + 1} (opcional)`} className="input !py-2" aria-label={`Opción ${i + 1}`} />
-          </div>
-        ))}
-      </fieldset>
+      {/* El tipo viaja en un campo oculto: al reiniciarse el formulario después de guardar, el selector no se desincroniza. */}
+      <input type="hidden" name="kind" value={kind} />
+      <div className="grid gap-3 sm:grid-cols-[auto_1fr]">
+        <Field label="Tipo de actividad">
+          <select value={kind} onChange={(e) => setKind(e.target.value as ActivityKind)} className="input">
+            {ACTIVITY_KINDS.map((k) => <option key={k} value={k}>{ACTIVITY_LABEL[k]}</option>)}
+          </select>
+        </Field>
+        <Field label={kind === "vf" ? "Afirmación" : kind === "completar" ? "Pregunta (puedes usar ___ para el espacio)" : kind === "opcion" ? "Pregunta" : "Instrucción"}>
+          <textarea name="prompt" defaultValue={question?.prompt ?? ""} required minLength={5} maxLength={400} rows={2} className="input" />
+        </Field>
+      </div>
+      <p className="hint">{KIND_HELP[kind]}</p>
+      {kind === "opcion" && (
+        <fieldset key="opcion" className="space-y-2">
+          <legend className="label">Opciones (de 2 a 6) · marca la correcta</legend>
+          {opts.map((o, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input type="radio" name="correct" value={i} defaultChecked={same ? question!.correctIndex === i : i === 0} aria-label={`La opción ${i + 1} es la correcta`} className="size-4 shrink-0 accent-[#4ade80]" />
+              <input name={`option${i}`} defaultValue={o} maxLength={200} placeholder={i < 2 ? `Opción ${i + 1}` : `Opción ${i + 1} (opcional)`} className="input !py-2" aria-label={`Opción ${i + 1}`} />
+            </div>
+          ))}
+        </fieldset>
+      )}
+      {kind === "vf" && (
+        <fieldset key="vf" className="flex flex-wrap gap-4">
+          <legend className="label">La afirmación es…</legend>
+          {["Verdadera", "Falsa"].map((t, i) => (
+            <label key={t} className="flex items-center gap-2">
+              <input type="radio" name="correct" value={i} defaultChecked={same ? question!.correctIndex === i : i === 0} className="size-4 accent-[#4ade80]" /> {t}
+            </label>
+          ))}
+        </fieldset>
+      )}
+      {kind === "completar" && (
+        <Field label="Respuestas aceptadas (una por línea)">
+          <textarea key="completar" name="answers" defaultValue={unique.join("\n")} required rows={3} className="input" placeholder={"fotosíntesis\nla fotosíntesis"} />
+        </Field>
+      )}
+      {kind === "ordenar" && (
+        <Field label="Pasos en el orden correcto (uno por línea)">
+          <textarea key="ordenar" name="steps" defaultValue={same ? question!.options.join("\n") : ""} required rows={5} className="input" placeholder={"Leer el problema\nHacer un plan\nResolver\nRevisar"} />
+        </Field>
+      )}
+      {kind === "relacionar" && (
+        <fieldset key="relacionar" className="space-y-2">
+          <legend className="label">Parejas (de 2 a 6)</legend>
+          {opts.map((o, i) => (
+            <div key={i} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+              <input name={`left${i}`} defaultValue={o} maxLength={200} placeholder={`Elemento ${i + 1}`} className="input !py-2" aria-label={`Pareja ${i + 1}, izquierda`} />
+              <span aria-hidden="true" className="text-muted">→</span>
+              <input name={`right${i}`} defaultValue={rights[i]} maxLength={200} placeholder="Su pareja" className="input !py-2" aria-label={`Pareja ${i + 1}, derecha`} />
+            </div>
+          ))}
+        </fieldset>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Pista (ayuda «Pista»)"><textarea name="hint" defaultValue={question?.hint ?? ""} maxLength={200} rows={2} className="input" /></Field>
         <Field label="Explicación (se muestra al responder)"><textarea name="explanation" defaultValue={question?.explanation ?? ""} maxLength={500} rows={2} className="input" /></Field>
@@ -231,5 +303,49 @@ export function QuestionForm({ action, question, submitLabel }: { action: FormAc
         <Notice state={state} />
       </div>
     </form>
+  );
+}
+
+/** Módulo de un curso corto: título, descripción y su Guardián. */
+export function ModuleForm({ action, module, guardians, submitLabel }: {
+  action: FormAction; module?: Module; guardians: { slug: string; name: string; obstacle: string }[]; submitLabel: string;
+}) {
+  const [state, run] = useActionState(action, undefined);
+  return (
+    <form action={run} className="space-y-3">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Título del módulo"><input name="title" defaultValue={module?.title ?? ""} required minLength={2} maxLength={80} className="input" /></Field>
+        <Field label="Guardián del módulo" hint="Es el jefe de la última lección del módulo y trae su parte de la historia.">
+          <select name="guardian" defaultValue={module?.guardian ?? guardians[0]?.slug} className="input">
+            {guardians.map((g) => <option key={g.slug} value={g.slug}>{g.name} · {g.obstacle}</option>)}
+          </select>
+        </Field>
+      </div>
+      <Field label="Descripción del módulo (opcional)"><textarea name="summary" defaultValue={module?.summary ?? ""} maxLength={400} rows={2} className="input" /></Field>
+      <div className="flex flex-wrap items-center gap-3">
+        <Submit pending="Guardando…">{submitLabel}</Submit>
+        <Notice state={state} />
+      </div>
+    </form>
+  );
+}
+
+/** «Ofrecer gratis»: el curso completo queda abierto para todos los estudiantes. */
+export function FreeToggle({ free, toggle }: { free: boolean; toggle: Quick }) {
+  const { pending, state, run } = useQuick();
+  const [on, setOn] = useState(free);
+  return (
+    <div className="space-y-1">
+      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
+        <input type="checkbox" checked={on} disabled={pending} className="size-4 accent-[#4ade80]"
+          onChange={() => {
+            if (!on && !confirm("¿Ofrecer este curso gratis? Cualquier estudiante podrá hacerlo completo, sin pagar.")) return;
+            setOn(!on);
+            run(toggle);
+          }} />
+        Ofrecer gratis (curso completo)
+      </label>
+      <Notice state={state} />
+    </div>
   );
 }

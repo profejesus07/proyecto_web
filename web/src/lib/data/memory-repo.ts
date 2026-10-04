@@ -1,11 +1,12 @@
 import intento from "@/content/portal-del-primer-intento.json";
 import primer from "@/content/primer-portal.json";
+import { gradeActivity, isChoiceKind, publicActivity, solutionOf, type ActivityKind } from "@/lib/activities";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import { powerByItem, stemOf } from "@/lib/game/powers";
 import type { AvatarLook } from "@/lib/avatar-look";
 import type {
-  AdminPayment, AdminUser, Payment, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, PowerPayload, PowerResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminPayment, AdminUser, Module, Payment, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, PowerPayload, PowerResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -108,28 +109,42 @@ function state(): State {
 type Seed = typeof primer;
 // Ids de la vista previa: el primer portal usa m1..m4 y los siguientes c2m1.., c3m1..
 const SEEDS: { seed: Seed; prefix: string }[] = [{ seed: primer, prefix: "m" }, { seed: intento as Seed, prefix: "c2m" }];
-interface QRow { id: string; prompt: string; options: string[]; correct_index: number; hint: string; explanation: string }
+interface QRow { id: string; prompt: string; kind: ActivityKind; options: string[]; correct_index: number; data: { right?: string[] }; hint: string; explanation: string }
+type ModuleRow = Module & { courseSlug: string };
 /** Contenido editable de la vista previa (empieza con los cursos de ejemplo). */
-interface Content { courses: (Course & { published: boolean })[]; missions: MissionSummary[]; questions: Map<string, QRow[]>; seq: number }
+interface Content { courses: (Course & { published: boolean })[]; modules: ModuleRow[]; missions: MissionSummary[]; questions: Map<string, QRow[]>; seq: number }
 const gc = globalThis as unknown as { __umbralContent?: Content };
 function C(): Content {
   if (!gc.__umbralContent) {
-    const blank = { kind: "curso" as const, area: null, grade: null, schoolYear: null, accessUntil: null, hours: null, trainerName: null, trainerTitle: null };
+    const blank = { kind: "curso" as const, area: null, grade: null, schoolYear: null, accessUntil: null, hours: null, trainerName: null, trainerTitle: null, isFree: false };
+    // Como en la migración 0022: cada curso de ejemplo tiene un solo módulo con su Guardián.
+    const modules: ModuleRow[] = SEEDS.map(({ seed }) => ({ id: `mod-${seed.course.slug}`, courseSlug: seed.course.slug, position: 1, title: "Módulo 1", summary: "", guardian: seed.course.guardian }));
     const questions = new Map<string, QRow[]>();
     const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => {
       const id = `${prefix}${m.position}`;
-      questions.set(id, m.questions.map((q, i) => ({ id: `${id}q${i + 1}`, ...q })));
-      return { id, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss, period: null };
+      questions.set(id, m.questions.map((q, i) => ({ id: `${id}q${i + 1}`, kind: "opcion" as const, data: {}, ...q })));
+      return { id, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss, period: null, moduleId: `mod-${seed.course.slug}` };
     }));
     gc.__umbralContent = {
       courses: SEEDS.map(({ seed }) => ({ ...(seed.course as Omit<Course, "price" | keyof typeof blank>), ...blank, price: null, published: true })),
-      missions, questions, seq: 1,
+      modules, missions, questions, seq: 1,
     };
   }
   return gc.__umbralContent;
 }
 const questions = (id: string) => C().questions.get(id) ?? [];
 const courseOf = (slug: string) => C().courses.find((c) => c.slug === slug)!;
+const modulesOf = (slug: string): Module[] => C().modules.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position)
+  .map(({ id, position, title, summary, guardian }) => ({ id, position, title, summary, guardian }));
+/** Como public.renumber_course: lecciones ordenadas por módulo y luego por su orden. */
+function renumber(slug: string) {
+  const c = C();
+  const mods = c.modules.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position);
+  mods.forEach((m, i) => { m.position = i + 1; });
+  const modPos = (id: string | null) => (id ? mods.find((m) => m.id === id)?.position ?? 0 : 0);
+  c.missions.filter((m) => m.courseSlug === slug).sort((a, b) => modPos(a.moduleId) - modPos(b.moduleId) || a.position - b.position)
+    .forEach((m, i) => { m.position = i + 1; });
+}
 const plain = (c: Course & { published: boolean }): Course => {
   const out: Course & { published?: boolean } = { ...c };
   delete out.published;
@@ -138,7 +153,7 @@ const plain = (c: Course & { published: boolean }): Course => {
 const withPrice = (c: Course & { published?: boolean }): Course => ({ ...plain({ published: true, ...c }), price: state().prices.get(c.slug) ?? null });
 function hasAccess(userId: string, slug: string): boolean {
   const s = state();
-  return STAFF.has(userId) || s.profile.role === "docente" || s.profile.role === "admin" || s.access.has(slug);
+  return !!C().courses.find((c) => c.slug === slug)?.isFree || STAFF.has(userId) || s.profile.role === "docente" || s.profile.role === "admin" || s.access.has(slug);
 }
 /** Misma regla que public.mission_is_locked: misiones en orden dentro del curso; la primera gratis, el resto con acceso. */
 function isLocked(s: State, m: MissionSummary, userId: string): boolean {
@@ -167,7 +182,8 @@ function complete(_u: string, id: string, score: number, passMark: number, items
   const gemsGain = first && m.isBoss ? 5 : 0;
   const granted: string[] = [];
   if (first) {
-    if (m.isBoss) s.bosses.add(m.courseSlug);
+    // Un jefe por módulo: el curso queda vencido solo con el jefe de su última lección.
+    if (m.isBoss && m.position === Math.max(...C().missions.filter((x) => x.courseSlug === m.courseSlug).map((x) => x.position))) s.bosses.add(m.courseSlug);
     for (const it of items) if (!s.inventory.some((i) => i.itemId === it)) { s.inventory.push({ itemId: it, source: "logro", acquiredAt: new Date().toISOString() }); granted.push(it); }
   }
   s.profile = { ...s.profile, xp: s.profile.xp + xpGain, coins: s.profile.coins + coinsGain, gems: s.profile.gems + gemsGain };
@@ -184,7 +200,7 @@ export function createMemoryRepo(): Repo {
     async listCourses() { return C().courses.filter((c) => c.published).map(withPrice); },
     async getCourse(slug): Promise<CourseDetail | null> {
       const c = C().courses.find((x) => x.slug === slug && x.published);
-      return c ? { ...withPrice(c), missions: C().missions.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position) } : null;
+      return c ? { ...withPrice(c), modules: modulesOf(slug), missions: C().missions.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position) } : null;
     },
     async getProgress() { return [...state().progress.values()]; },
     async getBossDefeats() { return [...state().bosses]; },
@@ -193,23 +209,30 @@ export function createMemoryRepo(): Repo {
       const mission = C().missions.find((m) => m.id === id);
       if (!mission) return null;
       if (!courseOf(mission.courseSlug).published) return null;
-      return { mission, course: withPrice(courseOf(mission.courseSlug)), questions: questions(id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, options: q.options, hasHint: q.hint.trim() !== "" })) };
+      return {
+        mission, course: withPrice(courseOf(mission.courseSlug)),
+        questions: questions(id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, kind: q.kind, ...publicActivity(q.id, q.kind, q.options, q.data), hasHint: q.hint.trim() !== "" })),
+      };
     },
     async getAnswerKey(id): Promise<AnswerKeyRow[]> {
-      return questions(id).map((q) => ({ id: q.id, correctIndex: q.correct_index, explanation: q.explanation }));
+      return questions(id).map((q) => ({ id: q.id, kind: q.kind, correctIndex: q.correct_index, explanation: q.explanation, solution: solutionOf(q.kind, q.options, q.data) }));
     },
     async getOpenAttempt(_u, id) {
       const a = state().attempts.get(id);
       return a ? [...a] : null;
     },
-    async answerQuestion(_u, id, index, choice): Promise<AnswerResult> {
+    async answerActivity(_u, id, index, response): Promise<AnswerResult> {
       const s = state();
       const m = C().missions.find((x) => x.id === id);
       if (!m) throw new Error("mision_no_encontrada");
       if (isLocked(s, m, _u)) throw new Error("mision_bloqueada");
       const qs = questions(id);
       if (!Number.isInteger(index) || index < 0 || index >= qs.length) throw new Error("pregunta_invalida");
-      if (!Number.isInteger(choice) || choice < 0 || choice >= qs[index].options.length) throw new Error("respuesta_invalida");
+      // Igual que answer_activity: las actividades que no son de opciones se guardan como 0 (bien) o 1 (mal).
+      const graded = gradeActivity(qs[index].kind, qs[index].options, qs[index].data, qs[index].correct_index, response);
+      if (graded === null) throw new Error("respuesta_invalida");
+      const choice = isChoiceKind(qs[index].kind) ? (response as number) : graded ? 0 : 1;
+      const solution = solutionOf(qs[index].kind, qs[index].options, qs[index].data);
       let a = s.attempts.get(id);
       if (!a || a.length !== qs.length) s.attempts.set(id, (a = Array(qs.length).fill(-1)));
       const q = qs[index];
@@ -232,7 +255,7 @@ export function createMemoryRepo(): Repo {
           rain.payload = { ...rain.payload, spent: true, bonus };
         }
       }
-      return { index, choice: a[index], correct: a[index] === q.correct_index, correctIndex: q.correct_index, explanation: q.explanation, ...counts(), bonusXp: bonus || undefined };
+      return { index, choice: a[index], correct: a[index] === q.correct_index, correctIndex: q.correct_index, explanation: q.explanation, ...counts(), bonusXp: bonus || undefined, ...(solution !== undefined && { solution }) };
     },
     async finishAttempt(u, id, passMark, items): Promise<FinishResult> {
       const s = state();
@@ -594,20 +617,50 @@ export function createMemoryRepo(): Repo {
       if (!c) return null;
       const s = state();
       return {
-        ...withPrice(c), published: c.published,
+        ...withPrice(c), published: c.published, modules: modulesOf(slug),
         missions: C().missions.filter((m) => m.courseSlug === slug).sort((a, b) => a.position - b.position).map((m) => ({
           ...m, hasProgress: s.progress.has(m.id),
-          questions: questions(m.id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, options: q.options, correctIndex: q.correct_index, hint: q.hint, explanation: q.explanation })),
+          questions: questions(m.id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, kind: q.kind, options: q.options, correctIndex: q.correct_index, right: q.data.right ?? [], hint: q.hint, explanation: q.explanation })),
         })),
       };
     },
     async createCourse(slug, input: CourseInput) {
       const c = C();
-      c.courses.push({ ...input, slug, position: c.courses.length + 1, price: null, published: false });
+      c.courses.push({ ...input, slug, position: c.courses.length + 1, price: null, published: false, isFree: false });
     },
     async updateCourse(slug, input) {
       const c = C().courses.find((x) => x.slug === slug);
       if (c) Object.assign(c, input);
+    },
+    async setCourseFree(slug, free) {
+      const c = C().courses.find((x) => x.slug === slug);
+      if (c) c.isFree = free;
+    },
+    async createModule(courseSlug, input) {
+      const c = C();
+      const id = `mod-${c.seq++}`;
+      const position = Math.max(0, ...c.modules.filter((m) => m.courseSlug === courseSlug).map((m) => m.position)) + 1;
+      c.modules.push({ id, courseSlug, position, ...input });
+      return { id };
+    },
+    async updateModule(moduleId, input) {
+      const m = C().modules.find((x) => x.id === moduleId);
+      if (m) Object.assign(m, input);
+    },
+    async deleteModule(moduleId) {
+      const c = C();
+      if (c.missions.some((m) => m.moduleId === moduleId)) throw new Error("modulo_con_lecciones");
+      c.modules = c.modules.filter((m) => m.id !== moduleId);
+    },
+    async moveModule(moduleId, direction) {
+      const c = C();
+      const m = c.modules.find((x) => x.id === moduleId);
+      if (!m) return;
+      const sibs = c.modules.filter((x) => x.courseSlug === m.courseSlug).sort((a, b) => a.position - b.position);
+      const other = sibs[sibs.indexOf(m) + direction];
+      if (!other) return;
+      [m.position, other.position] = [other.position, m.position];
+      renumber(m.courseSlug);
     },
     async setCoursePublished(slug, published) {
       const c = C().courses.find((x) => x.slug === slug);
@@ -619,11 +672,15 @@ export function createMemoryRepo(): Repo {
       const pos = Math.max(0, ...c.missions.filter((m) => m.courseSlug === courseSlug).map((m) => m.position)) + 1;
       c.missions.push({ id, courseSlug, position: pos, ...input });
       c.questions.set(id, []);
+      if (input.moduleId) renumber(courseSlug);
       return { id };
     },
     async updateMission(missionId, input) {
       const m = C().missions.find((x) => x.id === missionId);
-      if (m) Object.assign(m, input);
+      if (!m) return;
+      const moved = m.moduleId !== input.moduleId;
+      Object.assign(m, input);
+      if (moved) renumber(m.courseSlug);
     },
     async deleteMission(missionId) {
       if (state().progress.has(missionId)) throw new Error("tiene_avance");
@@ -635,20 +692,21 @@ export function createMemoryRepo(): Repo {
       const c = C();
       const m = c.missions.find((x) => x.id === missionId);
       if (!m) return;
-      const sibs = c.missions.filter((x) => x.courseSlug === m.courseSlug).sort((a, b) => a.position - b.position);
+      // Con módulos, una lección solo se mueve dentro de su módulo.
+      const sibs = c.missions.filter((x) => x.courseSlug === m.courseSlug && (!m.moduleId || x.moduleId === m.moduleId)).sort((a, b) => a.position - b.position);
       const other = sibs[sibs.indexOf(m) + direction];
       if (other) [m.position, other.position] = [other.position, m.position];
     },
     async createQuestion(missionId, input) {
       const c = C();
       const id = `${missionId}q${c.seq++}`;
-      c.questions.set(missionId, [...questions(missionId), { id, prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation }]);
+      c.questions.set(missionId, [...questions(missionId), { id, prompt: input.prompt, kind: input.kind, options: input.options, correct_index: input.correctIndex, data: input.data, hint: input.hint, explanation: input.explanation }]);
       return { id };
     },
     async updateQuestion(questionId, input) {
       for (const qs of C().questions.values()) {
         const q = qs.find((x) => x.id === questionId);
-        if (q) Object.assign(q, { prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation });
+        if (q) Object.assign(q, { prompt: input.prompt, kind: input.kind, options: input.options, correct_index: input.correctIndex, data: input.data, hint: input.hint, explanation: input.explanation });
       }
     },
     async deleteQuestion(questionId) {
@@ -692,6 +750,8 @@ export function createMemoryRepo(): Repo {
       if (prev) return { hint: prev.hint, removed: prev.removed, free: prev.free, charged: false, left: left() };
       if (s.profile.xp < minXp) throw new Error("rango_insuficiente");
       const isHint = itemId === "obj_ayuda_pista";
+      if (isHint && !q.hint.trim()) throw new Error("sin_pista");
+      if (!isHint && q.kind !== "opcion") throw new Error("no_aplica");
       const free = isHint && !s.aidUses.some((u) => u.day === day && u.itemId === itemId && u.missionId === missionId && u.free);
       if (!free) {
         if (s.aidUses.filter((u) => u.day === day && u.itemId === itemId && !u.free).length >= dailyCap) throw new Error("tope_diario");
@@ -749,7 +809,7 @@ export function createMemoryRepo(): Repo {
         case "kuro": {
           if (answered) throw new Error("ya_respondida");
           const wrong = q.options.map((_, i) => i).filter((i) => i !== q.correct_index).sort(() => Math.random() - 0.5);
-          payload = { hint: q.hint.trim() || null, removed: wrong.length >= 2 ? [wrong[0]] : [] };
+          payload = { hint: q.hint.trim() || null, removed: q.kind === "opcion" && wrong.length >= 2 ? [wrong[0]] : [] };
           if (!payload.hint && !payload.removed!.length) throw new Error("no_aplica");
           break;
         }
@@ -762,6 +822,7 @@ export function createMemoryRepo(): Repo {
         }
         case "sombra": {
           if (answered) throw new Error("ya_respondida");
+          if (!isChoiceKind(q.kind)) throw new Error("no_aplica");
           const past = (s.pastAttempts.get(missionId) ?? []).filter((a) => a.length === qs.length && a[index] === q.correct_index);
           if (!past.length) throw new Error("sin_jugada");
           payload = { choice: q.correct_index };

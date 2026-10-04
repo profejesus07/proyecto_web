@@ -1,9 +1,10 @@
 import "server-only";
+import { asKind, publicActivity, solutionOf } from "@/lib/activities";
 import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminPayment, AdminUser, Payment, PaymentProvider, PaymentStatus, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminPayment, AdminUser, Module, Payment, PaymentProvider, PaymentStatus, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -26,6 +27,10 @@ const course = (r: Row): Course => ({
   hours: (r.hours as number | null | undefined) ?? null,
   trainerName: (r.trainer_name as string | null | undefined) ?? null,
   trainerTitle: (r.trainer_title as string | null | undefined) ?? null,
+  isFree: (r.is_free as boolean | undefined) ?? false,
+});
+const moduleOf = (r: Row): Module => ({
+  id: r.id as string, position: r.position as number, title: r.title as string, summary: (r.summary as string | null) ?? "", guardian: r.guardian as string,
 });
 const payment = (r: Row): Payment => ({
   reference: r.reference as string, provider: r.provider as PaymentProvider, amount: r.amount_cop as number, status: r.status as PaymentStatus,
@@ -47,6 +52,7 @@ const mission = (r: Row): MissionSummary => ({
   id: r.id as string, courseSlug: r.course_slug as string, position: r.position as number, title: r.title as string,
   intro: r.intro as string, xpReward: r.xp_reward as number, isBoss: r.is_boss as boolean,
   period: (r.period as number | null | undefined) ?? null,
+  moduleId: (r.module_id as string | null | undefined) ?? null,
 });
 
 export function createSupabaseRepo(): Repo {
@@ -79,9 +85,13 @@ export function createSupabaseRepo(): Repo {
       const { data: c, error } = await db.from("courses").select("*").eq("slug", slug).eq("published", true).maybeSingle();
       if (error) fail(error, "curso");
       if (!c) return null;
-      const { data: ms, error: e2 } = await db.from("missions").select("*").eq("course_slug", slug).order("position");
+      const [{ data: ms, error: e2 }, { data: mods, error: e3 }] = await Promise.all([
+        db.from("missions").select("*").eq("course_slug", slug).order("position"),
+        db.from("modules").select("*").eq("course_slug", slug).order("position"),
+      ]);
       if (e2) fail(e2, "misiones");
-      const detail: CourseDetail = { ...course(c), missions: (ms ?? []).map(mission) };
+      if (e3) fail(e3, "módulos");
+      const detail: CourseDetail = { ...course(c), modules: (mods ?? []).map(moduleOf), missions: (ms ?? []).map(mission) };
       return detail;
     },
 
@@ -114,18 +124,23 @@ export function createSupabaseRepo(): Repo {
       if (!c) return null;
       // Nunca se selecciona correct_index ni explanation aquí, y la pista solo se usa para saber si existe:
       // esos datos no viajan al navegador.
-      const { data: qs, error: e3 } = await db.from("questions").select("id,position,prompt,options,hint").eq("mission_id", missionId).order("position");
+      // Las respuestas aceptadas y el orden correcto tampoco viajan: publicActivity los oculta o los mezcla.
+      const { data: qs, error: e3 } = await db.from("questions").select("id,position,prompt,options,hint,kind,data").eq("mission_id", missionId).order("position");
       if (e3) fail(e3, "preguntas");
-      const questions = (qs ?? []).map((q): PublicQuestion => ({
-        id: q.id, position: q.position, prompt: q.prompt, options: q.options as string[], hasHint: String(q.hint ?? "").trim() !== "",
-      }));
+      const questions = (qs ?? []).map((q): PublicQuestion => {
+        const kind = asKind(q.kind);
+        return { id: q.id, position: q.position, prompt: q.prompt, kind, ...publicActivity(q.id, kind, q.options as string[], (q.data ?? {}) as { right?: string[] }), hasHint: String(q.hint ?? "").trim() !== "" };
+      });
       return { mission: mission(m), course: course(c), questions };
     },
 
     async getAnswerKey(missionId) {
-      const { data, error } = await db.from("questions").select("id,correct_index,explanation").eq("mission_id", missionId).order("position");
+      const { data, error } = await db.from("questions").select("id,correct_index,explanation,kind,options,data").eq("mission_id", missionId).order("position");
       if (error) fail(error, "respuestas");
-      return (data ?? []).map((r): AnswerKeyRow => ({ id: r.id, correctIndex: r.correct_index, explanation: r.explanation }));
+      return (data ?? []).map((r): AnswerKeyRow => {
+        const kind = asKind(r.kind);
+        return { id: r.id, kind, correctIndex: r.correct_index, explanation: r.explanation, solution: solutionOf(kind, r.options as string[], (r.data ?? {}) as { right?: string[] }) };
+      });
     },
 
     async getOpenAttempt(userId, missionId) {
@@ -134,14 +149,15 @@ export function createSupabaseRepo(): Repo {
       return data ? (data.answers as number[]) : null;
     },
 
-    async answerQuestion(userId, missionId, index, choice) {
-      const { data, error } = await db.rpc("answer_question", { p_user: userId, p_mission: missionId, p_index: index, p_choice: choice });
+    async answerActivity(userId, missionId, index, response) {
+      const { data, error } = await db.rpc("answer_activity", { p_user: userId, p_mission: missionId, p_index: index, p_response: response });
       if (error) fail(error, "responder");
       const r = data as Record<string, unknown>;
       const out: AnswerResult = {
         index: r.index as number, choice: (r.choice as number | undefined) ?? -1, correct: r.correct as boolean, correctIndex: (r.correct_index as number | undefined) ?? -1,
         explanation: (r.explanation as string | undefined) ?? "", answered: r.answered as number, right: r.right as number, total: r.total as number,
         shielded: r.shielded === true || undefined, bonusXp: (r.bonus_xp as number | undefined) || undefined,
+        ...(r.solution !== undefined && r.solution !== null && { solution: r.solution as AnswerResult["solution"] }),
       };
       return out;
     },
@@ -367,10 +383,18 @@ export function createSupabaseRepo(): Repo {
         if (e2) fail(e2, "acceso");
         return new Set((all ?? []).map((c) => c.slug as string));
       }
-      const { data, error: e3 } = await db.from("course_access").select("course_slug,expires_at").eq("user_id", userId).is("revoked_at", null);
+      const [{ data, error: e3 }, { data: free, error: e4 }] = await Promise.all([
+        db.from("course_access").select("course_slug,expires_at").eq("user_id", userId).is("revoked_at", null),
+        db.from("courses").select("slug").eq("is_free", true),
+      ]);
       if (e3) fail(e3, "acceso");
+      if (e4) fail(e4, "acceso");
       const now = Date.now();
-      return new Set((data ?? []).filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > now).map((a) => a.course_slug as string));
+      // Los cursos gratis están abiertos para todos (como en public.has_course_access).
+      return new Set([
+        ...(free ?? []).map((c) => c.slug as string),
+        ...(data ?? []).filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > now).map((a) => a.course_slug as string),
+      ]);
     },
 
     async startPayment(payerId, studentId, course, provider) {
@@ -558,8 +582,12 @@ export function createSupabaseRepo(): Repo {
       const { data: c, error } = await db.from("courses").select("*").eq("slug", slug).maybeSingle();
       if (error) fail(error, "portal");
       if (!c) return null;
-      const { data: ms, error: e2 } = await db.from("missions").select("*").eq("course_slug", slug).order("position");
+      const [{ data: ms, error: e2 }, { data: mods, error: e5 }] = await Promise.all([
+        db.from("missions").select("*").eq("course_slug", slug).order("position"),
+        db.from("modules").select("*").eq("course_slug", slug).order("position"),
+      ]);
       if (e2) fail(e2, "lecciones");
+      if (e5) fail(e5, "módulos");
       const ids = (ms ?? []).map((m) => m.id as string);
       const [{ data: qs, error: e3 }, { data: prog, error: e4 }] = await Promise.all([
         ids.length ? db.from("questions").select("*").in("mission_id", ids).order("position") : Promise.resolve({ data: [], error: null }),
@@ -569,11 +597,12 @@ export function createSupabaseRepo(): Repo {
       if (e4) fail(e4, "avance");
       const withProgress = new Set((prog ?? []).map((p) => p.mission_id as string));
       const out: EditableCourse = {
-        ...course(c), published: c.published as boolean,
+        ...course(c), published: c.published as boolean, modules: (mods ?? []).map(moduleOf),
         missions: (ms ?? []).map((m) => ({
           ...mission(m), hasProgress: withProgress.has(m.id as string),
           questions: (qs ?? []).filter((q) => q.mission_id === m.id).map((q): EditableQuestion => ({
-            id: q.id, position: q.position, prompt: q.prompt, options: q.options as string[], correctIndex: q.correct_index, hint: q.hint, explanation: q.explanation,
+            id: q.id, position: q.position, prompt: q.prompt, kind: asKind(q.kind), options: q.options as string[], correctIndex: q.correct_index,
+            right: ((q.data ?? {}) as { right?: string[] }).right ?? [], hint: q.hint, explanation: q.explanation,
           })),
         })),
       };
@@ -591,6 +620,45 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "guardar portal");
     },
 
+    async setCourseFree(slug, free) {
+      const { error } = await db.from("courses").update({ is_free: free, updated_at: new Date().toISOString() }).eq("slug", slug);
+      if (error) fail(error, "gratis");
+    },
+
+    async createModule(courseSlug, input) {
+      const { data: last } = await db.from("modules").select("position").eq("course_slug", courseSlug).order("position", { ascending: false }).limit(1).maybeSingle();
+      const { data, error } = await db.from("modules").insert({
+        course_slug: courseSlug, position: ((last?.position as number | undefined) ?? 0) + 1, title: input.title, summary: input.summary, guardian: input.guardian,
+      }).select("id").single();
+      if (error) fail(error, "crear módulo");
+      return { id: data.id as string };
+    },
+
+    async updateModule(moduleId, input) {
+      const { error } = await db.from("modules").update({ title: input.title, summary: input.summary, guardian: input.guardian }).eq("id", moduleId);
+      if (error) fail(error, "guardar módulo");
+    },
+
+    async deleteModule(moduleId) {
+      const { count, error: e1 } = await db.from("missions").select("id", { count: "exact", head: true }).eq("module_id", moduleId);
+      if (e1) fail(e1, "módulo");
+      if ((count ?? 0) > 0) throw new Error("modulo_con_lecciones");
+      const { error } = await db.from("modules").delete().eq("id", moduleId);
+      if (error) fail(error, "borrar módulo");
+    },
+
+    async moveModule(moduleId, direction) {
+      const { data: m } = await db.from("modules").select("id,course_slug,position").eq("id", moduleId).maybeSingle();
+      if (!m) throw new Error("modulo_no_encontrado");
+      const q = db.from("modules").select("id,position").eq("course_slug", m.course_slug);
+      const { data: other } = await (direction < 0 ? q.lt("position", m.position).order("position", { ascending: false }) : q.gt("position", m.position).order("position")).limit(1).maybeSingle();
+      if (!other) return;
+      await db.from("modules").update({ position: other.position }).eq("id", m.id);
+      await db.from("modules").update({ position: m.position }).eq("id", other.id);
+      const { error } = await db.rpc("renumber_course", { p_course: m.course_slug });
+      if (error) fail(error, "mover módulo");
+    },
+
     async setCoursePublished(slug, published) {
       const { error } = await db.from("courses").update({ published, updated_at: new Date().toISOString() }).eq("slug", slug);
       if (error) fail(error, "publicar");
@@ -600,15 +668,28 @@ export function createSupabaseRepo(): Repo {
       const { data: last } = await db.from("missions").select("position").eq("course_slug", courseSlug).order("position", { ascending: false }).limit(1).maybeSingle();
       const { data, error } = await db.from("missions").insert({
         course_slug: courseSlug, position: ((last?.position as number | undefined) ?? 0) + 1,
-        title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period,
+        title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period, module_id: input.moduleId,
       }).select("id").single();
       if (error) fail(error, "crear lección");
+      // Queda al final de su módulo.
+      if (input.moduleId) {
+        const { error: e2 } = await db.rpc("renumber_course", { p_course: courseSlug });
+        if (e2) fail(e2, "ordenar lecciones");
+      }
       return { id: data.id as string };
     },
 
     async updateMission(missionId, input) {
-      const { error } = await db.from("missions").update({ title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period }).eq("id", missionId);
+      const { data: before } = await db.from("missions").select("course_slug,module_id").eq("id", missionId).maybeSingle();
+      const { error } = await db.from("missions").update({
+        title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period, module_id: input.moduleId,
+      }).eq("id", missionId);
       if (error) fail(error, "guardar lección");
+      // Si cambió de módulo, se reordena el curso.
+      if (before && before.module_id !== input.moduleId) {
+        const { error: e2 } = await db.rpc("renumber_course", { p_course: before.course_slug });
+        if (e2) fail(e2, "ordenar lecciones");
+      }
     },
 
     async deleteMission(missionId) {
@@ -620,9 +701,11 @@ export function createSupabaseRepo(): Repo {
     },
 
     async moveMission(missionId, direction) {
-      const { data: m } = await db.from("missions").select("id,course_slug,position").eq("id", missionId).maybeSingle();
+      const { data: m } = await db.from("missions").select("id,course_slug,position,module_id").eq("id", missionId).maybeSingle();
       if (!m) throw new Error("leccion_no_encontrada");
-      const q = db.from("missions").select("id,position").eq("course_slug", m.course_slug);
+      // Con módulos, una lección solo se mueve dentro de su módulo.
+      const base = db.from("missions").select("id,position").eq("course_slug", m.course_slug);
+      const q = m.module_id ? base.eq("module_id", m.module_id) : base;
       const { data: other } = await (direction < 0 ? q.lt("position", m.position).order("position", { ascending: false }) : q.gt("position", m.position).order("position")).limit(1).maybeSingle();
       if (!other) return;
       // Intercambio en tres pasos para no chocar con la regla de posiciones únicas.
@@ -636,7 +719,7 @@ export function createSupabaseRepo(): Repo {
       const { data: last } = await db.from("questions").select("position").eq("mission_id", missionId).order("position", { ascending: false }).limit(1).maybeSingle();
       const { data, error } = await db.from("questions").insert({
         mission_id: missionId, position: ((last?.position as number | undefined) ?? 0) + 1,
-        prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation,
+        prompt: input.prompt, kind: input.kind, options: input.options, correct_index: input.correctIndex, data: input.data, hint: input.hint, explanation: input.explanation,
       }).select("id").single();
       if (error) fail(error, "crear pregunta");
       return { id: data.id as string };
@@ -644,7 +727,7 @@ export function createSupabaseRepo(): Repo {
 
     async updateQuestion(questionId, input) {
       const { error } = await db.from("questions").update({
-        prompt: input.prompt, options: input.options, correct_index: input.correctIndex, hint: input.hint, explanation: input.explanation,
+        prompt: input.prompt, kind: input.kind, options: input.options, correct_index: input.correctIndex, data: input.data, hint: input.hint, explanation: input.explanation,
       }).eq("id", questionId);
       if (error) fail(error, "guardar pregunta");
     },

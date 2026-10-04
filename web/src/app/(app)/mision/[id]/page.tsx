@@ -10,6 +10,7 @@ import { POWERS, POWER_KINDS, powerByItem } from "@/lib/game/powers";
 import { kuroStage } from "@/lib/game/battle";
 import { rankForXp } from "@/lib/game/ranks";
 import { formatPrice, loadCourseView } from "@/lib/data/queries";
+import { segmentOf } from "@/lib/modules";
 
 export const metadata: Metadata = { title: "Misión" };
 
@@ -32,7 +33,7 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
   const resume = play.questions.map((_, i) => {
     const choice = open && open.length === key.length ? open[i] : -1;
     const k = key[i];
-    return choice >= 0 && k ? { choice, correct: choice === k.correctIndex, correctIndex: k.correctIndex, explanation: k.explanation } : null;
+    return choice >= 0 && k ? { choice, correct: choice === k.correctIndex, correctIndex: k.correctIndex, explanation: k.explanation, solution: k.solution } : null;
   });
   const paidToday = (itemId: string) => usesToday.filter((u) => u.itemId === itemId && !u.free).length;
   const ids = new Set(play.questions.map((q) => q.id));
@@ -75,7 +76,10 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
   }
 
   const next = course.missions.find((m) => m.position === play.mission.position + 1);
-  const g = guardianBySlug(play.course.guardian);
+  // Con módulos, el jefe de la lección es el Guardián de su módulo.
+  const seg = segmentOf(course, play.mission.id);
+  const guardianSlug = seg?.guardian ?? play.course.guardian;
+  const g = guardianBySlug(guardianSlug);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -88,9 +92,9 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
         isBoss={play.mission.isBoss}
         xpReward={play.mission.xpReward}
         courseSlug={course.slug}
-        courseTitle={course.title}
-        guardian={{ slug: play.course.guardian, name: g?.name ?? "el Guardián" }}
-        questions={play.questions.map((q) => ({ id: q.id, prompt: q.prompt, options: q.options, hasHint: q.hasHint }))}
+        courseTitle={seg?.module ? `${course.title} · ${seg.module.title}` : course.title}
+        guardian={{ slug: guardianSlug, name: g?.name ?? "el Guardián" }}
+        questions={play.questions.map((q) => ({ id: q.id, prompt: q.prompt, kind: q.kind, options: q.options, ...(q.right && { right: q.right }), hasHint: q.hasHint }))}
         aids={aids}
         powers={powers}
         powerState={powerState}

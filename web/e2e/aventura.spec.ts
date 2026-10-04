@@ -37,7 +37,7 @@ test("el estudiante empieza sin XP y ve su primer portal", async ({ page }) => {
   await expect(page.getByText("0 XP")).toBeVisible();
   await page.goto("/portales/primer-portal");
   await expect(page.getByRole("heading", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
-  await expect(page.getByText("Termina las 3 misiones para desbloquearlo")).toBeVisible();
+  await expect(page.getByText(/Termina las 3 misiones/)).toBeVisible();
 });
 
 test("el prólogo de las Crónicas está abierto y los demás capítulos sellados", async ({ page }) => {
@@ -318,14 +318,14 @@ test("el administrador crea una clase con el editor, la publica y un estudiante 
   await page.getByLabel("Periodo").selectOption("1");
   await page.getByRole("button", { name: "Crear lección" }).click();
   await page.locator("summary", { hasText: "Los seres vivos" }).click();
-  await page.getByText("+ Agregar pregunta").click();
+  await page.getByText("+ Agregar actividad").click();
   await page.getByLabel("Pregunta", { exact: true }).fill("¿Cuál de estos es un ser vivo?");
   await page.getByLabel("Opción 1", { exact: true }).fill("Una piedra");
   await page.getByLabel("Opción 2", { exact: true }).fill("Un árbol");
   await page.getByLabel("La opción 2 es la correcta").check();
   await page.getByLabel("Explicación (se muestra al responder)").fill("Los árboles nacen, crecen y se reproducen.");
-  await page.getByRole("button", { name: "Agregar pregunta" }).click();
-  await expect(page.getByText("Pregunta agregada.")).toBeVisible();
+  await page.getByRole("button", { name: "Agregar actividad" }).click();
+  await expect(page.getByText("Actividad agregada.")).toBeVisible();
 
   await page.getByRole("button", { name: "Publicar" }).click();
   await expect(page.getByText("¡Publicado!")).toBeVisible();
@@ -675,4 +675,142 @@ test("el administrador elimina un grupo, un docente y un curso, siempre confirma
   await page.goto("/programas");
   await expect(page.getByText("Ciencias 5.° · 2027")).toHaveCount(0);
   await context.clearCookies({ name: "umbral-vista" });
+});
+
+test("un curso corto por módulos, con actividades variadas, un Guardián por módulo y ofrecido gratis", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/contenido");
+  await page.getByText("Curso corto", { exact: true }).click();
+  await page.getByLabel("Título").fill("Ciencia en acción");
+  await page.getByRole("button", { name: "Crear y editar" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Ciencia en acción" })).toBeVisible();
+  await page.getByLabel("Intensidad (horas)").fill("10");
+  await page.getByLabel("Nombre del formador").fill("Ana Pérez Ríos");
+  await page.getByLabel("Título del formador").fill("Licenciada en Biología");
+  await page.getByRole("button", { name: "Guardar datos" }).click();
+  await expect(page.getByText("Guardado.")).toBeVisible();
+
+  const details = (text: string) => page.locator("details", { has: page.locator(":scope > summary", { hasText: text }) });
+  async function addLesson(module: string, title: string, boss = false) {
+    const d = details(`+ Agregar lección a «${module}»`);
+    if (!(await d.getAttribute("open").then((v) => v !== null))) await d.locator(":scope > summary").click();
+    await d.getByLabel("Título de la lección").fill(title);
+    if (boss) await d.getByLabel(/prueba del Guardián del módulo/).check();
+    await d.getByRole("button", { name: "Crear lección" }).click();
+    await expect(page.locator("summary", { hasText: title })).toBeVisible();
+  }
+  async function addActivity(lesson: string, fill: (form: ReturnType<typeof page.locator>) => Promise<void>) {
+    const l = details(lesson).first();
+    if (!(await l.getAttribute("open").then((v) => v !== null))) await l.locator(":scope > summary").click();
+    const d = l.locator("details", { has: page.locator(":scope > summary", { hasText: "+ Agregar actividad" }) });
+    if (!(await d.getAttribute("open").then((v) => v !== null))) await d.locator(":scope > summary").click();
+    const added = l.locator("summary", { hasText: /^\d+\. \[/ });
+    const before = await added.count();
+    await fill(d);
+    await d.getByRole("button", { name: "Agregar actividad" }).click();
+    await expect(added).toHaveCount(before + 1);
+  }
+
+  // El curso empieza con su Módulo 1: se renombra y se agrega un segundo módulo con otro Guardián.
+  const mod1 = details("Editar módulo").first();
+  await mod1.locator(":scope > summary").click();
+  await mod1.getByLabel("Título del módulo").fill("Seres vivos");
+  await mod1.getByRole("button", { name: "Guardar módulo" }).click();
+  await expect(page.getByText("Módulo guardado.")).toBeVisible();
+  await addLesson("Seres vivos", "La célula");
+  await addLesson("Seres vivos", "Prueba de Petrox", true);
+  const newMod = details("+ Agregar módulo");
+  await newMod.locator(":scope > summary").click();
+  await newMod.getByLabel("Título del módulo").fill("Energía");
+  await newMod.getByLabel("Guardián del módulo").selectOption("ignaris");
+  await newMod.getByRole("button", { name: "Crear módulo" }).click();
+  await expect(page.getByText("Módulo creado.")).toBeVisible();
+  await addLesson("Energía", "Prueba de Ignaris", true);
+
+  // Actividades de cada tipo.
+  await addActivity("La célula", async (f) => {
+    await f.getByLabel("Tipo de actividad").selectOption("vf");
+    await f.getByLabel("Afirmación").fill("Todos los seres vivos están hechos de células.");
+    await f.getByLabel("Verdadera").check();
+  });
+  await addActivity("La célula", async (f) => {
+    await f.getByLabel("Tipo de actividad").selectOption("completar");
+    await f.getByLabel(/^Pregunta \(puedes usar/).fill("El centro de control de la célula es el ___.");
+    await f.getByLabel(/Respuestas aceptadas/).fill("núcleo\nel núcleo");
+  });
+  await addActivity("La célula", async (f) => {
+    await f.getByLabel("Tipo de actividad").selectOption("ordenar");
+    await f.getByLabel("Instrucción").fill("Ordena de lo más pequeño a lo más grande.");
+    await f.getByLabel(/Pasos en el orden correcto/).fill("Célula\nTejido\nÓrgano\nOrganismo");
+  });
+  await addActivity("La célula", async (f) => {
+    await f.getByLabel("Tipo de actividad").selectOption("relacionar");
+    await f.getByLabel("Instrucción").fill("Relaciona cada parte con su función.");
+    await f.getByLabel("Pareja 1, izquierda").fill("Membrana");
+    await f.getByLabel("Pareja 1, derecha").fill("Protege");
+    await f.getByLabel("Pareja 2, izquierda").fill("Mitocondria");
+    await f.getByLabel("Pareja 2, derecha").fill("Da energía");
+  });
+  for (const boss of ["Prueba de Petrox", "Prueba de Ignaris"]) {
+    await addActivity(boss, async (f) => {
+      await f.getByLabel("Pregunta", { exact: true }).fill("¿Qué necesitan las plantas para hacer fotosíntesis?");
+      await f.getByLabel("Opción 1", { exact: true }).fill("Luz");
+      await f.getByLabel("Opción 2", { exact: true }).fill("Ruido");
+    });
+  }
+
+  page.once("dialog", (d) => d.accept());
+  await page.getByLabel("Ofrecer gratis (curso completo)").check();
+  await expect(page.getByText(/Ahora es gratis/)).toBeVisible();
+  await page.getByRole("button", { name: "Publicar" }).click();
+  await expect(page.getByText("¡Publicado!")).toBeVisible();
+
+  // El estudiante lo ve gratis en el catálogo, organizado por módulos, con un Guardián en cada uno.
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/programas");
+  await expect(page.locator("li", { hasText: "Ciencia en acción" }).getByText("Gratis", { exact: true })).toBeVisible();
+  await page.goto("/portales");
+  await page.getByRole("link", { name: /Ciencia en acción/ }).click();
+  await expect(page.getByRole("heading", { name: "Seres vivos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Energía" })).toBeVisible();
+  await expect(page.getByText("Guardián del módulo 2")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Desbloquear el curso" })).toHaveCount(0);
+
+  // Juega la lección con las cuatro actividades.
+  await page.getByRole("link", { name: /La célula/ }).click();
+  const respond = async () => {
+    await page.getByRole("button", { name: "Responder" }).click();
+    await expect(page.locator("#feedback")).toBeVisible();
+  };
+  await page.locator("label:has(input[type=radio])").first().click(); // Verdadero
+  await respond();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await page.getByLabel("Tu respuesta").fill("  NUCLEO ");
+  await respond();
+  await expect(page.locator("#feedback")).toContainText(/Golpe certero|Así se hace|Bien pensado|Directo al blanco|Brillante|Imparable/);
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+  const target = ["Célula", "Tejido", "Órgano", "Organismo"];
+  for (let i = 0; i < target.length; i++) {
+    const items = page.getByRole("list", { name: "Pasos para ordenar" }).getByRole("listitem");
+    let pos = (await items.allTextContents()).findIndex((t) => t.includes(target[i]) && !(target[i] === "Órgano" && t.includes("Organismo")));
+    while (pos > i) {
+      await page.getByRole("button", { name: `Subir «${target[i]}»` }).click();
+      pos--;
+    }
+  }
+  await respond();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+  await page.getByLabel("Membrana").selectOption("Protege");
+  await page.getByLabel("Mitocondria").selectOption("Da energía");
+  await respond();
+  await page.getByRole("button", { name: "Terminar misión" }).click();
+  await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "100 por ciento de aciertos" })).toBeVisible();
+
+  // El jefe del primer módulo es Petrox; el del segundo, Ignaris.
+  await page.goto("/portales");
+  await page.getByRole("link", { name: /Ciencia en acción/ }).click();
+  await expect(page.getByRole("link", { name: /Enfrentar a Petrox/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ignaris", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Crónicas de Ignaris" })).toBeVisible();
 });

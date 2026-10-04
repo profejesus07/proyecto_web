@@ -11,12 +11,47 @@ import { PASS_MARK } from "@/lib/game/grading";
 import { duel, kaelScore } from "@/lib/game/kael";
 import { POWERS, stemOf, type PowerKind } from "@/lib/game/powers";
 import { RANKS } from "@/lib/game/ranks";
+import { isChoiceKind, type ActivityKind, type ActivityResponse, type Solution } from "@/lib/activities";
 
 export interface AnsweredQuestion {
   choice: number;
   correct: boolean;
   correctIndex: number;
   explanation: string;
+  /** Solución de las actividades que no son de opciones. */
+  solution?: Solution;
+  /** Lo que respondió (solo en esta sesión, para mostrárselo). */
+  response?: ActivityResponse;
+}
+
+/** Solución de una actividad que no es de opciones, para el repaso y la retroalimentación. */
+function SolutionView({ kind, solution }: { kind: ActivityKind; solution?: Solution }) {
+  if (solution === undefined) return null;
+  if (kind === "completar") return <p className="text-sm"><span className="text-green">Respuesta correcta: </span><strong>{String(solution)}</strong></p>;
+  if (kind === "ordenar" && Array.isArray(solution)) {
+    return (
+      <div className="text-sm"><span className="text-green">Orden correcto:</span>
+        <ol className="mt-1 list-decimal space-y-0.5 pl-6">{solution.map((x) => <li key={x}>{x}</li>)}</ol>
+      </div>
+    );
+  }
+  if (kind === "relacionar" && typeof solution === "object" && !Array.isArray(solution)) {
+    return (
+      <div className="text-sm"><span className="text-green">Parejas correctas:</span>
+        <ul className="mt-1 space-y-0.5 pl-6">{solution.left.map((l, i) => <li key={l}><strong>{l}</strong> → {solution.right[i]}</li>)}</ul>
+      </div>
+    );
+  }
+  return null;
+}
+
+/** Respuesta del estudiante en ordenar/relacionar/completar, en texto. */
+function responseText(kind: ActivityKind, r: ActivityResponse | undefined, left: string[]): string | null {
+  if (r === undefined) return null;
+  if (kind === "completar") return String(r);
+  if (kind === "ordenar" && Array.isArray(r)) return r.join(" → ");
+  if (kind === "relacionar" && Array.isArray(r)) return r.map((x, i) => `${left[i]} → ${x || "—"}`).join(" · ");
+  return null;
 }
 
 export interface QuizProps {
@@ -29,7 +64,7 @@ export interface QuizProps {
   courseTitle: string;
   element: string;
   guardian: { slug: string; name: string };
-  questions: { id: string; prompt: string; options: string[]; hasHint: boolean }[];
+  questions: { id: string; prompt: string; kind: ActivityKind; options: string[]; right?: string[]; hasHint: boolean }[];
   nextMissionId: string | null;
   /** Si la siguiente misión necesita suscripción: a dónde ir para desbloquear el curso. */
   subscribe: { href: string; price: string } | null;
@@ -114,6 +149,10 @@ export function Quiz(p: QuizProps) {
   const [idx, setIdx] = useState(firstOpen);
   const [results, setResults] = useState<(AnsweredQuestion | null)[]>(() => p.questions.map((_, i) => p.resume[i] ?? null));
   const [selected, setSelected] = useState(-1);
+  // Respuesta en curso de las actividades que no son de opciones (por id de pregunta).
+  const [text, setText] = useState<Record<string, string>>({});
+  const [order, setOrder] = useState<Record<string, string[]>>({});
+  const [pairs, setPairs] = useState<Record<string, string[]>>({});
   const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -139,6 +178,12 @@ export function Quiz(p: QuizProps) {
 
   const q = p.questions[idx];
   const res = results[idx];
+  const choiceKind = isChoiceKind(q.kind);
+  const curOrder = order[q.id] ?? q.options;
+  const curPairs = pairs[q.id] ?? q.options.map(() => "");
+  const curText = text[q.id] ?? "";
+  const ready = choiceKind ? selected >= 0 : q.kind === "completar" ? curText.trim() !== "" : q.kind === "ordenar" ? true : curPairs.every(Boolean);
+  const response: ActivityResponse = choiceKind ? selected : q.kind === "completar" ? curText.trim() : q.kind === "ordenar" ? curOrder : curPairs;
   const answeredCount = results.filter(Boolean).length;
   const rightCount = results.filter((r) => r?.correct).length;
   const wrongCount = results.filter((r) => r && !r.correct).length;
@@ -184,11 +229,12 @@ export function Quiz(p: QuizProps) {
   }
 
   function answer() {
-    if (selected < 0 || res) return;
+    if (!ready || res) return;
     const at = idx;
+    const sent = response;
     setError(null);
     startTransition(async () => {
-      const r = await answerQuestionAction(p.missionId, at, selected);
+      const r = await answerQuestionAction(p.missionId, at, sent);
       if (!r.ok) {
         setError(r.error);
         return;
@@ -207,7 +253,7 @@ export function Quiz(p: QuizProps) {
         setFx({ src: POWERS.lluvia.fx, n: Date.now() });
       }
       setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], lluvia: false } }));
-      setResults((all) => all.map((x, i) => (i === at ? { choice: r.choice, correct: r.correct, correctIndex: r.correctIndex, explanation: r.explanation } : x)));
+      setResults((all) => all.map((x, i) => (i === at ? { choice: r.choice, correct: r.correct, correctIndex: r.correctIndex, explanation: r.explanation, solution: r.solution, response: sent } : x)));
       play(r.correct ? "hit" : "miss");
       // Lleva la vista a la escena para ver la reacción; la explicación queda justo debajo.
       requestAnimationFrame(() => {
@@ -247,6 +293,9 @@ export function Quiz(p: QuizProps) {
     setOutcome(null);
     setResults(p.questions.map(() => null));
     setSelected(-1);
+    setText({});
+    setOrder({});
+    setPairs({});
     setAidMsg(null);
     setIdx(0);
     setBeat({ kind: "enter", n: 0 });
@@ -303,7 +352,7 @@ export function Quiz(p: QuizProps) {
           patch({ kuro: { hint: r.hint ?? null, removed: r.removed ?? [] } });
           if (r.removed?.includes(selected)) setSelected(-1);
           if (r.hint) kuroSays(r.hint);
-          setPowerMsg({ ok: true, text: "🐾 ¡Kuro acude a tu llamada! Te dice la pista y descarta una opción." });
+          setPowerMsg({ ok: true, text: r.removed?.length ? "🐾 ¡Kuro acude a tu llamada! Te dice la pista y descarta una opción." : "🐾 ¡Kuro acude a tu llamada y te dice la pista!" });
           break;
         case "pulso":
           setMemory((m) => ({ ...m, ...(r.hints ?? {}) }));
@@ -337,14 +386,14 @@ export function Quiz(p: QuizProps) {
   // Poderes que se ofrecen antes de responder (el Segundo Aliento aparece al fallar).
   const prePowers = powers.filter((x) => x.kind !== "aliento" && x.have > 0 && x.unlocked
     && !(x.kind === "rayo" && (!q.hasHint || ps.rayo)) && !(x.kind === "escudo" && ps.escudo) && !(x.kind === "lluvia" && ps.lluvia)
-    && !(x.kind === "kuro" && ps.kuro) && !(x.kind === "sombra" && ps.sombra !== undefined) && !(x.kind === "aura" && !otherOpen)
+    && !(x.kind === "kuro" && ps.kuro) && !(x.kind === "sombra" && (ps.sombra !== undefined || !isChoiceKind(q.kind))) && !(x.kind === "aura" && !otherOpen)
     && !(x.kind === "pulso" && Object.keys(memory).length > 0));
 
   const pistaCapped = pista.usedToday >= pista.cap;
   const pistaReady = pista.freeAvailable || (pista.stock > 0 && !pistaCapped);
   const fiftyCapped = fifty.usedToday >= fifty.cap;
   const fiftyReady = fifty.unlocked && fifty.stock > 0 && !fiftyCapped;
-  const needShop = (q.hasHint && !shown.hint && !pista.freeAvailable && pista.stock === 0) || (fifty.unlocked && removed.length === 0 && fifty.stock === 0);
+  const needShop = (q.hasHint && !shown.hint && !pista.freeAvailable && pista.stock === 0) || (q.kind === "opcion" && fifty.unlocked && removed.length === 0 && fifty.stock === 0);
 
   // ===== Resultado =====
   if (outcome?.ok) {
@@ -451,8 +500,17 @@ export function Quiz(p: QuizProps) {
               return (
                 <li key={qq.id} className={`panel space-y-2 p-5 ${r.correct ? "!border-green/50" : "!border-coral/50"}`}>
                   <p className="flex gap-3 font-bold"><span aria-hidden="true">{r.correct ? "✅" : "❌"}</span><span><span className="sr-only">{r.correct ? "Correcta. " : "Incorrecta. "}</span>{qq.prompt}</span></p>
-                  {!r.correct && <p className="pl-9 text-sm text-muted">Tu respuesta: {r.chosen >= 0 ? qq.options[r.chosen] : "sin responder"}</p>}
-                  <p className="pl-9 text-sm"><span className="text-green">Respuesta correcta: </span><strong>{qq.options[r.correctIndex]}</strong></p>
+                  {isChoiceKind(qq.kind) ? (
+                    <>
+                      {!r.correct && <p className="pl-9 text-sm text-muted">Tu respuesta: {r.chosen >= 0 ? qq.options[r.chosen] : "sin responder"}</p>}
+                      <p className="pl-9 text-sm"><span className="text-green">Respuesta correcta: </span><strong>{qq.options[r.correctIndex]}</strong></p>
+                    </>
+                  ) : (
+                    <div className="pl-9">
+                      {!r.correct && responseText(qq.kind, results[i]?.response, qq.options) && <p className="text-sm text-muted">Tu respuesta: {responseText(qq.kind, results[i]?.response, qq.options)}</p>}
+                      <SolutionView kind={qq.kind} solution={r.solution} />
+                    </div>
+                  )}
                   <p className="pl-9 text-sm text-muted">💡 {r.explanation}</p>
                 </li>
               );
@@ -529,6 +587,7 @@ export function Quiz(p: QuizProps) {
               : p.isBoss ? `¡Uy! ${p.guardian.name} se crece un momento. Kuro te explica:` : "¡Uy, no era esa! Kuro te explica:"}
           </p>
           <p className={res.correct ? "text-muted" : "text-[#ffe3a0]"}>💡 {res.explanation}</p>
+          {!choiceKind && !res.correct && <SolutionView kind={q.kind} solution={res.solution} />}
           {bonus && res.correct && <p className="font-bold text-gold">🌠 ¡La Lluvia de Estrellas te da +{bonus} XP!</p>}
           {!res.correct && canUse("aliento") && (
             <button type="button" onClick={() => activatePower("aliento")} disabled={aidPending || pending} className="btn btn-secondary btn-sm">
@@ -566,6 +625,12 @@ export function Quiz(p: QuizProps) {
         <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">
           {!res && ps.rayo ? <Highlighted text={q.prompt} stems={ps.rayo.stems} /> : q.prompt}
         </h2>
+        {!choiceKind ? (
+          <ActivityInput kind={q.kind} qid={q.id} options={q.options} right={q.right ?? []} answered={res}
+            text={curText} onText={(v) => setText((all) => ({ ...all, [q.id]: v }))}
+            order={curOrder} onOrder={(v) => setOrder((all) => ({ ...all, [q.id]: v }))}
+            pairs={curPairs} onPairs={(v) => setPairs((all) => ({ ...all, [q.id]: v }))} onSubmit={answer} />
+        ) : (
         <div className="grid gap-3" role="radiogroup" aria-label="Opciones">
           {q.options.map((opt, i) => {
             const out = !res && removed.includes(i);
@@ -598,6 +663,7 @@ export function Quiz(p: QuizProps) {
             );
           })}
         </div>
+        )}
 
         {!res && (
           <>
@@ -611,7 +677,7 @@ export function Quiz(p: QuizProps) {
                   💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
                 </button>
               )}
-              {removed.length > 0 ? (
+              {q.kind !== "opcion" ? null : removed.length > 0 ? (
                 <span className="chip text-sm text-muted">🔮 50/50 usado</span>
               ) : !fifty.unlocked ? (
                 <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}>🔒 50/50 · rango {fifty.minRank}</span>
@@ -649,11 +715,85 @@ export function Quiz(p: QuizProps) {
 
       {!res && (
         <div className="flex items-center justify-end gap-3">
-          <button type="button" className="btn btn-primary btn-lg" onClick={answer} disabled={selected < 0 || pending}>
-            {pending ? "Revisando…" : selected < 0 ? "Elige una respuesta" : p.isBoss ? "¡Lanzar ataque!" : "Responder"}
+          <button type="button" className="btn btn-primary btn-lg" onClick={answer} disabled={!ready || pending}>
+            {pending ? "Revisando…" : !ready ? (q.kind === "completar" ? "Escribe tu respuesta" : q.kind === "relacionar" ? "Completa las parejas" : "Elige una respuesta") : p.isBoss ? "¡Lanzar ataque!" : "Responder"}
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Entrada de las actividades que no son de opciones: completar, ordenar y relacionar. */
+function ActivityInput(p: {
+  kind: ActivityKind; qid: string; options: string[]; right: string[]; answered: AnsweredQuestion | null;
+  text: string; onText: (v: string) => void; order: string[]; onOrder: (v: string[]) => void; pairs: string[]; onPairs: (v: string[]) => void; onSubmit: () => void;
+}) {
+  const done = !!p.answered;
+  const tone = done ? (p.answered!.correct ? "border-green bg-green/10" : "border-coral bg-coral/10") : "border-line bg-bg/40";
+  if (p.kind === "completar") {
+    const id = `resp-${p.qid}`;
+    const shown = done ? String(p.answered!.response ?? "") : p.text;
+    return (
+      <div className="space-y-2">
+        <label htmlFor={id} className="label">Tu respuesta</label>
+        <input id={id} value={shown} onChange={(e) => p.onText(e.target.value)} disabled={done} maxLength={200} autoComplete="off"
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); p.onSubmit(); } }}
+          className={`input !rounded-2xl border-2 !p-4 text-lg ${tone}`} placeholder="Escribe aquí" />
+        <p className="hint">No importan las mayúsculas ni las tildes.</p>
+      </div>
+    );
+  }
+  if (p.kind === "ordenar") {
+    const list = done && Array.isArray(p.answered!.response) ? (p.answered!.response as string[]) : p.order;
+    const move = (i: number, d: -1 | 1) => {
+      const j = i + d;
+      if (j < 0 || j >= list.length) return;
+      const next = [...list];
+      [next[i], next[j]] = [next[j], next[i]];
+      p.onOrder(next);
+    };
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-muted">Ordena los pasos con las flechas, del primero al último.</p>
+        <ol className="space-y-2" aria-label="Pasos para ordenar">
+          {list.map((x, i) => (
+            <li key={x} className={`flex items-center gap-3 rounded-2xl border-2 p-3 text-lg ${tone}`}>
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 font-display font-extrabold" aria-hidden="true">{i + 1}</span>
+              <span className="flex-1 font-medium">{x}</span>
+              {!done && (
+                <span className="flex gap-1">
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir «${x}»`}>↑</button>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => move(i, 1)} disabled={i === list.length - 1} aria-label={`Bajar «${x}»`}>↓</button>
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  }
+  // relacionar
+  const chosen = done && Array.isArray(p.answered!.response) ? (p.answered!.response as string[]) : p.pairs;
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted">Elige la pareja de cada elemento.</p>
+      <ul className="space-y-2">
+        {p.options.map((l, i) => {
+          const id = `par-${p.qid}-${i}`;
+          return (
+            <li key={l} className={`grid items-center gap-2 rounded-2xl border-2 p-3 sm:grid-cols-[1fr_auto_1fr] ${tone}`}>
+              <label htmlFor={id} className="text-lg font-medium">{l}</label>
+              <span aria-hidden="true" className="hidden text-muted sm:block">→</span>
+              <select id={id} value={chosen[i] ?? ""} disabled={done} className="input"
+                onChange={(e) => p.onPairs(p.pairs.map((x, k) => (k === i ? e.target.value : x)))}>
+                <option value="">Elige…</option>
+                {p.right.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

@@ -8,7 +8,8 @@ import { GUARDIANS } from "@/content/guardians";
 import { getViewer } from "@/lib/auth";
 import { MAX_INFORMAL_HOURS, publishProblems, slugify } from "@/lib/content";
 import { getRepo } from "@/lib/data";
-import type { CourseInput, MissionInput, QuestionInput } from "@/lib/data/types";
+import { asKind, normalizeActivity } from "@/lib/activities";
+import type { CourseInput, MissionInput, ModuleInput, QuestionInput } from "@/lib/data/types";
 import { isAdmin } from "@/lib/roles";
 
 // Editor de contenido: cada acción comprueba que quien llama es el administrador.
@@ -75,6 +76,8 @@ export async function createCourseAction(_prev: EditorState, fd: FormData): Prom
   };
   try {
     await getRepo().createCourse(slug, input);
+    // Un curso corto empieza con su primer módulo.
+    if (kind === "curso") await getRepo().createModule(slug, { title: "Módulo 1", summary: "", guardian: input.guardian });
   } catch {
     return { error: "No pudimos crear el portal. Inténtalo de nuevo." };
   }
@@ -128,13 +131,64 @@ const missionSchema = z.object({
   xpReward: z.coerce.number().int().min(0).max(1000),
   isBoss: z.boolean(),
   period: z.coerce.number().int().min(1).max(4).nullable(),
+  moduleId: z.string().regex(/^[\w-]{1,64}$/).nullable(),
 });
 
 function readMission(fd: FormData) {
   return missionSchema.safeParse({
     title: fd.get("title") ?? "", intro: fd.get("intro") ?? "", xpReward: fd.get("xpReward") ?? 50,
-    isBoss: fd.get("isBoss") === "on", period: blankToNull(fd.get("period")),
+    isBoss: fd.get("isBoss") === "on", period: blankToNull(fd.get("period")), moduleId: blankToNull(fd.get("moduleId")),
   });
+}
+
+// ===== Módulos (cursos cortos) =====
+const moduleSchema = z.object({
+  title: text(2, 80, "Título del módulo"),
+  summary: optText(400, "Descripción del módulo"),
+  guardian: z.enum(GUARDIANS.map((g) => g.slug) as [string, ...string[]], { message: "Elige el Guardián del módulo." }),
+});
+
+export async function saveModuleAction(slug: string, moduleId: string | null, _prev: EditorState, fd: FormData): Promise<EditorState> {
+  if (!(await requireAdminId())) return { error: NOT_ADMIN };
+  const parsed = moduleSchema.safeParse({ title: fd.get("title") ?? "", summary: fd.get("summary") ?? "", guardian: fd.get("guardian") });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Revisa el módulo." };
+  const input: ModuleInput = parsed.data;
+  try {
+    if (moduleId) await getRepo().updateModule(moduleId, input);
+    else await getRepo().createModule(slug, input);
+  } catch {
+    return { error: "No pudimos guardar el módulo." };
+  }
+  refresh(slug);
+  return { message: moduleId ? "Módulo guardado." : "Módulo creado." };
+}
+
+export async function deleteModuleAction(slug: string, moduleId: string): Promise<EditorState> {
+  if (!(await requireAdminId())) return { error: NOT_ADMIN };
+  try {
+    await getRepo().deleteModule(moduleId);
+  } catch (e) {
+    if (e instanceof Error && e.message.includes("modulo_con_lecciones")) return { error: "Primero borra o mueve sus lecciones a otro módulo." };
+    return { error: "No pudimos borrar el módulo." };
+  }
+  refresh(slug);
+  return { message: "Módulo borrado." };
+}
+
+export async function moveModuleAction(slug: string, moduleId: string, direction: -1 | 1): Promise<EditorState> {
+  if (!(await requireAdminId())) return { error: NOT_ADMIN };
+  await getRepo().moveModule(moduleId, direction === -1 ? -1 : 1);
+  refresh(slug);
+  return {};
+}
+
+/** «Ofrecer gratis»: el curso completo queda abierto para todos. */
+export async function setFreeAction(slug: string, free: boolean): Promise<EditorState> {
+  if (!(await requireAdminId())) return { error: NOT_ADMIN };
+  await getRepo().setCourseFree(slug, free);
+  refresh(slug);
+  revalidatePath("/", "layout");
+  return { message: free ? "Ahora es gratis: cualquier estudiante puede hacerlo completo." : "Ya no es gratis: después de la primera lección se pide acceso." };
 }
 
 export async function saveMissionAction(slug: string, missionId: string | null, _prev: EditorState, fd: FormData): Promise<EditorState> {
@@ -173,25 +227,26 @@ export async function moveMissionAction(slug: string, missionId: string, directi
 
 const questionSchema = z.object({
   prompt: text(5, 400, "Pregunta"),
-  options: z.array(z.string().trim().min(1).max(200)).min(2, "Escribe al menos 2 opciones.").max(6, "Máximo 6 opciones."),
-  correctIndex: z.coerce.number().int().min(0),
   hint: optText(200, "Pista"),
   explanation: optText(500, "Explicación"),
-}).refine((q) => q.correctIndex < q.options.length, { message: "Marca cuál es la respuesta correcta." });
+});
+const field = (fd: FormData, k: string) => String(fd.get(k) ?? "").slice(0, 200);
+const lines = (fd: FormData, k: string) => String(fd.get(k) ?? "").split(/\r?\n/).map((x) => x.slice(0, 200));
 
 export async function saveQuestionAction(slug: string, missionId: string, questionId: string | null, _prev: EditorState, fd: FormData): Promise<EditorState> {
   if (!(await requireAdminId())) return { error: NOT_ADMIN };
-  // Las opciones vacías se ignoran; la correcta se recalcula sobre las que quedan.
-  const raw = [0, 1, 2, 3, 4, 5].map((i) => String(fd.get(`option${i}`) ?? "").trim());
-  const chosen = Number(fd.get("correct") ?? -1);
-  const options = raw.filter((o) => o !== "");
-  const correctIndex = raw[chosen] ? raw.slice(0, chosen).filter((o) => o !== "").length : -1;
-  const parsed = questionSchema.safeParse({
-    prompt: fd.get("prompt") ?? "", options, correctIndex: correctIndex < 0 ? 99 : correctIndex,
-    hint: fd.get("hint") ?? "", explanation: fd.get("explanation") ?? "",
-  });
+  const parsed = questionSchema.safeParse({ prompt: fd.get("prompt") ?? "", hint: fd.get("hint") ?? "", explanation: fd.get("explanation") ?? "" });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Revisa la pregunta." };
-  const input: QuestionInput = parsed.data;
+  // Cada tipo de actividad llega en sus propios campos; normalizeActivity valida y deja todo listo para guardar.
+  const kind = asKind(fd.get("kind"));
+  const idx = [0, 1, 2, 3, 4, 5];
+  const options = kind === "completar" ? lines(fd, "answers") : kind === "ordenar" ? lines(fd, "steps")
+    : kind === "relacionar" ? idx.map((i) => field(fd, `left${i}`)) : idx.map((i) => field(fd, `option${i}`));
+  const right = kind === "relacionar" ? idx.map((i) => field(fd, `right${i}`)) : [];
+  const correct = fd.get("correct");
+  const activity = normalizeActivity({ kind, options, right, correctIndex: correct === null || correct === "" ? -1 : Number(correct) });
+  if ("error" in activity) return { error: activity.error };
+  const input: QuestionInput = { ...parsed.data, kind, ...activity };
   try {
     if (questionId) await getRepo().updateQuestion(questionId, input);
     else await getRepo().createQuestion(missionId, input);
@@ -199,14 +254,14 @@ export async function saveQuestionAction(slug: string, missionId: string, questi
     return { error: "No pudimos guardar la pregunta." };
   }
   refresh(slug);
-  return { message: questionId ? "Pregunta guardada." : "Pregunta agregada." };
+  return { message: questionId ? "Actividad guardada." : "Actividad agregada." };
 }
 
 export async function deleteQuestionAction(slug: string, questionId: string): Promise<EditorState> {
   if (!(await requireAdminId())) return { error: NOT_ADMIN };
   await getRepo().deleteQuestion(questionId);
   refresh(slug);
-  return { message: "Pregunta borrada." };
+  return { message: "Actividad borrada." };
 }
 
 export async function moveQuestionAction(slug: string, questionId: string, direction: -1 | 1): Promise<EditorState> {

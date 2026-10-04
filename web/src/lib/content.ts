@@ -41,6 +41,18 @@ export function publishProblems(c: EditableCourse): string[] {
   c.missions.forEach((m) => {
     if (m.questions.length === 0) out.push(`La lección «${m.title}» no tiene preguntas.`);
   });
+  if (c.kind === "curso" && !c.modules.length) out.push("Organiza el curso en módulos (al menos uno).");
+  if (c.kind === "curso" && c.modules.length) {
+    // Curso por módulos: cada módulo termina con la prueba de su Guardián (y es la única del módulo).
+    if (c.missions.some((m) => !m.moduleId)) out.push("Cada lección debe estar dentro de un módulo.");
+    for (const mod of c.modules) {
+      const ls = c.missions.filter((m) => m.moduleId === mod.id).sort((a, b) => a.position - b.position);
+      if (!ls.length) { out.push(`El módulo «${mod.title}» no tiene lecciones.`); continue; }
+      const bosses = ls.filter((m) => m.isBoss);
+      if (bosses.length !== 1 || ls[ls.length - 1].id !== bosses[0].id) out.push(`El módulo «${mod.title}» debe terminar con una sola prueba de su Guardián (su última lección).`);
+    }
+    return out;
+  }
   const bosses = c.missions.filter((m) => m.isBoss);
   if (bosses.length > 1) out.push("Solo puede haber una prueba del Guardián.");
   if (bosses.length === 1 && c.missions[c.missions.length - 1]?.id !== bosses[0].id) out.push("La prueba del Guardián debe ser la última lección.");

@@ -44,10 +44,28 @@ describe("repositorio de Supabase", () => {
     tables.questions = [{ id: "q1", mission_id: "m1", position: 1, prompt: "p", options: ["a", "b"], hint: "h", correct_index: 1, explanation: "x" }];
     const play = await createSupabaseRepo().getMissionPlay("m1");
     const q = calls.find((c) => c.table === "questions")!;
-    expect(q.select).toBe("id,position,prompt,options,hint");
+    expect(q.select).toBe("id,position,prompt,options,hint,kind,data");
     expect(q.select).not.toMatch(/correct|explanation|\*/);
-    expect(play?.questions[0]).toEqual({ id: "q1", position: 1, prompt: "p", options: ["a", "b"], hasHint: true });
+    expect(play?.questions[0]).toEqual({ id: "q1", position: 1, prompt: "p", kind: "opcion", options: ["a", "b"], hasHint: true });
     expect(JSON.stringify(play)).not.toContain('"h"');
+  });
+
+  it("tampoco viajan las respuestas aceptadas ni el orden correcto de las otras actividades", async () => {
+    tables.missions = [{ id: "m1", course_slug: "c", position: 1, title: "t", intro: "i", xp_reward: 10, is_boss: false }];
+    tables.courses = [{ slug: "c", title: "C", summary: "s", element: "luz", guardian: "petrox", position: 1, published: true }];
+    tables.questions = [
+      { id: "q1", mission_id: "m1", position: 1, prompt: "p", kind: "completar", options: ["fotosintesis", "fotosintesis"], data: {}, hint: "" },
+      { id: "q2", mission_id: "m1", position: 2, prompt: "p", kind: "ordenar", options: ["Uno", "Dos", "Tres", "Cuatro"], data: {}, hint: "" },
+      { id: "q3", mission_id: "m1", position: 3, prompt: "p", kind: "relacionar", options: ["A", "B", "C"], data: { right: ["1", "2", "3"] }, hint: "" },
+    ];
+    const play = await createSupabaseRepo().getMissionPlay("m1");
+    const [completar, ordenar, relacionar] = play!.questions;
+    expect(completar.options).toEqual([]);
+    expect(JSON.stringify(play)).not.toContain("fotosintesis");
+    expect(ordenar.options).not.toEqual(["Uno", "Dos", "Tres", "Cuatro"]);
+    expect([...ordenar.options].sort()).toEqual(["Cuatro", "Dos", "Tres", "Uno"]);
+    expect(relacionar.options).toEqual(["A", "B", "C"]);
+    expect(relacionar.right).not.toEqual(["1", "2", "3"]);
   });
 
   it("solo lista cursos publicados", async () => {
@@ -75,8 +93,8 @@ describe("repositorio de Supabase", () => {
 
   it("responde con la función de la base de datos", async () => {
     rpcResult = { data: { index: 2, choice: 1, correct: false, correct_index: 3, explanation: "x", answered: 3, right: 2, total: 4 }, error: null };
-    const r = await createSupabaseRepo().answerQuestion("u", "m", 2, 1);
-    expect(rpcCalls[0]).toEqual({ fn: "answer_question", args: { p_user: "u", p_mission: "m", p_index: 2, p_choice: 1 } });
+    const r = await createSupabaseRepo().answerActivity("u", "m", 2, 1);
+    expect(rpcCalls[0]).toEqual({ fn: "answer_activity", args: { p_user: "u", p_mission: "m", p_index: 2, p_response: 1 } });
     expect(r).toEqual({ index: 2, choice: 1, correct: false, correctIndex: 3, explanation: "x", answered: 3, right: 2, total: 4 });
   });
 

@@ -52,7 +52,8 @@ export const submitSchema = z.object({
 export const answerSchema = z.object({
   missionId: z.string().min(1).max(64),
   index: z.number().int().min(0).max(49),
-  choice: z.number().int().min(0).max(9),
+  // Índice (opciones), texto (completar) o lista de textos (ordenar, relacionar).
+  response: z.union([z.number().int().min(0).max(9), z.string().max(200), z.array(z.string().max(200)).min(1).max(6)]),
 });
 
 /** Solo permite volver a rutas internas (evita redirecciones abiertas). */

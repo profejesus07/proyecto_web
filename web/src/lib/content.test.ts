@@ -3,14 +3,15 @@ import type { EditableCourse, EditableMission } from "@/lib/data/types";
 import { publishProblems, slugify } from "./content";
 
 const mission = (id: string, extra: Partial<EditableMission> = {}): EditableMission => ({
-  id, courseSlug: "c", position: 1, title: `Lección ${id}`, intro: "", xpReward: 50, isBoss: false, period: 1, hasProgress: false,
-  questions: [{ id: `${id}q`, position: 1, prompt: "¿Pregunta?", options: ["a", "b"], correctIndex: 0, hint: "", explanation: "" }],
+  id, courseSlug: "c", position: 1, title: `Lección ${id}`, intro: "", xpReward: 50, isBoss: false, period: 1, moduleId: null, hasProgress: false,
+  questions: [{ id: `${id}q`, position: 1, prompt: "¿Pregunta?", kind: "opcion", options: ["a", "b"], correctIndex: 0, right: [], hint: "", explanation: "" }],
   ...extra,
 });
 const base: EditableCourse = {
   slug: "c", title: "C", summary: "", element: "luz", guardian: "petrox", position: 1, price: null, published: false,
   kind: "curso", area: null, grade: null, schoolYear: null, accessUntil: null, hours: 20, trainerName: "Ana Pérez", trainerTitle: "Magíster en Educación",
-  missions: [mission("a"), mission("b", { isBoss: true })],
+  isFree: false, modules: [{ id: "m1", position: 1, title: "Uno", summary: "", guardian: "petrox" }],
+  missions: [mission("a", { moduleId: "m1" }), mission("b", { moduleId: "m1", position: 2, isBoss: true })],
 };
 
 describe("slugify", () => {
@@ -40,6 +41,27 @@ describe("publishProblems", () => {
   it("exige lecciones con preguntas y el Guardián al final", () => {
     expect(publishProblems({ ...base, missions: [] })).toContain("Agrega al menos una lección.");
     expect(publishProblems({ ...base, missions: [mission("a", { questions: [] })] })).toContain("La lección «Lección a» no tiene preguntas.");
-    expect(publishProblems({ ...base, missions: [mission("a", { isBoss: true }), mission("b")] })).toContain("La prueba del Guardián debe ser la última lección.");
+    expect(publishProblems({ ...base, missions: [mission("a", { isBoss: true, moduleId: "m1" }), mission("b", { moduleId: "m1", position: 2 })] }))
+      .toContain("El módulo «Uno» debe terminar con una sola prueba de su Guardián (su última lección).");
+    expect(publishProblems({ ...base, modules: [] })).toContain("Organiza el curso en módulos (al menos uno).");
+    // Las clases (por periodos) siguen con un solo Guardián al final.
+    const clase = { ...base, kind: "clase" as const, area: "Ciencias", grade: "5.°", schoolYear: 2027, accessUntil: "2027-11-30", modules: [] };
+    expect(publishProblems({ ...clase, missions: [mission("a", { isBoss: true }), mission("b")] })).toContain("La prueba del Guardián debe ser la última lección.");
+  });
+});
+
+describe("publishProblems con módulos", () => {
+  const mods = [{ id: "m1", position: 1, title: "Uno", summary: "", guardian: "petrox" }, { id: "m2", position: 2, title: "Dos", summary: "", guardian: "ignaris" }];
+  it("cada módulo termina con la prueba de su Guardián", () => {
+    const ok: EditableCourse = { ...base, modules: mods, missions: [
+      mission("a", { moduleId: "m1", position: 1 }), mission("b", { moduleId: "m1", position: 2, isBoss: true }),
+      mission("c", { moduleId: "m2", position: 3, isBoss: true }),
+    ] };
+    expect(publishProblems(ok)).toEqual([]);
+    const bad: EditableCourse = { ...ok, missions: [mission("a", { moduleId: "m1", position: 1, isBoss: true }), mission("b", { moduleId: "m1", position: 2 }), mission("c", { position: 3 })] };
+    const problems = publishProblems(bad);
+    expect(problems).toContain("Cada lección debe estar dentro de un módulo.");
+    expect(problems.some((p) => p.includes("«Uno» debe terminar"))).toBe(true);
+    expect(problems.some((p) => p.includes("«Dos» no tiene lecciones"))).toBe(true);
   });
 });

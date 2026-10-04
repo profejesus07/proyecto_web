@@ -17,8 +17,11 @@ export default async function BestiaryPage() {
   // El Cofre Mímico aparece al final de las misiones largas: se descubre al terminar una.
   const mimicSeen = courses.some((c) => c.missions.some((m) => m.state === "completada"));
   const seen = (slug: string) => (slug === "cofre-mimico" ? mimicSeen : played);
-  const purified = new Set(courses.filter((c) => c.bossDefeated).map((c) => c.guardian));
-  const inPortal = new Set(courses.map((c) => c.guardian));
+  // Con módulos, cada módulo tiene su Guardián: se purifica al superar la prueba del módulo.
+  const purified = new Set(courses.flatMap((c) => c.modules.length
+    ? c.modules.filter((m) => c.missions.some((x) => x.moduleId === m.id && x.isBoss && x.state === "completada")).map((m) => m.guardian)
+    : c.bossDefeated ? [c.guardian] : []));
+  const inPortal = new Set(courses.flatMap((c) => (c.modules.length ? c.modules.map((m) => m.guardian) : [c.guardian])));
   const found = ALL_ENEMIES.filter((e) => seen(e.slug)).length + GUARDIANS.filter((g) => inPortal.has(g.slug)).length;
 
   return (

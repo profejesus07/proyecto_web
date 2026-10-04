@@ -15,6 +15,7 @@ export function ProgramCard({ c }: { c: CatalogItem }) {
       <div className="relative h-40 overflow-hidden" style={{ background: `radial-gradient(80% 120% at 80% 30%, ${color}40, transparent 70%), linear-gradient(180deg, #1b1745, #14123b)` }}>
         <Sprite src={asset.boss(c.guardian)} alt="" decorative className="absolute -bottom-3 right-3 h-[115%] w-auto opacity-90 transition-transform duration-300 group-hover:scale-105" />
         <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-bg/60 px-3 py-1 text-xs font-semibold backdrop-blur">{meta}</span>
+        {c.isFree && <span className="absolute right-4 top-4 rounded-full bg-green px-3 py-1 text-xs font-extrabold text-ink">Gratis</span>}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
         <h3 className="text-xl">

@@ -1,3 +1,4 @@
+import type { ActivityKind, ActivityResponse, Solution } from "@/lib/activities";
 import type { AvatarLook } from "@/lib/avatar-look";
 
 export type Role = "estudiante" | "docente" | "familia" | "admin";
@@ -44,6 +45,17 @@ export interface Course {
   hours: number | null;
   trainerName: string | null;
   trainerTitle: string | null;
+  /** El curso completo es gratis para todos. */
+  isFree: boolean;
+}
+
+/** Módulo de un curso corto: agrupa lecciones y tiene su propio Guardián (el jefe de su última lección). */
+export interface Module {
+  id: string;
+  position: number;
+  title: string;
+  summary: string;
+  guardian: string;
 }
 
 export type CourseKind = "clase" | "curso";
@@ -58,9 +70,12 @@ export interface MissionSummary {
   isBoss: boolean;
   /** Periodo académico (1 a 4) en una clase. */
   period: number | null;
+  /** Módulo de un curso corto. */
+  moduleId: string | null;
 }
 
 export interface CourseDetail extends Course {
+  modules: Module[];
   missions: MissionSummary[];
 }
 
@@ -68,7 +83,11 @@ export interface PublicQuestion {
   id: string;
   position: number;
   prompt: string;
+  kind: ActivityKind;
+  /** Opciones (selección), pasos desordenados (ordenar) o columna izquierda (relacionar). Vacío en «completar». */
   options: string[];
+  /** Columna derecha desordenada (relacionar). */
+  right?: string[];
   /** Solo dice si existe pista; el texto se entrega al usar la ayuda «Pista». */
   hasHint: boolean;
 }
@@ -81,8 +100,11 @@ export interface MissionPlay {
 
 export interface AnswerKeyRow {
   id: string;
+  kind: ActivityKind;
   correctIndex: number;
   explanation: string;
+  /** Solución que se muestra en el repaso (actividades que no son de opciones). */
+  solution?: Solution;
 }
 
 export interface ProgressRow {
@@ -124,6 +146,8 @@ export interface AnswerResult {
   shielded?: boolean;
   /** XP extra de la Lluvia de Estrellas. */
   bonusXp?: number;
+  /** Solución (actividades que no son de opciones). */
+  solution?: Solution;
 }
 
 /** Lo que devuelve (y guarda) un poder al usarse. */
@@ -247,8 +271,11 @@ export interface EditableQuestion {
   id: string;
   position: number;
   prompt: string;
+  kind: ActivityKind;
   options: string[];
   correctIndex: number;
+  /** Columna derecha (relacionar). */
+  right: string[];
   hint: string;
   explanation: string;
 }
@@ -261,6 +288,7 @@ export interface EditableMission extends MissionSummary {
 
 export interface EditableCourse extends Course {
   published: boolean;
+  modules: Module[];
   missions: EditableMission[];
 }
 
@@ -269,9 +297,10 @@ export interface CourseListItem extends Course {
   missionCount: number;
 }
 
-export type CourseInput = Omit<Course, "slug" | "position" | "price">;
-export type MissionInput = { title: string; intro: string; xpReward: number; isBoss: boolean; period: number | null };
-export type QuestionInput = { prompt: string; options: string[]; correctIndex: number; hint: string; explanation: string };
+export type CourseInput = Omit<Course, "slug" | "position" | "price" | "isFree">;
+export type MissionInput = { title: string; intro: string; xpReward: number; isBoss: boolean; period: number | null; moduleId: string | null };
+export type QuestionInput = { prompt: string; kind: ActivityKind; options: string[]; correctIndex: number; data: { right?: string[] }; hint: string; explanation: string };
+export type ModuleInput = { title: string; summary: string; guardian: string };
 
 export interface AdminUser {
   id: string;
@@ -387,7 +416,8 @@ export interface Repo {
   getAnswerKey(missionId: string): Promise<AnswerKeyRow[]>;
   /** Respuestas del intento abierto (-1 = sin responder), o null si no hay. */
   getOpenAttempt(userId: string, missionId: string): Promise<number[] | null>;
-  answerQuestion(userId: string, missionId: string, index: number, choice: number): Promise<AnswerResult>;
+  /** Responde una actividad de cualquier tipo; la base de datos la revisa. */
+  answerActivity(userId: string, missionId: string, index: number, response: ActivityResponse): Promise<AnswerResult>;
   /** Cierra el intento: la nota sale de las respuestas guardadas. */
   finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
@@ -463,6 +493,12 @@ export interface Repo {
   createCourse(slug: string, input: CourseInput): Promise<void>;
   updateCourse(slug: string, input: CourseInput): Promise<void>;
   setCoursePublished(slug: string, published: boolean): Promise<void>;
+  setCourseFree(slug: string, free: boolean): Promise<void>;
+  createModule(courseSlug: string, input: ModuleInput): Promise<{ id: string }>;
+  updateModule(moduleId: string, input: ModuleInput): Promise<void>;
+  /** Solo si ya no tiene lecciones. */
+  deleteModule(moduleId: string): Promise<void>;
+  moveModule(moduleId: string, direction: -1 | 1): Promise<void>;
   createMission(courseSlug: string, input: MissionInput): Promise<{ id: string }>;
   updateMission(missionId: string, input: MissionInput): Promise<void>;
   deleteMission(missionId: string): Promise<void>;
