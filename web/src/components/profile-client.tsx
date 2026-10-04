@@ -37,6 +37,8 @@ export function BuyButton({ itemId, price, coins, owned, open = true, stack, use
     return (
       <div className="space-y-2">
         <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Ya lo tienes</span>
+        {/* Tras comprar, la página se actualiza y el objeto ya es suyo: el mensaje se conserva. */}
+        {msg?.ok && <p role="status" className="text-xs font-medium text-green">{msg.text}</p>}
         {useLink}
       </div>
     );
