@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Footer } from "@/components/footer";
 import { logoutAction } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
@@ -58,15 +59,15 @@ export async function SiteHeader() {
 
 /** Cabecera de la portada: no depende de quién mira, así la portada se sirve estática y rápida desde la CDN. */
 const PUBLIC_NAV = [
-  { href: "/programas", label: "Programas" },
-  { href: "/#metodologia", label: "Metodología" },
-  { href: "/#comunidad", label: "Docentes y familias" },
-  { href: "/#preguntas", label: "Preguntas" },
+  { href: "/#filosofia", label: "Filosofía" },
+  { href: "/#universos", label: "Universos" },
+  { href: "/programas", label: "Cursos y clases" },
+  { href: "/servicios", label: "Servicios" },
 ];
 
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+    <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/85 backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo href="/" />
         <nav aria-label="Academia" className="hidden items-center gap-1 lg:flex">
@@ -93,5 +94,16 @@ export function PublicHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+/** Envoltura del sitio principal: tema editorial claro, con su cabecera y su pie. */
+export function SiteShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="theme-site">
+      <PublicHeader />
+      <main id="contenido">{children}</main>
+      <Footer />
+    </div>
   );
 }

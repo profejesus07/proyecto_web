@@ -121,6 +121,7 @@ test("repetir una misión superada no da XP otra vez", async ({ page }) => {
 });
 
 test("completar el portal y vencer a Petrox da recompensa, sello y certificado", async ({ page }) => {
+  test.setTimeout(60_000); // juega tres misiones seguidas
   await play(page, "m2", CORRECT.m2);
   await play(page, "m3", CORRECT.m3);
   await play(page, "m4", CORRECT.m4);
@@ -435,15 +436,28 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
-test("la portada de la academia lleva al catálogo y a la ficha de cada programa", async ({ page }) => {
+test("la portada cuenta la filosofía, muestra los universos y lleva al catálogo y a los servicios", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Aprender bien");
-  const programas = page.getByRole("region", { name: "Elige por dónde empezar" });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("salvar el mundo");
+  await expect(page.getByRole("heading", { name: "Un mundo que necesita héroes que aprendan." })).toBeVisible();
+  const universos = page.getByRole("region", { name: "Cada historia, un estilo distinto" });
+  await expect(universos.getByRole("heading", { name: "Academia Hacker" })).toBeVisible();
+  await expect(universos.getByText("Próximamente")).toHaveCount(3);
+  const programas = page.getByRole("region", { name: "Empieza tu aventura" });
   await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
-  await page.getByText("¿Cuánto cuesta?").click();
-  await expect(page.getByText(/se paga en línea con Wompi o Mercado Pago/)).toBeVisible();
-  await page.getByRole("link", { name: /Ver todos los programas/ }).click();
+
+  // Servicios para instituciones.
+  await page.getByRole("link", { name: "Ver los servicios" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Escribir a profejesus365@gmail\.com/ })).toHaveAttribute("href", /^mailto:/);
+
+  // Catálogo, preguntas frecuentes y ficha del programa.
+  await page.goto("/programas");
   await expect(page.getByRole("heading", { level: 1, name: "Todos los programas" })).toBeVisible();
+  await page.getByText("¿Cuánto cuesta?").click();
+  await expect(page.getByText(/se pagan en línea con Wompi o Mercado Pago/)).toBeVisible();
   await page.getByRole("link", { name: "El Portal del Primer Intento" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "El Portal del Primer Intento" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Contenido" })).toBeVisible();

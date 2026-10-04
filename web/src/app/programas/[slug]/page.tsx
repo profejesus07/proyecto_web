@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Footer } from "@/components/footer";
 import { Icon } from "@/components/icons";
-import { PublicHeader } from "@/components/site-header";
+import { SiteShell } from "@/components/site-header";
 import { Sprite, asset } from "@/components/sprite";
 import { CHAPTERS } from "@/content/cronicas";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
@@ -46,9 +45,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
   ].filter((f): f is NonNullable<typeof f> => f !== null);
 
   return (
-    <>
-      <PublicHeader />
-      <main id="contenido" className="mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6">
+    <SiteShell>
+      <div className="mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6">
         <Link href="/programas" className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-text">
           <Icon name="arrow" className="size-4 rotate-180" /> Todos los programas
         </Link>
@@ -56,7 +54,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
         <section className="mt-6 grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
           <div className="space-y-5">
             <p className="eyebrow">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</p>
-            <h1 className="text-4xl sm:text-5xl">{c.title}</h1>
+            <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
             <p className="text-lg text-muted">{c.summary}</p>
             <div className="flex flex-wrap gap-3">
               {viewer ? (
@@ -99,8 +97,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                     <li key={m.id} className="flex items-center gap-4 px-5 py-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-green/15 px-2.5 py-0.5 text-xs font-semibold text-[#b6f5cb]">Gratis</span>}
-                      {m.isBoss && <span className="rounded-full bg-gold/15 px-2.5 py-0.5 text-xs font-semibold text-[#ffe3a0]">Reto del Guardián</span>}
+                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-[#1f8a4c]/10 px-2.5 py-0.5 text-xs font-semibold text-[#1f8a4c]">Gratis</span>}
+                      {m.isBoss && <span className="rounded-full bg-[#e2a019]/15 px-2.5 py-0.5 text-xs font-semibold text-[#8a5a00]">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>
@@ -133,8 +131,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
             {c.kind === "curso" && <p className="text-xs text-muted">{INFORMAL_NOTICE}</p>}
           </aside>
         </div>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </SiteShell>
   );
 }

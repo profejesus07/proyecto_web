@@ -229,3 +229,82 @@ p { text-wrap: pretty; }
   .bubble, .bubble[data-speaking] .portrait, .voice-wave i, .hit-flash, .shake, .pop, .float-up, .confetti i { animation: none !important; }
   .confetti { display: none; }
 }
+
+/* ============================================================
+   Temas por zona. Cada zona redefine los mismos tokens:
+   · el Gremio (estudiantes, familias, docentes) usa los de :root;
+   · .theme-site: el sitio principal, editorial y claro;
+   · .theme-console: la consola de administración, neutra y sobria.
+   ============================================================ */
+.theme-site {
+  --bg: #f6f3ee;
+  --bg-2: #ede8df;
+  --panel: #ffffff;
+  --panel-2: #f1ece4;
+  --line: #e2dbcf;
+  --text: #15120f;
+  --muted: #625c53;
+  --cyan: #4a2fd6;
+  --violet: #4a2fd6;
+  --gold: #e2a019;
+  --coral: #d9472b;
+  --green: #1f8a4c;
+  --ink: #15120f;
+  color-scheme: light;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+}
+.theme-site ::selection { background: rgb(74 47 214 / 0.2); color: inherit; }
+.theme-site :focus-visible { outline-color: var(--cyan); }
+.theme-site .panel { background: var(--panel); box-shadow: 0 1px 2px rgb(20 18 15 / 0.05); backdrop-filter: none; }
+.theme-site .panel-glow { box-shadow: 0 0 0 2px rgb(74 47 214 / 0.25); }
+.theme-site .btn-primary { background: var(--ink); color: #fff; box-shadow: none; }
+.theme-site .btn-primary:hover:not(:disabled) { background: #2d2823; box-shadow: 0 10px 24px -12px rgb(20 18 15 / 0.6); }
+.theme-site .btn-secondary { background: transparent; border-color: var(--ink); color: var(--ink); }
+.theme-site .btn-secondary:hover:not(:disabled) { background: rgb(20 18 15 / 0.05); }
+.theme-site .btn-ghost:hover:not(:disabled) { background: rgb(20 18 15 / 0.06); }
+.theme-site .input { background: #fff; }
+.theme-site .input::placeholder { color: #a39b8f; }
+.theme-site .input:hover { border-color: #c9c0b2; }
+.theme-site .chip { background: rgb(20 18 15 / 0.04); border-color: rgb(20 18 15 / 0.1); }
+.theme-site .bar { background: rgb(20 18 15 / 0.08); }
+.theme-site h1, .theme-site h2 { letter-spacing: -0.035em; }
+
+.theme-console {
+  --bg: #0d0f14;
+  --bg-2: #12151c;
+  --panel: #161a23;
+  --panel-2: #1c2130;
+  --line: #262c3a;
+  --text: #e7eaf1;
+  --muted: #98a0b2;
+  --cyan: #6aa6ff;
+  --violet: #8b93ff;
+  --gold: #f2b84b;
+  --ink: #0b1220;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.theme-console h1, .theme-console h2, .theme-console h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.015em; }
+.theme-console .panel { background: var(--panel); border-radius: 0.75rem; box-shadow: none; backdrop-filter: none; }
+.theme-console .panel-glow { box-shadow: 0 0 0 1px rgb(106 166 255 / 0.35); }
+.theme-console .btn { border-radius: 0.55rem; font-weight: 600; }
+.theme-console .btn-primary { background: var(--cyan); color: #06101f; box-shadow: none; }
+.theme-console .btn-primary:hover:not(:disabled) { background: #8bbaff; box-shadow: none; transform: none; }
+.theme-console .btn-secondary { background: rgb(106 166 255 / 0.08); border-color: rgb(106 166 255 / 0.45); color: var(--cyan); }
+.theme-console .input { background: #0f1218; border-radius: 0.55rem; min-height: 2.6rem; }
+.theme-console .eyebrow { color: var(--muted); letter-spacing: 0.1em; }
+.theme-console .chip { border-radius: 0.4rem; }
+
+/* Universos: miniaturas de cada estilo (sin imágenes). */
+.u-hacker { background: radial-gradient(120% 80% at 80% 0%, #0f3d2a 0%, #050807 60%); color: #42f58d; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.u-hacker .scan { background: repeating-linear-gradient(180deg, rgb(66 245 141 / 0.06) 0 2px, transparent 2px 4px); }
+.u-hacker .cursor { display: inline-block; width: 0.6em; height: 1em; background: #42f58d; vertical-align: -0.12em; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.u-dragon { background: conic-gradient(from 210deg at 50% 60%, #ff6b3d, #ffc83d, #3ddc84, #2ec4ff, #8a5cff, #ff6b3d); }
+.u-pixel { background: #6ec3ff; image-rendering: pixelated; }
+.u-pixel .px { font-family: ui-monospace, monospace; letter-spacing: 0.08em; text-shadow: 3px 3px 0 #1d2b53; }
+@media (prefers-reduced-motion: reduce) { .u-hacker .cursor { animation: none; } }

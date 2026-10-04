@@ -3,7 +3,7 @@ import { Logo } from "@/components/logo";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 const COLUMNS = [
-  { title: "Academia", links: [["/programas", "Programas"], ["/#metodologia", "Metodología"], ["/#comunidad", "Docentes y familias"], ["/#preguntas", "Preguntas frecuentes"]] },
+  { title: "UMBRAL", links: [["/#filosofia", "Filosofía"], ["/#universos", "Universos"], ["/programas", "Cursos y clases"], ["/servicios", "Servicios para instituciones"]] },
   { title: "Tu cuenta", links: [["/registro", "Crear cuenta"], ["/ingresar", "Ingresar"], ["/verificar", "Verificar una constancia"]] },
   { title: "Confianza", links: [["/privacidad", "Privacidad y datos"], ["/terminos", "Términos de uso"]] },
 ] as const;
@@ -14,7 +14,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo />
-          <p className="max-w-xs text-sm text-muted">Academia digital de cursos cortos y clases, con misiones, retroalimentación inmediata y constancias verificables.</p>
+          <p className="max-w-xs text-sm text-muted">Educación con historia: cursos, clases y plataformas para que aprender se sienta como salvar el mundo.</p>
           <p className="text-sm"><a href={`mailto:${SUPPORT_EMAIL}`} className="text-muted underline-offset-4 hover:text-text hover:underline">{SUPPORT_EMAIL}</a></p>
         </div>
         {COLUMNS.map((col) => (
