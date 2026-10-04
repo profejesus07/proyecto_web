@@ -13,6 +13,8 @@ import { formatPrice } from "@/lib/data/queries";
 import { groupByModule } from "@/lib/modules";
 import type { CourseDetail } from "@/lib/data/types";
 
+const FACT_TONES = ["bg-[#5b3df5]/10 text-[#5b3df5]", "bg-[#ff5a36]/10 text-[#ff5a36]", "bg-[#0fa98f]/10 text-[#0fa98f]", "bg-[#ffc233]/20 text-[#a86f00]"];
+
 async function load(slug: string): Promise<CourseDetail | null> {
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) return null;
   try {
@@ -46,36 +48,43 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
 
   return (
     <SiteShell>
-      <div className="mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6">
-        <Link href="/programas" className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-text">
-          <Icon name="arrow" className="size-4 rotate-180" /> Todos los programas
-        </Link>
-
-        <section className="mt-6 grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
-          <div className="space-y-5">
-            <p className="eyebrow">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</p>
-            <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
-            <p className="text-lg text-muted">{c.summary}</p>
-            <div className="flex flex-wrap gap-3">
-              {viewer ? (
-                <Link href={`/portales/${c.slug}`} className="btn btn-primary btn-lg">Ir al programa</Link>
-              ) : (
-                <>
-                  <Link href="/registro" className="btn btn-primary btn-lg">Empieza gratis</Link>
-                  <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-ghost btn-lg">Ya tengo cuenta</Link>
-                </>
-              )}
+      <header className="brand-hero relative isolate overflow-hidden">
+        <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
+        <div className="mx-auto max-w-6xl px-4 pb-20 pt-8 sm:px-6">
+          <Link href="/programas" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white">
+            <Icon name="arrow" className="size-4 rotate-180" /> Todos los programas
+          </Link>
+          <section className="mt-6 grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
+            <div className="space-y-5">
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
+                {c.isFree && <span className="rounded-full bg-[#ffc233] px-3 py-1 text-xs font-bold text-[#17142b]">Gratis</span>}
+              </div>
+              <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
+              <p className="text-lg text-white/85">{c.summary}</p>
+              <div className="flex flex-wrap gap-3">
+                {viewer ? (
+                  <Link href={`/portales/${c.slug}`} className="btn btn-accent btn-lg">Ir al programa</Link>
+                ) : (
+                  <>
+                    <Link href="/registro" className="btn btn-accent btn-lg">Empieza gratis</Link>
+                    <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-outline-light btn-lg">Ya tengo cuenta</Link>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="relative h-72 overflow-hidden rounded-[2rem] border border-line/70" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}45, transparent 70%), linear-gradient(180deg, #1b1745, #14123b)` }}>
-            <Sprite src={asset.boss(c.guardian)} alt={g ? `${g.name}, el Guardián de este programa` : "El Guardián del programa"} className="absolute bottom-0 left-1/2 h-[92%] w-auto -translate-x-1/2" />
-          </div>
-        </section>
+            <div className="relative h-72 overflow-hidden rounded-[2rem] border-4 border-white/25 shadow-2xl" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}55, transparent 70%), linear-gradient(180deg, #1b1745, #14123b)` }}>
+              <Sprite src={asset.boss(c.guardian)} alt={g ? `${g.name}, el Guardián de este programa` : "El Guardián del programa"} className="absolute bottom-0 left-1/2 h-[92%] w-auto -translate-x-1/2" />
+            </div>
+          </section>
+        </div>
+      </header>
 
-        <dl className={`mt-12 grid gap-px overflow-hidden rounded-2xl border border-line/70 bg-line/50 sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
-          {facts.map((f) => (
-            <div key={f.label} className="flex items-center gap-3 bg-bg-2 p-5">
-              <span className="grid size-10 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name={f.icon} /></span>
+      <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+        <dl className={`relative -mt-10 grid gap-px overflow-hidden rounded-3xl border border-line bg-line shadow-lg sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
+          {facts.map((f, i) => (
+            <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
+              <span className={`grid size-10 place-items-center rounded-xl ${FACT_TONES[i % FACT_TONES.length]}`}><Icon name={f.icon} /></span>
               <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="font-display text-lg font-bold">{f.value}</dd></div>
             </div>
           ))}
@@ -88,11 +97,11 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
               <div key={mod?.id ?? "todas"} className="space-y-2">
                 {mod && c.modules.length > 0 && (
                   <h3 className="text-lg">
-                    <span className="text-muted">Módulo {gi + 1} · </span>{mod.title}
+                    <span className="text-[var(--cyan)]">Módulo {gi + 1}</span>{mod.title.trim().toLowerCase() !== `módulo ${gi + 1}` && <> · {mod.title}</>}
                     <span className="ml-2 text-sm font-normal text-muted">Guardián: {guardianBySlug(mod.guardian)?.name ?? mod.guardian}</span>
                   </h3>
                 )}
-                <ol className="divide-y divide-line/70 rounded-2xl border border-line/70 bg-panel/40">
+                <ol className="divide-y divide-line/70 rounded-2xl border border-line bg-panel">
                   {missions.map((m) => (
                     <li key={m.id} className="flex items-center gap-4 px-5 py-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
@@ -108,14 +117,14 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
 
           <aside className="space-y-5">
             {(c.modules.length > 1 ? c.modules.map((m) => guardianBySlug(m.guardian)) : [g]).filter((x, i, all) => x && all.indexOf(x) === i).map((gg) => gg && (
-              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line/70 bg-panel/40 p-6">
+              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line bg-panel p-6">
                 <h2 className="text-xl">{c.modules.length > 1 ? `Guardián: ${gg.name}` : `El reto final: ${gg.name}`}</h2>
                 <p className="mt-2 text-muted">{gg.blurb}</p>
                 <p className="mt-3 text-sm"><span className="text-muted">Representa: </span><strong>{gg.obstacle}</strong></p>
                 <p className="text-sm"><span className="text-muted">Se supera con: </span><strong>{gg.weakness}</strong></p>
               </section>
             ))}
-            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line/70 bg-panel/40 p-6">
+            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line bg-panel p-6">
               <h2 id="incluye-t" className="text-xl">Incluye</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {[

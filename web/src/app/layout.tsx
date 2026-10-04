@@ -31,7 +31,7 @@ export const viewport: Viewport = { themeColor: "#0f0d2e", colorScheme: "dark", 
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${display.variable} ${body.variable}`}>
+    <html lang="es" data-scroll-behavior="smooth" className={`${display.variable} ${body.variable}`}>
       <body>
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
         {children}

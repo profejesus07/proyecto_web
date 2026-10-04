@@ -39,14 +39,17 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
 
   return (
     <SiteShell>
-      <div className="mx-auto max-w-6xl px-4 pb-8 pt-12 sm:px-6">
-        <header className="max-w-2xl space-y-3">
-          <p className="eyebrow">Programas</p>
+      <header className="brand-hero relative isolate overflow-hidden">
+        <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
+        <div className="mx-auto max-w-6xl space-y-3 px-4 pb-16 pt-12 sm:px-6">
+          <p className="text-sm font-semibold text-[#ffc233]">Programas</p>
           <h1 className="text-5xl font-extrabold sm:text-6xl">Todos los programas</h1>
-          <p className="text-lg text-muted">La primera lección de cada programa es gratis. Entra, pruébala y decide.</p>
-        </header>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <form action="/programas" role="search" className="flex w-full max-w-md items-center gap-2 rounded-full border border-line bg-panel p-1.5 pl-5 focus-within:border-[var(--cyan)]">
+          <p className="max-w-2xl text-lg text-white/85">La primera lección de cada programa es gratis. Entra, pruébala y decide.</p>
+        </div>
+      </header>
+      <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+        <div className="relative -mt-7 flex flex-wrap items-center gap-3 rounded-3xl border border-line bg-panel p-3 shadow-lg">
+          <form action="/programas" role="search" className="flex w-full max-w-md items-center gap-2 rounded-full border border-line bg-[var(--bg)] p-1.5 pl-5 focus-within:border-[var(--cyan)]">
             <label htmlFor="buscar" className="sr-only">Buscar programas</label>
             <input id="buscar" name="q" defaultValue={q} placeholder="Buscar programas" className="min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-muted" />
             {tipo && <input type="hidden" name="tipo" value={tipo} />}
@@ -55,7 +58,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
           <nav aria-label="Filtrar" className="flex flex-wrap gap-2 text-sm">
             {FILTERS.map(([t, label]) => (
               <Link key={t} href={href(t)} aria-current={tipo === t ? "page" : undefined}
-                className={`rounded-full border px-3.5 py-1.5 font-medium ${tipo === t ? "border-[var(--ink)] bg-[var(--ink)] text-white" : "border-line bg-panel hover:border-[var(--ink)]"}`}>{label}</Link>
+                className={`rounded-full border px-3.5 py-1.5 font-medium ${tipo === t ? "border-[var(--cyan)] bg-[var(--cyan)] text-white" : "border-line bg-panel hover:border-[var(--cyan)] hover:text-[var(--cyan)]"}`}>{label}</Link>
             ))}
           </nav>
         </div>
