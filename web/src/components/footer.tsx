@@ -1,28 +1,34 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { SUPPORT_EMAIL } from "@/lib/features";
+
+const COLUMNS = [
+  { title: "Academia", links: [["/programas", "Programas"], ["/#metodologia", "Metodología"], ["/#comunidad", "Docentes y familias"], ["/#preguntas", "Preguntas frecuentes"]] },
+  { title: "Tu cuenta", links: [["/registro", "Crear cuenta"], ["/ingresar", "Ingresar"], ["/verificar", "Verificar una constancia"]] },
+  { title: "Confianza", links: [["/privacidad", "Privacidad y datos"], ["/terminos", "Términos de uso"]] },
+] as const;
 
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-line/60 bg-bg-2/60 print:hidden">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
-        <div className="space-y-3">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="space-y-4">
           <Logo />
-          <p className="max-w-sm text-sm text-muted">Cursos que se viven como una aventura. Creado por un docente, pensado para estudiantes, familias y maestros.</p>
+          <p className="max-w-xs text-sm text-muted">Academia digital de cursos cortos y clases, con misiones, retroalimentación inmediata y constancias verificables.</p>
+          <p className="text-sm"><a href={`mailto:${SUPPORT_EMAIL}`} className="text-muted underline-offset-4 hover:text-text hover:underline">{SUPPORT_EMAIL}</a></p>
         </div>
-        <nav aria-label="Plataforma" className="space-y-2 text-sm">
-          <p className="font-bold">Plataforma</p>
-          <Link className="block text-muted hover:text-text" href="/registro">Crear cuenta</Link>
-          <Link className="block text-muted hover:text-text" href="/ingresar">Ingresar</Link>
-          <Link className="block text-muted hover:text-text" href="/#guardianes">Los Guardianes</Link>
-        </nav>
-        <nav aria-label="Legal" className="space-y-2 text-sm">
-          <p className="font-bold">Confianza</p>
-          <Link className="block text-muted hover:text-text" href="/privacidad">Privacidad y datos</Link>
-          <Link className="block text-muted hover:text-text" href="/terminos">Términos de uso</Link>
-          <Link className="block text-muted hover:text-text" href="/verificar">Verificar una constancia</Link>
-        </nav>
+        {COLUMNS.map((col) => (
+          <nav key={col.title} aria-label={col.title} className="space-y-3 text-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-text/80">{col.title}</p>
+            {col.links.map(([href, label]) => (
+              <Link key={href} className="block text-muted transition hover:text-text" href={href}>{label}</Link>
+            ))}
+          </nav>
+        ))}
       </div>
-      <div className="border-t border-line/40 py-5 text-center text-xs text-muted">© {new Date().getFullYear()} Umbral. Todos los derechos reservados.</div>
+      <div className="border-t border-line/40">
+        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">© {new Date().getFullYear()} Umbral · Mgtr. Jesús David Álvarez Sáez. Todos los derechos reservados.</p>
+      </div>
     </footer>
   );
 }

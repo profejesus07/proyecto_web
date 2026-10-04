@@ -89,3 +89,19 @@ export async function loadDiplomas(userId: string): Promise<EarnedDiploma[]> {
     return { slug: v.slug, title: v.title, certifiable: v.kind === "curso" && !!v.hours, date: dates.at(-1) ?? new Date().toISOString() };
   });
 }
+
+/** Programa del catálogo público: el curso y cuántas lecciones tiene. */
+export interface CatalogItem extends Course { lessons: number }
+
+/** Catálogo público de la academia. Nunca rompe la portada: si la base de datos falla, devuelve una lista vacía. */
+export async function loadCatalog(): Promise<CatalogItem[]> {
+  try {
+    const repo = getRepo();
+    const courses = await repo.listCourses();
+    const details = await Promise.all(courses.map((c) => repo.getCourse(c.slug)));
+    return courses.map((c, i) => ({ ...c, lessons: details[i]?.missions.length ?? 0 }));
+  } catch (e) {
+    console.error("catálogo no disponible:", e instanceof Error ? e.message : e);
+    return [];
+  }
+}

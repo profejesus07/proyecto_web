@@ -55,15 +55,40 @@ export async function SiteHeader() {
 }
 
 /** Cabecera de la portada: no depende de quién mira, así la portada se sirve estática y rápida desde la CDN. */
+const PUBLIC_NAV = [
+  { href: "/programas", label: "Programas" },
+  { href: "/#metodologia", label: "Metodología" },
+  { href: "/#comunidad", label: "Docentes y familias" },
+  { href: "/#preguntas", label: "Preguntas" },
+];
+
 export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo href="/" />
-        <nav className="flex items-center gap-2" aria-label="Cuenta">
-          <Link href="/ingresar" className="btn btn-ghost btn-sm">Ingresar</Link>
-          <Link href="/registro" className="btn btn-primary btn-sm">Crear cuenta</Link>
+        <nav aria-label="Academia" className="hidden items-center gap-1 lg:flex">
+          {PUBLIC_NAV.map((l) => (
+            <Link key={l.href} href={l.href} className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition hover:bg-white/5 hover:text-text">{l.label}</Link>
+          ))}
         </nav>
+        <div className="flex items-center gap-2">
+          <nav className="flex items-center gap-2" aria-label="Cuenta">
+            <Link href="/ingresar" className="btn btn-ghost btn-sm hidden sm:inline-flex">Ingresar</Link>
+            <Link href="/registro" className="btn btn-primary btn-sm">Crear cuenta</Link>
+          </nav>
+          <details className="group relative lg:hidden">
+            <summary className="grid size-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-muted hover:text-text [&::-webkit-details-marker]:hidden" aria-label="Menú">
+              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </summary>
+            <nav aria-label="Academia" className="absolute right-0 top-11 w-56 rounded-xl border border-line bg-bg-2 p-2 shadow-2xl">
+              {PUBLIC_NAV.map((l) => (
+                <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-white/5 hover:text-text">{l.label}</Link>
+              ))}
+              <Link href="/ingresar" className="mt-1 block rounded-lg border-t border-line px-3 py-2 text-sm font-semibold hover:bg-white/5 sm:hidden">Ingresar</Link>
+            </nav>
+          </details>
+        </div>
       </div>
     </header>
   );

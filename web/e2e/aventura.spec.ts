@@ -435,6 +435,26 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
+test("la portada de la academia lleva al catálogo y a la ficha de cada programa", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Aprender bien");
+  const programas = page.getByRole("region", { name: "Elige por dónde empezar" });
+  await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
+  await page.getByText("¿Cuánto cuesta?").click();
+  await expect(page.getByText(/se paga en línea con Wompi o Mercado Pago/)).toBeVisible();
+  await page.getByRole("link", { name: /Ver todos los programas/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Todos los programas" })).toBeVisible();
+  await page.getByRole("link", { name: "El Portal del Primer Intento" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "El Portal del Primer Intento" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Contenido" })).toBeVisible();
+  await expect(page.getByText("Gratis", { exact: true }).first()).toBeVisible();
+  // Con sesión iniciada, el botón lleva directo al programa.
+  await page.getByRole("link", { name: "Ir al programa" }).click();
+  await expect(page).toHaveURL(/\/portales\/portal-del-primer-intento$/);
+  await page.goto("/programas/no-existe");
+  await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);
