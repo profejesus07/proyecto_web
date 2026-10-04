@@ -215,6 +215,7 @@ export function createMemoryRepo(): Repo {
       return { coins: s.profile.coins };
     },
     async setAvatar(_u, base: AvatarBase) { state().profile = { ...state().profile, avatarBase: base }; },
+    async setDisplayName(_u, name: string) { state().profile = { ...state().profile, displayName: name }; },
     async listTeacherClasses(teacherId) {
       const s = state();
       return s.classes.filter((c) => c.teacherId === teacherId).map((c) => ({

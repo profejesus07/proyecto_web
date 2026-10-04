@@ -163,6 +163,11 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "avatar");
     },
 
+    async setDisplayName(userId, name) {
+      const { error } = await db.from("profiles").update({ display_name: name }).eq("id", userId);
+      if (error) fail(error, "nombre");
+    },
+
     async markIntroSeen(userId) {
       const { error } = await db.from("profiles").update({ intro_seen_at: new Date().toISOString() }).eq("id", userId).is("intro_seen_at", null);
       if (error) fail(error, "bienvenida");

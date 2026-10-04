@@ -11,7 +11,7 @@ import { ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
 import { RARITY, getItem, itemImage, priceOf, SHOP_CATEGORIES } from "@/lib/catalog";
 import { SHOP_OPEN } from "@/lib/features";
-import { answerSchema, submitSchema } from "@/lib/validation";
+import { answerSchema, displayName, submitSchema } from "@/lib/validation";
 
 export interface ReviewRow {
   correct: boolean;
@@ -196,6 +196,19 @@ export async function selectAvatarAction(base: string): Promise<{ ok: boolean }>
   await getRepo().setAvatar(viewer.id, base as AvatarBase);
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+export type NameState = { ok: boolean; message: string } | null;
+
+/** Cambia el nombre de aventurero (el que ven el docente y el Gremio). */
+export async function updateDisplayNameAction(_prev: NameState, form: FormData): Promise<NameState> {
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, message: "Tu sesión terminó. Vuelve a ingresar." };
+  const parsed = displayName.safeParse(form.get("displayName"));
+  if (!parsed.success) return { ok: false, message: parsed.error.issues[0]?.message ?? "Nombre no válido." };
+  if (parsed.data !== viewer.displayName) await getRepo().setDisplayName(viewer.id, parsed.data);
+  revalidatePath("/", "layout");
+  return { ok: true, message: "¡Listo! Tu nombre se actualizó." };
 }
 
 /** La bienvenida de Sora ya se vio (no vuelve a aparecer sola). */

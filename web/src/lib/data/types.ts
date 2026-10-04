@@ -294,6 +294,7 @@ export interface Repo {
   finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
   setAvatar(userId: string, base: AvatarBase): Promise<void>;
+  setDisplayName(userId: string, name: string): Promise<void>;
   markIntroSeen(userId: string): Promise<void>;
   markChapterRead(userId: string, chapterId: string): Promise<void>;
   /** Unidades de cada ayuda consumible: { item_id: cantidad }. */

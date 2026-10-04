@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JoinClassForm, LeaveClassButton } from "@/components/classes-client";
-import { AvatarPicker } from "@/components/profile-client";
+import { logoutAction } from "@/app/actions/auth";
+import { AvatarPicker, DisplayNameForm } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
@@ -41,8 +42,21 @@ export default async function ProfilePage() {
         <div className="space-y-5 self-center">
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
+          <a href="#editar" className="btn btn-secondary btn-sm">✏️ Editar perfil</a>
+        </div>
+      </section>
+
+      <section id="editar" aria-labelledby="editar-t" className="panel scroll-mt-24 space-y-6 p-6">
+        <h2 id="editar-t" className="text-2xl">Editar perfil</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <DisplayNameForm current={viewer.displayName} />
           <AvatarPicker current={viewer.avatarBase} rank={p.rank.key} />
-          <Link href="/nueva-contrasena" className="inline-block text-sm font-semibold text-cyan underline-offset-4 hover:underline">🔑 Cambiar mi contraseña</Link>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+          <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm">🔑 Cambiar mi contraseña</Link>
+          <form action={logoutAction}>
+            <button type="submit" className="btn btn-ghost btn-sm">🚪 Cerrar sesión</button>
+          </form>
         </div>
       </section>
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { buyItemAction, selectAvatarAction } from "@/app/actions/game";
+import { useActionState, useState, useTransition } from "react";
+import { buyItemAction, selectAvatarAction, updateDisplayNameAction } from "@/app/actions/game";
 import { AvatarFace } from "@/components/avatar-face";
 import { AVATAR_BASES, AVATAR_NAMES, type AvatarBase } from "@/lib/data/types";
 
@@ -42,6 +42,20 @@ export function AvatarPicker({ current, rank }: { current: AvatarBase; rank: str
       </div>
       {error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{error}</p>}
     </fieldset>
+  );
+}
+
+export function DisplayNameForm({ current }: { current: string }) {
+  const [state, action, pending] = useActionState(updateDisplayNameAction, null);
+  return (
+    <form action={action} className="space-y-2">
+      <label htmlFor="displayName" className="label">Nombre de aventurero</label>
+      <div className="flex flex-wrap gap-2">
+        <input id="displayName" name="displayName" defaultValue={current} required minLength={2} maxLength={24} autoComplete="nickname" className="input min-w-0 flex-1" aria-describedby="displayName-msg" />
+        <button type="submit" className="btn btn-primary btn-sm" disabled={pending}>{pending ? "Guardando…" : "Guardar"}</button>
+      </div>
+      <p id="displayName-msg" aria-live="polite" className={`text-sm font-medium ${state?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{state?.message}</p>
+    </form>
   );
 }
 

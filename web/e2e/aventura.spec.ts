@@ -365,3 +365,28 @@ test("las páginas públicas cargan y la accesibilidad básica está presente", 
     await expect(page.locator("html")).toHaveAttribute("lang", "es");
   }
 });
+
+test("en el celular se puede editar el perfil y cerrar sesión", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 740 });
+  await page.goto("/perfil");
+  await page.getByRole("link", { name: /Editar perfil/ }).click();
+  const name = page.getByLabel("Nombre de aventurero");
+  await expect(name).toBeInViewport();
+  await name.fill("Luna<3");
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await expect(page.getByText(/Usa solo letras/)).toBeVisible();
+  await name.fill("Luna Valiente");
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await expect(page.getByText("¡Listo! Tu nombre se actualizó.")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Luna Valiente" })).toBeVisible();
+  // Se deja como estaba para las demás pruebas.
+  await name.fill("Despertado");
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Despertado" })).toBeVisible();
+
+  await expect(page.getByRole("button", { name: "Cerrar sesión" })).toBeVisible();
+  const headerLogout = page.locator("header").getByRole("button", { name: "Salir" });
+  await expect(headerLogout).toBeVisible();
+  await headerLogout.click();
+  await expect(page).toHaveURL(/\/$/);
+});
