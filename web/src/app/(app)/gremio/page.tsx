@@ -6,13 +6,13 @@ import { SoraWelcome } from "@/components/sora-welcome";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
-import { getItem } from "@/lib/catalog";
+import { getItem, petImage } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
 import { kuroStage } from "@/lib/game/battle";
 import { isStaff } from "@/lib/roles";
-import { rankProgress } from "@/lib/game/ranks";
+import { rankForXp, rankProgress } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "El Gremio" };
 
@@ -23,6 +23,7 @@ function isDay(): boolean {
 
 export default async function GremioPage({ searchParams }: PageProps<"/gremio">) {
   const viewer = await requireViewer("/gremio");
+  const pet = petImage(viewer.avatarLook.pet, rankForXp(viewer.xp).key);
   const passwordChanged = (await searchParams).aviso === "clave";
   const [courses, inventory, shelves] = await Promise.all([loadCourseViews(viewer.id), getRepo().getInventory(viewer.id), loadChronicles(viewer)]);
   const unread = unreadCount(shelves);
@@ -69,7 +70,9 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
           <div className="relative hidden h-72 md:block" aria-hidden="true">
             <Sprite src={asset.sora("saludar")} alt="" decorative className="absolute bottom-[-6%] right-[6%] h-[110%] w-auto" />
             <Sprite src={asset.avatar(viewer.avatarBase, rank.key, viewer.avatarLook)} alt="" decorative className="absolute bottom-[-8%] right-[38%] h-[105%] w-auto" />
-            <Sprite src={asset.kuro("reposo", kuroStage(rank.key))} alt="" decorative className="absolute bottom-0 right-[66%] h-[42%] w-auto" />
+            {/* Si eligió una piel de Kuro, Kuro la lleva; otro compañero se suma junto al avatar. */}
+            <Sprite src={pet && viewer.avatarLook.pet?.startsWith("obj_companero_kuro_") ? pet : asset.kuro("reposo", kuroStage(rank.key))} alt="" decorative className="absolute bottom-0 right-[66%] h-[42%] w-auto" />
+            {pet && !viewer.avatarLook.pet?.startsWith("obj_companero_kuro_") && <Sprite src={pet} alt="" decorative className="absolute bottom-0 right-[30%] h-[30%] w-auto" />}
           </div>
         </div>
       </section>

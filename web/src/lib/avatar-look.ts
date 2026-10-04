@@ -11,6 +11,7 @@
  */
 import type { AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
+import { WEARABLE_IDS } from "@/content/wearable-ids";
 import { HAIRSTYLES, applyHairstyle } from "@/lib/avatar-hair";
 import { clamp, hexToHsl, hslToHex } from "@/lib/color";
 
@@ -88,7 +89,22 @@ export interface AvatarLook {
   style?: number;
   /** Atuendo de rango elegido (si no, el del rango actual). */
   gear?: RankKey;
+  /** Objetos de la tienda que lleva puestos (id del catálogo por lugar). */
+  wear?: Partial<Record<WearSlot, string>>;
+  /** Marco del retrato (obj_marco_*). */
+  frame?: string;
+  /** Título que se muestra bajo el nombre (obj_titulo_*). */
+  title?: string;
+  /** Compañero que lo acompaña (obj_companero_*). */
+  pet?: string;
 }
+
+export type WearSlot = keyof typeof WEARABLE_IDS;
+export const WEAR_SLOTS = Object.keys(WEARABLE_IDS) as WearSlot[];
+/** Letra de cada lugar en el código de la URL (mayúsculas: no chocan con los colores). */
+const WEAR_CODE: Record<WearSlot, string> = { capa: "K", alas: "W", aura: "A", bufanda: "B", gafas: "G", sombrero: "S", foco: "F" };
+export const WEAR_LABEL: Record<WearSlot, string> = { capa: "Capa", alas: "Alas", aura: "Aura", bufanda: "Bufanda", gafas: "Gafas", sombrero: "Sombrero", foco: "En la mano" };
+const isWearable = (slot: WearSlot, id: unknown): id is string => typeof id === "string" && (WEARABLE_IDS[slot] as readonly string[]).includes(id);
 
 const SLOTS = [
   ["s", "skin", SKIN.length],
@@ -112,12 +128,34 @@ export function sanitizeLook(raw: unknown): AvatarLook {
     if (typeof v === "number" && Number.isInteger(v) && v >= 0 && v < len) out[key] = v;
   }
   if (typeof r.gear === "string" && rankIndex(r.gear) >= 0) out.gear = r.gear.toUpperCase() as RankKey;
+  if (r.wear && typeof r.wear === "object") {
+    const w = r.wear as Record<string, unknown>;
+    const wear: Partial<Record<WearSlot, string>> = {};
+    for (const slot of WEAR_SLOTS) if (isWearable(slot, w[slot])) wear[slot] = w[slot] as string;
+    if (Object.keys(wear).length) out.wear = wear;
+  }
+  if (typeof r.frame === "string" && /^obj_marco_[a-z]+$/.test(r.frame)) out.frame = r.frame;
+  if (typeof r.title === "string" && /^obj_titulo_[a-z_]+$/.test(r.title)) out.title = r.title;
+  if (typeof r.pet === "string" && /^obj_companero_[a-z_]+$/.test(r.pet)) out.pet = r.pet;
   return out;
+}
+
+/** El marco con el que empieza todo el mundo: no hace falta tenerlo en el inventario. */
+export const FREE_FRAME = "obj_marco_basico";
+
+/** Ids de todo lo que lleva puesto o equipado (para comprobar que lo tiene). */
+export function equippedItems(look: AvatarLook): string[] {
+  return [...Object.values(look.wear ?? {}), look.frame, look.title, look.pet].filter((x): x is string => !!x);
 }
 
 /** Código corto de colores para la URL (el atuendo no va aquí: elige el archivo). */
 export function encodeColors(look: AvatarLook): string {
-  return SLOTS.map(([c, key]) => (look[key] === undefined ? "" : `${c}${look[key]}`)).join("");
+  const colors = SLOTS.map(([c, key]) => (look[key] === undefined ? "" : `${c}${look[key]}`)).join("");
+  const wear = WEAR_SLOTS.map((slot) => {
+    const i = look.wear?.[slot] ? (WEARABLE_IDS[slot] as readonly string[]).indexOf(look.wear[slot]!) : -1;
+    return i < 0 ? "" : `${WEAR_CODE[slot]}${i}`;
+  }).join("");
+  return colors + wear;
 }
 
 export function decodeColors(code: string): AvatarLook {
@@ -126,7 +164,13 @@ export function decodeColors(code: string): AvatarLook {
     const m = code.match(new RegExp(`${c}(\\d+)`));
     if (m) out[key] = Number(m[1]);
   }
-  return sanitizeLook(out);
+  const wear: Record<string, string> = {};
+  for (const slot of WEAR_SLOTS) {
+    const m = code.match(new RegExp(`${WEAR_CODE[slot]}(\\d+)`));
+    const id = m ? WEARABLE_IDS[slot][Number(m[1])] : undefined;
+    if (id) wear[slot] = id;
+  }
+  return sanitizeLook({ ...out, wear });
 }
 
 /** Rango cuyo archivo se dibuja: el atuendo elegido, nunca por encima del rango real. */
@@ -147,7 +191,7 @@ export function avatarSrc(base: string, rank: string, look?: AvatarLook): string
 }
 
 /** Súbelo si cambian los SVG o las paletas, para que la CDN no sirva versiones viejas. */
-export const LOOK_VERSION = 2;
+export const LOOK_VERSION = 3;
 
 // ---------------------------------------------------------------------------
 // Grupos de color de cada avatar (el primero es el principal del grupo).

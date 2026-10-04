@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AvatarFace } from "@/components/avatar-face";
 import { ClassActions, CodeCard, RemoveStudentButton } from "@/components/classes-client";
 import { BackLink } from "@/components/ui";
+import { titleLabel } from "@/lib/catalog";
 import { guardianBySlug } from "@/content/guardians";
 import { daysAgo, lastSeen } from "@/lib/activity";
 import { requireTeacher } from "@/lib/auth";
@@ -121,7 +122,7 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
                   return (
                     <tr key={s.id} className="border-b border-line/60 last:border-0">
                       <th scope="row" className="px-4 py-3 font-semibold">
-                        <span className="flex items-center gap-2"><AvatarFace base={s.avatar} look={s.avatarLook} rank={rank.key} size={32} /> {s.name}</span>
+                        <span className="flex items-center gap-2"><AvatarFace base={s.avatar} look={s.avatarLook} rank={rank.key} size={32} /> <span>{s.name}{titleLabel(s.avatarLook.title) && <span className="block text-xs font-normal text-[#d9c9ff]">«{titleLabel(s.avatarLook.title)}»</span>}</span></span>
                       </th>
                       <td className="px-3 py-3"><span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank.color, color: "#14123b" }}>{rank.key}</span> <span className="text-muted">{s.xp} XP</span></td>
                       <td className="px-3 py-3 text-muted">{lastSeen(s.lastActive)}{s.streak > 1 ? ` · 🔥${s.streak}` : ""}</td>

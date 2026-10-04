@@ -1,4 +1,5 @@
 import catalogJson from "../../public/assets/objetos/catalogo.json";
+import { aidByItem } from "@/lib/game/aids";
 
 export type Rarity = "comun" | "poco" | "raro" | "epico" | "legendario";
 
@@ -45,13 +46,37 @@ export function priceOf(item: CatalogItem): number | null {
   return typeof item.precio === "number" && item.precio > 0 ? item.precio : null;
 }
 
-/** Categorías que se venden en la tienda. */
-export const SHOP_CATEGORIES = ["poder", "ayuda", "marco", "cosmetico", "foco", "decoracion", "equipo"] as const;
+/**
+ * Categorías que se venden en la tienda: solo lo que ya hace algo en el juego.
+ * Ayudas (Pista y 50/50, ver lib/game/aids.ts), lo que se viste en el Vestidor (cosméticos y focos),
+ * marcos del retrato y compañeros. Poderes, decoración y piezas sueltas de equipo esperan a tener uso.
+ */
+export const SHOP_CATEGORIES = ["ayuda", "cosmetico", "foco", "marco", "companero"] as const;
 
 export function shopItems(): CatalogItem[] {
-  return items.filter((i) => priceOf(i) !== null && (SHOP_CATEGORIES as readonly string[]).includes(i.categoria));
+  return items.filter((i) => priceOf(i) !== null && (SHOP_CATEGORIES as readonly string[]).includes(i.categoria) && (i.categoria !== "ayuda" || !!aidByItem(i.id)));
+}
+
+export function isForSale(item: CatalogItem): boolean {
+  return shopItems().some((i) => i.id === item.id);
 }
 
 export function itemImage(item: CatalogItem): string {
   return `/assets/objetos/${item.archivo}`;
+}
+
+/** Nombre corto de un título: «Título «Constructor»» → «Constructor». */
+export function titleLabel(id: string | undefined): string | null {
+  const item = id ? getItem(id) : undefined;
+  if (!item || item.categoria !== "titulo") return null;
+  return item.nombre.match(/«(.+)»/)?.[1] ?? item.nombre;
+}
+
+/** Imagen del compañero. Las pieles de Kuro crecen con el rango: cachorro (E-D), joven (C-B), majestuoso (A-S). */
+export function petImage(id: string | undefined, rank: string): string | null {
+  const item = id ? getItem(id) : undefined;
+  if (!item || item.categoria !== "companero") return null;
+  if (!item.id.startsWith("obj_companero_kuro_")) return itemImage(item);
+  const stage = "ED".includes(rank) ? "cachorro" : "CB".includes(rank) ? "joven" : "majestuoso";
+  return `/assets/objetos/companero/${item.id}-${stage}.svg`;
 }

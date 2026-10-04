@@ -157,7 +157,7 @@ export function hairColors(main: string): HairColors {
 }
 
 /** Busca el </g> que cierra el grupo que empieza en `start`. */
-function groupEnd(svg: string, start: number): number {
+export function groupEnd(svg: string, start: number): number {
   let depth = 0;
   const re = /<g[\s>]|<\/g>/g;
   re.lastIndex = start;

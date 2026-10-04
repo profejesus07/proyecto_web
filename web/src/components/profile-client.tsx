@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { buyItemAction, updateDisplayNameAction } from "@/app/actions/game";
@@ -26,12 +27,20 @@ interface Stack {
   locked: string | null;
 }
 
-export function BuyButton({ itemId, price, coins, owned, open, stack }: { itemId: string; price: number; coins: number; owned: boolean; open: boolean; stack?: Stack }) {
+export function BuyButton({ itemId, price, coins, owned, open = true, stack, use }: { itemId: string; price: number; coins: number; owned: boolean; open?: boolean; stack?: Stack; /** Dónde usarlo después de comprarlo (p. ej. el Vestidor). */ use?: { href: string; label: string } }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  if (owned) return <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Ya lo tienes</span>;
+  const useLink = use && <Link href={use.href} className="btn btn-secondary btn-sm w-full">{use.label}</Link>;
+  if (owned) {
+    return (
+      <div className="space-y-2">
+        <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Ya lo tienes</span>
+        {useLink}
+      </div>
+    );
+  }
   if (!open) return <span className="chip text-sm text-muted" title="La compra se abrirá pronto">🪙 {price} · Próximamente</span>;
   if (stack?.locked) return <span className="chip text-sm text-muted">🔒 Se desbloquea en rango {stack.locked}</span>;
   const poor = coins < price;
@@ -61,6 +70,7 @@ export function BuyButton({ itemId, price, coins, owned, open, stack }: { itemId
       </button>
       {poor && !full && !msg && <p className="text-center text-xs text-muted">Te faltan {price - coins} monedas</p>}
       <p aria-live="polite" className={`text-center text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
+      {msg?.ok && useLink}
     </div>
   );
 }

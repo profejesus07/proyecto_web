@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
-import { canWearGear, sanitizeLook } from "@/lib/avatar-look";
+import { FREE_FRAME, canWearGear, equippedItems, sanitizeLook } from "@/lib/avatar-look";
 import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
 import { getRepo } from "@/lib/data";
 import { AVATAR_BASES, type AnswerResult, type AvatarBase, type CompleteResult } from "@/lib/data/types";
@@ -10,8 +10,7 @@ import { AIDS, aidByItem, type AidKind } from "@/lib/game/aids";
 import { PASS_MARK } from "@/lib/game/grading";
 import { rankForXp, ranksReached } from "@/lib/game/ranks";
 import { itemsOnFirstCompletion } from "@/lib/game/rewards";
-import { RARITY, getItem, itemImage, priceOf, SHOP_CATEGORIES } from "@/lib/catalog";
-import { SHOP_OPEN } from "@/lib/features";
+import { RARITY, getItem, isForSale, itemImage, priceOf } from "@/lib/catalog";
 import { answerSchema, displayName, submitSchema } from "@/lib/validation";
 
 export interface ReviewRow {
@@ -119,13 +118,11 @@ export type BuyOutcome = { ok: true; coins: number; name: string; quantity?: num
 
 export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
   const aid = typeof itemId === "string" ? aidByItem(itemId) : undefined;
-  // Las ayudas que ya funcionan (Pista y 50/50) se venden aunque el resto de la tienda siga cerrada.
-  if (!SHOP_OPEN && !aid) return { ok: false, error: "La tienda todavía no está abierta." };
   const viewer = await getViewer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const item = typeof itemId === "string" ? getItem(itemId) : undefined;
   const price = item ? priceOf(item) : null;
-  if (!item || price === null || !(SHOP_CATEGORIES as readonly string[]).includes(item.categoria)) {
+  if (!item || price === null || !isForSale(item)) {
     return { ok: false, error: "Ese objeto no está a la venta." };
   }
   if (aid) {
@@ -197,6 +194,12 @@ export async function saveAvatarAction(base: string, rawLook: unknown): Promise<
   if (!viewer || !(AVATAR_BASES as readonly string[]).includes(base)) return { ok: false };
   const look = sanitizeLook(rawLook);
   if (look.gear && !canWearGear(look.gear, rankForXp(viewer.xp).key)) return { ok: false };
+  // Solo se puede llevar lo que se tiene (el marco básico es de todos).
+  const wanted = equippedItems(look).filter((id) => id !== FREE_FRAME);
+  if (wanted.length) {
+    const owned = new Set((await getRepo().getInventory(viewer.id)).map((i) => i.itemId));
+    if (wanted.some((id) => !owned.has(id))) return { ok: false };
+  }
   await getRepo().setAvatar(viewer.id, base as AvatarBase, look);
   revalidatePath("/", "layout");
   return { ok: true };

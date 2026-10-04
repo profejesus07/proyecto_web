@@ -1,4 +1,5 @@
 import { decodeColors, recolorSvg } from "@/lib/avatar-look";
+import { applyWearables } from "@/lib/avatar-wear";
 import { AVATAR_BASES, type AvatarBase } from "@/lib/data/types";
 
 /**
@@ -15,7 +16,7 @@ export async function GET(request: Request, ctx: RouteContext<"/avatar/[base]/[f
   if (!original.ok) return new Response("No encontrado", { status: 404 });
 
   const look = decodeColors(new URL(request.url).searchParams.get("c") ?? "");
-  const svg = recolorSvg(await original.text(), base as AvatarBase, look);
+  const svg = applyWearables(recolorSvg(await original.text(), base as AvatarBase, look), base as AvatarBase, look);
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",

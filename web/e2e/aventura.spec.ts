@@ -150,16 +150,33 @@ test("al superar la lección gratis se ofrece desbloquear el curso", async ({ pa
   await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:profejesus365@gmail\.com/);
 });
 
-test("la tienda vende Pista y 50/50; lo demás sigue cerrado", async ({ page }) => {
-  await page.goto("/tienda?c=poder");
-  await expect(page.getByText("Brann está preparando la forja")).toBeVisible();
-  await expect(page.getByRole("button", { name: /Comprar/ })).toHaveCount(0);
+test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en el Vestidor", async ({ page }) => {
   await page.goto("/tienda");
+  const nav = page.getByRole("navigation", { name: "Categorías" });
+  await expect(nav.getByRole("link", { name: "Poderes" })).toHaveCount(0);
+  await expect(page.getByText(/Próximamente/)).toHaveCount(0);
   const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
   await card("50/50").getByRole("button", { name: /Comprar/ }).click();
   await expect(card("50/50").getByText("Ahora tienes 1")).toBeVisible();
   await card("Pista").getByRole("button", { name: /Comprar/ }).click();
   await expect(card("Pista").getByText("Ahora tienes 1")).toBeVisible();
+
+  // Una capa: se ve puesta en la tienda, se compra y se lleva al Vestidor.
+  await nav.getByRole("link", { name: "Cosméticos" }).click();
+  await expect(card("Capa de hojas").getByRole("img", { name: /Así te queda: Capa de hojas/ })).toHaveAttribute("src", /c=[^&]*K1/);
+  await card("Capa de hojas").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("Capa de hojas").getByText("¡Conseguiste Capa de hojas!")).toBeVisible();
+  await card("Capa de hojas").getByRole("link", { name: /Póntelo en el Vestidor/ }).click();
+  await expect(page).toHaveURL(/\/perfil\/avatar$/);
+  await page.getByRole("group", { name: /^Capa/ }).getByRole("radio", { name: "Capa de hojas" }).check({ force: true });
+  await page.getByRole("group", { name: /Marco del retrato/ }).getByRole("radio", { name: "Marco básico" }).check({ force: true });
+  await page.getByRole("button", { name: "Guardar cambios" }).click();
+  await expect(page.getByText("¡Listo! Tu avatar se guardó.")).toBeVisible();
+  await page.goto("/perfil");
+  await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=[^&]*K1/);
+  // Lo que no tiene no aparece para ponérselo.
+  await page.goto("/perfil/avatar");
+  await expect(page.getByRole("radio", { name: "Capa real" })).toHaveCount(0);
 });
 
 test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ page }) => {

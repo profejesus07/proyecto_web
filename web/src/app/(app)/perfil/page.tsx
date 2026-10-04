@@ -7,7 +7,7 @@ import { DisplayNameForm } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
-import { allItems, getItem, type CatalogItem } from "@/lib/catalog";
+import { allItems, getItem, petImage, titleLabel, type CatalogItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import { loadDiplomas } from "@/lib/data/queries";
 import { rankProgress } from "@/lib/game/ranks";
@@ -19,7 +19,7 @@ const SECTIONS: { key: string; title: string; cats: string[]; showMissing?: bool
   { key: "titulos", title: "Títulos", cats: ["titulo"], empty: "Los títulos se ganan al vencer Guardianes y explorar." },
   { key: "insignias", title: "Insignias y rangos", cats: ["rango", "insignia"], showMissing: true, empty: "Completa tu primera misión para empezar tu colección." },
   { key: "sellos", title: "Sellos y certificados", cats: ["sello", "certificado"], empty: "Termina un portal para recibir su sello y tu certificado." },
-  { key: "tienda", title: "Tus compras", cats: ["poder", "ayuda", "marco", "cosmetico", "foco", "decoracion", "equipo", "companero"], empty: "Visita la tienda para conseguir poderes y ayudas." },
+  { key: "tienda", title: "Tus compras", cats: ["poder", "ayuda", "marco", "cosmetico", "foco", "decoracion", "equipo", "companero"], empty: "Visita la tienda para conseguir ayudas, accesorios y compañeros." },
 ];
 
 export default async function ProfilePage() {
@@ -32,6 +32,8 @@ export default async function ProfilePage() {
   const diplomas = await loadDiplomas(viewer.id);
   const owned = new Set(inventory.map((i) => i.itemId));
   const p = rankProgress(viewer.xp);
+  const pet = petImage(viewer.avatarLook.pet, p.rank.key);
+  const title = titleLabel(viewer.avatarLook.title);
 
   const ownedItems = inventory.map((i) => getItem(i.itemId)).filter((i): i is CatalogItem => !!i);
 
@@ -39,12 +41,14 @@ export default async function ProfilePage() {
     <div className="space-y-8">
       <section className="panel panel-glow relative isolate grid gap-6 overflow-hidden rounded-3xl p-6 sm:p-8 md:grid-cols-[auto_1fr]">
         <div className="absolute inset-0 -z-10" style={{ background: `radial-gradient(50% 80% at 12% 50%, ${p.rank.color}30, transparent 70%)` }} />
-        <div className="mx-auto flex h-64 w-44 items-end justify-center md:h-72 md:w-52">
+        <div className="relative mx-auto flex h-64 w-52 items-end justify-center md:h-72 md:w-60">
           <Sprite src={asset.avatar(viewer.avatarBase, p.rank.key, viewer.avatarLook)} alt={`Tu avatar, rango ${p.rank.key}`} priority className="h-full w-auto" />
+          {pet && <Sprite src={pet} alt="Tu compañero" className="absolute bottom-0 right-0 h-1/3 w-auto" />}
         </div>
         <div className="space-y-5 self-center">
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
+          {title && <p className="w-fit rounded-lg bg-violet/20 px-3 py-1 text-sm font-bold text-[#d9c9ff]">🎖️ «{title}»</p>}
           <div className="flex flex-wrap gap-2">
             <Link href="/perfil/avatar" className="btn btn-primary btn-sm">🎨 Personalizar avatar</Link>
             <a href="#editar" className="btn btn-secondary btn-sm">✏️ Editar perfil</a>
@@ -181,7 +185,7 @@ export default async function ProfilePage() {
         );
       })}
 
-      <p className="text-center text-sm text-muted">¿Quieres más poderes y ayudas? <Link href="/tienda" className="font-semibold text-cyan underline underline-offset-4">Visita la tienda</Link></p>
+      <p className="text-center text-sm text-muted">¿Quieres más accesorios y ayudas? <Link href="/tienda" className="font-semibold text-cyan underline underline-offset-4">Visita la tienda</Link></p>
     </div>
   );
 }

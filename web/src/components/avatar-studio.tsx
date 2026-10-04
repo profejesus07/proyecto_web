@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 import { saveAvatarAction } from "@/app/actions/game";
 import { AvatarFace } from "@/components/avatar-face";
 import { Sprite, asset } from "@/components/sprite";
-import { BASE_PALETTE, EYES, GEAR, HAIR, PANTS, SKIN, TOP, avatarSrc, canWearGear, gearRank, sanitizeLook, type AvatarLook, type Swatch } from "@/lib/avatar-look";
+import { BASE_PALETTE, EYES, GEAR, HAIR, PANTS, SKIN, TOP, WEAR_LABEL, WEAR_SLOTS, avatarSrc, canWearGear, gearRank, sanitizeLook, type AvatarLook, type WearSlot, type Swatch } from "@/lib/avatar-look";
 import { HAIRSTYLES } from "@/lib/avatar-hair";
 import { AVATAR_BASES, AVATAR_NAMES, type AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
@@ -70,7 +70,36 @@ function StyleOption({ label, checked, onPick, base, rank, look }: { label: stri
   );
 }
 
-export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: AvatarBase; initialLook: AvatarLook; rank: RankKey }) {
+export interface OwnedOption { id: string; name: string; image: string }
+export interface OwnedItems { wear: Record<WearSlot, OwnedOption[]>; frames: OwnedOption[]; titles: OwnedOption[]; pets: OwnedOption[] }
+
+/** Fila de objetos que tiene: «Ninguno» + los suyos. */
+function ItemRow({ title, name, options, value, onPick, none = "Ninguno", round = false }: { title: string; name: string; options: OwnedOption[]; value: string | undefined; onPick: (v: string | undefined) => void; none?: string | null; round?: boolean }) {
+  const current = options.find((o) => o.id === value);
+  return (
+    <fieldset className="space-y-2">
+      <legend className="label">{title} <span className="font-normal text-muted">· {current?.name ?? none ?? ""}</span></legend>
+      <div className="flex flex-wrap gap-2">
+        {none !== null && (
+          <label className="cursor-pointer">
+            <input type="radio" name={name} checked={!value} onChange={() => onPick(undefined)} className="peer sr-only" aria-label={none} />
+            <span className="grid size-16 place-items-center rounded-xl border-2 border-dashed border-line bg-bg/40 text-xs font-bold text-muted transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{none}</span>
+          </label>
+        )}
+        {options.map((o) => (
+          <label key={o.id} className="cursor-pointer" title={o.name}>
+            <input type="radio" name={name} checked={value === o.id} onChange={() => onPick(o.id)} className="peer sr-only" aria-label={o.name} />
+            <span className={`grid size-16 place-items-center overflow-hidden rounded-xl border-2 border-line bg-bg/40 transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${round ? "p-0.5" : "p-1"}`}>
+              <Sprite src={o.image} alt="" decorative className="size-full object-contain" />
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initialBase: AvatarBase; initialLook: AvatarLook; rank: RankKey; owned: OwnedItems }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [base, setBase] = useState<AvatarBase>(initialBase);
@@ -102,19 +131,38 @@ export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: 
 
   const wearing = gearRank(rank, look) as RankKey;
   const colors: AvatarLook = { ...look, gear: undefined };
+  const pet = owned.pets.find((p) => p.id === look.pet);
+  const titleName = owned.titles.find((t) => t.id === look.title)?.name;
+  const anyWear = WEAR_SLOTS.some((s) => owned.wear[s].length > 0);
+
+  function setWear(slot: WearSlot, id: string | undefined) {
+    setMsg(null);
+    setLook((l) => {
+      const wear = { ...l.wear };
+      if (id) wear[slot] = id;
+      else delete wear[slot];
+      const next: AvatarLook = { ...l, wear };
+      if (!Object.keys(wear).length) delete next.wear;
+      return next;
+    });
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
       <section aria-label="Vista previa" className="panel panel-glow sticky top-[4.5rem] z-10 flex items-center gap-4 overflow-hidden !bg-[#1d1a4d] p-3 md:top-20 md:flex-col md:p-6">
         <div className="relative h-32 w-24 shrink-0 md:h-96 md:w-full" style={{ background: "radial-gradient(60% 60% at 50% 60%, rgba(46,230,214,.18), transparent 70%)" }}>
           <Sprite src={avatarSrc(base, rank, look)} alt={`Vista previa de ${AVATAR_NAMES[base]}`} priority className="absolute inset-0 size-full object-contain" />
+          {pet && <Sprite src={pet.image} alt={`Tu compañero: ${pet.name}`} className="absolute bottom-0 right-0 h-1/3 w-auto md:right-4" />}
         </div>
         <div className="min-w-0 flex-1 space-y-2 md:w-full md:text-center">
-          <p className="font-display text-lg font-bold leading-tight">{AVATAR_NAMES[base]} <span className="block text-xs font-normal text-muted">{GEAR[wearing]}</span></p>
+          <div className="flex items-center gap-3 md:justify-center">
+            <AvatarFace base={base} rank={rank} look={look} size={40} className="hidden md:block" />
+            <p className="font-display text-lg font-bold leading-tight">{AVATAR_NAMES[base]} <span className="block text-xs font-normal text-muted">{titleName ? `«${titleName}» · ` : ""}{GEAR[wearing]}</span></p>
+          </div>
           <button type="button" onClick={save} disabled={!dirty || pending} className="btn btn-primary btn-sm w-full">
             {pending ? "Guardando…" : dirty ? "Guardar cambios" : "Guardado ✔"}
           </button>
-          <button type="button" onClick={() => { setLook((l) => sanitizeLook({ gear: l.gear, style: l.style })); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
+          <button type="button" onClick={() => { setLook((l) => sanitizeLook({ gear: l.gear, style: l.style, wear: l.wear, frame: l.frame, title: l.title, pet: l.pet })); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
             Colores originales
           </button>
           <p aria-live="polite" className={`text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
@@ -161,6 +209,24 @@ export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: 
           {ROWS.map((r) => (
             <ColorRow key={r.slot} title={r.title} slot={r.slot} swatches={r.swatches} base={base} value={look[r.slot]} onPick={(v) => set(r.slot, v)} />
           ))}
+        </section>
+
+        <section className="panel space-y-5 p-5 sm:p-6" aria-labelledby="acc-t">
+          <div>
+            <h2 id="acc-t" className="text-xl">Accesorios</h2>
+            <p className="text-sm text-muted">Lo que consigas en la tienda aparece aquí para ponértelo.</p>
+          </div>
+          {WEAR_SLOTS.filter((s) => owned.wear[s].length > 0).map((s) => (
+            <ItemRow key={s} title={WEAR_LABEL[s]} name={`wear-${s}`} options={owned.wear[s]} value={look.wear?.[s]} onPick={(v) => setWear(s, v)} />
+          ))}
+          <ItemRow title="Marco del retrato" name="frame" options={owned.frames} value={look.frame} onPick={(v) => set("frame", v)} none="Sin marco" round />
+          {owned.titles.length > 0 && <ItemRow title="Título" name="title" options={owned.titles} value={look.title} onPick={(v) => set("title", v)} none="Sin título" />}
+          {owned.pets.length > 0 && <ItemRow title="Compañero" name="pet" options={owned.pets} value={look.pet} onPick={(v) => set("pet", v)} none="Sin compañero" />}
+          {!anyWear && (
+            <p className="rounded-xl border border-dashed border-line p-4 text-sm text-muted">
+              Aún no tienes capas, gafas, sombreros ni otros accesorios. <Link href="/tienda?c=cosmetico" className="font-semibold text-cyan underline underline-offset-4">Visita la tienda</Link> con las monedas que ganas en las misiones.
+            </p>
+          )}
         </section>
 
         <section className="panel space-y-4 p-5 sm:p-6" aria-labelledby="atu-t">

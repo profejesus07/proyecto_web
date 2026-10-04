@@ -6,6 +6,7 @@ import { Sprite, asset } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
 import { daysAgo, lastSeen } from "@/lib/activity";
 import { requireFamily } from "@/lib/auth";
+import { titleLabel } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import type { FamilyChild } from "@/lib/data/types";
 import { PASS_MARK } from "@/lib/game/grading";
@@ -40,6 +41,7 @@ function ChildCard({ c }: { c: FamilyChild }) {
         <AvatarFace base={c.avatar} look={c.avatarLook} rank={p.rank.key} size={72} />
         <div className="min-w-0 flex-1">
           <h2 id={`child-${c.id}`} className="text-2xl">{c.name}</h2>
+          {titleLabel(c.avatarLook.title) && <p className="text-sm font-bold text-[#d9c9ff]">🎖️ «{titleLabel(c.avatarLook.title)}»</p>}
           <p className="text-sm text-muted">
             <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: p.rank.color, color: "#14123b" }}>{p.rank.key}</span>{" "}
             Rango {p.rank.name} · {c.xp} XP
