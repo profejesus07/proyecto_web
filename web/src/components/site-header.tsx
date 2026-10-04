@@ -59,10 +59,9 @@ export async function SiteHeader() {
 
 /** Cabecera de la portada: no depende de quién mira, así la portada se sirve estática y rápida desde la CDN. */
 const PUBLIC_NAV = [
-  { href: "/#filosofia", label: "Filosofía" },
-  { href: "/#universos", label: "Universos" },
   { href: "/programas", label: "Cursos y clases" },
-  { href: "/servicios", label: "Servicios" },
+  { href: "/servicios", label: "Para instituciones" },
+  { href: "/#filosofia", label: "Filosofía" },
 ];
 
 export function PublicHeader() {

@@ -436,18 +436,23 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
-test("la portada cuenta la filosofía, muestra los universos y lleva al catálogo y a los servicios", async ({ page }) => {
+test("la portada cuenta la filosofía, busca en el catálogo y lleva a los servicios", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("salvar el mundo");
-  await expect(page.getByRole("heading", { name: "Un mundo que necesita héroes que aprendan." })).toBeVisible();
-  const universos = page.getByRole("region", { name: "Cada historia, un estilo distinto" });
-  await expect(universos.getByRole("heading", { name: "Academia Hacker" })).toBeVisible();
-  await expect(universos.getByText("Próximamente")).toHaveCount(3);
-  const programas = page.getByRole("region", { name: "Empieza tu aventura" });
+  await expect(page.getByRole("heading", { name: /No solo cursos/ })).toBeVisible();
+  await expect(page.getByText("Próximamente")).toHaveCount(0);
+  const programas = page.getByRole("region", { name: "Cursos y clases" });
   await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
+  // El buscador lleva al catálogo filtrado.
+  await page.getByLabel("¿Qué quieres aprender?").fill("intento");
+  await page.getByRole("button", { name: "Buscar" }).click();
+  await expect(page).toHaveURL(/\/programas\?q=intento/);
+  await expect(page.getByRole("link", { name: "El Portal del Primer Intento" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toHaveCount(0);
+  await page.goto("/");
 
   // Servicios para instituciones.
-  await page.getByRole("link", { name: "Ver los servicios" }).click();
+  await page.getByRole("link", { name: "Conocer los servicios" }).click();
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();

@@ -3,7 +3,7 @@ import { Logo } from "@/components/logo";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 const COLUMNS = [
-  { title: "UMBRAL", links: [["/#filosofia", "Filosofía"], ["/#universos", "Universos"], ["/programas", "Cursos y clases"], ["/servicios", "Servicios para instituciones"]] },
+  { title: "UMBRAL", links: [["/programas", "Cursos y clases"], ["/servicios", "Para instituciones"], ["/#filosofia", "Filosofía"]] },
   { title: "Tu cuenta", links: [["/registro", "Crear cuenta"], ["/ingresar", "Ingresar"], ["/verificar", "Verificar una constancia"]] },
   { title: "Confianza", links: [["/privacidad", "Privacidad y datos"], ["/terminos", "Términos de uso"]] },
 ] as const;

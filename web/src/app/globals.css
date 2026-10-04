@@ -298,13 +298,3 @@ p { text-wrap: pretty; }
 .theme-console .input { background: #0f1218; border-radius: 0.55rem; min-height: 2.6rem; }
 .theme-console .eyebrow { color: var(--muted); letter-spacing: 0.1em; }
 .theme-console .chip { border-radius: 0.4rem; }
-
-/* Universos: miniaturas de cada estilo (sin imágenes). */
-.u-hacker { background: radial-gradient(120% 80% at 80% 0%, #0f3d2a 0%, #050807 60%); color: #42f58d; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-.u-hacker .scan { background: repeating-linear-gradient(180deg, rgb(66 245 141 / 0.06) 0 2px, transparent 2px 4px); }
-.u-hacker .cursor { display: inline-block; width: 0.6em; height: 1em; background: #42f58d; vertical-align: -0.12em; animation: blink 1s steps(2) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-.u-dragon { background: conic-gradient(from 210deg at 50% 60%, #ff6b3d, #ffc83d, #3ddc84, #2ec4ff, #8a5cff, #ff6b3d); }
-.u-pixel { background: #6ec3ff; image-rendering: pixelated; }
-.u-pixel .px { font-family: ui-monospace, monospace; letter-spacing: 0.08em; text-shadow: 3px 3px 0 #1d2b53; }
-@media (prefers-reduced-motion: reduce) { .u-hacker .cursor { animation: none; } }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icon } from "@/components/icons";
+import { Icon, type IconName } from "@/components/icons";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
 import { UniverseArt } from "@/components/universe-art";
@@ -10,157 +10,125 @@ import { loadCatalog } from "@/lib/data/queries";
 // El catálogo se vuelve a leer cada 10 minutos.
 export const revalidate = 600;
 
+const VALUES: { icon: IconName; title: string; text: string }[] = [
+  { icon: "play", title: "Primera lección gratis", text: "Prueba cualquier programa antes de decidir." },
+  { icon: "seal", title: "Constancias verificables", text: "Cada constancia se comprueba en línea." },
+  { icon: "people", title: "Acompañamiento", text: "Docentes y familias siguen el avance." },
+];
+
 const PILLARS = [
-  { n: "01", title: "Historia", text: "Cada contenido vive dentro de una narrativa. Se aprende porque importa lo que pasa después." },
-  { n: "02", title: "Aventura", text: "Retos que se superan, no tareas que se entregan. Equivocarse es parte del camino." },
-  { n: "03", title: "Descubrimiento", text: "Aprender es encontrar, no memorizar. Cada lección abre una puerta nueva." },
-  { n: "04", title: "Propósito", text: "Lo que aprendes sirve para algo: en cada historia, tú salvas tu mundo." },
+  { title: "Historia", text: "Cada contenido vive dentro de una narrativa." },
+  { title: "Aventura", text: "Retos que se superan, no tareas que se entregan." },
+  { title: "Descubrimiento", text: "Aprender es encontrar, no memorizar." },
+  { title: "Propósito", text: "Lo que aprendes salva tu mundo." },
 ];
 
 export default async function Home() {
   const catalog = await loadCatalog();
-  const featured = catalog.slice(0, 3);
-  const [gremio, hacker, dragon] = UNIVERSES;
+  const featured = catalog.slice(0, 4);
+  const [gremio] = UNIVERSES;
 
   return (
     <SiteShell>
-      {/* ===== Manifiesto ===== */}
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
-        <div className="rise space-y-8">
-          <p className="eyebrow">UMBRAL · Educación con historia</p>
-          <h1 className="text-[2.9rem] font-extrabold leading-[0.98] sm:text-7xl">
-            Aprender es<br />salvar <span className="relative whitespace-nowrap">el mundo<svg aria-hidden="true" viewBox="0 0 300 20" className="absolute -bottom-2 left-0 w-full text-cyan"><path d="M3 15 C 80 3, 200 3, 297 12" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" /></svg></span>.
-          </h1>
-          <p className="max-w-xl text-lg text-muted sm:text-xl">
-            No ofrecemos solo cursos y clases. Ofrecemos una historia, una aventura y un descubrimiento: cada estudiante se vuelve protagonista y cada lección acerca su mundo a la luz.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link href="#universos" className="btn btn-primary btn-lg">Explorar los universos</Link>
-            <Link href="/servicios" className="btn btn-secondary btn-lg">Soy docente o institución</Link>
-          </div>
+      {/* ===== Portada: propuesta + buscador ===== */}
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:pt-20">
+        <div className="rise space-y-7">
+          <p className="eyebrow">Educación con historia</p>
+          <h1 className="text-[2.8rem] font-extrabold leading-[1] sm:text-6xl">Aprender es salvar el mundo.</h1>
+          <p className="max-w-lg text-lg text-muted">Cursos y clases donde cada lección es parte de una aventura y cada estudiante es protagonista.</p>
+          <form action="/programas" role="search" className="flex max-w-lg items-center gap-2 rounded-full border border-line bg-panel p-1.5 pl-5 shadow-sm focus-within:border-[var(--cyan)]">
+            <label htmlFor="buscar-home" className="sr-only">¿Qué quieres aprender?</label>
+            <svg viewBox="0 0 24 24" className="size-5 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            <input id="buscar-home" name="q" placeholder="¿Qué quieres aprender?" className="min-w-0 flex-1 bg-transparent py-2 outline-none placeholder:text-muted" />
+            <button type="submit" className="btn btn-primary btn-sm !min-h-10 px-5">Buscar</button>
+          </form>
+          <ul className="flex flex-wrap gap-2 text-sm" aria-label="Explorar">
+            {[["Cursos cortos", "/programas?tipo=curso"], ["Clases", "/programas?tipo=clase"], ["Gratis", "/programas?tipo=gratis"], ["Para instituciones", "/servicios"]].map(([label, href]) => (
+              <li key={href}><Link href={href} className="inline-block rounded-full border border-line bg-panel px-3.5 py-1.5 font-medium hover:border-[var(--ink)]">{label}</Link></li>
+            ))}
+          </ul>
         </div>
-
-        {/* Collage: tres universos, tres estilos. */}
-        <div className="rise relative h-[26rem] [animation-delay:120ms] sm:h-[30rem]" aria-hidden="true">
-          <div className="absolute right-0 top-0 w-[78%] rotate-2 overflow-hidden rounded-3xl border border-line bg-white shadow-xl">
+        <div className="rise relative [animation-delay:120ms]">
+          <div className="overflow-hidden rounded-[2rem] border border-line bg-panel shadow-xl">
             <UniverseArt u={gremio} className="aspect-[4/3]" />
-            <p className="px-4 py-3 text-sm font-bold">{gremio.name}</p>
           </div>
-          <div className="absolute bottom-6 left-0 w-[58%] -rotate-3 overflow-hidden rounded-3xl border border-line bg-white shadow-xl">
-            <UniverseArt u={hacker} className="aspect-[4/3]" />
-            <p className="px-4 py-3 text-sm font-bold">{hacker.name}</p>
-          </div>
-          <div className="absolute bottom-0 right-[6%] w-[40%] rotate-6 overflow-hidden rounded-3xl border border-line bg-white shadow-xl">
-            <UniverseArt u={dragon} className="aspect-square" />
+          <div className="absolute -bottom-6 left-4 max-w-[16rem] rounded-2xl border border-line bg-panel p-4 shadow-lg sm:-left-6">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted">Universo</p>
+            <p className="font-display text-lg font-extrabold leading-tight">{gremio.name}</p>
           </div>
         </div>
       </section>
 
-      {/* ===== Filosofía ===== */}
-      <section id="filosofia" aria-labelledby="filosofia-t" className="scroll-mt-20 border-y border-line bg-panel">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
-            <div className="space-y-4">
-              <p className="eyebrow">Nuestra filosofía</p>
-              <h2 id="filosofia-t" className="text-4xl font-extrabold leading-tight sm:text-5xl">Un mundo que necesita héroes que aprendan.</h2>
-              <p className="text-muted">El rigor académico de siempre, vivido de otra manera. Por eso cada curso pertenece a un universo con su propio estilo, sus personajes y su misión.</p>
-            </div>
-            <ol className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2">
-              {PILLARS.map((p) => (
-                <li key={p.n} className="space-y-3 bg-panel p-7">
-                  <span className="font-display text-sm font-bold text-cyan">{p.n}</span>
-                  <h3 className="text-2xl font-extrabold">{p.title}</h3>
-                  <p className="text-muted">{p.text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Universos ===== */}
-      <section id="universos" aria-labelledby="universos-t" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-        <div className="max-w-2xl space-y-3">
-          <p className="eyebrow">Universos</p>
-          <h2 id="universos-t" className="text-4xl font-extrabold sm:text-5xl">Cada historia, un estilo distinto</h2>
-          <p className="text-lg text-muted">Fantasía, ciberpunk, elementos, pixel art… El mismo aprendizaje, muchas formas de vivirlo.</p>
-        </div>
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2">
-          {UNIVERSES.map((u) => (
-            <li key={u.id} className="group overflow-hidden rounded-3xl border border-line bg-panel transition hover:-translate-y-1 hover:shadow-xl">
-              <UniverseArt u={u} className="aspect-[16/9]" />
-              <div className="space-y-2 p-6">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-muted">{u.style}</p>
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold ${u.status === "disponible" ? "bg-[#1f8a4c] text-white" : "bg-black/5 text-muted"}`}>
-                    {u.status === "disponible" ? "Disponible" : "Próximamente"}
-                  </span>
-                </div>
-                <h3 className="text-2xl font-extrabold">{u.name}</h3>
-                <p className="text-muted">{u.tagline}</p>
-                {u.status === "disponible" && (
-                  <Link href="/programas" className="inline-flex items-center gap-1.5 pt-2 font-bold text-cyan hover:underline hover:underline-offset-4">
-                    Ver sus cursos y clases <Icon name="arrow" className="size-4" />
-                  </Link>
-                )}
-              </div>
+      {/* ===== Valores ===== */}
+      <section aria-label="Lo que ofrecemos" className="border-y border-line bg-panel">
+        <ul className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:grid-cols-3 sm:px-6">
+          {VALUES.map((v) => (
+            <li key={v.title} className="flex items-center gap-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--cyan)]/10 text-cyan"><Icon name={v.icon} /></span>
+              <span><span className="block font-bold">{v.title}</span><span className="text-sm text-muted">{v.text}</span></span>
             </li>
           ))}
         </ul>
       </section>
 
       {/* ===== Cursos y clases ===== */}
-      <section id="programas" aria-labelledby="programas-t" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-20 sm:px-6">
+      <section id="programas" aria-labelledby="programas-t" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="max-w-xl space-y-3">
-            <p className="eyebrow">Cursos y clases</p>
-            <h2 id="programas-t" className="text-4xl font-extrabold sm:text-5xl">Empieza tu aventura</h2>
-            <p className="text-muted">La primera lección de cada programa es gratis.</p>
-          </div>
+          <h2 id="programas-t" className="text-3xl font-extrabold sm:text-4xl">Cursos y clases</h2>
           <Link href="/programas" className="inline-flex items-center gap-1.5 font-bold text-cyan hover:underline hover:underline-offset-4">
-            Ver todos los programas <Icon name="arrow" className="size-4" />
+            Ver todos <Icon name="arrow" className="size-4" />
           </Link>
         </div>
         {featured.length ? (
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((c) => <ProgramCard key={c.slug} c={c} />)}
           </ul>
         ) : (
-          <p className="mt-10 rounded-3xl border border-line bg-panel p-8 text-center text-muted">Muy pronto publicaremos los primeros programas.</p>
+          <p className="mt-8 rounded-3xl border border-line bg-panel p-8 text-center text-muted">Muy pronto publicaremos los primeros programas.</p>
         )}
       </section>
 
+      {/* ===== Filosofía ===== */}
+      <section id="filosofia" aria-labelledby="filosofia-t" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-20 sm:px-6">
+        <div className="grid items-center gap-10 rounded-[2rem] border border-line bg-panel p-8 sm:p-12 lg:grid-cols-[1fr_1.3fr]">
+          <div className="space-y-3">
+            <p className="eyebrow">Nuestra filosofía</p>
+            <h2 id="filosofia-t" className="text-3xl font-extrabold leading-tight sm:text-4xl">No solo cursos: una historia que vale la pena vivir.</h2>
+          </div>
+          <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+            {PILLARS.map((p, i) => (
+              <li key={p.title} className="border-l-2 border-[var(--cyan)] pl-4">
+                <p className="text-xs font-bold text-cyan">0{i + 1}</p>
+                <h3 className="text-xl font-extrabold">{p.title}</h3>
+                <p className="text-sm text-muted">{p.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* ===== Para instituciones ===== */}
-      <section aria-labelledby="servicios-t" className="bg-[#15120f] text-[#f6f3ee]">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.5fr]">
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#b7a8ff]">Para docentes, directivos e instituciones</p>
-              <h2 id="servicios-t" className="text-4xl font-extrabold leading-tight sm:text-5xl">Más que cursos: soluciones para tu institución</h2>
-              <p className="text-[#c9c2b6]">Plataformas, aplicaciones y juegos hechos a la medida, con la misma idea: que aprender y enseñar se sienta como una buena historia.</p>
-              <Link href="/servicios" className="btn btn-lg mt-2 bg-[#f6f3ee] text-[#15120f] hover:bg-white">Ver los servicios</Link>
-            </div>
-            <ul className="grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2">
-              {SERVICES.map((s) => (
-                <li key={s.id} className="space-y-2 bg-[#15120f] p-6">
-                  <span className="grid size-10 place-items-center rounded-xl bg-white/10 text-[#b7a8ff]"><Icon name={s.icon} /></span>
-                  <h3 className="text-lg font-bold">{s.title}</h3>
-                  <p className="text-sm text-[#c9c2b6]">{s.lead}</p>
-                </li>
-              ))}
+      <section aria-labelledby="inst-t" className="bg-[#15120f] text-[#f6f3ee]">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#b7a8ff]">Para instituciones educativas</p>
+            <h2 id="inst-t" className="text-3xl font-extrabold leading-tight sm:text-4xl">Soluciones para docentes, directivos e instituciones</h2>
+            <ul className="flex flex-wrap gap-2 pt-1">
+              {SERVICES.map((s) => <li key={s.id} className="rounded-full border border-white/15 px-3 py-1 text-sm text-[#d8d1c5]">{s.title}</li>)}
             </ul>
+          </div>
+          <div className="flex flex-wrap gap-3 lg:justify-end">
+            <Link href="/servicios" className="btn btn-lg bg-[#f6f3ee] text-[#15120f] hover:bg-white">Conocer los servicios</Link>
+            <Link href="/servicios#contacto" className="btn btn-lg border-white/40 text-[#f6f3ee] hover:bg-white/10">Hablemos</Link>
           </div>
         </div>
       </section>
 
       {/* ===== Cierre ===== */}
-      <section aria-labelledby="cierre-t" className="mx-auto max-w-4xl px-4 py-24 text-center sm:px-6">
-        <h2 id="cierre-t" className="text-4xl font-extrabold leading-tight sm:text-6xl">¿Listo para cruzar el umbral?</h2>
-        <p className="mx-auto mt-5 max-w-xl text-lg text-muted">Crea tu cuenta gratis y empieza hoy tu primera aventura. Si eres institución, cuéntanos qué quieres lograr.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/registro" className="btn btn-primary btn-lg">Empieza gratis</Link>
-          <Link href="/servicios#contacto" className="btn btn-secondary btn-lg">Hablemos</Link>
-        </div>
+      <section aria-labelledby="cierre-t" className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
+        <h2 id="cierre-t" className="text-3xl font-extrabold sm:text-5xl">¿Listo para cruzar el umbral?</h2>
+        <p className="mt-4 text-lg text-muted">Crea tu cuenta gratis y empieza hoy.</p>
+        <Link href="/registro" className="btn btn-primary btn-lg mt-7">Empieza gratis</Link>
       </section>
     </SiteShell>
   );
