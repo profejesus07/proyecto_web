@@ -1,5 +1,5 @@
 import "server-only";
-import { CHAPTERS, isUnlocked, missionKey, type Chapter } from "@/content/cronicas";
+import { CHAPTERS, isUnlocked, stagesReached, type Chapter } from "@/content/cronicas";
 import type { Profile } from "./types";
 import { loadCourseViews, type CourseView } from "./queries";
 
@@ -18,11 +18,16 @@ export interface ChronicleShelf {
 /** Arma el Archivo para un estudiante: qué capítulos tiene abiertos y cuáles ya leyó. */
 export async function loadChronicles(viewer: Profile): Promise<ChronicleShelf[]> {
   const courses = await loadCourseViews(viewer.id);
-  const completed = new Set(courses.flatMap((c) => c.missions.filter((m) => m.state === "completada").map((m) => missionKey(c.slug, m.position))));
-  const view = (ch: Chapter): ChapterView => ({ chapter: ch, unlocked: isUnlocked(ch, completed), read: viewer.chroniclesRead.includes(ch.id) });
-  const shelves: ChronicleShelf[] = [{ course: null, chapters: CHAPTERS.filter((c) => c.course === null).map(view) }];
+  // Hitos alcanzados en cualquier portal (varios cursos pueden compartir Guardián).
+  const reached = new Set(courses.flatMap((c) => stagesReached(c.guardian, c.missions.filter((m) => m.state === "completada").map((m) => m.position), c.missions.length)));
+  const view = (ch: Chapter): ChapterView => ({ chapter: ch, unlocked: isUnlocked(ch, reached), read: viewer.chroniclesRead.includes(ch.id) });
+  const shelves: ChronicleShelf[] = [{ course: null, chapters: CHAPTERS.filter((c) => c.guardian === null).map(view) }];
+  // Un estante por Guardián que tenga portal (el primero de sus cursos le da el título).
+  const seen = new Set<string>();
   for (const c of courses) {
-    const chapters = CHAPTERS.filter((ch) => ch.course === c.slug).map(view);
+    if (seen.has(c.guardian)) continue;
+    seen.add(c.guardian);
+    const chapters = CHAPTERS.filter((ch) => ch.guardian === c.guardian).map(view);
     if (chapters.length) shelves.push({ course: { slug: c.slug, title: c.title, guardian: c.guardian, element: c.element }, chapters });
   }
   return shelves;

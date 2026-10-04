@@ -92,7 +92,7 @@ export function CourseForm({ action, values, guardians, elements }: {
         <textarea name="summary" defaultValue={values.summary} maxLength={400} rows={3} className="input" />
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Guardián del portal">
+        <Field label="Guardián del portal" hint="Trae su historia en las Crónicas (3 capítulos), su recompensa y su título al vencerlo.">
           <select name="guardian" defaultValue={values.guardian} className="input">
             {guardians.map((g) => <option key={g.slug} value={g.slug}>{g.name} · {g.obstacle}</option>)}
           </select>

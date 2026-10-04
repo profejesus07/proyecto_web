@@ -80,6 +80,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
     const play = await repo.getMissionPlay(parsed.data.missionId);
     if (!play) return { ok: false, error: MESSAGES.mision_no_encontrada };
     const key = await repo.getAnswerKey(parsed.data.missionId);
+    const total = (await repo.getCourse(play.course.slug))?.missions.length ?? play.mission.position;
     const progress = await repo.getProgress(viewer.id);
     const items = itemsOnFirstCompletion({
       isBoss: play.mission.isBoss,
@@ -104,7 +105,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
       review: key.map((k, i) => ({ correct: answers[i] === k.correctIndex, chosen: answers[i] ?? -1, correctIndex: k.correctIndex, explanation: k.explanation })),
       result: rest,
       newRanks: result.first ? ranksReached(viewer.xp, result.xp).map((r) => r.key) : [],
-      chronicles: result.first ? chaptersUnlockedBy(play.course.slug, play.mission.position).map((c) => ({ id: c.id, title: c.title })) : [],
+      chronicles: result.first ? chaptersUnlockedBy(play.course.guardian, play.mission.position, total).map((c) => ({ id: c.id, title: c.title })) : [],
       items: result.granted.flatMap((id) => {
         const it = getItem(id);
         return it ? [{ id, name: it.nombre, alt: it.alt, image: itemImage(it), rarity: RARITY[it.rareza].label, color: RARITY[it.rareza].color }] : [];

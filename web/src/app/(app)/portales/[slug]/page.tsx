@@ -6,7 +6,7 @@ import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
 import { requireViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
-import { CHAPTERS, isUnlocked, missionKey } from "@/content/cronicas";
+import { CHAPTERS, isUnlocked, stagesReached } from "@/content/cronicas";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { formatPrice, loadCourseView, type MissionView } from "@/lib/data/queries";
 
@@ -25,8 +25,8 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
   const g = guardianBySlug(course.guardian);
   const normal = course.missions.filter((m) => !m.isBoss);
   const boss = course.missions.find((m) => m.isBoss);
-  const done = new Set(course.missions.filter((m) => m.state === "completada").map((m) => missionKey(course.slug, m.position)));
-  const chapters = CHAPTERS.filter((c) => c.course === course.slug);
+  const done = new Set(stagesReached(course.guardian, course.missions.filter((m) => m.state === "completada").map((m) => m.position), course.missions.length));
+  const chapters = CHAPTERS.filter((c) => c.guardian === course.guardian);
 
   return (
     <div className="space-y-8">
