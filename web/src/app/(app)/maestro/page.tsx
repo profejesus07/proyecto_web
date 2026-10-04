@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CreateClassForm } from "@/components/classes-client";
 import { SpeechBubble } from "@/components/dialogue";
-import { asset } from "@/components/sprite";
+import { GuidePicker } from "@/components/guide-picker";
+import { Sprite } from "@/components/sprite";
+import { MAESTROS, guideSrc } from "@/content/elenco";
 import { PageTitle } from "@/components/ui";
 import { requireTeacher } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
+import { guideFor } from "@/lib/guides";
 
 export const metadata: Metadata = { title: "Maestro del Gremio" };
 
@@ -14,18 +17,26 @@ export default async function TeacherPage() {
   const classes = await getRepo().listTeacherClasses(viewer.id);
   const active = classes.filter((c) => !c.archived);
   const archived = classes.filter((c) => c.archived);
+  const guide = guideFor(viewer)!;
 
   return (
     <div className="space-y-8">
-      <PageTitle eyebrow="Maestro del Gremio" title="Tus clases">
-        <p>Crea una clase, comparte su código y sigue el avance de tus estudiantes en cada portal.</p>
-      </PageTitle>
-
-      <SpeechBubble name="Maestra Sora" src={asset.sora(active.length ? "senalar" : "saludar")} alt="La Maestra Sora" className="max-w-3xl">
-        {active.length
-          ? "Abre una clase para ver quién avanza, quién necesita un empujón y qué preguntas les cuestan más."
-          : <>Bienvenido, Maestro del Gremio. Empieza creando tu primera clase: tus estudiantes se unen escribiendo el código en <strong>Perfil → Mis clases</strong>.</>}
-      </SpeechBubble>
+      <section className="panel relative isolate overflow-hidden rounded-3xl" aria-label="Maestro del Gremio">
+        <div className="absolute inset-0 -z-10" style={{ background: "radial-gradient(60% 90% at 85% 60%, rgba(91,52,214,.35), transparent 70%)" }} />
+        <div className="flex items-end justify-between gap-4 p-6 sm:p-8">
+          <div className="space-y-4 md:max-w-xl">
+            <PageTitle eyebrow="Maestro del Gremio" title="Tus clases">
+              <p>Crea una clase, comparte su código y sigue el avance de tus estudiantes en cada portal.</p>
+            </PageTitle>
+            <SpeechBubble name={guide.name} src={guideSrc(guide, active.length ? "senalar" : "saludar")} alt={guide.name}>
+              {active.length
+                ? "Abre una clase para ver quién avanza, quién necesita un empujón y qué preguntas les cuestan más."
+                : <>Bienvenido al Gremio. Empieza creando tu primera clase: tus estudiantes se unen escribiendo el código en <strong>Perfil → Mis clases</strong>.</>}
+            </SpeechBubble>
+          </div>
+          <Sprite src={guideSrc(guide, active.length ? "reposo" : "abrir-portal")} alt="" decorative className="hidden h-64 w-auto shrink-0 md:block" />
+        </div>
+      </section>
 
       <section aria-labelledby="nueva-t" className="max-w-2xl space-y-3">
         <h2 id="nueva-t" className="text-2xl">Nueva clase</h2>
@@ -51,6 +62,12 @@ export default async function TeacherPage() {
           </ul>
         </section>
       )}
+
+      <section aria-labelledby="retrato-t" className="panel max-w-2xl space-y-3 p-5">
+        <h2 id="retrato-t" className="text-xl">Tu retrato en el Gremio</h2>
+        <p className="text-sm text-muted">Elige el Maestro que te representa. Lo verás en la cabecera y en tus informes.</p>
+        <GuidePicker options={MAESTROS} current={guide.id} legend="Maestro del Gremio" />
+      </section>
 
       {archived.length > 0 && (
         <details className="panel p-5">

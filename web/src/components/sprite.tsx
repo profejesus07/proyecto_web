@@ -3,9 +3,9 @@ import { avatarSrc, type AvatarLook } from "@/lib/avatar-look";
 /* Los SVG animados se usan como imagen: conservan su animación y no necesitan JavaScript. */
 /* eslint-disable @next/next/no-img-element */
 export function Sprite({
-  src, alt, width, height, className = "", priority = false, decorative = false,
+  src, alt, width, height, className = "", priority = false, decorative = false, style,
 }: {
-  src: string; alt: string; width?: number; height?: number; className?: string; priority?: boolean; decorative?: boolean;
+  src: string; alt: string; width?: number; height?: number; className?: string; priority?: boolean; decorative?: boolean; style?: React.CSSProperties;
 }) {
   return (
     <img
@@ -19,6 +19,7 @@ export function Sprite({
       decoding="async"
       draggable={false}
       className={`sprite ${className}`}
+      style={style}
     />
   );
 }

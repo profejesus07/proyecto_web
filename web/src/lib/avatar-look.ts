@@ -12,6 +12,7 @@
 import type { AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
 import { WEARABLE_IDS } from "@/content/wearable-ids";
+import { guideById } from "@/content/elenco";
 import { HAIRSTYLES, applyHairstyle } from "@/lib/avatar-hair";
 import { clamp, hexToHsl, hslToHex } from "@/lib/color";
 
@@ -97,6 +98,8 @@ export interface AvatarLook {
   title?: string;
   /** Compañero que lo acompaña (obj_companero_*). */
   pet?: string;
+  /** Docentes y familias: su Maestro del Gremio o Guardián del Hogar (ver content/elenco). */
+  guide?: string;
 }
 
 export type WearSlot = keyof typeof WEARABLE_IDS;
@@ -137,6 +140,7 @@ export function sanitizeLook(raw: unknown): AvatarLook {
   if (typeof r.frame === "string" && /^obj_marco_[a-z]+$/.test(r.frame)) out.frame = r.frame;
   if (typeof r.title === "string" && /^obj_titulo_[a-z_]+$/.test(r.title)) out.title = r.title;
   if (typeof r.pet === "string" && /^obj_companero_[a-z_]+$/.test(r.pet)) out.pet = r.pet;
+  if (typeof r.guide === "string" && guideById(r.guide)) out.guide = r.guide;
   return out;
 }
 

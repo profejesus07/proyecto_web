@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { familyCodeAction, linkFamilyAction, unlinkFamilyAction } from "@/app/actions/family";
+import { familyCodeAction, linkFamilyAction, readFamilyMessagesAction, sendFamilyMessageAction, unlinkFamilyAction } from "@/app/actions/family";
+import { FAMILY_MESSAGES } from "@/content/elenco";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -103,5 +104,58 @@ export function FamilyCodeCard() {
       </button>
       {error && <p role="alert" className="text-sm text-[#ffb3b3]">{error}</p>}
     </div>
+  );
+}
+
+/** La familia elige una frase de apoyo y se la envía a su hijo o hija. */
+export function SendMessage({ studentId, name, left }: { studentId: string; name: string; left: number }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [choice, setChoice] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [remaining, setRemaining] = useState(left);
+
+  function send() {
+    if (!choice) return;
+    start(async () => {
+      const r = await sendFamilyMessageAction(studentId, choice);
+      if (r.ok) {
+        setRemaining(r.remaining ?? 0);
+        setMsg({ ok: true, text: `¡Enviado! ${name} lo verá al entrar al Gremio.` });
+        setChoice(null);
+        router.refresh();
+      } else setMsg({ ok: false, text: r.error ?? "No se pudo enviar." });
+    });
+  }
+
+  return (
+    <fieldset disabled={pending || remaining <= 0} className="space-y-3">
+      <legend className="label">Envíale un mensaje de apoyo</legend>
+      <div className="flex flex-wrap gap-2">
+        {Object.entries(FAMILY_MESSAGES).map(([key, m]) => (
+          <label key={key} className="cursor-pointer">
+            <input type="radio" name={`msg-${studentId}`} checked={choice === key} onChange={() => { setChoice(key); setMsg(null); }} className="peer sr-only" />
+            <span className="block rounded-full border-2 border-line bg-bg/40 px-3 py-1.5 text-sm transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{m.text}</span>
+          </label>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" className="btn btn-primary btn-sm" disabled={!choice || pending} onClick={send}>{pending ? "Enviando…" : "💌 Enviar"}</button>
+        <span className="text-xs text-muted">{remaining > 0 ? `Te quedan ${remaining} hoy.` : "Ya enviaste los mensajes de hoy."}</span>
+      </div>
+      <p aria-live="polite" className={`text-sm font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
+    </fieldset>
+  );
+}
+
+/** El estudiante agradece los mensajes (quedan como leídos). */
+export function ThanksButton() {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  return (
+    <button type="button" className="btn btn-secondary btn-sm" disabled={pending}
+      onClick={() => start(async () => { await readFamilyMessagesAction(); router.refresh(); })}>
+      {pending ? "…" : "💛 ¡Gracias!"}
+    </button>
   );
 }

@@ -121,6 +121,39 @@ describe("family_overview", () => {
   });
 });
 
+describe("mensajes de la familia", () => {
+  const send = (f: string, st: string, m: string) => one<{ remaining: number }>("select public.send_family_message($1, $2, $3) as r", [f, st, m]);
+  const inbox = (st: string) => one<{ message: string; from: string; guide: string | null }[]>("select public.student_messages($1) as r", [st]);
+
+  it("una familia vinculada envía frases fijas y el estudiante las ve con su Guardián", async () => {
+    await link(F, await code(S));
+    await h.db.query(`update public.profiles set avatar = '{"base":"aria","look":{"guide":"abuela-amara"}}'::jsonb where id = $1`, [F]);
+    expect(await send(F, S, "orgullo")).toEqual({ remaining: 4 });
+    const msgs = await inbox(S);
+    expect(msgs).toEqual([expect.objectContaining({ message: "orgullo", from: "Mamá de Luna", guide: "abuela-amara" })]);
+    await h.db.query("select public.read_family_messages($1)", [S]);
+    expect(await inbox(S)).toEqual([]);
+  });
+
+  it("sin vínculo no se puede, ni con texto libre, y hay un máximo diario", async () => {
+    await expect(send(F, S, "orgullo")).rejects.toThrow(/no_vinculado/);
+    await link(F, await code(S));
+    await expect(send(F, S, "Hola <b>")).rejects.toThrow(/mensaje_invalido/);
+    for (let i = 0; i < 5; i++) await send(F, S, "animo");
+    await expect(send(F, S, "animo")).rejects.toThrow(/demasiados_mensajes/);
+    expect(await one<Record<string, number>>("select public.family_messages_left($1) as r", [F])).toEqual({ [S]: 0 });
+  });
+
+  it("al desvincularse, sus mensajes dejan de verse y no puede enviar más", async () => {
+    await link(F, await code(S));
+    await send(F, S, "carino");
+    await h.db.query("select public.unlink_family($1, $2, $3)", [S, F, S]);
+    expect(await inbox(S)).toEqual([]);
+    await expect(send(F, S, "carino")).rejects.toThrow(/no_vinculado/);
+    await expect(h.as("authenticated", F, "select public.send_family_message($1, $2, 'animo')", [F, S])).rejects.toThrow(/permission denied/);
+  });
+});
+
 describe("inicio según el rol", () => {
   it("la familia entra directo a «Mi familia»; los demás, al Gremio", () => {
     expect(homePath("familia")).toBe("/familia");

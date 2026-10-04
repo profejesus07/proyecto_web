@@ -6,7 +6,10 @@ import { SoraWelcome } from "@/components/sora-welcome";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
+import { ThanksButton } from "@/components/family-client";
+import { FAMILY_MESSAGES, defaultGuide, guideById, guideSrc } from "@/content/elenco";
 import { getItem, petImage } from "@/lib/catalog";
+import { KAEL_ALLY_AT, kaelRecord } from "@/lib/game/kael";
 import { getRepo } from "@/lib/data";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
@@ -25,7 +28,20 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
   const viewer = await requireViewer("/gremio");
   const pet = petImage(viewer.avatarLook.pet, rankForXp(viewer.xp).key);
   const passwordChanged = (await searchParams).aviso === "clave";
-  const [courses, inventory, shelves] = await Promise.all([loadCourseViews(viewer.id), getRepo().getInventory(viewer.id), loadChronicles(viewer)]);
+  const isStudent = viewer.role === "estudiante";
+  const [courses, inventory, shelves, messages] = await Promise.all([
+    loadCourseViews(viewer.id), getRepo().getInventory(viewer.id), loadChronicles(viewer), isStudent ? getRepo().studentMessages(viewer.id) : Promise.resolve([]),
+  ]);
+  // Duelos con Kael: solo en misiones ya jugadas que se pueden repetir.
+  const kael = kaelRecord(courses.flatMap((c) => c.missions).filter((m) => m.bestScore !== null && m.state !== "bloqueada").map((m) => ({ missionId: m.id, bestScore: m.bestScore! })));
+  const played = kael.wins + kael.losses + kael.ties;
+  const kaelSays: { anim: string; text: string } = played === 0
+    ? { anim: "retar", text: `Soy Kael. Cada misión que juegues, yo también la juego. ¿Crees que puedes superar mis puntajes, ${viewer.displayName}?` }
+    : kael.ally
+      ? { anim: "dar-la-mano", text: `Me has ganado ${kael.wins} veces. Ya no somos rivales: ahora somos aliados. ¡Vamos por el próximo Guardián juntos!` }
+      : kael.wins > kael.losses
+        ? { anim: "derrota", text: `¿Otra vez? Vas ${kael.wins} a ${kael.losses}. Me quedan ${KAEL_ALLY_AT - kael.wins} derrotas antes de admitir que eres mejor…` }
+        : { anim: "retar", text: kael.rematch ? `Voy ganando ${kael.losses} a ${kael.wins}. ¿Te atreves a una revancha?` : `Vamos empatados. ¡El próximo duelo decide!` };
   const unread = unreadCount(shelves);
   const newest = shelves.flatMap((s) => s.chapters).filter((c) => c.unlocked && !c.read).at(-1);
   const rank = rankProgress(viewer.xp).rank;
@@ -79,6 +95,24 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
+      {messages.length > 0 && (
+        <section aria-labelledby="msg-t" className="panel space-y-3 !border-green/40 p-4 sm:p-5">
+          <h2 id="msg-t" className="font-display text-lg font-bold">💌 {messages.length === 1 ? "Un mensaje de tu familia" : "Mensajes de tu familia"}</h2>
+          <ul className="space-y-3">
+            {messages.map((m) => {
+              const g = guideById(m.guide ?? undefined) ?? defaultGuide("hogar", m.from);
+              const fm = FAMILY_MESSAGES[m.message];
+              return fm ? (
+                <li key={m.id}>
+                  <SpeechBubble name={m.from} src={guideSrc(g, fm.anim)} alt={g.name} tone="cyan">{fm.text}</SpeechBubble>
+                </li>
+              ) : null;
+            })}
+          </ul>
+          <ThanksButton />
+        </section>
+      )}
+
       {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={isStaff(viewer.role)} />}
 
       {isStaff(viewer.role) && (
@@ -102,6 +136,18 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
             <strong>«{newest.chapter.title}»</strong>.
           </SpeechBubble>
           <Link href={`/cronicas/${newest.chapter.id}`} className="btn btn-secondary">📜 Leer ahora</Link>
+        </section>
+      )}
+
+      {isStudent && (
+        <section aria-label="Kael, tu rival" className="panel flex flex-wrap items-center gap-4 !border-coral/40 p-4 sm:p-5">
+          <SpeechBubble name={kael.ally ? "Kael, tu aliado" : "Kael, tu rival"} src={`/assets/personajes/kael/kael-${kaelSays.anim}.svg`} alt="Kael" tone="coral" className="min-w-0 flex-1">
+            {kaelSays.text}
+          </SpeechBubble>
+          <div className="flex items-center gap-3">
+            {played > 0 && <p className="chip text-sm" aria-label={`Duelos: tú ${kael.wins}, Kael ${kael.losses}, empates ${kael.ties}`}>⚔️ Tú {kael.wins} · Kael {kael.losses}</p>}
+            {kael.rematch && !kael.ally && <Link href={`/mision/${kael.rematch}`} className="btn btn-secondary">Revancha</Link>}
+          </div>
         </section>
       )}
 

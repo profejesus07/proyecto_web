@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
+import { FAMILY_MESSAGES } from "@/content/elenco";
 import { getRepo } from "@/lib/data";
 
 export type FamilyFormState = { error?: string; message?: string } | undefined;
@@ -13,6 +14,8 @@ const MESSAGES: Record<string, string> = {
   demasiados_hijos: "Llegaste al máximo de 8 estudiantes vinculados.",
   demasiadas_familias: "Ese estudiante ya tiene 4 familias vinculadas. Puede quitar alguna desde su perfil.",
   no_autorizado: "No puedes hacer ese cambio.",
+  no_vinculado: "Ya no estás vinculado con ese estudiante.",
+  demasiados_mensajes: "Ya enviaste los 5 mensajes de hoy. ¡Mañana puedes enviar más!",
 };
 
 function friendly(e: unknown, fallback: string): string {
@@ -62,5 +65,28 @@ export async function unlinkFamilyAction(otherId: string): Promise<{ ok: boolean
     return { ok: false, error: friendly(e, "No pudimos guardar el cambio. Inténtalo de nuevo.") };
   }
   revalidatePath(viewer.role === "familia" ? "/familia" : "/perfil");
+  return { ok: true };
+}
+
+/** La familia envía un mensaje de apoyo (una de las frases fijas). */
+export async function sendFamilyMessageAction(studentId: string, message: string): Promise<{ ok: boolean; remaining?: number; error?: string }> {
+  const viewer = await getViewer();
+  if (!viewer || viewer.role !== "familia") return { ok: false, error: MESSAGES.solo_familias };
+  if (typeof studentId !== "string" || typeof message !== "string" || !FAMILY_MESSAGES[message]) return { ok: false, error: "Elige uno de los mensajes." };
+  try {
+    const r = await getRepo().sendFamilyMessage(viewer.id, studentId, message);
+    revalidatePath("/familia");
+    return { ok: true, remaining: r.remaining };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos enviar el mensaje. Inténtalo de nuevo.") };
+  }
+}
+
+/** El estudiante agradece y marca como leídos los mensajes de su familia. */
+export async function readFamilyMessagesAction(): Promise<{ ok: boolean }> {
+  const viewer = await getViewer();
+  if (!viewer || viewer.role !== "estudiante") return { ok: false };
+  await getRepo().readFamilyMessages(viewer.id);
+  revalidatePath("/gremio");
   return { ok: true };
 }

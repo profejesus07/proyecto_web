@@ -383,6 +383,24 @@ test("al terminar un curso corto se expide la constancia, que se puede verificar
   await expect(page.getByRole("heading", { name: "No encontramos esa constancia" })).toBeVisible();
 });
 
+test("Kael reta en cada misión y lleva el marcador de duelos en el Gremio", async ({ page }) => {
+  await page.goto("/mision/m1");
+  await expect(page.getByText(/Yo saqué \d+% en esta misión/)).toBeVisible();
+  await page.goto("/gremio");
+  const kael = page.getByRole("region", { name: "Kael, tu rival" });
+  await expect(kael.getByText(/Tú \d+ · Kael \d+/)).toBeVisible();
+});
+
+test("el docente elige su Maestro del Gremio y lo ve en su informe", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "docente", url: "http://localhost:3200" }]);
+  await page.goto("/maestro");
+  await page.getByRole("radio", { name: "Maestro Ravi" }).check({ force: true });
+  await expect(page.getByText("Maestro Ravi", { exact: true }).first()).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Maestro del Gremio" }).getByText("Maestro Ravi")).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);
@@ -477,6 +495,22 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   await expect(card.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" })).toBeVisible();
   const portal = card.locator("li").filter({ has: page.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" }) });
   await expect(portal.getByText(/L1 · 100% ✔/)).toBeVisible();
+
+  // La familia elige su Guardián del Hogar y envía un mensaje de apoyo.
+  await page.getByRole("radio", { name: "Papá Kenji" }).check({ force: true });
+  await expect(page.locator("header").getByRole("link", { name: /Tu perfil/ })).toBeVisible();
+  await card.getByText("¿Me cuentas hoy qué aprendiste?").click();
+  await card.getByRole("button", { name: /Enviar/ }).click();
+  await expect(card.getByText(/¡Enviado!/)).toBeVisible();
+
+  // El estudiante lo ve en el Gremio, con el Guardián de su familia, y da las gracias.
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/gremio");
+  const inbox = page.getByRole("region", { name: /mensaje de tu familia/i });
+  await expect(inbox.getByText("¿Me cuentas hoy qué aprendiste?")).toBeVisible();
+  await expect(inbox.getByRole("img", { name: "Papá Kenji" })).toBeVisible();
+  await inbox.getByRole("button", { name: /Gracias/ }).click();
+  await expect(inbox).toHaveCount(0);
 
   // El estudiante ve quién lo acompaña y lo quita.
   await context.clearCookies({ name: "umbral-vista" });

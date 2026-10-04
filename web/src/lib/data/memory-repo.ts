@@ -2,6 +2,7 @@ import intento from "@/content/portal-del-primer-intento.json";
 import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
+import type { AvatarLook } from "@/lib/avatar-look";
 import type {
   AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
@@ -64,6 +65,9 @@ interface State {
   familyCode: string | null;
   /** La familia de prueba está vinculada al estudiante de prueba desde esta fecha. */
   familySince: string | null;
+  familyMessages: { id: string; message: string; createdAt: string; read: boolean }[];
+  /** Aspecto guardado por el docente, el admin y la familia de prueba (su Maestro o Guardián). */
+  adultLooks: Record<string, AvatarLook>;
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -88,6 +92,8 @@ function state(): State {
       extraTeachers: [],
       familyCode: null,
       familySince: null,
+      familyMessages: [],
+      adultLooks: {},
     };
   }
   return g.__umbralPreview;
@@ -165,7 +171,10 @@ function complete(_u: string, id: string, score: number, passMark: number, items
 
 export function createMemoryRepo(): Repo {
   return {
-    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : id === PREVIEW_ADMIN_ID ? { ...ADMIN } : id === PREVIEW_FAMILY_ID ? { ...FAMILY } : { ...state().profile }; },
+    async getProfile(id) {
+      const adult = id === PREVIEW_TEACHER_ID ? TEACHER : id === PREVIEW_ADMIN_ID ? ADMIN : id === PREVIEW_FAMILY_ID ? FAMILY : null;
+      return adult ? { ...adult, avatarLook: state().adultLooks[id] ?? adult.avatarLook } : { ...state().profile };
+    },
     async listCourses() { return C().courses.filter((c) => c.published).map(withPrice); },
     async getCourse(slug): Promise<CourseDetail | null> {
       const c = C().courses.find((x) => x.slug === slug && x.published);
@@ -222,7 +231,10 @@ export function createMemoryRepo(): Repo {
       s.inventory.push({ itemId, source: "tienda", acquiredAt: new Date().toISOString() });
       return { coins: s.profile.coins };
     },
-    async setAvatar(_u, base: AvatarBase, look = {}) { state().profile = { ...state().profile, avatarBase: base, avatarLook: look }; },
+    async setAvatar(userId, base: AvatarBase, look = {}) {
+      if (userId === PREVIEW_TEACHER_ID || userId === PREVIEW_ADMIN_ID || userId === PREVIEW_FAMILY_ID) state().adultLooks[userId] = look;
+      else state().profile = { ...state().profile, avatarBase: base, avatarLook: look };
+    },
     async setDisplayName(_u, name: string) { state().profile = { ...state().profile, displayName: name }; },
     async listTeacherClasses(teacherId) {
       const s = state();
@@ -321,6 +333,30 @@ export function createMemoryRepo(): Repo {
     async listStudentFamilies(studentId) {
       const s = state();
       return studentId === PREVIEW_USER_ID && s.familySince ? [{ id: PREVIEW_FAMILY_ID, name: FAMILY.displayName, since: s.familySince }] : [];
+    },
+    async sendFamilyMessage(familyId, studentId, message) {
+      const s = state();
+      if (familyId !== PREVIEW_FAMILY_ID || studentId !== PREVIEW_USER_ID || !s.familySince) throw new Error("no_vinculado");
+      if (!/^[a-z_]{2,30}$/.test(message)) throw new Error("mensaje_invalido");
+      const today = s.familyMessages.filter((m) => todayBogota(new Date(m.createdAt)) === todayBogota()).length;
+      if (today >= 5) throw new Error("demasiados_mensajes");
+      s.familyMessages.push({ id: `msg-${s.familyMessages.length + 1}`, message, createdAt: new Date().toISOString(), read: false });
+      return { remaining: 4 - today };
+    },
+    async studentMessages(studentId) {
+      const s = state();
+      if (studentId !== PREVIEW_USER_ID || !s.familySince) return [];
+      return s.familyMessages.filter((m) => !m.read).slice(-5).reverse()
+        .map((m) => ({ id: m.id, message: m.message, createdAt: m.createdAt, from: FAMILY.displayName, guide: s.adultLooks[PREVIEW_FAMILY_ID]?.guide ?? null }));
+    },
+    async readFamilyMessages(studentId) {
+      if (studentId === PREVIEW_USER_ID) for (const m of state().familyMessages) m.read = true;
+    },
+    async familyMessagesLeft(familyId): Promise<Record<string, number>> {
+      const s = state();
+      if (familyId !== PREVIEW_FAMILY_ID || !s.familySince) return {};
+      const today = s.familyMessages.filter((m) => todayBogota(new Date(m.createdAt)) === todayBogota()).length;
+      return { [PREVIEW_USER_ID]: 5 - today };
     },
     async familyOverview(familyId): Promise<FamilyChild[]> {
       if (familyId !== PREVIEW_FAMILY_ID) throw new Error("solo_familias");

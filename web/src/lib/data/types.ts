@@ -181,6 +181,9 @@ export interface JoinResult {
 /** Familia vinculada a un estudiante (lo que ve el estudiante). */
 export interface LinkedFamily { id: string; name: string; since: string }
 
+/** Mensaje de apoyo de la familia (clave de content/elenco FAMILY_MESSAGES). */
+export interface FamilyMessage { id: string; message: string; createdAt: string; from: string; guide: string | null }
+
 /** Lo que ve una familia de cada hijo o hija vinculado (solo lectura). */
 export interface FamilyChild {
   id: string;
@@ -347,6 +350,12 @@ export interface Repo {
   unlinkFamily(actorId: string, familyId: string, studentId: string): Promise<void>;
   listStudentFamilies(studentId: string): Promise<LinkedFamily[]>;
   familyOverview(familyId: string): Promise<FamilyChild[]>;
+  sendFamilyMessage(familyId: string, studentId: string, message: string): Promise<{ remaining: number }>;
+  /** Mensajes sin leer de sus familias vinculadas. */
+  studentMessages(studentId: string): Promise<FamilyMessage[]>;
+  readFamilyMessages(studentId: string): Promise<void>;
+  /** Mensajes que le quedan hoy a la familia por cada estudiante: { id: cantidad }. */
+  familyMessagesLeft(familyId: string): Promise<Record<string, number>>;
   // Suscripciones
   /** Cursos con acceso completo (docentes y admin: todos). */
   getCourseAccess(userId: string): Promise<Set<string>>;

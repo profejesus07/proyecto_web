@@ -8,6 +8,7 @@ import { SpeechBubble } from "@/components/dialogue";
 import { Sprite, asset } from "@/components/sprite";
 import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
 import { PASS_MARK } from "@/lib/game/grading";
+import { duel, kaelScore } from "@/lib/game/kael";
 import { RANKS } from "@/lib/game/ranks";
 
 export interface AnsweredQuestion {
@@ -207,6 +208,7 @@ export function Quiz(p: QuizProps) {
   if (outcome?.ok) {
     const { result, review, newRanks, items } = outcome;
     const win = result.passed;
+    const duelOutcome = duel(result.score, p.missionId);
     const bossWin = p.isBoss && win;
     return (
       <div className="space-y-6" aria-live="polite">
@@ -233,6 +235,16 @@ export function Quiz(p: QuizProps) {
                   ? result.first ? "Aprobaste con éxito. ¡Mira lo que ganaste!" : "Volviste a superarla. Repetir te ayuda a recordar, aunque ya no da más XP."
                   : `Necesitas ${outcome.passMark}% para superarla. Repasa las explicaciones de abajo y vuelve a intentarlo: equivocarse es parte de aprender.`}
             </p>
+
+            <div className="w-full max-w-xl text-left">
+              <SpeechBubble name="Kael" src={`/assets/personajes/kael/kael-${duelOutcome === "gana" ? "derrota" : duelOutcome === "empata" ? "dar-la-mano" : "retar"}.svg`} alt="Kael, tu rival" tone="coral">
+                {duelOutcome === "gana"
+                  ? `¡Me ganaste! Tu ${result.score}% supera mi ${kaelScore(p.missionId)}%. Buen duelo.`
+                  : duelOutcome === "empata"
+                    ? `Empate: los dos sacamos ${result.score}%. Choca esos cinco.`
+                    : `Esta vez gané yo: ${kaelScore(p.missionId)}% contra tu ${result.score}%. ¡Te espero en la revancha!`}
+              </SpeechBubble>
+            </div>
 
             {result.first && (
               <ul className="flex flex-wrap justify-center gap-2" aria-label="Recompensas">
@@ -325,6 +337,11 @@ export function Quiz(p: QuizProps) {
               ? `Necesitas ${needed} aciertos de ${total} para purificarlo. Si te equivocas, no pasa nada: Kuro te explica y sigues.`
               : `${total} enemigos custodian esta sala. Elige tu respuesta y pulsa «Responder»; si fallas, Kuro te cuenta por qué.`}
           </p>
+        </SpeechBubble>
+      )}
+      {answeredCount === 0 && (
+        <SpeechBubble name="Kael" src="/assets/personajes/kael/kael-retar.svg" alt="Kael, tu rival" tone="coral" className="max-w-xl">
+          Yo saqué <strong>{kaelScore(p.missionId)}%</strong> en esta misión. ¿Me superas?
         </SpeechBubble>
       )}
 

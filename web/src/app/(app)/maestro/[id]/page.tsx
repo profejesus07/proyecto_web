@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AvatarFace } from "@/components/avatar-face";
 import { ClassActions, CodeCard, RemoveStudentButton } from "@/components/classes-client";
+import { SpeechBubble } from "@/components/dialogue";
 import { BackLink } from "@/components/ui";
+import { guideSrc, type GuideAnim } from "@/content/elenco";
+import { guideFor } from "@/lib/guides";
 import { titleLabel } from "@/lib/catalog";
 import { guardianBySlug } from "@/content/guardians";
 import { daysAgo, lastSeen } from "@/lib/activity";
@@ -48,6 +51,19 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
     .map((q) => ({ ...q, pct: Math.round((q.right / q.answered) * 100) }))
     .sort((a, b) => a.pct - b.pct || b.answered - a.answered)
     .slice(0, 5);
+  // Lectura rápida de la clase en boca del Maestro del docente.
+  const guide = guideFor(viewer)!;
+  const away = students.filter((s) => (daysAgo(s.lastActive) ?? 99) >= 7).length;
+  const reading: { anim: GuideAnim; text: string } = students.length === 0
+    ? { anim: "saludar", text: "Cuando tus estudiantes se unan con el código, aquí verás su avance misión por misión." }
+    : away > students.length / 2
+      ? { anim: "alerta", text: `${away} de ${students.length} estudiantes llevan una semana o más sin entrar. Un recordatorio en clase puede reactivar la racha.` }
+      : hardest[0] && hardest[0].pct < 50
+        ? { anim: "pensar", text: `La pregunta que más cuesta acierta solo el ${hardest[0].pct}% de las veces. Vale la pena repasarla juntos (la ves abajo).` }
+        : guardians > 0
+          ? { anim: "celebrar", text: `¡La clase ya purificó ${guardians} ${guardians === 1 ? "Guardián" : "Guardianes"}! ${activeWeek} ${activeWeek === 1 ? "estudiante estuvo activo" : "estudiantes estuvieron activos"} esta semana.` }
+          : { anim: "animar", text: `${activeWeek} de ${students.length} ${students.length === 1 ? "estudiante estuvo activo" : "estudiantes estuvieron activos"} esta semana. Celebra cada misión superada: la constancia se contagia.` };
+
   const detail = await Promise.all(hardest.map(async (q) => {
     const [play, key] = await Promise.all([repo.getMissionPlay(q.missionId), repo.getAnswerKey(q.missionId)]);
     const question = play?.questions[q.position - 1];
@@ -88,6 +104,8 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
           </div>
         ))}
       </dl>
+
+      <SpeechBubble name={guide.name} src={guideSrc(guide, reading.anim)} alt={guide.name} className="max-w-4xl">{reading.text}</SpeechBubble>
 
       <section aria-labelledby="est-t" className="space-y-3">
         <h2 id="est-t" className="text-2xl">Estudiantes</h2>

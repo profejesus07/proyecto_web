@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AvatarFace } from "@/components/avatar-face";
-import { LinkFamilyForm, UnlinkButton } from "@/components/family-client";
+import { SpeechBubble } from "@/components/dialogue";
+import { LinkFamilyForm, SendMessage, UnlinkButton } from "@/components/family-client";
+import { GuidePicker } from "@/components/guide-picker";
+import { FAMILY_MESSAGES_PER_DAY, GUARDIANES_HOGAR, guideSrc, type Guide, type GuideAnim } from "@/content/elenco";
 import { Sprite, asset } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
 import { daysAgo, lastSeen } from "@/lib/activity";
 import { requireFamily } from "@/lib/auth";
 import { titleLabel } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
+import { guideFor } from "@/lib/guides";
 import type { FamilyChild } from "@/lib/data/types";
 import { PASS_MARK } from "@/lib/game/grading";
 import { rankProgress } from "@/lib/game/ranks";
@@ -22,17 +26,18 @@ function terraceState(): "manana" | "atardecer" | "noche" {
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Bogota" });
 
-/** Una frase para la familia, según cómo va la semana. */
-function nudge(c: FamilyChild): string {
+/** Una frase para la familia, según cómo va la semana (y el gesto de su Guardián del Hogar). */
+function nudge(c: FamilyChild): { text: string; anim: GuideAnim } {
   const d = daysAgo(c.lastActive);
-  if (d === null) return `${c.name} todavía no ha empezado. Anímale a cruzar su primer portal: la primera lección siempre es gratis.`;
-  if (d <= 1 && c.streak >= 3) return `¡${c.streak} días seguidos! Celebren juntos esa constancia.`;
-  if (d <= 2) return "Va al día. Pregúntale qué aprendió hoy: contarlo ayuda a recordarlo.";
-  if (d <= 7) return "Lleva unos días sin entrar. Un rato corto hoy basta para retomar la racha.";
-  return "Hace más de una semana que no entra. Acompáñale en la próxima lección; equivocarse también es parte de aprender.";
+  if (d === null) return { anim: "senalar", text: `${c.name} todavía no ha empezado. Anímale a cruzar su primer portal: la primera lección siempre es gratis.` };
+  if (d <= 1 && c.streak >= 3) return { anim: "orgullo", text: `¡${c.streak} días seguidos! Celebren juntos esa constancia.` };
+  if (d <= 2) return { anim: "hablar", text: "Va al día. Pregúntale qué aprendió hoy: contarlo ayuda a recordarlo." };
+  if (d <= 7) return { anim: "pensar", text: "Lleva unos días sin entrar. Un rato corto hoy basta para retomar la racha." };
+  return { anim: "animar", text: "Hace más de una semana que no entra. Acompáñale en la próxima lección; equivocarse también es parte de aprender." };
 }
 
-function ChildCard({ c }: { c: FamilyChild }) {
+function ChildCard({ c, guide, left }: { c: FamilyChild; guide: Guide; left: number }) {
+  const tip = nudge(c);
   const p = rankProgress(c.xp);
   const done = c.courses.reduce((n, k) => n + k.lessons.filter((l) => l.completed).length, 0);
   return (
@@ -63,7 +68,9 @@ function ChildCard({ c }: { c: FamilyChild }) {
         ))}
       </dl>
 
-      <p className="rounded-xl border border-cyan/30 bg-cyan/10 px-4 py-3 text-sm">💡 {nudge(c)}</p>
+      <SpeechBubble name={guide.name} src={guideSrc(guide, tip.anim)} alt={guide.name} tone="cyan">{tip.text}</SpeechBubble>
+
+      <SendMessage studentId={c.id} name={c.name} left={left} />
 
       <section aria-label="Portales" className="space-y-3">
         <h3 className="text-lg">Portales</h3>
@@ -134,7 +141,8 @@ function ChildCard({ c }: { c: FamilyChild }) {
 export default async function FamilyPage({ searchParams }: PageProps<"/familia">) {
   const viewer = await requireFamily("/familia");
   const passwordChanged = (await searchParams).aviso === "clave";
-  const children = await getRepo().familyOverview(viewer.id);
+  const [children, left] = await Promise.all([getRepo().familyOverview(viewer.id), getRepo().familyMessagesLeft(viewer.id)]);
+  const guide = guideFor(viewer)!;
 
   return (
     <div className="space-y-8">
@@ -147,13 +155,13 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
               <p className="text-text/80">Acompaña el avance de tus hijos en UMBRAL: sus portales, sus notas y su racha. Solo lo ves; no puedes cambiar nada de su cuenta.</p>
             </PageTitle>
           </div>
-          <Sprite src="/assets/familia/mama-lucia/mama-lucia-saludar.svg" alt="Lucía, Guardiana del Hogar, te saluda" className="hidden h-48 w-auto sm:block" />
+          <Sprite src={guideSrc(guide, "saludar")} alt={`${guide.name}, tu Guardián del Hogar, te saluda`} className="hidden h-48 w-auto sm:block" />
         </div>
       </section>
 
       {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
-      {children.map((c) => <ChildCard key={c.id} c={c} />)}
+      {children.map((c) => <ChildCard key={c.id} c={c} guide={guide} left={left[c.id] ?? FAMILY_MESSAGES_PER_DAY} />)}
 
       <section className="panel grid gap-6 p-5 sm:p-6 md:grid-cols-2" aria-labelledby="vincular-t">
         <div className="space-y-2">
@@ -165,6 +173,12 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
           </ol>
         </div>
         <LinkFamilyForm />
+      </section>
+
+      <section aria-labelledby="hogar-t" className="panel max-w-2xl space-y-3 p-5">
+        <h2 id="hogar-t" className="text-xl">Tu Guardián del Hogar</h2>
+        <p className="text-sm text-muted">Elige quién te representa. Tu hijo o hija lo verá junto a tus mensajes de apoyo.</p>
+        <GuidePicker options={GUARDIANES_HOGAR} current={guide.id} legend="Guardián del Hogar" />
       </section>
 
       <p className="text-center text-xs text-muted">Nunca verás su correo, su contraseña ni sus respuestas. Tu hijo o hija puede dejar de compartir su avance desde su perfil.</p>
