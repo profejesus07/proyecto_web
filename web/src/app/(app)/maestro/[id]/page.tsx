@@ -131,7 +131,7 @@ export default async function ClassReportPage({ params }: PageProps<"/maestro/[i
                   return (
                     <tr key={s.id} className="border-b border-line/60 last:border-0">
                       <th scope="row" className="px-4 py-3 font-semibold">
-                        <span className="flex items-center gap-2"><AvatarFace base={s.avatar} rank={rank.key} size={32} /> {s.name}</span>
+                        <span className="flex items-center gap-2"><AvatarFace base={s.avatar} look={s.avatarLook} rank={rank.key} size={32} /> {s.name}</span>
                       </th>
                       <td className="px-3 py-3"><span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank.color, color: "#14123b" }}>{rank.key}</span> <span className="text-muted">{s.xp} XP</span></td>
                       <td className="px-3 py-3 text-muted">{lastSeen(s.lastActive)}{s.streak > 1 ? ` · 🔥${s.streak}` : ""}</td>

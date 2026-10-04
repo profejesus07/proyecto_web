@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { BASE_PALETTE, EYES, HAIR, SKIN, avatarSrc, canWearGear, decodeColors, encodeColors, gearRank, recolorSvg, sanitizeLook, shadeGroup } from "@/lib/avatar-look";
 import { AVATAR_BASES } from "@/lib/data/types";
+import { HAIRSTYLES } from "@/lib/avatar-hair";
 
 const svg = (base: string, rank = "e") => readFileSync(path.join(import.meta.dirname, `../public/assets/avatares/${base}/${base}-rango-${rank}-reposo.svg`), "utf8");
 
@@ -64,5 +65,27 @@ describe("aspecto del avatar", () => {
     expect(out).toContain('stop-color="#FFC83D"');
     expect(out.length).toBeGreaterThan(original.length - 200);
     expect(recolorSvg(original, "aria", {})).toBe(original);
+  });
+
+  it("hay peinados masculinos y femeninos, y cada uno cambia el cabello sin perder cejas ni audífonos", () => {
+    expect(HAIRSTYLES.filter((h) => h.group === "masculino").length).toBeGreaterThanOrEqual(5);
+    expect(HAIRSTYLES.filter((h) => h.group === "femenino").length).toBeGreaterThanOrEqual(5);
+    expect(new Set(HAIRSTYLES.map((h) => h.id)).size).toBe(HAIRSTYLES.length);
+    for (const b of AVATAR_BASES) {
+      const original = svg(b, "s");
+      HAIRSTYLES.forEach((_h, i) => {
+        const out = recolorSvg(original, b, { style: i, hair: 4 });
+        expect(out, `${b} ${i}`).not.toBe(original);
+        expect(out).toContain('class="av-bl"');
+        expect(out).toContain('class="av-br"');
+        expect(out).toContain(`fill="${HAIR[4].color}"`);
+        expect(out).toContain('class="av-crown"');
+        // El SVG sigue bien formado: mismos <g> abiertos que cerrados.
+        expect((out.match(/<g[\s>]/g) ?? []).length).toBe((out.match(/<\/g>/g) ?? []).length);
+        if (b === "nuri") expect(out).toContain('cx="101" cy="164"');
+      });
+    }
+    expect(encodeColors({ style: 3 })).toBe("y3");
+    expect(decodeColors("y3")).toEqual({ style: 3 });
   });
 });

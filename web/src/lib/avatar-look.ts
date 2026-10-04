@@ -11,6 +11,8 @@
  */
 import type { AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
+import { HAIRSTYLES, applyHairstyle } from "@/lib/avatar-hair";
+import { clamp, hexToHsl, hslToHex } from "@/lib/color";
 
 export interface Swatch { name: string; color: string }
 export interface EyeSwatch { name: string; stops: [string, string, string] }
@@ -82,6 +84,8 @@ export interface AvatarLook {
   eyes?: number;
   top?: number;
   pants?: number;
+  /** Peinado (índice en HAIRSTYLES); sin valor, el del personaje. */
+  style?: number;
   /** Atuendo de rango elegido (si no, el del rango actual). */
   gear?: RankKey;
 }
@@ -92,6 +96,7 @@ const SLOTS = [
   ["e", "eyes", EYES.length],
   ["t", "top", TOP.length],
   ["p", "pants", PANTS.length],
+  ["y", "style", HAIRSTYLES.length],
 ] as const;
 
 const RANK_KEYS = RANKS.map((r) => r.key);
@@ -142,7 +147,7 @@ export function avatarSrc(base: string, rank: string, look?: AvatarLook): string
 }
 
 /** Súbelo si cambian los SVG o las paletas, para que la CDN no sirva versiones viejas. */
-export const LOOK_VERSION = 1;
+export const LOOK_VERSION = 2;
 
 // ---------------------------------------------------------------------------
 // Grupos de color de cada avatar (el primero es el principal del grupo).
@@ -157,28 +162,6 @@ export const BASE_PALETTE: Record<AvatarBase, BasePalette> = {
   tomas: { skin: ["#C99A74", "#A97C58", "#7A5236"], hair: ["#2A1C14", "#5A4030"], top: ["#F1E4C3", "#D8C79B", "#E3D4AE", "#C9B88A"] },
   nuri: { skin: ["#D9A07A", "#BC825C", "#8E5A3A"], hair: ["#7A3A2A", "#5A2618", "#B0644A"], top: ["#E8853A", "#C46A24", "#F09A54", "#B05C1C"] },
 };
-
-type HSL = [number, number, number];
-
-function hexToHsl(hex: string): HSL {
-  const n = parseInt(hex.slice(1), 16);
-  const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
-  if (max === min) return [0, 0, l];
-  const d = max - min;
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-  const h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  return [h * 60, s, l];
-}
-
-function hslToHex([h, s, l]: HSL): string {
-  const k = (n: number) => (n + h / 30) % 12;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
-  return "#" + [f(0), f(8), f(4)].map((x) => Math.round(x * 255).toString(16).padStart(2, "0")).join("").toUpperCase();
-}
-
-const clamp = (x: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, x));
 
 /** Lleva todo un grupo de tonos al color nuevo, conservando sombras y luces. */
 export function shadeGroup(source: string[], target: string): Record<string, string> {
@@ -213,6 +196,11 @@ export function recolorSvg(svg: string, base: AvatarBase, look: AvatarLook): str
       let i = 0;
       return open + inner.replace(/stop-color="#[0-9A-Fa-f]{6}"/g, (s) => (i < 3 ? `stop-color="${stops[i++]}"` : s)) + close;
     });
+  }
+
+  // El peinado va al final: sus colores ya salen calculados y no deben volver a sustituirse.
+  if (look.style !== undefined) {
+    out = applyHairstyle(out, HAIRSTYLES[look.style], look.hair !== undefined ? HAIR[look.hair].color : pal.hair[0]);
   }
   return out;
 }

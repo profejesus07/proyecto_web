@@ -399,7 +399,9 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
 
   await page.getByRole("group", { name: /Cabello/ }).getByRole("radio", { name: "Rubio" }).check({ force: true });
   await page.getByRole("group", { name: /Chaqueta/ }).getByRole("radio", { name: "Rojo" }).check({ force: true });
-  await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3/);
+  await page.getByRole("group", { name: "Peinados femeninos" }).getByRole("radio", { name: "Dos trenzas" }).check({ force: true });
+  await expect(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio")).toHaveCount(7);
+  await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3y9/);
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByText("¡Listo! Tu avatar se guardó.")).toBeVisible();
 
@@ -409,11 +411,12 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   expect(await res.text()).toContain('fill="#E2B85A"');
 
   await page.goto("/perfil");
-  await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=h4t3/);
+  await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=h4t3y9/);
 
   // Se deja como estaba para las demás pruebas.
   await page.goto("/perfil/avatar");
   await page.getByRole("button", { name: "Colores originales" }).click();
+  await page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio", { name: "Original" }).check({ force: true });
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
 });

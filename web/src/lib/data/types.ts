@@ -180,6 +180,7 @@ export interface ClassStudent {
   id: string;
   name: string;
   avatar: AvatarBase;
+  avatarLook: AvatarLook;
   xp: number;
   streak: number;
   lastActive: string | null;

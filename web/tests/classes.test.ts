@@ -14,7 +14,7 @@ const create = (teacher: string, name: string) => call<{ id: string; name: strin
 const join = (student: string, code: string) => call<{ id: string; name: string }>("select public.join_class($1, $2) as r", [student, code]);
 const report = (teacher: string, cls: string) => call<{
   class: { name: string; code: string };
-  students: { id: string; name: string; xp: number; progress: { mission_id: string; completed: boolean }[] }[];
+  students: { id: string; name: string; xp: number; avatar: string; look: Record<string, unknown>; progress: { mission_id: string; completed: boolean }[] }[];
   questions: { mission_id: string; position: number; answered: number; right: number }[];
 }>("select public.class_report($1, $2) as r", [teacher, cls]);
 
@@ -93,6 +93,16 @@ describe("class_report", () => {
     expect(q2).toMatchObject({ answered: 2, right: 2 });
   });
 
+  it("incluye el aspecto del avatar elegido en el Vestidor", async () => {
+    const c = await create(T, "6.º C");
+    await join(S, c.code);
+    await join(S2, c.code);
+    await h.db.query(`update public.profiles set avatar = '{"base":"leo","look":{"hair":4,"style":2}}'::jsonb where id = $1`, [S]);
+    const r = await report(T, c.id);
+    expect(r.students[0]).toMatchObject({ name: "Luna", avatar: "leo", look: { hair: 4, style: 2 } });
+    expect(r.students[1].look).toEqual({});
+  });
+
   it("otra docente no puede ver ni tocar la clase", async () => {
     const c = await create(T, "6.º B");
     await expect(report(T2, c.id)).rejects.toThrow(/clase_no_encontrada/);
@@ -103,7 +113,7 @@ describe("class_report", () => {
     const c = await create(T, "6.º B");
     await join(S, c.code);
     const s = (await report(T, c.id)).students[0];
-    expect(Object.keys(s).sort()).toEqual(["avatar", "id", "joined_at", "last_active", "name", "progress", "streak", "xp"]);
+    expect(Object.keys(s).sort()).toEqual(["avatar", "id", "joined_at", "last_active", "look", "name", "progress", "streak", "xp"]);
   });
 
   it("nada de esto se puede llamar desde el navegador, y cada uno ve solo lo suyo", async () => {

@@ -233,7 +233,7 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "informe");
       const r = data as {
         class: { id: string; name: string; code: string; created_at: string; archived: boolean };
-        students: { id: string; name: string; avatar: string; xp: number; streak: number; last_active: string | null; joined_at: string;
+        students: { id: string; name: string; avatar: string; look?: unknown; xp: number; streak: number; last_active: string | null; joined_at: string;
           progress: { mission_id: string; best_score: number; attempts: number; completed: boolean }[] }[];
         questions: { mission_id: string; position: number; answered: number; right: number }[];
       };
@@ -242,6 +242,7 @@ export function createSupabaseRepo(): Repo {
         students: r.students.map((st) => ({
           id: st.id, name: st.name, xp: st.xp, streak: st.streak, lastActive: st.last_active, joinedAt: st.joined_at,
           avatar: (AVATAR_BASES as readonly string[]).includes(st.avatar) ? (st.avatar as AvatarBase) : "aria",
+          avatarLook: sanitizeLook(st.look),
           progress: st.progress.map((p) => ({ missionId: p.mission_id, bestScore: p.best_score, attempts: p.attempts, completed: p.completed })),
         })),
         questions: r.questions.map((q) => ({ missionId: q.mission_id, position: q.position, answered: q.answered, right: q.right })),

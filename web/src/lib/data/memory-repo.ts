@@ -29,9 +29,9 @@ interface PreviewClass { id: string; name: string; code: string; teacherId: stri
 // Estudiantes de ejemplo que se suman a cada clase de la vista previa, para que el informe no salga vacío.
 const done = (id: string, bestScore: number, attempts = 1): ProgressRow => ({ missionId: id, bestScore, attempts, completed: bestScore >= 70 });
 const DEMO_STUDENTS: ClassStudent[] = [
-  { id: "demo-1", name: "Valentina (demo)", avatar: "nuri", xp: 340, streak: 4, lastActive: null, joinedAt: "", progress: [done("m1", 100), done("m2", 100), done("m3", 75, 2), done("m4", 83)] },
-  { id: "demo-2", name: "Samuel (demo)", avatar: "tomas", xp: 120, streak: 1, lastActive: null, joinedAt: "", progress: [done("m1", 75), done("m2", 75, 3), done("m3", 50, 2)] },
-  { id: "demo-3", name: "Mariana (demo)", avatar: "aria", xp: 0, streak: 0, lastActive: null, joinedAt: "", progress: [] },
+  { id: "demo-1", name: "Valentina (demo)", avatar: "nuri", avatarLook: { hair: 8, style: 9, top: 6 }, xp: 340, streak: 4, lastActive: null, joinedAt: "", progress: [done("m1", 100), done("m2", 100), done("m3", 75, 2), done("m4", 83)] },
+  { id: "demo-2", name: "Samuel (demo)", avatar: "tomas", avatarLook: { style: 2, hair: 3 }, xp: 120, streak: 1, lastActive: null, joinedAt: "", progress: [done("m1", 75), done("m2", 75, 3), done("m3", 50, 2)] },
+  { id: "demo-3", name: "Mariana (demo)", avatar: "aria", avatarLook: {}, xp: 0, streak: 0, lastActive: null, joinedAt: "", progress: [] },
 ];
 // Aciertos de ejemplo por pregunta: [misión, posición, respondidas, acertadas].
 const DEMO_QUESTIONS: [string, number, number, number][] = [
@@ -252,7 +252,7 @@ export function createMemoryRepo(): Repo {
       const students = s.members.filter((m) => m.classId === classId).flatMap((m): ClassStudent[] => {
         if (m.studentId === PREVIEW_USER_ID) {
           const p = s.profile;
-          return [{ id: p.id, name: p.displayName, avatar: p.avatarBase, xp: p.xp, streak: p.streak, lastActive: todayBogota(), joinedAt: m.joinedAt, progress: [...s.progress.values()] }];
+          return [{ id: p.id, name: p.displayName, avatar: p.avatarBase, avatarLook: p.avatarLook, xp: p.xp, streak: p.streak, lastActive: todayBogota(), joinedAt: m.joinedAt, progress: [...s.progress.values()] }];
         }
         const d = DEMO_STUDENTS.find((x) => x.id === m.studentId);
         return d ? [{ ...d, joinedAt: m.joinedAt }] : [];

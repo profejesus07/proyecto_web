@@ -6,7 +6,8 @@ import { useState, useTransition } from "react";
 import { saveAvatarAction } from "@/app/actions/game";
 import { AvatarFace } from "@/components/avatar-face";
 import { Sprite, asset } from "@/components/sprite";
-import { BASE_PALETTE, EYES, GEAR, HAIR, PANTS, SKIN, TOP, avatarSrc, canWearGear, gearRank, type AvatarLook, type Swatch } from "@/lib/avatar-look";
+import { BASE_PALETTE, EYES, GEAR, HAIR, PANTS, SKIN, TOP, avatarSrc, canWearGear, gearRank, sanitizeLook, type AvatarLook, type Swatch } from "@/lib/avatar-look";
+import { HAIRSTYLES } from "@/lib/avatar-hair";
 import { AVATAR_BASES, AVATAR_NAMES, type AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
 
@@ -57,6 +58,18 @@ function ColorRow({ title, slot, swatches, base, value, onPick }: { title: strin
   );
 }
 
+function StyleOption({ label, checked, onPick, base, rank, look }: { label: string; checked: boolean; onPick: () => void; base: AvatarBase; rank: RankKey; look: AvatarLook }) {
+  return (
+    <label className="cursor-pointer">
+      <input type="radio" name="style" checked={checked} onChange={onPick} className="peer sr-only" aria-label={label} />
+      <span className="flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 text-center transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
+        <AvatarFace base={base} rank={rank} look={{ ...look, gear: "E" }} size={52} />
+        <span className="text-[11px] font-bold leading-tight">{label}</span>
+      </span>
+    </label>
+  );
+}
+
 export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: AvatarBase; initialLook: AvatarLook; rank: RankKey }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -101,7 +114,7 @@ export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: 
           <button type="button" onClick={save} disabled={!dirty || pending} className="btn btn-primary btn-sm w-full">
             {pending ? "Guardando…" : dirty ? "Guardar cambios" : "Guardado ✔"}
           </button>
-          <button type="button" onClick={() => { setLook((l) => (l.gear ? { gear: l.gear } : {})); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
+          <button type="button" onClick={() => { setLook((l) => sanitizeLook({ gear: l.gear, style: l.style })); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
             Colores originales
           </button>
           <p aria-live="polite" className={`text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
@@ -125,6 +138,22 @@ export function AvatarStudio({ initialBase, initialLook, rank }: { initialBase: 
               ))}
             </div>
           </fieldset>
+        </section>
+
+        <section className="panel space-y-5 p-5 sm:p-6" aria-labelledby="pein-t">
+          <h2 id="pein-t" className="text-xl">Peinado</h2>
+          {(["masculino", "femenino"] as const).map((g) => (
+            <fieldset key={g} className="space-y-2">
+              <legend className="label">{g === "masculino" ? "Peinados masculinos" : "Peinados femeninos"}</legend>
+              <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                {g === "masculino" && <StyleOption label="Original" checked={look.style === undefined} onPick={() => set("style", undefined)} base={base} rank={rank} look={{ ...look, style: undefined }} />}
+                {HAIRSTYLES.map((h, i) => h.group === g && (
+                  <StyleOption key={h.id} label={h.name} checked={look.style === i} onPick={() => set("style", i)} base={base} rank={rank} look={{ ...look, style: i }} />
+                ))}
+              </div>
+            </fieldset>
+          ))}
+          <p className="hint">Cualquier peinado se puede elegir; el color se cambia en «Cabello».</p>
         </section>
 
         <section className="panel space-y-5 p-5 sm:p-6" aria-labelledby="col-t">
