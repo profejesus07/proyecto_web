@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { homeForUser } from "@/lib/auth";
 import { hasSupabase } from "@/lib/env";
+import { homePath } from "@/lib/roles";
 import { siteUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { emailSchema, loginSchema, newPasswordSchema, registerSchema, safeNext } from "@/lib/validation";
@@ -44,8 +46,8 @@ export async function registerAction(_prev: FormState, formData: FormData): Prom
     return { error: "No pudimos crear tu cuenta. Inténtalo de nuevo en un momento." };
   }
   // Si Supabase no exige confirmar el correo, la sesión ya existe.
-  if (data.session) redirect("/gremio");
-  return { message: "¡Casi listo! Te enviamos un correo para confirmar tu cuenta. Ábrelo y pulsa el enlace para entrar al gremio." };
+  if (data.session) redirect(homePath(role));
+  return { message: `¡Casi listo! Te enviamos un correo para confirmar tu cuenta. Ábrelo y pulsa el enlace para ${role === "familia" ? "entrar a «Mi familia»" : "entrar al gremio"}.` };
 }
 
 export async function loginAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -54,7 +56,7 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   if (!hasSupabase()) return { error: NOT_READY };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     if (error.code === "email_not_confirmed") {
       return { error: "Aún falta confirmar tu correo. Revisa tu bandeja de entrada (y la carpeta de spam).", unconfirmedEmail: parsed.data.email };
@@ -62,7 +64,9 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     if (error.status === 429) return { error: "Demasiados intentos. Espera un minuto y vuelve a probar." };
     return { error: "El correo o la contraseña no coinciden." };
   }
-  redirect(safeNext(formData.get("siguiente")));
+  // Si venía de una página concreta, vuelve ahí; si no, a su inicio (la familia, a «Mi familia»).
+  const next = formData.get("siguiente");
+  redirect(typeof next === "string" && next ? safeNext(next) : await homeForUser(data.user.id));
 }
 
 export async function logoutAction(): Promise<void> {
@@ -103,7 +107,7 @@ export async function updatePasswordAction(_prev: FormState, formData: FormData)
   if (!parsed.success) return { error: firstIssue(parsed.error) };
   if (!hasSupabase()) return { error: NOT_READY };
   const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  const { data, error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) {
     if (error.code === "same_password") return { error: "La contraseña nueva debe ser distinta de la anterior." };
     if (error.code === "weak_password") return { error: "Esa contraseña es muy fácil de adivinar. Usa al menos 8 caracteres con letras y números." };
@@ -111,5 +115,5 @@ export async function updatePasswordAction(_prev: FormState, formData: FormData)
     if (error.status === 429) return { error: RATE_LIMITED };
     return { error: "No pudimos cambiar la contraseña. Inténtalo de nuevo." };
   }
-  redirect("/gremio?aviso=clave");
+  redirect(`${await homeForUser(data.user.id)}?aviso=clave`);
 }

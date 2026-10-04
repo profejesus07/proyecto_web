@@ -129,8 +129,9 @@ function ChildCard({ c }: { c: FamilyChild }) {
   );
 }
 
-export default async function FamilyPage() {
+export default async function FamilyPage({ searchParams }: PageProps<"/familia">) {
   const viewer = await requireFamily("/familia");
+  const passwordChanged = (await searchParams).aviso === "clave";
   const children = await getRepo().familyOverview(viewer.id);
 
   return (
@@ -147,6 +148,8 @@ export default async function FamilyPage() {
           <Sprite src="/assets/familia/mama-lucia/mama-lucia-saludar.svg" alt="Lucía, Guardiana del Hogar, te saluda" className="hidden h-48 w-auto sm:block" />
         </div>
       </section>
+
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
       {children.map((c) => <ChildCard key={c.id} c={c} />)}
 

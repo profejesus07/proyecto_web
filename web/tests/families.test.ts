@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { homePath } from "@/lib/roles";
 import { makeDb } from "./helpers/pg";
 
 // Panel de familias: el estudiante comparte un código; la familia ve su avance, solo para leer.
@@ -117,5 +118,14 @@ describe("family_overview", () => {
     await expect(h.as("authenticated", S, "select public.family_code($1, false)", [S])).rejects.toThrow(/permission denied/);
     await expect(h.as("authenticated", F, "select * from public.family_links")).rejects.toThrow(/permission denied/);
     await expect(h.as("anon", null, "select * from public.family_codes")).rejects.toThrow(/permission denied/);
+  });
+});
+
+describe("inicio según el rol", () => {
+  it("la familia entra directo a «Mi familia»; los demás, al Gremio", () => {
+    expect(homePath("familia")).toBe("/familia");
+    expect(homePath("estudiante")).toBe("/gremio");
+    expect(homePath("docente")).toBe("/gremio");
+    expect(homePath("admin")).toBe("/gremio");
   });
 });

@@ -443,6 +443,8 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   await page.getByLabel("Código de familia").fill(`${code.slice(0, 4).toLowerCase()} ${code.slice(4)}`);
   await page.getByRole("button", { name: "Vincular" }).click();
   await expect(page.getByText("¡Listo! Ya acompañas a Despertado.")).toBeVisible();
+  // Para la familia, el logo lleva a «Mi familia».
+  await expect(page.locator("header").getByRole("link").first()).toHaveAttribute("href", "/familia");
   await page.reload();
   const card = page.getByRole("article", { name: "Despertado" });
   await expect(card).toBeVisible();

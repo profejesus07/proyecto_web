@@ -4,7 +4,7 @@ import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
 import { getViewer } from "@/lib/auth";
 import { rankProgress } from "@/lib/game/ranks";
-import { isAdmin, isStaff } from "@/lib/roles";
+import { homePath, isAdmin, isStaff } from "@/lib/roles";
 import { NavLinks } from "./nav-links";
 
 export async function SiteHeader() {
@@ -15,7 +15,7 @@ export async function SiteHeader() {
     <>
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Logo href={viewer ? "/gremio" : "/"} />
+          <Logo href={viewer ? homePath(viewer.role) : "/"} />
 
           {viewer ? (
             <>

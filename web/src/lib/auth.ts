@@ -5,7 +5,7 @@ import { cache } from "react";
 import { getRepo } from "@/lib/data";
 import { cookies } from "next/headers";
 import { PREVIEW_ADMIN_ID, PREVIEW_FAMILY_ID, PREVIEW_TEACHER_ID, PREVIEW_USER_ID } from "@/lib/data/memory-repo";
-import { isAdmin, isStaff } from "@/lib/roles";
+import { homePath, isAdmin, isStaff } from "@/lib/roles";
 import type { Profile } from "@/lib/data/types";
 import { hasSupabase, isPreview, isPreviewAnon } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -53,4 +53,10 @@ export async function requireFamily(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
   if (viewer.role !== "familia") redirect("/gremio");
   return viewer;
+}
+
+/** Inicio de una persona según su rol (para después de ingresar o confirmar el correo). */
+export async function homeForUser(userId: string): Promise<string> {
+  const p = await getRepo().getProfile(userId);
+  return p ? homePath(p.role) : "/gremio";
 }
