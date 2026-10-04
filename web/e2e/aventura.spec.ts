@@ -637,3 +637,42 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
   await expect(table.getByRole("row").filter({ hasText: "Wompi" })).toContainText("Rechazado");
   await context.clearCookies({ name: "umbral-vista" });
 });
+
+test("el administrador elimina un grupo, un docente y un curso, siempre confirmando con ELIMINAR", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin");
+
+  // Grupo «5.° A» (creado en una prueba anterior).
+  const grupos = page.getByRole("region", { name: "Grupos y códigos" });
+  await grupos.getByRole("button", { name: "Eliminar grupo 5.° A" }).click();
+  const dialog = page.getByRole("dialog", { name: /¿Eliminar el grupo «5\.° A»\?/ });
+  await expect(dialog).toBeVisible();
+  const confirm = dialog.getByRole("button", { name: "Eliminar definitivamente" });
+  await expect(confirm).toBeDisabled();
+  await dialog.getByLabel(/para confirmar/).fill("eliminar");
+  await confirm.click();
+  await expect(grupos.getByRole("button", { name: "Eliminar grupo 5.° A" })).toHaveCount(0);
+
+  // Cuenta de docente «Profe Ana»; el administrador no tiene botón para eliminarse.
+  const ana = page.locator("li", { hasText: "ana@colegio.edu.co" });
+  await ana.getByRole("button", { name: /Eliminar cuenta/ }).click();
+  const d2 = page.getByRole("dialog", { name: /Profe Ana/ });
+  await d2.getByLabel(/para confirmar/).fill("ELIMINAR");
+  await d2.getByRole("button", { name: "Eliminar definitivamente" }).click();
+  await expect(page.locator("li", { hasText: "ana@colegio.edu.co" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Eliminar cuenta Admin de prueba/ })).toHaveCount(0);
+
+  // Curso «Ciencias 5.° · 2027» desde Contenido; cancelar no borra nada.
+  await page.goto("/admin/contenido");
+  await page.getByRole("button", { name: "Eliminar curso Ciencias 5.° · 2027" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Cancelar" }).click();
+  await expect(page.getByRole("link", { name: /Ciencias 5\.° · 2027/ })).toBeVisible();
+  await page.getByRole("button", { name: "Eliminar curso Ciencias 5.° · 2027" }).click();
+  const d3 = page.getByRole("dialog", { name: /Ciencias 5\.° · 2027/ });
+  await d3.getByLabel(/para confirmar/).fill("ELIMINAR");
+  await d3.getByRole("button", { name: "Eliminar definitivamente" }).click();
+  await expect(page.getByRole("link", { name: /Ciencias 5\.° · 2027/ })).toHaveCount(0);
+  await page.goto("/programas");
+  await expect(page.getByText("Ciencias 5.° · 2027")).toHaveCount(0);
+  await context.clearCookies({ name: "umbral-vista" });
+});

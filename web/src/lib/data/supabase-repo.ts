@@ -445,6 +445,37 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "precio");
     },
 
+    async adminDeleteCourse(adminId, slug) {
+      const { data, error } = await db.rpc("admin_preparar_eliminar_curso", { p_admin: adminId, p_course: slug });
+      if (error) fail(error, "eliminar curso");
+      // Los pagos ya quedaron en la copia contable (payments_archive).
+      const { error: e1 } = await db.from("payments").delete().eq("course_slug", slug);
+      if (e1) fail(e1, "eliminar curso");
+      const { error: e2 } = await db.from("courses").delete().eq("slug", slug);
+      if (e2) fail(e2, "eliminar curso");
+      const r = data as Row;
+      return { title: r.title as string, students: r.students as number, payments: r.payments as number, groups: r.groups as number };
+    },
+
+    async adminDeleteClass(adminId, classId) {
+      const { data, error } = await db.rpc("admin_preparar_eliminar_grupo", { p_admin: adminId, p_class: classId });
+      if (error) fail(error, "eliminar grupo");
+      const { error: e1 } = await db.from("classes").delete().eq("id", classId);
+      if (e1) fail(e1, "eliminar grupo");
+      const r = data as Row;
+      return { name: r.name as string, members: r.members as number };
+    },
+
+    async adminDeleteUser(adminId, userId) {
+      const { data, error } = await db.rpc("admin_preparar_eliminar_cuenta", { p_admin: adminId, p_user: userId });
+      if (error) fail(error, "eliminar cuenta");
+      // Borrar la cuenta de acceso borra en cascada su perfil, su avance, sus grupos y sus vínculos.
+      const { error: e1 } = await db.auth.admin.deleteUser(userId);
+      if (e1) fail(e1, "eliminar cuenta");
+      const r = data as Row;
+      return { name: r.name as string, role: r.role as string };
+    },
+
     async adminClasses(adminId) {
       const { data, error } = await db.rpc("admin_classes", { p_admin: adminId });
       if (error) fail(error, "clases");

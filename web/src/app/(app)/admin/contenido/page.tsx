@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DeleteButton } from "@/components/delete-button";
 import { AdminNav } from "@/components/admin-nav";
 import { NewCourseForm } from "@/components/editor-client";
 import { Sprite, asset } from "@/components/sprite";
@@ -39,8 +40,8 @@ export default async function ContentPage() {
             ) : (
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((c) => (
-                  <li key={c.slug}>
-                    <Link href={`/admin/contenido/${c.slug}`} className="panel flex h-full items-center gap-3 p-4 transition hover:border-cyan/50">
+                  <li key={c.slug} className="panel flex h-full flex-col transition hover:border-cyan/50">
+                    <Link href={`/admin/contenido/${c.slug}`} className="flex flex-1 items-center gap-3 p-4">
                       <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 object-contain" />
                       <span className="min-w-0">
                         <span className="block truncate font-semibold">{c.title}</span>
@@ -52,6 +53,14 @@ export default async function ContentPage() {
                         <span className={`mt-1 inline-block rounded px-1.5 text-xs font-bold ${c.published ? "bg-green/15 text-[#b6f5cb]" : "bg-white/10 text-muted"}`}>{c.published ? "Publicado" : "Borrador"}</span>
                       </span>
                     </Link>
+                    <div className="flex justify-end border-t border-line/60 px-4 py-2">
+                      <DeleteButton kind="curso" id={c.slug} name={c.title} consequences={[
+                        "Se borran sus lecciones, sus preguntas y el avance de todos los estudiantes en este curso.",
+                        "Se quitan los accesos al curso. Sus pagos quedan en la copia contable y las constancias ya expedidas siguen verificables.",
+                        "Los grupos ligados a este curso quedan archivados.",
+                        "Si solo quieres ocultarlo, ábrelo y pásalo a borrador.",
+                      ]} />
+                    </div>
                   </li>
                 ))}
               </ul>

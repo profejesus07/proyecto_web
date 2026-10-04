@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminNav } from "@/components/admin-nav";
+import { DeleteButton } from "@/components/delete-button";
 import { IssuerSettingsForm } from "@/components/issuer-settings-form";
 import { AccessChip, CreateLinkedClassForm, CreateTeacherForm, GrantAccess, PriceForm, RoleSelect, TeacherSelect } from "@/components/admin-client";
 import { PageTitle } from "@/components/ui";
@@ -140,7 +141,16 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   <p className="truncate text-sm text-muted">{u.email}</p>
                   <p className="text-xs text-muted">Desde {new Date(u.createdAt).toLocaleDateString("es-CO")}{u.lastSignInAt ? ` · último ingreso ${new Date(u.lastSignInAt).toLocaleDateString("es-CO")}` : ""}</p>
                 </div>
-                <RoleSelect userId={u.id} role={u.role} name={u.name} />
+                <div className="flex flex-wrap items-center gap-2">
+                  <RoleSelect userId={u.id} role={u.role} name={u.name} />
+                  {u.role !== "admin" && u.id !== viewer.id && (
+                    <DeleteButton kind="cuenta" id={u.id} name={u.name} consequences={
+                      u.role === "docente"
+                        ? ["Se borra la cuenta y no podrá volver a entrar con ese correo (salvo que se registre de nuevo).", "Se borran sus grupos; sus estudiantes siguen con sus cuentas, pero pierden el acceso que les dio el código.", "Si solo quieres quitarle el rol, cámbialo a Estudiante."]
+                        : ["Se borra la cuenta con todo su avance, su inventario, sus vínculos de familia y sus clases.", "Sus pagos quedan en la copia contable y sus constancias expedidas siguen verificables (sin enlace a la cuenta)."]
+                    } />
+                  )}
+                </div>
                 <div className="space-y-2">
                   {u.role === "docente" || u.role === "admin" ? (
                     <p className="text-sm text-muted">Ve todos los cursos completos.</p>
@@ -195,7 +205,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                     {c.courseTitle ? <>Da acceso a <strong className="text-text">{c.courseTitle}</strong></> : "Grupo propio del docente (no da acceso)"} · {c.members} estudiantes · código <span className="font-mono font-bold text-gold">{c.code}</span>
                   </p>
                 </div>
-                {c.courseSlug ? <TeacherSelect classId={c.id} teacherId={c.teacherId} teachers={teachers} name={c.name} /> : <span className="text-sm text-muted">{c.teacher}</span>}
+                <div className="flex flex-wrap items-center gap-2">
+                  {c.courseSlug ? <TeacherSelect classId={c.id} teacherId={c.teacherId} teachers={teachers} name={c.name} /> : <span className="text-sm text-muted">{c.teacher}</span>}
+                  <DeleteButton kind="grupo" id={c.id} name={c.name} consequences={[
+                    `Sus ${c.members} estudiantes salen del grupo (sus cuentas y su avance se conservan).`,
+                    ...(c.courseSlug ? ["Pierden el acceso a la clase que les dio el código."] : []),
+                    "El código deja de funcionar. Si solo quieres cerrarlo, el docente puede archivarlo.",
+                  ]} />
+                </div>
               </li>
             ))}
           </ul>

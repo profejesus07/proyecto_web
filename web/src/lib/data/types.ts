@@ -442,6 +442,10 @@ export interface Repo {
   adminRevokeAccess(adminId: string, userId: string, course: string): Promise<void>;
   adminSetPrice(adminId: string, course: string, price: number | null): Promise<void>;
   adminClasses(adminId: string): Promise<AdminClass[]>;
+  /** Eliminar (el administrador): prepara en la base de datos (copia contable y registro) y luego borra. */
+  adminDeleteCourse(adminId: string, slug: string): Promise<{ title: string; students: number; payments: number; groups: number }>;
+  adminDeleteClass(adminId: string, classId: string): Promise<{ name: string; members: number }>;
+  adminDeleteUser(adminId: string, userId: string): Promise<{ name: string; role: string }>;
   /** Grupo ligado a una clase: su código da acceso hasta el fin del año lectivo. */
   adminCreateClass(adminId: string, course: string, name: string, teacherId: string): Promise<{ id: string; code: string }>;
   adminAssignTeacher(adminId: string, classId: string, teacherId: string): Promise<void>;

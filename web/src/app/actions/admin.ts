@@ -19,6 +19,10 @@ const MESSAGES: Record<string, string> = {
   persona_no_encontrada: "No encontramos a esa persona.",
   curso_no_encontrado: "No encontramos ese curso.",
   precio_invalido: "El precio no es válido.",
+  clase_no_encontrada: "No encontramos ese grupo.",
+  no_a_ti_mismo: "No puedes eliminar tu propia cuenta.",
+  no_admin: "Las cuentas de administrador no se eliminan desde el panel.",
+  solo_docentes_de_prueba: "En la vista previa solo se pueden eliminar los docentes creados de prueba.",
 };
 function friendly(e: unknown, fallback: string): string {
   const msg = e instanceof Error ? e.message : "";
@@ -150,4 +154,55 @@ export async function assignTeacherAction(classId: string, teacherId: string): P
   }
   revalidatePath("/admin");
   return { ok: true };
+}
+
+// ===== Eliminar =====
+// Siempre se pide escribir ELIMINAR. No se puede deshacer, pero los pagos quedan en una copia contable,
+// las constancias expedidas siguen verificables y cada eliminación queda registrada.
+export type DeleteResult = { ok: boolean; error?: string; message?: string };
+const CONFIRM_WORD = "ELIMINAR";
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const confirmed = (word: string) => word.trim().toUpperCase() === CONFIRM_WORD;
+
+export async function deleteCourseAction(slug: string, word: string): Promise<DeleteResult> {
+  const viewer = await admin();
+  if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
+  if (!confirmed(word)) return { ok: false, error: `Escribe ${CONFIRM_WORD} para confirmar.` };
+  if (!/^[a-z0-9-]{1,80}$/.test(slug)) return { ok: false, error: MESSAGES.curso_no_encontrado };
+  try {
+    const r = await getRepo().adminDeleteCourse(viewer.id, slug);
+    revalidatePath("/", "layout");
+    return { ok: true, message: `Se eliminó «${r.title}».` };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos eliminar el curso.") };
+  }
+}
+
+export async function deleteClassAction(classId: string, word: string): Promise<DeleteResult> {
+  const viewer = await admin();
+  if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
+  if (!confirmed(word)) return { ok: false, error: `Escribe ${CONFIRM_WORD} para confirmar.` };
+  if (!UUID.test(classId) && !/^[\w-]{1,40}$/.test(classId)) return { ok: false, error: MESSAGES.clase_no_encontrada };
+  try {
+    const r = await getRepo().adminDeleteClass(viewer.id, classId);
+    revalidatePath("/admin");
+    return { ok: true, message: `Se eliminó el grupo «${r.name}».` };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos eliminar el grupo.") };
+  }
+}
+
+export async function deleteUserAction(userId: string, word: string): Promise<DeleteResult> {
+  const viewer = await admin();
+  if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
+  if (!confirmed(word)) return { ok: false, error: `Escribe ${CONFIRM_WORD} para confirmar.` };
+  if (!UUID.test(userId)) return { ok: false, error: MESSAGES.persona_no_encontrada };
+  if (userId === viewer.id) return { ok: false, error: MESSAGES.no_a_ti_mismo };
+  try {
+    const r = await getRepo().adminDeleteUser(viewer.id, userId);
+    revalidatePath("/admin");
+    return { ok: true, message: `Se eliminó la cuenta de ${r.name}.` };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos eliminar la cuenta.") };
+  }
 }

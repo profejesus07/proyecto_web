@@ -52,7 +52,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 - Para cambiar o añadir cursos, edita o crea `supabase/seed/<curso>.json`, añádelo a `SEEDS` en `supabase/build_setup.py` (con el nombre de su migración), ejecuta `python3 supabase/build_setup.py` y vuelve a pegar `setup.sql` en el editor SQL. Los portales se abren en el orden de su `position`: cada uno exige terminar los anteriores.
 - Las claves se rotan desde Supabase; después actualiza la variable en Vercel y vuelve a desplegar.
-- **Cambios en la base de datos.** Cada cambio llega como una migración en `supabase/migrations/` (numeradas). Para aplicarla, copia ese archivo en Supabase → **SQL Editor** y pulsa **Run**; o vuelve a pegar `setup.sql` completo (es seguro repetirlo). En producción están aplicadas de la 0001 a la 0020 (octubre de 2026).
+- **Cambios en la base de datos.** Cada cambio llega como una migración en `supabase/migrations/` (numeradas). Para aplicarla, copia ese archivo en Supabase → **SQL Editor** y pulsa **Run**; o vuelve a pegar `setup.sql` completo (es seguro repetirlo). En producción están aplicadas de la 0001 a la 0021 (octubre de 2026).
 - **Dibujos de accesorios y decoración.** Si cambian los SVG de `public/assets/objetos` (cosméticos, focos o decoración), ejecuta `python3 web/scripts/build_wearables.py` para regenerar las piezas que se ponen sobre el avatar y en la terraza.
 
 ## Cómo funciona cada parte
@@ -75,6 +75,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 - **Cuentas de docente:** solo se crean desde **Admin → Crear cuenta de docente** (o cambiando el rol de una cuenta existente). El registro público solo crea cuentas de estudiante o familia.
 - **Cursos:** la primera lección de cada curso es gratis. El resto se abre con un pago en línea (ver abajo) o con acceso que el administrador activa en **Admin → Personas** (sin vencimiento, 1 mes, 6 meses o 1 año). Quitar un acceso no borra el registro: queda marcado como revocado.
 - **Precios:** en **Admin → Cursos y precios**, en pesos colombianos.
+- **Eliminar:** en **Admin → Personas** (cuentas de estudiante, familia o docente), **Admin → Grupos y códigos** (grupos) y **Admin → Contenido** (cursos y clases). Siempre pide escribir `ELIMINAR` y no se puede deshacer. Antes de borrar, los pagos se copian a `payments_archive` (registro contable), las constancias ya expedidas siguen verificables y cada eliminación queda en `admin_log`. Las cuentas de administrador no se eliminan desde el panel. Si solo quieres ocultar un curso, pásalo a borrador; si solo quieres cerrar un grupo, archívalo.
 
 ## Pagos en línea (Wompi y Mercado Pago)
 

@@ -270,7 +270,7 @@ export function createMemoryRepo(): Repo {
       const n = name.trim();
       if (n.length < 2 || n.length > 60) throw new Error("nombre_invalido");
       const s = state();
-      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: n, code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: null };
+      const c: PreviewClass = { id: `clase-${crypto.randomUUID().slice(0, 8)}`, name: n, code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: null };
       s.classes.push(c);
       for (const d of DEMO_STUDENTS) s.members.push({ classId: c.id, studentId: d.id, joinedAt: c.createdAt });
       return { id: c.id, name: c.name, code: c.code };
@@ -485,6 +485,45 @@ export function createMemoryRepo(): Repo {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
       state().prices.set(course, price);
     },
+    async adminDeleteCourse(adminId, slug) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const c = C();
+      const course = c.courses.find((x) => x.slug === slug);
+      if (!course) throw new Error("curso_no_encontrado");
+      const s = state();
+      const ids = new Set(c.missions.filter((m) => m.courseSlug === slug).map((m) => m.id));
+      const students = [...ids].some((id) => s.progress.has(id)) ? 1 : 0;
+      const payments = s.payments.filter((p) => p.courseSlug === slug).length;
+      const groups = s.classes.filter((x) => x.courseSlug === slug).length;
+      c.courses = c.courses.filter((x) => x.slug !== slug);
+      c.missions = c.missions.filter((m) => m.courseSlug !== slug);
+      for (const id of ids) { c.questions.delete(id); s.progress.delete(id); s.attempts.delete(id); }
+      s.access.delete(slug);
+      s.payments = s.payments.filter((p) => p.courseSlug !== slug);
+      for (const x of s.classes) if (x.courseSlug === slug) { x.courseSlug = null; x.archived = true; }
+      return { title: course.title, students, payments, groups };
+    },
+    async adminDeleteClass(adminId, classId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const s = state();
+      const cl = s.classes.find((x) => x.id === classId);
+      if (!cl) throw new Error("clase_no_encontrada");
+      const members = s.members.filter((m) => m.classId === classId).length;
+      for (const [course, via] of s.viaClass) if (via === classId) { s.access.delete(course); s.viaClass.delete(course); }
+      s.classes = s.classes.filter((x) => x.id !== classId);
+      s.members = s.members.filter((m) => m.classId !== classId);
+      return { name: cl.name, members };
+    },
+    async adminDeleteUser(adminId, userId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      if (userId === PREVIEW_ADMIN_ID) throw new Error("no_a_ti_mismo");
+      const s = state();
+      const t = s.extraTeachers.find((u) => u.id === userId);
+      if (!t) throw new Error("solo_docentes_de_prueba");
+      s.extraTeachers = s.extraTeachers.filter((u) => u.id !== userId);
+      s.classes = s.classes.filter((x) => x.teacherId !== userId);
+      return { name: t.name, role: t.role };
+    },
     async adminClasses(adminId) {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
       const s = state();
@@ -499,7 +538,7 @@ export function createMemoryRepo(): Repo {
       if (!C().courses.some((c) => c.slug === course && c.kind === "clase")) throw new Error("curso_no_encontrado");
       if (!STAFF.has(teacherId)) throw new Error("solo_docentes");
       const s = state();
-      const c: PreviewClass = { id: `clase-${s.classes.length + 1}`, name: name.trim(), code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: course };
+      const c: PreviewClass = { id: `clase-${crypto.randomUUID().slice(0, 8)}`, name: name.trim(), code: previewCode(), teacherId, archived: false, createdAt: new Date().toISOString(), courseSlug: course };
       s.classes.push(c);
       return { id: c.id, code: c.code };
     },
@@ -512,7 +551,7 @@ export function createMemoryRepo(): Repo {
     async createTeacherAccount(email, name) {
       const s = state();
       if (s.extraTeachers.some((t) => t.email === email)) throw new Error("already been registered");
-      const id = `docente-${s.extraTeachers.length + 1}`;
+      const id = crypto.randomUUID();
       s.extraTeachers.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
       return { id };
     },
