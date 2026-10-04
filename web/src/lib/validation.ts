@@ -24,6 +24,12 @@ export const newPassword = z
   .regex(/[A-Za-z]/, "La contraseña necesita al menos una letra.")
   .regex(/[0-9]/, "La contraseña necesita al menos un número.");
 
+export const emailSchema = z.string().trim().toLowerCase().pipe(z.email());
+
+export const newPasswordSchema = z
+  .object({ password: newPassword, confirm: z.string() })
+  .refine((v) => v.password === v.confirm, { message: "Las dos contraseñas no coinciden.", path: ["confirm"] });
+
 export const registerSchema = z.object({
   displayName,
   email: z.string().trim().toLowerCase().pipe(z.email("Escribe un correo válido.")),

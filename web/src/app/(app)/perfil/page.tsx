@@ -40,6 +40,7 @@ export default async function ProfilePage() {
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
           <AvatarPicker current={viewer.avatarBase} rank={p.rank.key} />
+          <Link href="/nueva-contrasena" className="inline-block text-sm font-semibold text-cyan underline-offset-4 hover:underline">🔑 Cambiar mi contraseña</Link>
         </div>
       </section>
 

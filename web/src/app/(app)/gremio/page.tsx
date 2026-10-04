@@ -20,8 +20,9 @@ function isDay(): boolean {
   return h >= 6 && h < 18;
 }
 
-export default async function GremioPage() {
+export default async function GremioPage({ searchParams }: PageProps<"/gremio">) {
   const viewer = await requireViewer("/gremio");
+  const passwordChanged = (await searchParams).aviso === "clave";
   const [courses, inventory, shelves] = await Promise.all([loadCourseViews(viewer.id), getRepo().getInventory(viewer.id), loadChronicles(viewer)]);
   const unread = unreadCount(shelves);
   const newest = shelves.flatMap((s) => s.chapters).filter((c) => c.unlocked && !c.read).at(-1);
@@ -65,6 +66,8 @@ export default async function GremioPage() {
           </div>
         </div>
       </section>
+
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
       {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={viewer.role === "docente"} />}
 

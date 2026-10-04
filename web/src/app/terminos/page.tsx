@@ -37,7 +37,7 @@ export default function TermsPage() {
       </section>
       <section>
         <h2>Cambios y contacto</h2>
-        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong>[CORREO DE CONTACTO]</strong> si tienes dudas.</p>
+        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong><a href="mailto:jesuspunksaez@gmail.com" className="text-cyan underline underline-offset-4">jesuspunksaez@gmail.com</a></strong> si tienes dudas.</p>
       </section>
     </LegalPage>
   );

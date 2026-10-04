@@ -216,6 +216,17 @@ test("el docente crea una clase, el estudiante se une con el código y aparece e
   await context.clearCookies({ name: "umbral-vista" });
 });
 
+test("desde el ingreso se llega a recuperar la contraseña, y el cambio de contraseña pide las mismas reglas", async ({ page }) => {
+  await page.goto("/recuperar");
+  await expect(page.getByRole("heading", { name: "¿Olvidaste tu contraseña?" })).toBeVisible();
+  await expect(page.getByLabel("Correo de tu cuenta")).toBeVisible();
+  await page.goto("/nueva-contrasena");
+  await page.locator("#password").fill("estrella");
+  await expect(page.locator("#password-rules [data-cumple]")).toHaveCount(2);
+  await page.goto("/perfil");
+  await expect(page.getByRole("link", { name: /Cambiar mi contraseña/ })).toBeVisible();
+});
+
 test("las páginas públicas cargan y la accesibilidad básica está presente", async ({ page }) => {
   for (const path of ["/privacidad", "/terminos"]) {
     await page.goto(path);
