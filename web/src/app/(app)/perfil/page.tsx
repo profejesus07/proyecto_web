@@ -9,6 +9,7 @@ import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
 import { requireViewer } from "@/lib/auth";
 import { allItems, getItem, type CatalogItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
+import { loadDiplomas } from "@/lib/data/queries";
 import { rankProgress } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "Tu perfil" };
@@ -28,11 +29,11 @@ export default async function ProfilePage() {
     getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([]), getRepo().listCertificates({ userId: viewer.id }),
     isStudent ? getRepo().listStudentFamilies(viewer.id) : Promise.resolve([]),
   ]);
+  const diplomas = await loadDiplomas(viewer.id);
   const owned = new Set(inventory.map((i) => i.itemId));
   const p = rankProgress(viewer.xp);
 
   const ownedItems = inventory.map((i) => getItem(i.itemId)).filter((i): i is CatalogItem => !!i);
-  const hasCertificate = owned.has("obj_certificado_portal");
 
   return (
     <div className="space-y-8">
@@ -137,13 +138,23 @@ export default async function ProfilePage() {
         </section>
       )}
 
-      {hasCertificate && (
-        <section className="panel flex flex-wrap items-center gap-4 p-5" aria-label="Certificado">
-          <Sprite src="/assets/objetos/certificado/obj_certificado_portal.svg" alt="Certificado Sello del Portal" className="h-24 w-auto" />
-          <div className="flex-1">
-            <p className="font-display text-xl font-bold">¡Tienes un certificado!</p>
-            <p className="text-sm text-muted">Completaste un portal entero. Pronto podrás descargarlo con tu nombre.</p>
+      {diplomas.length > 0 && (
+        <section aria-labelledby="diplomas-t" className="panel space-y-3 p-6">
+          <div className="flex flex-wrap items-center gap-4">
+            <Sprite src="/assets/objetos/certificado/obj_certificado_portal.svg" alt="" decorative className="h-16 w-auto" />
+            <div className="flex-1">
+              <h2 id="diplomas-t" className="text-2xl">Mis diplomas</h2>
+              <p className="text-sm text-muted">Un diploma «Sello del Portal» por cada portal que completaste. Descárgalo con tu nombre.</p>
+            </div>
           </div>
+          <ul className="space-y-2">
+            {diplomas.map((d) => (
+              <li key={d.slug} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
+                <strong>{d.title}</strong>
+                <Link href={`/diploma/${d.slug}`} className="btn btn-secondary btn-sm">📜 Ver y descargar</Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

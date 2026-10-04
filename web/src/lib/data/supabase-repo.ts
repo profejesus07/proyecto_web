@@ -85,7 +85,7 @@ export function createSupabaseRepo(): Repo {
       const { data, error } = await db.from("mission_progress").select("mission_id,best_score,attempts,completed_at").eq("user_id", userId);
       if (error) fail(error, "progreso");
       return (data ?? []).map((r): ProgressRow => ({
-        missionId: r.mission_id, bestScore: r.best_score, attempts: r.attempts, completed: r.completed_at !== null,
+        missionId: r.mission_id, bestScore: r.best_score, attempts: r.attempts, completed: r.completed_at !== null, completedAt: r.completed_at,
       }));
     },
 

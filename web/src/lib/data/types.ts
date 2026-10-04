@@ -90,6 +90,8 @@ export interface ProgressRow {
   bestScore: number;
   attempts: number;
   completed: boolean;
+  /** Cuándo se aprobó por primera vez (si se conoce). */
+  completedAt?: string | null;
 }
 
 export interface CompleteResult {

@@ -77,3 +77,15 @@ export async function loadCourseView(userId: string, slug: string): Promise<Cour
 export function formatPrice(price: number | null): string {
   return price === null ? "Precio por definir" : new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(price);
 }
+
+export interface EarnedDiploma { slug: string; title: string; date: string; /** Curso corto con horas: además puede pedir la constancia legal. */ certifiable: boolean }
+
+/** Diplomas del juego «Sello del Portal»: uno por portal con el Guardián vencido o todas sus lecciones superadas. */
+export async function loadDiplomas(userId: string): Promise<EarnedDiploma[]> {
+  const [views, progress] = await Promise.all([loadCourseViews(userId), getRepo().getProgress(userId)]);
+  const when = new Map(progress.map((p) => [p.missionId, p.completedAt ?? null]));
+  return views.filter((v) => v.total > 0 && (v.bossDefeated || v.status === "completado")).map((v) => {
+    const dates = v.missions.map((m) => when.get(m.id)).filter((d): d is string => !!d).sort();
+    return { slug: v.slug, title: v.title, certifiable: v.kind === "curso" && !!v.hours, date: dates.at(-1) ?? new Date().toISOString() };
+  });
+}

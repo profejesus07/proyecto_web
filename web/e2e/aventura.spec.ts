@@ -131,7 +131,15 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   }
   await page.goto("/perfil");
   await expect(page.getByText("Rango D · Explorador").first()).toBeVisible();
-  await expect(page.getByText("¡Tienes un certificado!")).toBeVisible();
+  // El diploma del juego se descarga con el nombre del estudiante.
+  await expect(page.getByRole("heading", { name: "Mis diplomas" })).toBeVisible();
+  await page.getByRole("link", { name: /Ver y descargar/ }).last().click();
+  await expect(page).toHaveURL(/\/diploma\/primer-portal$/);
+  await expect(page.getByRole("img", { name: /Diploma Sello del Portal de Despertado/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Descargar PDF/ })).toBeVisible();
+  // Un portal sin terminar no tiene diploma.
+  await page.goto("/diploma/portal-del-primer-intento");
+  await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
 });
 
 test("al superar la lección gratis se ofrece desbloquear el curso", async ({ page }) => {
