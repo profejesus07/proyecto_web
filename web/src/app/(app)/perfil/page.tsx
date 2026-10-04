@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JoinClassForm, LeaveClassButton } from "@/components/classes-client";
 import { logoutAction } from "@/app/actions/auth";
+import { FamilyCodeCard, UnlinkButton } from "@/components/family-client";
 import { DisplayNameForm } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
@@ -23,8 +24,9 @@ const SECTIONS: { key: string; title: string; cats: string[]; showMissing?: bool
 export default async function ProfilePage() {
   const viewer = await requireViewer("/perfil");
   const isStudent = viewer.role === "estudiante";
-  const [inventory, myClasses, myCerts] = await Promise.all([
+  const [inventory, myClasses, myCerts, families] = await Promise.all([
     getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([]), getRepo().listCertificates({ userId: viewer.id }),
+    isStudent ? getRepo().listStudentFamilies(viewer.id) : Promise.resolve([]),
   ]);
   const owned = new Set(inventory.map((i) => i.itemId));
   const p = rankProgress(viewer.xp);
@@ -108,6 +110,29 @@ export default async function ProfilePage() {
           <div className="space-y-3">
             <JoinClassForm />
             <p className="hint">Al unirte, tu docente verá tu nombre de aventurero, tu rango y tu avance en los portales. Nunca verá tu correo ni tu contraseña. Puedes salir cuando quieras.</p>
+          </div>
+        </section>
+      )}
+
+      {isStudent && (
+        <section aria-labelledby="familia-t" className="panel grid gap-6 p-6 md:grid-cols-2">
+          <div className="space-y-3">
+            <h2 id="familia-t" className="text-2xl">Mi familia</h2>
+            <p className="text-muted">Comparte tu código con tu mamá, papá o quien te acompañe. Con él podrá ver tu rango, tu racha y tu avance en los portales. No verá tu correo, tu contraseña ni tus respuestas, y no podrá cambiar nada.</p>
+            {families.length > 0 && (
+              <ul className="space-y-2">
+                {families.map((f) => (
+                  <li key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
+                    <span>👪 <strong>{f.name}</strong> <span className="text-sm text-muted">ve tu avance</span></span>
+                    <UnlinkButton otherId={f.id} label="Quitar" confirmText={`¿Dejar de compartir tu avance con ${f.name}?`} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="space-y-3">
+            <FamilyCodeCard />
+            <p className="hint">Tu familia lo escribe en su cuenta de UMBRAL (tipo «Familia»), en «Mi familia». Si lo compartiste con quien no debías, cámbialo.</p>
           </div>
         </section>
       )}

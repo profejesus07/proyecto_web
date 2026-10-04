@@ -3,7 +3,7 @@ import primer from "@/content/primer-portal.json";
 import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import type {
-  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminUser, AidUseRow, AnswerKeyRow, Certificate, IssuerSettings, CourseInput, EditableCourse, AnswerResult, ClassReport, ClassStudent, FamilyChild, FinishResult, AvatarBase, CompleteResult, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, Repo,
 } from "./types";
 
@@ -22,6 +22,9 @@ const TEACHER: Profile = {
 /** Administrador de prueba (cookie «umbral-vista=admin»). */
 export const PREVIEW_ADMIN_ID = "00000000-0000-0000-0000-00000000cccc";
 const ADMIN: Profile = { ...TEACHER, id: PREVIEW_ADMIN_ID, role: "admin", displayName: "Admin de prueba" };
+/** Familia de prueba (cookie «umbral-vista=familia»). */
+export const PREVIEW_FAMILY_ID = "00000000-0000-0000-0000-00000000dddd";
+const FAMILY: Profile = { ...TEACHER, id: PREVIEW_FAMILY_ID, role: "familia", displayName: "Familia de prueba", avatarBase: "nuri" };
 const STAFF = new Set([PREVIEW_TEACHER_ID, PREVIEW_ADMIN_ID]);
 
 interface PreviewClass { id: string; name: string; code: string; teacherId: string; archived: boolean; createdAt: string; courseSlug: string | null }
@@ -58,6 +61,9 @@ interface State {
   certificates: Certificate[];
   prices: Map<string, number | null>;
   extraTeachers: AdminUser[];
+  familyCode: string | null;
+  /** La familia de prueba está vinculada al estudiante de prueba desde esta fecha. */
+  familySince: string | null;
 }
 
 const g = globalThis as unknown as { __umbralPreview?: State };
@@ -80,6 +86,8 @@ function state(): State {
       certificates: [],
       prices: new Map([["primer-portal", 20000], ["portal-del-primer-intento", 25000]]),
       extraTeachers: [],
+      familyCode: null,
+      familySince: null,
     };
   }
   return g.__umbralPreview;
@@ -157,7 +165,7 @@ function complete(_u: string, id: string, score: number, passMark: number, items
 
 export function createMemoryRepo(): Repo {
   return {
-    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : id === PREVIEW_ADMIN_ID ? { ...ADMIN } : { ...state().profile }; },
+    async getProfile(id) { return id === PREVIEW_TEACHER_ID ? { ...TEACHER } : id === PREVIEW_ADMIN_ID ? { ...ADMIN } : id === PREVIEW_FAMILY_ID ? { ...FAMILY } : { ...state().profile }; },
     async listCourses() { return C().courses.filter((c) => c.published).map(withPrice); },
     async getCourse(slug): Promise<CourseDetail | null> {
       const c = C().courses.find((x) => x.slug === slug && x.published);
@@ -291,6 +299,53 @@ export function createMemoryRepo(): Repo {
     async leaveClass(studentId, classId) {
       const s = state();
       s.members = s.members.filter((m) => !(m.classId === classId && m.studentId === studentId));
+    },
+    async familyCode(studentId, renew = false) {
+      if (studentId !== PREVIEW_USER_ID || state().profile.role !== "estudiante") throw new Error("solo_estudiantes");
+      const s = state();
+      if (!s.familyCode || renew) s.familyCode = previewCode() + previewCode().slice(0, 2);
+      return s.familyCode;
+    },
+    async linkFamily(familyId, code) {
+      if (familyId !== PREVIEW_FAMILY_ID) throw new Error("solo_familias");
+      const s = state();
+      const norm = code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      if (!s.familyCode || norm !== s.familyCode) throw new Error("codigo_invalido");
+      s.familySince = new Date().toISOString();
+      return { id: s.profile.id, name: s.profile.displayName };
+    },
+    async unlinkFamily(actorId, familyId, studentId) {
+      if (actorId !== familyId && actorId !== studentId) throw new Error("no_autorizado");
+      if (familyId === PREVIEW_FAMILY_ID && studentId === PREVIEW_USER_ID) state().familySince = null;
+    },
+    async listStudentFamilies(studentId) {
+      const s = state();
+      return studentId === PREVIEW_USER_ID && s.familySince ? [{ id: PREVIEW_FAMILY_ID, name: FAMILY.displayName, since: s.familySince }] : [];
+    },
+    async familyOverview(familyId): Promise<FamilyChild[]> {
+      if (familyId !== PREVIEW_FAMILY_ID) throw new Error("solo_familias");
+      const s = state();
+      if (!s.familySince) return [];
+      const p = s.profile;
+      const rows = [...s.progress.entries()].flatMap(([id, pr]) => {
+        const m = C().missions.find((x) => x.id === id);
+        return m ? [{ m, pr }] : [];
+      });
+      const courses = C().courses.filter((c) => c.published && rows.some((r) => r.m.courseSlug === c.slug)).map((c) => ({
+        slug: c.slug, title: c.title, kind: c.kind, total: C().missions.filter((m) => m.courseSlug === c.slug).length,
+        lessons: rows.filter((r) => r.m.courseSlug === c.slug).sort((a, b) => a.m.position - b.m.position)
+          .map(({ m, pr }) => ({ position: m.position, title: m.title, bestScore: pr.bestScore, attempts: pr.attempts, completed: pr.completed })),
+      }));
+      const classes = s.members.filter((m) => m.studentId === p.id).flatMap((m) => {
+        const c = s.classes.find((x) => x.id === m.classId && !x.archived);
+        return c ? [{ name: c.name, teacher: TEACHER.displayName }] : [];
+      });
+      return [{
+        id: p.id, name: p.displayName, avatar: p.avatarBase, avatarLook: p.avatarLook, xp: p.xp, streak: p.streak,
+        lastActive: rows.length ? todayBogota() : null, since: s.familySince, weekAttempts: rows.reduce((n, r) => n + r.pr.attempts, 0),
+        courses, classes,
+        certificates: s.certificates.map((c) => ({ code: c.code, courseTitle: c.courseTitle, hours: c.hours, issuedAt: c.issuedAt })),
+      }];
     },
     async getCourseAccess(userId) {
       return new Set(C().courses.filter((c) => hasAccess(userId, c.slug)).map((c) => c.slug));

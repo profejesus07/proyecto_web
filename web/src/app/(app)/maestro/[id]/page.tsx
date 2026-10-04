@@ -4,25 +4,15 @@ import { AvatarFace } from "@/components/avatar-face";
 import { ClassActions, CodeCard, RemoveStudentButton } from "@/components/classes-client";
 import { BackLink } from "@/components/ui";
 import { guardianBySlug } from "@/content/guardians";
+import { daysAgo, lastSeen } from "@/lib/activity";
 import { requireTeacher } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import type { ClassReport, CourseDetail } from "@/lib/data/types";
 import { PASS_MARK } from "@/lib/game/grading";
-import { todayBogota } from "@/lib/game/aids";
 import { rankForXp } from "@/lib/game/ranks";
 import { isAdmin } from "@/lib/roles";
 
 export const metadata: Metadata = { title: "Informe de la clase" };
-
-function daysAgo(date: string | null): number | null {
-  if (!date) return null;
-  const today = new Date(`${todayBogota()}T00:00:00Z`).getTime();
-  return Math.round((today - new Date(`${date.slice(0, 10)}T00:00:00Z`).getTime()) / 86_400_000);
-}
-function lastSeen(date: string | null): string {
-  const d = daysAgo(date);
-  return d === null ? "Sin actividad" : d <= 0 ? "Hoy" : d === 1 ? "Ayer" : `Hace ${d} días`;
-}
 
 export default async function ClassReportPage({ params }: PageProps<"/maestro/[id]">) {
   const { id } = await params;

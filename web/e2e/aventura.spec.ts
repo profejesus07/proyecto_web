@@ -420,3 +420,49 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
 });
+
+test("la familia se vincula con el código del estudiante, ve su avance y el estudiante puede quitarla", async ({ page, context }) => {
+  const asFamily = { name: "umbral-vista", value: "familia", url: "http://localhost:3200" };
+  // El estudiante muestra su código en el perfil.
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: /Mostrar mi código de familia/ }).click();
+  const code = (await page.getByLabel(/Tu código de familia/).textContent())!.trim();
+  expect(code).toMatch(/^[A-Z2-9]{8}$/);
+
+  // Un estudiante no entra al panel de familias.
+  await page.goto("/familia");
+  await expect(page).toHaveURL(/\/gremio$/);
+
+  await context.addCookies([asFamily]);
+  await page.goto("/gremio");
+  await page.getByRole("link", { name: "Ir a Mi familia" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Mi familia" })).toBeVisible();
+  await page.getByLabel("Código de familia").fill("XXXX-YYYY");
+  await page.getByRole("button", { name: "Vincular" }).click();
+  await expect(page.getByText(/Ese código no existe/)).toBeVisible();
+  await page.getByLabel("Código de familia").fill(`${code.slice(0, 4).toLowerCase()} ${code.slice(4)}`);
+  await page.getByRole("button", { name: "Vincular" }).click();
+  await expect(page.getByText("¡Listo! Ya acompañas a Despertado.")).toBeVisible();
+  await page.reload();
+  const card = page.getByRole("article", { name: "Despertado" });
+  await expect(card).toBeVisible();
+  // Las pruebas anteriores ya jugaron el primer portal.
+  await expect(card.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" })).toBeVisible();
+  const portal = card.locator("li").filter({ has: page.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" }) });
+  await expect(portal.getByText(/L1 · 100% ✔/)).toBeVisible();
+
+  // El estudiante ve quién lo acompaña y lo quita.
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto("/perfil");
+  const row = page.locator("li", { hasText: "Familia de prueba" });
+  await expect(row).toBeVisible();
+  page.once("dialog", (d) => d.accept());
+  await row.getByRole("button", { name: "Quitar" }).click();
+  await expect(row).toHaveCount(0);
+
+  await context.addCookies([asFamily]);
+  await page.goto("/familia");
+  await expect(page.getByRole("heading", { name: "Vincula a tu hijo o hija" })).toBeVisible();
+  await expect(page.getByRole("article")).toHaveCount(0);
+  await context.clearCookies({ name: "umbral-vista" });
+});

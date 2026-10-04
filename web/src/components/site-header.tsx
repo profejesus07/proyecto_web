@@ -19,7 +19,7 @@ export async function SiteHeader() {
 
           {viewer ? (
             <>
-              <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} />
+              <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />
               <div className="flex items-center gap-2 sm:gap-3">
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
                   <span aria-hidden="true">🪙</span> {viewer.coins}
@@ -45,7 +45,7 @@ export async function SiteHeader() {
         </div>
       </header>
       {/* Fuera del <header>: su backdrop-blur haría que «fixed» se anclara a la cabecera y la tapara. */}
-      {viewer && <NavLinks mobile className="md:hidden" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} />}
+      {viewer && <NavLinks mobile className="md:hidden" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />}
     </>
   );
 }

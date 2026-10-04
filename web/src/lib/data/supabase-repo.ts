@@ -3,7 +3,7 @@ import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FinishResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminUser, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FinishResult, LinkedFamily, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -226,6 +226,48 @@ export function createSupabaseRepo(): Repo {
     async manageClass(teacherId, classId, action, arg) {
       const { error } = await db.rpc("manage_class", { p_teacher: teacherId, p_class: classId, p_action: action, p_arg: arg ?? null });
       if (error) fail(error, "clase");
+    },
+
+    async familyCode(studentId, renew = false) {
+      const { data, error } = await db.rpc("family_code", { p_student: studentId, p_renew: renew });
+      if (error) fail(error, "código de familia");
+      return data as string;
+    },
+
+    async linkFamily(familyId, code) {
+      const { data, error } = await db.rpc("link_family", { p_family: familyId, p_code: code });
+      if (error) fail(error, "familia");
+      return data as { id: string; name: string };
+    },
+
+    async unlinkFamily(actorId, familyId, studentId) {
+      const { error } = await db.rpc("unlink_family", { p_actor: actorId, p_family: familyId, p_student: studentId });
+      if (error) fail(error, "familia");
+    },
+
+    async listStudentFamilies(studentId) {
+      const { data, error } = await db.rpc("student_families", { p_student: studentId });
+      if (error) fail(error, "familias");
+      return (data as LinkedFamily[] | null) ?? [];
+    },
+
+    async familyOverview(familyId) {
+      const { data, error } = await db.rpc("family_overview", { p_family: familyId });
+      if (error) fail(error, "familia");
+      type Raw = {
+        id: string; name: string; avatar: string; look?: unknown; xp: number; streak: number; last_active: string | null; since: string; week_attempts: number;
+        courses: { slug: string; title: string; kind: "clase" | "curso"; total: number; lessons: { position: number; title: string; best_score: number; attempts: number; completed: boolean }[] }[];
+        classes: { name: string; teacher: string }[];
+        certificates: { code: string; course_title: string; hours: number; issued_at: string }[];
+      };
+      return ((data as Raw[] | null) ?? []).map((c): FamilyChild => ({
+        id: c.id, name: c.name, xp: c.xp, streak: c.streak, lastActive: c.last_active, since: c.since, weekAttempts: c.week_attempts,
+        avatar: (AVATAR_BASES as readonly string[]).includes(c.avatar) ? (c.avatar as AvatarBase) : "aria",
+        avatarLook: sanitizeLook(c.look),
+        courses: c.courses.map((k) => ({ ...k, lessons: k.lessons.map((l) => ({ position: l.position, title: l.title, bestScore: l.best_score, attempts: l.attempts, completed: l.completed })) })),
+        classes: c.classes,
+        certificates: c.certificates.map((x) => ({ code: x.code, courseTitle: x.course_title, hours: x.hours, issuedAt: x.issued_at })),
+      }));
     },
 
     async classReport(teacherId, classId) {

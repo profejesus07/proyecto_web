@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import { cache } from "react";
 import { getRepo } from "@/lib/data";
 import { cookies } from "next/headers";
-import { PREVIEW_ADMIN_ID, PREVIEW_TEACHER_ID, PREVIEW_USER_ID } from "@/lib/data/memory-repo";
+import { PREVIEW_ADMIN_ID, PREVIEW_FAMILY_ID, PREVIEW_TEACHER_ID, PREVIEW_USER_ID } from "@/lib/data/memory-repo";
 import { isAdmin, isStaff } from "@/lib/roles";
 import type { Profile } from "@/lib/data/types";
 import { hasSupabase, isPreview, isPreviewAnon } from "@/lib/env";
@@ -16,9 +16,10 @@ export const getViewer = cache(async (): Promise<Profile | null> => {
   await connection();
   if (isPreviewAnon()) return null;
   if (isPreview()) {
-    // Solo en la vista previa local: la cookie «umbral-vista» entra como el docente o el admin de prueba.
+    // Solo en la vista previa local: la cookie «umbral-vista» entra como el docente, el admin o la familia de prueba.
     const as = (await cookies()).get("umbral-vista")?.value;
-    return getRepo().getProfile(as === "docente" ? PREVIEW_TEACHER_ID : as === "admin" ? PREVIEW_ADMIN_ID : PREVIEW_USER_ID);
+    const id = as === "docente" ? PREVIEW_TEACHER_ID : as === "admin" ? PREVIEW_ADMIN_ID : as === "familia" ? PREVIEW_FAMILY_ID : PREVIEW_USER_ID;
+    return getRepo().getProfile(id);
   }
   if (!hasSupabase()) return null;
   const supabase = await createClient();
@@ -44,5 +45,12 @@ export async function requireTeacher(next: string): Promise<Profile> {
 export async function requireAdmin(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
   if (!isAdmin(viewer.role)) redirect("/gremio");
+  return viewer;
+}
+
+/** Panel de familias: solo cuentas de familia. */
+export async function requireFamily(next: string): Promise<Profile> {
+  const viewer = await requireViewer(next);
+  if (viewer.role !== "familia") redirect("/gremio");
   return viewer;
 }

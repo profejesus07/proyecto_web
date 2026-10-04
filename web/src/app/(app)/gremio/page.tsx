@@ -85,6 +85,13 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
         </section>
       )}
 
+      {viewer.role === "familia" && (
+        <section aria-label="Guardianes del Hogar" className="panel flex flex-wrap items-center justify-between gap-4 !border-cyan/40 p-5">
+          <p><strong className="font-display text-lg">👪 Guardián del Hogar.</strong> <span className="text-muted">Vincula a tu hijo o hija y acompaña su avance.</span></p>
+          <Link href="/familia" className="btn btn-primary">Ir a Mi familia</Link>
+        </section>
+      )}
+
       {newest && (
         <section aria-label="Crónicas nuevas" className="panel flex flex-wrap items-center gap-4 !border-violet/40 p-4 sm:p-5">
           <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet" className="min-w-0 flex-1">

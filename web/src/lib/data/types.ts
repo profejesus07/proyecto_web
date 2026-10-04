@@ -176,6 +176,26 @@ export interface JoinResult {
   expiresAt: string | null;
 }
 
+/** Familia vinculada a un estudiante (lo que ve el estudiante). */
+export interface LinkedFamily { id: string; name: string; since: string }
+
+/** Lo que ve una familia de cada hijo o hija vinculado (solo lectura). */
+export interface FamilyChild {
+  id: string;
+  name: string;
+  avatar: AvatarBase;
+  avatarLook: AvatarLook;
+  xp: number;
+  streak: number;
+  lastActive: string | null;
+  since: string;
+  /** Misiones terminadas en los últimos 7 días. */
+  weekAttempts: number;
+  courses: { slug: string; title: string; kind: "clase" | "curso"; total: number; lessons: { position: number; title: string; bestScore: number; attempts: number; completed: boolean }[] }[];
+  classes: { name: string; teacher: string }[];
+  certificates: { code: string; courseTitle: string; hours: number; issuedAt: string }[];
+}
+
 export interface ClassStudent {
   id: string;
   name: string;
@@ -318,6 +338,13 @@ export interface Repo {
   /** Revoca el acceso a la clase que dio este grupo (al salir o ser retirado). */
   revokeClassAccess(studentId: string, classId: string): Promise<void>;
   leaveClass(studentId: string, classId: string): Promise<void>;
+  /** Código que el estudiante comparte con su familia (renew = cambiarlo). */
+  familyCode(studentId: string, renew?: boolean): Promise<string>;
+  linkFamily(familyId: string, code: string): Promise<{ id: string; name: string }>;
+  /** Desvincula; `actorId` es la familia o el estudiante. */
+  unlinkFamily(actorId: string, familyId: string, studentId: string): Promise<void>;
+  listStudentFamilies(studentId: string): Promise<LinkedFamily[]>;
+  familyOverview(familyId: string): Promise<FamilyChild[]>;
   // Suscripciones
   /** Cursos con acceso completo (docentes y admin: todos). */
   getCourseAccess(userId: string): Promise<Set<string>>;

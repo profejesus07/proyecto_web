@@ -13,11 +13,14 @@ const LINKS = [
 
 const TEACHER_LINK = { href: "/maestro", label: "Mi clase", icon: "🧑‍🏫" };
 const ADMIN_LINK = { href: "/admin", label: "Admin", icon: "🛠️" };
+const FAMILY_LINK = { href: "/familia", label: "Mi familia", icon: "👪" };
 
-export function NavLinks({ className = "", mobile = false, teacher = false, admin = false }: { className?: string; mobile?: boolean; teacher?: boolean; admin?: boolean }) {
+export function NavLinks({ className = "", mobile = false, teacher = false, admin = false, family = false }: { className?: string; mobile?: boolean; teacher?: boolean; admin?: boolean; family?: boolean }) {
   const pathname = usePathname();
   // El docente ve «Mi clase» en lugar de la tienda, para que el menú quepa en el celular.
-  const links = teacher ? [...LINKS.filter((l) => l.href !== "/tienda"), TEACHER_LINK, ...(admin ? [ADMIN_LINK] : [])] : LINKS;
+  // La familia ve «Mi familia» en el mismo lugar.
+  const links = teacher ? [...LINKS.filter((l) => l.href !== "/tienda"), TEACHER_LINK, ...(admin ? [ADMIN_LINK] : [])]
+    : family ? [FAMILY_LINK, ...LINKS.filter((l) => l.href !== "/tienda")] : LINKS;
   const items = links.map((l) => {
     const active = pathname === l.href || pathname.startsWith(l.href + "/");
     return (
