@@ -99,6 +99,10 @@ describe("use_power", () => {
     expect(await power("aliento", 1, 1)).toMatchObject({ reset: true });
     expect(await one<number[]>("select answers as r from public.attempts where user_id = $1 and finished_at is null", [S])).toEqual(keys.map((k, i) => (i === 1 ? -1 : k)));
     await expect(power("aliento", 2, 1)).rejects.toThrow(/no_aplica|tope_diario/);
+    // Ya vio la correcta: la Lluvia no da XP gratis en esa pregunta (y no cobra).
+    await give("lluvia");
+    await expect(power("lluvia", 1)).rejects.toThrow(/no_aplica/);
+    expect(await one<number>("select quantity as r from public.consumables where user_id = $1 and item_id = 'obj_poder_lluvia'", [S])).toBe(3);
     await answer(1, keys[1]);
     await h.db.query("select public.finish_attempt($1, $2, 70, '{}')", [S, m1]);
     // Nuevo intento: la sombra recuerda la respuesta acertada.

@@ -652,6 +652,7 @@ export function createMemoryRepo(): Repo {
         }
         case "escudo": case "lluvia":
           if (answered) throw new Error("ya_respondida");
+          if (rule.kind === "lluvia" && s.aidUses.some((u) => u.day === day && u.questionId === q.id && (u.itemId === "obj_poder_aliento" || u.itemId === "obj_poder_sombra"))) throw new Error("no_aplica");
           payload = { spent: false };
           break;
         case "aura":
