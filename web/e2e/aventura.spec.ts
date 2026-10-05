@@ -440,9 +440,10 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
-test("la portada cuenta la filosofía, busca en el catálogo y lleva a los servicios", async ({ page }) => {
+test("la portada explica que es una academia de cursos, busca en el catálogo y lleva a servicios y proyectos", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("salvar el mundo");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Cursos en línea");
+  await expect(page.getByText("Elige un curso")).toBeVisible();
   await expect(page.getByRole("heading", { name: /No solo cursos/ })).toBeVisible();
   await expect(page.getByText("Próximamente")).toHaveCount(0);
   // La escena de la portada cuenta una historia en cada mazmorra: reto, giro (el aventurero evoluciona) y victoria.
@@ -459,8 +460,8 @@ test("la portada cuenta la filosofía, busca en el catálogo y lleva a los servi
   await expect(page.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toHaveCount(0);
   await page.goto("/");
 
-  // Servicios para instituciones.
-  await page.getByRole("link", { name: "Conocer los servicios" }).click();
+  // Servicios y proyectos.
+  await page.getByRole("link", { name: "Ver servicios y proyectos" }).click();
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();

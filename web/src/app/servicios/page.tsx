@@ -6,7 +6,7 @@ import { AUDIENCES, PROCESS, PROJECTS, SERVICES } from "@/content/servicios";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 export const metadata: Metadata = {
-  title: "Servicios para docentes e instituciones",
+  title: "Servicios y proyectos",
   description: "Cursos y clases con historia, plataformas de gestión docente, exámenes institucionales, aplicaciones, juegos y gamificación educativa a la medida.",
 };
 
@@ -22,7 +22,7 @@ export default function ServicesPage() {
       <section className="brand-hero relative isolate overflow-hidden">
         <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
         <div className="mx-auto max-w-6xl px-4 pb-24 pt-14 sm:px-6 lg:pt-20">
-          <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold"><span className="size-2 rounded-full bg-[#ffc83d]" aria-hidden="true" /> Para instituciones educativas</p>
+          <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-semibold"><span className="size-2 rounded-full bg-[#ffc83d]" aria-hidden="true" /> Servicios y proyectos · Para instituciones educativas</p>
           <h1 className="mt-5 max-w-4xl text-5xl font-extrabold leading-[1.02] sm:text-7xl">Tecnología educativa con <span className="text-[#ffc83d]">alma de aventura</span>.</h1>
           <p className="mt-6 max-w-2xl text-lg text-white/85 sm:text-xl">Para docentes, directivos docentes e instituciones. Lo principal son nuestros cursos y clases; alrededor, todo lo que tu institución necesita para enseñar mejor.</p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -94,7 +94,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ===== Proyectos ===== */}
-      <section aria-labelledby="proyectos-t" className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <section id="proyectos" aria-labelledby="proyectos-t" className="mx-auto scroll-mt-20 max-w-6xl px-4 py-20 sm:px-6">
         <div className="max-w-2xl space-y-3">
           <p className="eyebrow">Proyectos</p>
           <h2 id="proyectos-t" className="text-4xl font-extrabold sm:text-5xl">Ya están funcionando</h2>
