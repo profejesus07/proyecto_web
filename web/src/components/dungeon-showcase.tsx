@@ -5,14 +5,14 @@ import { Sprite, asset } from "@/components/sprite";
 
 /**
  * Escena de la portada: las tres mazmorras (fuego, agua y sombra) se suceden con un fundido,
- * cada una con su aventurero, Kuro y el Guardián del lugar en reposo.
+ * cada una con su Guardián en furia atacando y el aventurero (rango E) y Kuro asombrados.
  * La escena de 1280 × 720 se recorta a 4:3, así que las posiciones salen de los marcadores
  * del escenario (x − 160) / 960.
  */
 const SCENES = [
-  { state: "fuego", name: "Mazmorra de Fuego", hero: "aria", boss: "sandrael", bossName: "Sandrael" },
-  { state: "agua", name: "Mazmorra de Agua", hero: "leo", boss: "quimax", bossName: "Quimax" },
-  { state: "sombra", name: "Mazmorra de Sombra", hero: "nuri", boss: "eclipsa", bossName: "Eclipsa" },
+  { state: "fuego", name: "Mazmorra de Fuego", hero: "aria", boss: "ignaris", bossName: "Ignaris" },
+  { state: "agua", name: "Mazmorra de Agua", hero: "leo", boss: "eclipsa", bossName: "Eclipsa" },
+  { state: "sombra", name: "Mazmorra de Sombra", hero: "nuri", boss: "brumalis", bossName: "Brumalis" },
 ] as const;
 
 const STEP_MS = 6500;
@@ -32,15 +32,15 @@ export function DungeonShowcase() {
   return (
     <div className="relative">
       <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border-4 border-white/20 bg-[#14123b] shadow-2xl shadow-black/30"
-        role="img" aria-label={`${current.name}: un aventurero y Kuro frente a ${current.bossName}, el Guardián`}>
+        role="img" aria-label={`${current.name}: ${current.bossName}, el Guardián, ataca furioso; un aventurero y Kuro lo miran asombrados`}>
         {SCENES.map((s, n) => (
           <div key={s.state} aria-hidden="true" data-scene={s.state}
             className={`absolute inset-0 transition-opacity duration-[1400ms] ease-in-out ${n === i ? "opacity-100" : "opacity-0"}`}>
             <Sprite src={asset.scene("mazmorra", s.state)} alt="" decorative priority={n === 0} className="absolute inset-0 size-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/35 to-transparent" />
-            <Sprite src={asset.kuro("reposo")} alt="" decorative priority className="absolute bottom-[5%] left-[11%] h-[24%] w-auto -translate-x-1/2" />
-            <Sprite src={`/assets/avatares/${s.hero}/${s.hero}-rango-c-reposo.svg`} alt="" decorative priority className="absolute bottom-[4%] left-[26%] h-[46%] w-auto -translate-x-1/2" />
-            <Sprite src={asset.boss(s.boss)} alt="" decorative priority className="absolute bottom-[4%] left-[75%] h-[52%] w-auto -translate-x-1/2" />
+            <Sprite src={asset.kuro("alerta")} alt="" decorative priority className="absolute bottom-[5%] left-[11%] h-[24%] w-auto -translate-x-1/2" />
+            <Sprite src={asset.avatarAnim(s.hero, "asombro")} alt="" decorative priority className="absolute bottom-[4%] left-[26%] h-[46%] w-auto -translate-x-1/2" />
+            <Sprite src={asset.boss(s.boss, "furia-atacar")} alt="" decorative priority className="absolute bottom-[4%] left-[75%] h-[52%] w-auto -translate-x-1/2" />
           </div>
         ))}
         <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden="true">
