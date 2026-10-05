@@ -421,3 +421,39 @@ p { text-wrap: pretty; }
 .theme-bold .panel { background: var(--panel); }
 .theme-bold .input { background: #15103f; }
 @media (prefers-reduced-motion: reduce) { .theme-bold .stars::after { animation: none; } }
+
+/* ============================================================
+   .theme-sobrio: portada sobria y elegante (inspirada en EducaciónIT).
+   Blanco, tipografía sans sin adornos, un solo acento violeta profundo, bordes finos.
+   ============================================================ */
+.theme-sobrio {
+  --bg: #ffffff;
+  --bg-2: #f7f7fa;
+  --panel: #ffffff;
+  --panel-2: #f7f7fa;
+  --line: #e6e4ee;
+  --text: #14123b;
+  --muted: #5d5a78;
+  --cyan: #4a22c9;
+  --violet: #4a22c9;
+  --gold: #ffc83d;
+  --ink: #14123b;
+  background: var(--bg);
+  color: var(--text);
+}
+.theme-sobrio h1, .theme-sobrio h2, .theme-sobrio h3 { font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.02em; }
+.theme-sobrio ::selection { background: rgb(74 34 201 / 0.15); }
+.theme-sobrio .brand-oscuro { display: none; }
+.theme-sobrio .brand-claro { display: inline-block; }
+.theme-sobrio .btn { border-radius: 0.5rem; font-weight: 600; box-shadow: none; }
+.theme-sobrio .btn-primary { background: #4a22c9; color: #fff; }
+.theme-sobrio .btn-primary:hover:not(:disabled) { background: #3a199f; transform: none; box-shadow: none; }
+.theme-sobrio .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--text); }
+.theme-sobrio .btn-secondary:hover:not(:disabled) { border-color: #4a22c9; color: #4a22c9; background: #fff; }
+.theme-sobrio .btn-ghost:hover:not(:disabled) { background: #f3f1fa; }
+.theme-sobrio .eyebrow { color: #4a22c9; font-weight: 600; letter-spacing: 0.08em; }
+.theme-sobrio .input { background: #fff; }
+.theme-sobrio .panel { background: #fff; box-shadow: none; backdrop-filter: none; }
+/* Tarjetas más contenidas: radio pequeño y elevación suave. */
+.theme-sobrio .lift { border-radius: 0.75rem; }
+.theme-sobrio .lift:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -18px rgb(20 18 59 / 0.35); }

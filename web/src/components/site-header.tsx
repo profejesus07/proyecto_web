@@ -115,11 +115,12 @@ export function PublicHeader({ bold = false }: { bold?: boolean }) {
 }
 
 /** Envoltura del sitio principal: tema editorial claro, con su cabecera y su pie. */
-/** bold: el estilo moderno y oscuro de la portada nueva (en prueba). */
-export function SiteShell({ children, bold = false }: { children: React.ReactNode; bold?: boolean }) {
+/** variant: estilos de portada en prueba. «atrevido» = oscuro y moderno; «sobrio» = blanco y elegante. */
+export function SiteShell({ children, variant }: { children: React.ReactNode; variant?: "atrevido" | "sobrio" }) {
+  const theme = variant === "atrevido" ? "theme-bold" : variant === "sobrio" ? "theme-sobrio" : "theme-site";
   return (
-    <div className={bold ? "theme-bold" : "theme-site"}>
-      <PublicHeader bold={bold} />
+    <div className={theme}>
+      <PublicHeader bold={variant === "atrevido"} />
       <main id="contenido">{children}</main>
       <Footer />
     </div>
