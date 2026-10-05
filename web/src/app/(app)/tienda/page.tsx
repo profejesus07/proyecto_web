@@ -7,7 +7,7 @@ import { Sprite } from "@/components/sprite";
 import { Terrace } from "@/components/terrace";
 import { PageTitle } from "@/components/ui";
 import { WEARABLE_IDS } from "@/content/wearable-ids";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { WEAR_LABEL, WEAR_SLOTS, avatarSrc, type WearSlot } from "@/lib/avatar-look";
 import { CATEGORY_LABEL, RARITY, consumableRule, itemImage, petImage, priceOf, shopItems, SHOP_CATEGORIES, type CatalogItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
@@ -40,7 +40,7 @@ const BRANN: Record<string, { anim: string; line: string }> = {
 const slotOf = (id: string): WearSlot | undefined => WEAR_SLOTS.find((s) => (WEARABLE_IDS[s] as readonly string[]).includes(id));
 
 export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
-  const viewer = await requireViewer("/tienda");
+  const viewer = await requirePlayer("/tienda");
   const sp = await searchParams;
   const cat = typeof sp.c === "string" && (SHOP_CATEGORIES as readonly string[]).includes(sp.c) ? sp.c : "ayuda";
   const repo = getRepo();

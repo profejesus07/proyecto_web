@@ -18,7 +18,7 @@ export default async function ConsoleLayout({ children }: LayoutProps<"/">) {
           </Link>
           <nav aria-label="Salidas" className="ml-auto flex items-center gap-1 text-sm">
             <Link href="/" className="rounded-md px-2.5 py-1.5 text-muted hover:bg-white/5 hover:text-text">Ver el sitio</Link>
-            <Link href="/gremio" className="hidden rounded-md px-2.5 py-1.5 text-muted hover:bg-white/5 hover:text-text sm:inline">Ir al Gremio</Link>
+            <Link href="/nueva-contrasena" className="hidden rounded-md px-2.5 py-1.5 text-muted hover:bg-white/5 hover:text-text sm:inline">Cambiar contraseña</Link>
             <span className="hidden px-2 text-muted md:inline">{viewer.displayName}</span>
             <form action={logoutAction}><button type="submit" className="btn btn-ghost btn-sm">Salir</button></form>
           </nav>

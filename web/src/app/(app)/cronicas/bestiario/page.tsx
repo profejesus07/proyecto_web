@@ -4,14 +4,14 @@ import { Sprite, asset } from "@/components/sprite";
 import { BackLink, PageTitle } from "@/components/ui";
 import { BEASTS } from "@/content/bestiario";
 import { ELEMENT_COLOR, GUARDIANS } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { loadCourseViews } from "@/lib/data/queries";
 import { ALL_ENEMIES } from "@/lib/game/battle";
 
 export const metadata: Metadata = { title: "Bestiario" };
 
 export default async function BestiaryPage() {
-  const viewer = await requireViewer("/cronicas/bestiario");
+  const viewer = await requirePlayer("/cronicas/bestiario");
   const courses = await loadCourseViews(viewer.id);
   const played = courses.some((c) => c.missions.some((m) => m.attempts > 0));
   // El Cofre Mímico aparece al final de las misiones largas: se descubre al terminar una.

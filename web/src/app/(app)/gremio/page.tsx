@@ -5,7 +5,7 @@ import { SpeechBubble } from "@/components/dialogue";
 import { SoraWelcome } from "@/components/sora-welcome";
 import { Sprite, asset } from "@/components/sprite";
 import { ItemTile, RankCard, Stat } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { ThanksButton } from "@/components/family-client";
 import { FAMILY_MESSAGES, defaultGuide, guideById, guideSrc } from "@/content/elenco";
 import { getItem, petImage } from "@/lib/catalog";
@@ -25,7 +25,7 @@ function isDay(): boolean {
 }
 
 export default async function GremioPage({ searchParams }: PageProps<"/gremio">) {
-  const viewer = await requireViewer("/gremio");
+  const viewer = await requirePlayer("/gremio");
   const pet = petImage(viewer.avatarLook.pet, rankForXp(viewer.xp).key);
   const passwordChanged = (await searchParams).aviso === "clave";
   const isStudent = viewer.role === "estudiante";

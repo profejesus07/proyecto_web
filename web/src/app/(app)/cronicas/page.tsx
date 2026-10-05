@@ -4,13 +4,13 @@ import { SpeechBubble } from "@/components/dialogue";
 import { Sprite, asset } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 
 export const metadata: Metadata = { title: "Archivo de Crónicas" };
 
 export default async function ChroniclesPage() {
-  const viewer = await requireViewer("/cronicas");
+  const viewer = await requirePlayer("/cronicas");
   const shelves = await loadChronicles(viewer);
   const unread = unreadCount(shelves);
 

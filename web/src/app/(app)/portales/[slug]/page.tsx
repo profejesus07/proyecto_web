@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Sprite, asset } from "@/components/sprite";
 import { BackLink } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { CHAPTERS, isUnlocked, stagesReached } from "@/content/cronicas";
 import { INFORMAL_NOTICE } from "@/lib/content";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps<"/portales/[slug]">
 
 export default async function CoursePage({ params }: PageProps<"/portales/[slug]">) {
   const { slug } = await params;
-  const viewer = await requireViewer(`/portales/${slug}`);
+  const viewer = await requirePlayer(`/portales/${slug}`);
   const course = await loadCourseView(viewer.id, slug);
   if (!course) notFound();
   const myCert = course.kind === "curso" ? (await getRepo().listCertificates({ userId: viewer.id })).find((c) => c.courseSlug === slug) : undefined;

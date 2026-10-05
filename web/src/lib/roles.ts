@@ -4,8 +4,8 @@ import type { Role } from "@/lib/data/types";
 export const isStaff = (role: Role) => role === "docente" || role === "admin";
 export const isAdmin = (role: Role) => role === "admin";
 
-/** Página de inicio de cada cuenta: la familia entra directo a «Mi familia». */
-export const homePath = (role: Role) => (role === "familia" ? "/familia" : "/gremio");
+/** Página de inicio de cada cuenta: la familia entra a «Mi familia» y el administrador, a su consola. */
+export const homePath = (role: Role) => (role === "familia" ? "/familia" : role === "admin" ? "/admin" : "/gremio");
 
 export const ROLE_LABEL: Record<Role, string> = { estudiante: "Estudiante", familia: "Familia", docente: "Docente", admin: "Administrador" };
 

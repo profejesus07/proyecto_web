@@ -7,7 +7,7 @@ import { PayButtons } from "@/components/pay-buttons";
 import { BackLink } from "@/components/ui";
 import { CHAPTERS } from "@/content/cronicas";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { formatPrice, loadCourseView } from "@/lib/data/queries";
 import { INFORMAL_NOTICE } from "@/lib/content";
@@ -18,7 +18,7 @@ export const metadata: Metadata = { title: "Desbloquear curso" };
 
 export default async function SubscribePage({ params }: PageProps<"/suscribirse/[slug]">) {
   const { slug } = await params;
-  const viewer = await requireViewer(`/suscribirse/${slug}`);
+  const viewer = await requirePlayer(`/suscribirse/${slug}`);
   const course = await loadCourseView(viewer.id, slug);
   if (!course) notFound();
   const g = guardianBySlug(course.guardian);

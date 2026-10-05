@@ -97,6 +97,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <p>Cuentas de docente, acceso a los cursos, precios y todas las clases.</p>
       </PageTitle>
       <AdminNav current="general" />
+      {sp.aviso === "clave" && <p role="status" className="panel p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
 
       <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[

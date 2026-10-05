@@ -34,24 +34,34 @@ export async function requireViewer(next?: string): Promise<Profile> {
   return viewer;
 }
 
+/**
+ * Páginas del juego (Gremio, portales, misiones, tienda, perfil…). La cuenta de administración
+ * es solo para administrar: no juega, así que va a su consola.
+ */
+export async function requirePlayer(next: string): Promise<Profile> {
+  const viewer = await requireViewer(next);
+  if (isAdmin(viewer.role)) redirect("/admin");
+  return viewer;
+}
+
 /** Páginas del Maestro del Gremio: docentes y administrador. */
 export async function requireTeacher(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
-  if (!isStaff(viewer.role)) redirect("/gremio");
+  if (!isStaff(viewer.role)) redirect(homePath(viewer.role));
   return viewer;
 }
 
 /** Panel de administración: solo el administrador. */
 export async function requireAdmin(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
-  if (!isAdmin(viewer.role)) redirect("/gremio");
+  if (!isAdmin(viewer.role)) redirect(homePath(viewer.role));
   return viewer;
 }
 
 /** Panel de familias: solo cuentas de familia. */
 export async function requireFamily(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
-  if (viewer.role !== "familia") redirect("/gremio");
+  if (viewer.role !== "familia") redirect(homePath(viewer.role));
   return viewer;
 }
 

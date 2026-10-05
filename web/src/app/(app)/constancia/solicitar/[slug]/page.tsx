@@ -6,7 +6,7 @@ import { CertificateRequestForm } from "@/components/certificate-form";
 import { SpeechBubble } from "@/components/dialogue";
 import { asset } from "@/components/sprite";
 import { BackLink } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { getRepo } from "@/lib/data";
 import { loadCourseView } from "@/lib/data/queries";
@@ -15,7 +15,7 @@ export const metadata: Metadata = { title: "Solicitar constancia" };
 
 export default async function RequestCertificatePage({ params }: PageProps<"/constancia/solicitar/[slug]">) {
   const { slug } = await params;
-  const viewer = await requireViewer(`/constancia/solicitar/${slug}`);
+  const viewer = await requirePlayer(`/constancia/solicitar/${slug}`);
   const course = await loadCourseView(viewer.id, slug);
   if (!course || course.kind !== "curso") notFound();
   const existing = (await getRepo().listCertificates({ userId: viewer.id })).find((c) => c.courseSlug === slug);

@@ -89,7 +89,7 @@ export default async function EditCoursePage({ params }: PageProps<"/admin/conte
         <div className="space-y-1">
           <p className="eyebrow">Editar · {KIND_LABEL[course.kind]}</p>
           <h1 className="text-3xl leading-tight sm:text-4xl">{course.title}</h1>
-          {course.published && <Link href={`/portales/${course.slug}`} className="text-sm font-semibold text-cyan hover:underline">Ver como estudiante →</Link>}
+          {course.published && <Link href={`/programas/${course.slug}`} className="text-sm font-semibold text-cyan hover:underline">Ver la ficha pública →</Link>}
         </div>
         <div className="space-y-3">
           <PublishBar published={course.published} publish={publishCourseAction.bind(null, slug, true)} unpublish={publishCourseAction.bind(null, slug, false)} />

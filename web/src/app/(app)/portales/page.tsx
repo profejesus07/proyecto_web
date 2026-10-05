@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Sprite, asset } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
 import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { type CourseView, formatPrice, loadCourseViews } from "@/lib/data/queries";
 
@@ -46,7 +46,7 @@ function PortalCard({ c }: { c: CourseView }) {
 }
 
 export default async function PortalsPage() {
-  const viewer = await requireViewer("/portales");
+  const viewer = await requirePlayer("/portales");
   const courses = await loadCourseViews(viewer.id);
   const scene = courses.every((c) => c.status === "completado") && courses.length ? "completado" : courses.some((c) => c.status !== "nuevo") ? "mixto" : "disponible";
   const clases = courses.filter((c) => c.kind === "clase");

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { simulatePaymentAction } from "@/app/actions/payments";
 import { PageTitle } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
 import { isPreview } from "@/lib/env";
@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Pago simulado", robots: { index: fal
 /** Solo existe en la vista previa: hace las veces del checkout de la pasarela. */
 export default async function SimulatedCheckoutPage({ searchParams }: PageProps<"/pago/simulado">) {
   if (!isPreview()) notFound();
-  const viewer = await requireViewer("/gremio");
+  const viewer = await requirePlayer("/gremio");
   const ref = (await searchParams).ref;
   const payment = typeof ref === "string" ? await getRepo().getPayment(ref) : null;
   if (!payment || payment.payerId !== viewer.id) notFound();

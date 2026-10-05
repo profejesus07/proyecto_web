@@ -17,6 +17,24 @@ export async function SiteHeader() {
   // Docentes y familias se ven con su Maestro o Guardián del Hogar.
   const adultGuide = viewer ? guideFor(viewer) : null;
 
+  // El administrador no juega: en las pocas páginas compartidas (informes de grupo, constancias,
+  // contraseña) ve una cabecera de administración, sin monedas, avatar ni menú del juego.
+  if (viewer && isAdmin(viewer.role)) {
+    return (
+      <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <Logo href="/admin" compact />
+          <nav aria-label="Administración" className="flex items-center gap-2">
+            <Link href="/admin" className="btn btn-secondary btn-sm">← Volver a la consola</Link>
+            <form action={logoutAction}>
+              <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
+            </form>
+          </nav>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">

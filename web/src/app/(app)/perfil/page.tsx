@@ -7,7 +7,7 @@ import { DisplayNameForm } from "@/components/profile-client";
 import { Sprite, asset } from "@/components/sprite";
 import { Terrace } from "@/components/terrace";
 import { ItemTile, PageTitle, RankCard, Stat } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { allItems, getItem, petImage, titleLabel, type CatalogItem } from "@/lib/catalog";
 import { getRepo } from "@/lib/data";
 import { loadDiplomas } from "@/lib/data/queries";
@@ -24,7 +24,7 @@ const SECTIONS: { key: string; title: string; cats: string[]; showMissing?: bool
 ];
 
 export default async function ProfilePage() {
-  const viewer = await requireViewer("/perfil");
+  const viewer = await requirePlayer("/perfil");
   const isStudent = viewer.role === "estudiante";
   const [inventory, myClasses, myCerts, families] = await Promise.all([
     getRepo().getInventory(viewer.id), isStudent ? getRepo().listStudentClasses(viewer.id) : Promise.resolve([]), getRepo().listCertificates({ userId: viewer.id }),

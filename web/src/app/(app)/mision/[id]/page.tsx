@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Quiz, type QuizPowerState } from "@/components/quiz";
 import { BackLink } from "@/components/ui";
 import { guardianBySlug } from "@/content/guardians";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { AIDS } from "@/lib/game/aids";
 import { POWERS, POWER_KINDS, powerByItem } from "@/lib/game/powers";
@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Misión" };
 
 export default async function MissionPage({ params }: PageProps<"/mision/[id]">) {
   const { id } = await params;
-  const viewer = await requireViewer(`/mision/${id}`);
+  const viewer = await requirePlayer(`/mision/${id}`);
   const play = await getRepo().getMissionPlay(id);
   if (!play || play.questions.length === 0) notFound();
 

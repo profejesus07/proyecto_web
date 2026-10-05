@@ -11,6 +11,7 @@ import { INFORMAL_NOTICE, KIND_LABEL } from "@/lib/content";
 import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
 import { groupByModule } from "@/lib/modules";
+import { isAdmin } from "@/lib/roles";
 import type { CourseDetail } from "@/lib/data/types";
 
 async function load(slug: string): Promise<CourseDetail | null> {
@@ -61,7 +62,9 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
               <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
               <p className="text-lg text-white/85">{c.summary}</p>
               <div className="flex flex-wrap gap-3">
-                {viewer ? (
+                {viewer && isAdmin(viewer.role) ? (
+                  <Link href={`/admin/contenido/${c.slug}`} className="btn btn-accent btn-lg">Editar en la consola</Link>
+                ) : viewer ? (
                   <Link href={`/portales/${c.slug}`} className="btn btn-accent btn-lg">Ir al programa</Link>
                 ) : (
                   <>

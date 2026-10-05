@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SpeechBubble } from "@/components/dialogue";
 import { BackLink, PageTitle } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
 import type { PaymentStatus } from "@/lib/data/types";
@@ -24,7 +24,7 @@ const TONE = { green: "!border-green/50 text-[#b6f5cb]", gold: "!border-gold/50 
 
 export default async function PaymentResultPage({ params, searchParams }: PageProps<"/pago/[ref]">) {
   const { ref } = await params;
-  const viewer = await requireViewer(`/pago/${ref}`);
+  const viewer = await requirePlayer(`/pago/${ref}`);
   if (!/^UMB-[0-9A-F]{12}$/.test(ref)) notFound();
   const repo = getRepo();
   const payment = await repo.getPayment(ref);

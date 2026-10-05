@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ChapterReader } from "@/components/chapter-reader";
 import { BackLink } from "@/components/ui";
 import { CHAPTERS, chapterById } from "@/content/cronicas";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { loadChronicles } from "@/lib/data/chronicles";
 
 export async function generateMetadata({ params }: PageProps<"/cronicas/[id]">): Promise<Metadata> {
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps<"/cronicas/[id]">):
 
 export default async function ChapterPage({ params }: PageProps<"/cronicas/[id]">) {
   const { id } = await params;
-  const viewer = await requireViewer(`/cronicas/${id}`);
+  const viewer = await requirePlayer(`/cronicas/${id}`);
   const chapter = chapterById(id);
   if (!chapter) notFound();
   const shelves = await loadChronicles(viewer);

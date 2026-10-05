@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AvatarStudio, type OwnedOption } from "@/components/avatar-studio";
 import { PageTitle } from "@/components/ui";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { FREE_FRAME, WEAR_SLOTS, type WearSlot } from "@/lib/avatar-look";
 import { getItem, itemImage, petImage, titleLabel, type CatalogItem } from "@/lib/catalog";
 import { WEARABLE_IDS } from "@/content/wearable-ids";
@@ -11,7 +11,7 @@ import { rankForXp } from "@/lib/game/ranks";
 export const metadata: Metadata = { title: "Vestidor" };
 
 export default async function AvatarPage() {
-  const viewer = await requireViewer("/perfil/avatar");
+  const viewer = await requirePlayer("/perfil/avatar");
   const rank = rankForXp(viewer.xp).key;
   const owned = new Set((await getRepo().getInventory(viewer.id)).map((i) => i.itemId));
   const opt = (it: CatalogItem, image = itemImage(it)): OwnedOption => ({ id: it.id, name: it.nombre, image });

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/print-button";
-import { requireViewer } from "@/lib/auth";
+import { requirePlayer } from "@/lib/auth";
 import { loadDiplomas } from "@/lib/data/queries";
 import { renderDiploma } from "@/lib/diploma";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Diploma Sello del Portal" };
 
 export default async function DiplomaPage({ params }: PageProps<"/diploma/[slug]">) {
   const { slug } = await params;
-  const viewer = await requireViewer(`/diploma/${slug}`);
+  const viewer = await requirePlayer(`/diploma/${slug}`);
   const diploma = (await loadDiplomas(viewer.id)).find((d) => d.slug === slug);
   if (!diploma) notFound();
   const date = new Date(diploma.date).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Bogota" });

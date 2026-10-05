@@ -445,9 +445,10 @@ test("la portada cuenta la filosofía, busca en el catálogo y lleva a los servi
   await expect(page.getByRole("heading", { level: 1 })).toContainText("salvar el mundo");
   await expect(page.getByRole("heading", { name: /No solo cursos/ })).toBeVisible();
   await expect(page.getByText("Próximamente")).toHaveCount(0);
-  // La escena de la portada recorre las tres mazmorras.
-  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego/ })).toBeVisible();
-  await expect(page.getByRole("img", { name: /^Mazmorra de Agua/ })).toBeVisible({ timeout: 10_000 });
+  // La escena de la portada cuenta una historia en cada mazmorra: reto, giro (el aventurero evoluciona) y victoria.
+  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris, el Guardián, ataca/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Aria evoluciona/ })).toBeVisible({ timeout: 8_000 });
+  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris queda purificado/ })).toBeVisible({ timeout: 8_000 });
   const programas = page.getByRole("region", { name: "Cursos y clases" });
   await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
   // El buscador lleva al catálogo filtrado.
@@ -655,8 +656,9 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
 
   // Nadie más ve el estado de ese pago, y el administrador lo ve en su lista.
   await context.addCookies([asAdmin]);
+  // (la cuenta de administración no abre páginas del juego: va a su consola)
   await page.goto(`/pago/${ref}`);
-  await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
+  await expect(page).toHaveURL(/\/admin$/);
   await page.goto("/admin");
   const table = page.getByRole("table");
   await expect(table.getByRole("row").filter({ hasText: ref })).toContainText("Aprobado");
@@ -861,4 +863,21 @@ test("el sonido se configura desde la cabecera y los personajes se pueden escuch
   await page.goto("/mision/m1");
   await expect(page.getByRole("button", { name: "Escuchar a Maestra Sora" }).or(page.getByRole("button", { name: "Escuchar a Kuro" })).first()).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("la cuenta de administración no entra al juego: todo la lleva a su consola", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  for (const path of ["/gremio", "/portales", "/portales/primer-portal", "/mision/m1", "/tienda", "/perfil", "/cronicas"]) {
+    await page.goto(path);
+    await expect(page, `${path} debe llevar a la consola`).toHaveURL(/\/admin$/);
+  }
+  await expect(page.getByRole("link", { name: "Ir al Gremio" })).toHaveCount(0);
+  // Los informes de grupo sí se abren, con cabecera de administración (sin monedas ni avatar).
+  await page.goto("/maestro");
+  await expect(page).toHaveURL(/\/maestro$/);
+  await expect(page.getByRole("link", { name: "← Volver a la consola" })).toBeVisible();
+  await expect(page.getByLabel(/monedas$/)).toHaveCount(0);
+  // En la ficha pública, en lugar de «Ir al programa», puede editarlo.
+  await page.goto("/programas/primer-portal");
+  await expect(page.getByRole("link", { name: "Editar en la consola" })).toHaveAttribute("href", "/admin/contenido/primer-portal");
 });
