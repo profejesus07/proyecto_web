@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 // Los tres colores del logotipo, en ciclo: violeta, turquesa y dorado.
-const TONES = ["#6d3ff2", "#0b9e93", "#e0a520"];
+const TONES = ["#6b3bf5", "#0b9e93", "#e0a520"];
 const mail = (subject: string) => `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent("Hola. Soy (nombre y cargo) de (institución). Nos interesa:\n\n")}`;
 
 export default function ServicesPage() {

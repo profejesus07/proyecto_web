@@ -77,13 +77,13 @@ export function SoundControl() {
         ] as const).map(([k, label]) => (
           <label key={k} className="flex cursor-pointer items-center justify-between gap-3">
             <span>{label}</span>
-            <input type="checkbox" checked={s[k]} disabled={k === "autoRead" && !s.voices} className="size-4 accent-[#2ee6d6]"
+            <input type="checkbox" checked={s[k]} disabled={k === "autoRead" && !s.voices} className="size-4 accent-[#8a5cff]"
               onChange={(e) => { unlockAudio(); updateSettings({ [k]: e.target.checked }); if (k === "voices" && !e.target.checked) stopSpeaking(); }} />
           </label>
         ))}
         <label htmlFor={`${id}-vol`} className="block space-y-1">
           <span className="text-muted">Volumen de la música</span>
-          <input id={`${id}-vol`} type="range" min={0} max={1} step={0.05} value={s.musicVolume} disabled={!s.music} className="w-full accent-[#2ee6d6]"
+          <input id={`${id}-vol`} type="range" min={0} max={1} step={0.05} value={s.musicVolume} disabled={!s.music} className="w-full accent-[#8a5cff]"
             onChange={(e) => { unlockAudio(); updateSettings({ musicVolume: Number(e.target.value) }); }} />
         </label>
         <button type="button" className="btn btn-ghost btn-sm w-full" onClick={() => { unlockAudio(); updateSettings({ voices: true }); void speak("¡Hola! Así suena mi voz. Cuando quieras, seguimos aprendiendo.", "Maestra Sora", "prueba"); }}>

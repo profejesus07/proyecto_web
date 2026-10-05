@@ -152,7 +152,7 @@ export function RegisterForm() {
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-bg/40 p-3 text-sm">
-        <input type="checkbox" name="consent" required className="mt-1 size-5 shrink-0 accent-[#2ee6d6]" />
+        <input type="checkbox" name="consent" required className="mt-1 size-5 shrink-0 accent-[#8a5cff]" />
         <span>
           Soy mayor de edad, o mi acudiente autoriza que use esta plataforma. He leído la <Link href="/privacidad" className="text-cyan underline underline-offset-4" target="_blank">política de privacidad</Link> y los <Link href="/terminos" className="text-cyan underline underline-offset-4" target="_blank">términos de uso</Link>.
         </span>

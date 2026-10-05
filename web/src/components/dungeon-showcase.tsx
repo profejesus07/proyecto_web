@@ -90,7 +90,7 @@ export function DungeonShowcase() {
       </div>
 
       <div className="drift absolute -left-4 top-6 hidden rounded-2xl bg-white px-4 py-3 text-[#14123b] shadow-xl sm:-left-10 sm:block" style={{ ["--r" as string]: "-4deg" }} aria-hidden="true">
-        <p className="text-xs font-bold uppercase tracking-wider text-[#6d3ff2]">{phase === "victoria" ? "Misión superada" : "Misión en curso"}</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-[#6b3bf5]">{phase === "victoria" ? "Misión superada" : "Misión en curso"}</p>
         <p className="font-display text-xl font-extrabold">{phase === "victoria" ? "+60 XP ✨" : "⚔️ ¡A la batalla!"}</p>
       </div>
       <div className="drift absolute -top-5 right-2 min-w-44 rounded-2xl bg-[#ffc83d] px-4 py-3 text-[#14123b] shadow-xl [animation-delay:1.5s] sm:-right-6" style={{ ["--r" as string]: "3deg" }} aria-hidden="true">

@@ -31,7 +31,7 @@ export function CertificateRequestForm({ action }: { action: (prev: CertState, f
         </div>
       </div>
       <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-bg/40 p-3 text-sm">
-        <input type="checkbox" name="confirm" required className="mt-1 size-5 shrink-0 accent-[#2ee6d6]" />
+        <input type="checkbox" name="confirm" required className="mt-1 size-5 shrink-0 accent-[#8a5cff]" />
         <span>Confirmo que mis datos son correctos. Entiendo que <strong>la constancia no se puede modificar</strong> una vez expedida.</span>
       </label>
       <div aria-live="polite">{state?.error && <p role="alert" className="rounded-xl border border-coral/50 bg-coral/10 px-4 py-3 text-sm font-medium text-[#ffb3b3]">{state.error}</p>}</div>

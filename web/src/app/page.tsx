@@ -78,7 +78,7 @@ export default async function Home() {
           {categories.map((c) => (
             <li key={c.label}>
               <Link href={c.href} className="lift group flex h-full items-center gap-4 rounded-2xl border border-line bg-panel p-5">
-                <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#6d3ff2]/10 text-[#6d3ff2] transition group-hover:bg-[#6d3ff2] group-hover:text-white"><Icon name={c.icon} className="size-6" /></span>
+                <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#6b3bf5]/10 text-[#6b3bf5] transition group-hover:bg-[#6b3bf5] group-hover:text-white"><Icon name={c.icon} className="size-6" /></span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-bold">{c.label}</span>
                   <span className="block text-sm text-muted">{c.detail}</span>
@@ -129,7 +129,7 @@ export default async function Home() {
         <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {PILLARS.map((p, i) => (
             <li key={p.title} className="lift rounded-3xl border border-line bg-panel p-6">
-              <span className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-[#8a5cff] to-[#2ee6d6] font-display text-sm font-extrabold text-white">0{i + 1}</span>
+              <span className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-[#8a5cff] to-[#b79bff] font-display text-sm font-extrabold text-white">0{i + 1}</span>
               <h3 className="mt-5 text-2xl font-extrabold">{p.title}</h3>
               <p className="mt-1 text-muted">{p.text}</p>
             </li>
@@ -141,7 +141,7 @@ export default async function Home() {
       <section aria-labelledby="inst-t" className="px-4 sm:px-6">
         <div className="brand-band relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] p-8 sm:p-12">
           <div className="dots absolute inset-0 opacity-50" aria-hidden="true" />
-          <div className="absolute -right-16 -top-16 size-64 rounded-full bg-[#2ee6d6]/25 blur-3xl" aria-hidden="true" />
+          <div className="absolute -right-16 -top-16 size-64 rounded-full bg-[#b79bff]/25 blur-3xl" aria-hidden="true" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
             <div className="space-y-4">
               <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#ffc83d]">Para instituciones educativas</p>
@@ -165,7 +165,7 @@ export default async function Home() {
             <h2 id="cierre-t" className="text-3xl font-extrabold sm:text-4xl">¿Listo para cruzar el umbral?</h2>
             <p className="mt-2 text-lg text-[#14123b]/75">Crea tu cuenta gratis y empieza hoy tu primera aventura.</p>
           </div>
-          <Link href="/registro" className="btn btn-lg bg-[#14123b] text-white hover:bg-[#241c6e]">Empieza gratis</Link>
+          <Link href="/registro" className="btn btn-lg bg-[#14123b] text-white hover:bg-[#2a1f7a]">Empieza gratis</Link>
         </div>
       </section>
     </SiteShell>

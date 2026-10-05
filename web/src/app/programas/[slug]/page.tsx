@@ -87,7 +87,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
         <dl className={`relative -mt-10 grid gap-px overflow-hidden rounded-3xl border border-line bg-line shadow-lg sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
           {facts.map((f) => (
             <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
-              <span className={`grid size-10 place-items-center rounded-xl bg-[#6d3ff2]/10 text-[#6d3ff2]`}><Icon name={f.icon} /></span>
+              <span className={`grid size-10 place-items-center rounded-xl bg-[#6b3bf5]/10 text-[#6b3bf5]`}><Icon name={f.icon} /></span>
               <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="font-display text-lg font-bold">{f.value}</dd></div>
             </div>
           ))}
@@ -109,8 +109,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                     <li key={m.id} className="flex items-center gap-4 px-5 py-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position <= free && !c.isFree && <span className="rounded-full bg-[#2ee6d6]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
-                      {m.lessonKind === "explicacion" && <span className="rounded-full bg-[#6d3ff2]/10 px-2.5 py-0.5 text-xs font-semibold text-[#6d3ff2]">📖 Explicación</span>}
+                      {m.position <= free && !c.isFree && <span className="rounded-full bg-[#b79bff]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
+                      {m.lessonKind === "explicacion" && <span className="rounded-full bg-[#6b3bf5]/10 px-2.5 py-0.5 text-xs font-semibold text-[#6b3bf5]">📖 Explicación</span>}
                       {m.isBoss && <span className="rounded-full bg-[#ffc83d]/25 px-2.5 py-0.5 text-xs font-semibold text-[#7a5200]">Reto del Guardián</span>}
                     </li>
                   ))}

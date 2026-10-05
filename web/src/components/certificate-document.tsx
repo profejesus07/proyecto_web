@@ -17,7 +17,7 @@ export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { c
             <svg viewBox="0 0 48 48" className="size-11" aria-hidden="true">
               <rect x="2" y="2" width="44" height="44" rx="12" fill="#14123b" />
               <path d="M14 36V22a10 10 0 0 1 20 0v14" fill="none" stroke="#ffc83d" strokeWidth="4" strokeLinecap="round" />
-              <circle cx="24" cy="24" r="3" fill="#2ee6d6" />
+              <circle cx="24" cy="24" r="3" fill="#b79bff" />
             </svg>
             <div>
               <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-[#5b5788]">Academia Virtual</p>
