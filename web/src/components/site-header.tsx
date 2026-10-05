@@ -114,10 +114,9 @@ export function PublicHeader({ bold = false }: { bold?: boolean }) {
   );
 }
 
-/** Envoltura del sitio principal: tema editorial claro, con su cabecera y su pie. */
-/** variant: estilos de portada en prueba. «atrevido» = oscuro y moderno; «sobrio» = blanco y elegante. */
-export function SiteShell({ children, variant }: { children: React.ReactNode; variant?: "atrevido" | "sobrio" }) {
-  const theme = variant === "atrevido" ? "theme-bold" : variant === "sobrio" ? "theme-sobrio" : "theme-site";
+/** Envoltura del sitio principal, con su cabecera y su pie. variant: estilos de portada en prueba. «atrevido» = oscuro y moderno; «sobrio» = blanco y elegante; «claro» = el Gremio en modo claro. */
+export function SiteShell({ children, variant }: { children: React.ReactNode; variant?: "atrevido" | "sobrio" | "claro" }) {
+  const theme = variant === "atrevido" ? "theme-bold" : variant === "sobrio" ? "theme-sobrio" : variant === "claro" ? "theme-claro" : "theme-site";
   return (
     <div className={theme}>
       <PublicHeader bold={variant === "atrevido"} />

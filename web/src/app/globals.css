@@ -457,3 +457,60 @@ p { text-wrap: pretty; }
 /* Tarjetas más contenidas: radio pequeño y elevación suave. */
 .theme-sobrio .lift { border-radius: 0.75rem; }
 .theme-sobrio .lift:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -18px rgb(20 18 59 / 0.35); }
+
+/* ============================================================
+   .theme-claro: el estilo del Gremio (paneles, botones dorados, personajes)
+   en un modo claro y profesional.
+   ============================================================ */
+.theme-claro {
+  --bg: #f7f5ff;
+  --bg-2: #efebff;
+  --panel: #ffffff;
+  --panel-2: #f3efff;
+  --line: #e1daf8;
+  --text: #15103f;
+  --muted: #5d5a7e;
+  --cyan: #6b3bf5;
+  --violet: #6b3bf5;
+  --gold: #ffc83d;
+  --coral: #d9363e;
+  --green: #148a4b;
+  --ink: #15103f;
+  min-height: 100dvh;
+  color: var(--text);
+  color-scheme: light;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60rem 36rem at 12% -10%, rgb(138 92 255 / 0.16), transparent 60%),
+    radial-gradient(44rem 28rem at 96% 0%, rgb(255 200 61 / 0.14), transparent 60%),
+    radial-gradient(40rem 30rem at 50% 110%, rgb(183 155 255 / 0.18), transparent 60%);
+  background-attachment: fixed;
+}
+.theme-claro ::selection { background: rgb(107 59 245 / 0.2); color: inherit; }
+.theme-claro .brand-oscuro { display: none; }
+.theme-claro .brand-claro { display: inline-block; }
+.theme-claro .panel {
+  background: linear-gradient(180deg, #ffffff, #fbfaff);
+  box-shadow: 0 1px 0 #fff inset, 0 1px 2px rgb(21 16 63 / 0.04), 0 18px 40px -26px rgb(74 34 201 / 0.35);
+  backdrop-filter: none;
+}
+.theme-claro .panel-glow { box-shadow: 0 0 0 1px rgb(107 59 245 / 0.35), 0 0 32px -8px rgb(107 59 245 / 0.3), 0 18px 40px -26px rgb(74 34 201 / 0.35); }
+.theme-claro .btn-primary { box-shadow: 0 8px 20px -10px rgb(214 150 0 / 0.7), 0 -3px 0 rgb(0 0 0 / 0.12) inset; }
+.theme-claro .btn-primary:hover:not(:disabled) { box-shadow: 0 12px 24px -10px rgb(214 150 0 / 0.8), 0 -3px 0 rgb(0 0 0 / 0.12) inset; }
+.theme-claro .btn-secondary { background: rgb(107 59 245 / 0.06); border-color: rgb(107 59 245 / 0.45); color: #4a22c9; }
+.theme-claro .btn-secondary:hover:not(:disabled) { background: rgb(107 59 245 / 0.12); }
+.theme-claro .btn-ghost:hover:not(:disabled), .theme-claro .hover\:bg-white\/5:hover { background: rgb(21 16 63 / 0.05); }
+.theme-claro .input { background: #fff; }
+.theme-claro .input::placeholder { color: #9a95bd; }
+.theme-claro .input:hover { border-color: #c4baf0; }
+.theme-claro .input:focus { box-shadow: 0 0 0 4px rgb(107 59 245 / 0.15); }
+.theme-claro .chip { background: rgb(107 59 245 / 0.07); border-color: rgb(107 59 245 / 0.16); }
+.theme-claro .bar { background: rgb(21 16 63 / 0.08); }
+.theme-claro .eyebrow { color: #6b3bf5; }
+.theme-claro .bg-bg\/40 { background: #fff; }
+/* Avisos de los formularios: tonos legibles sobre blanco. */
+.theme-claro .text-\[\#ffb3b3\] { color: #b42318; }
+.theme-claro .text-\[\#b6f5cb\] { color: #0f6b3a; }
+.theme-claro .text-\[\#ffe3a0\] { color: #8a5a00; }
+.theme-claro .dots-claro { background-image: radial-gradient(rgb(107 59 245 / 0.14) 1px, transparent 1px); background-size: 20px 20px; }
+.theme-claro .marker { background: linear-gradient(180deg, transparent 60%, rgb(255 200 61 / 0.85) 60%); padding: 0 0.1em; border-radius: 0.1em; }
