@@ -82,20 +82,20 @@ const PUBLIC_NAV = [
   { href: "/#filosofia", label: "Filosofía" },
 ];
 
-export function PublicHeader() {
+export function PublicHeader({ bold = false }: { bold?: boolean }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/85 backdrop-blur-md print:hidden">
+    <header className={`sticky top-0 z-40 backdrop-blur-md print:hidden ${bold ? "bg-bg/70" : "border-b border-line/70 bg-bg/85"}`}>
       <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-4 px-4 sm:px-6">
         <Logo href="/" />
         <nav aria-label="Academia" className="hidden items-center gap-1 lg:flex">
           {PUBLIC_NAV.map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition hover:bg-white/5 hover:text-text">{l.label}</Link>
+            <Link key={l.href} href={l.href} className={`rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-text ${bold ? "text-[0.95rem] font-bold text-text hover:underline underline-offset-8" : "text-sm font-medium text-muted"}`}>{l.label}</Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">
           <nav className="flex items-center gap-2" aria-label="Cuenta">
             <Link href="/ingresar" className="btn btn-ghost btn-sm hidden sm:inline-flex">Ingresar</Link>
-            <Link href="/registro" className="btn btn-primary btn-sm">Crear cuenta</Link>
+            <Link href="/registro" className={`btn btn-sm ${bold ? "btn-white" : "btn-primary"}`}>Crear cuenta</Link>
           </nav>
           <details className="group relative lg:hidden">
             <summary className="grid size-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-muted hover:text-text [&::-webkit-details-marker]:hidden" aria-label="Menú">
@@ -115,10 +115,11 @@ export function PublicHeader() {
 }
 
 /** Envoltura del sitio principal: tema editorial claro, con su cabecera y su pie. */
-export function SiteShell({ children }: { children: React.ReactNode }) {
+/** bold: el estilo moderno y oscuro de la portada nueva (en prueba). */
+export function SiteShell({ children, bold = false }: { children: React.ReactNode; bold?: boolean }) {
   return (
-    <div className="theme-site">
-      <PublicHeader />
+    <div className={bold ? "theme-bold" : "theme-site"}>
+      <PublicHeader bold={bold} />
       <main id="contenido">{children}</main>
       <Footer />
     </div>
