@@ -179,9 +179,13 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <li key={c.slug} className="panel flex flex-wrap items-center justify-between gap-3 p-4">
               <div>
                 <p className="font-semibold">{c.title}</p>
-                <p className="text-sm text-muted">Precio actual: {formatPrice(c.price)}. La primera lección siempre es gratis.</p>
+                <p className="text-sm text-muted">
+                  {c.isFree ? <><strong className="text-text">Gratis</strong> para todos{c.price ? ` (el precio guardado, ${formatPrice(c.price)}, no se cobra)` : ""}.</>
+                    : c.price ? <>Se vende a <strong className="text-text">{formatPrice(c.price)}</strong>. La primera lección siempre es gratis.</>
+                    : <>Sin precio: nadie puede comprarlo todavía.</>}
+                </p>
               </div>
-              <PriceForm course={c.slug} title={c.title} price={c.price} />
+              <PriceForm course={c.slug} title={c.title} price={c.price} isFree={c.isFree} />
             </li>
           ))}
         </ul>

@@ -881,3 +881,28 @@ test("la cuenta de administración no entra al juego: todo la lleva a su consola
   await page.goto("/programas/primer-portal");
   await expect(page.getByRole("link", { name: "Editar en la consola" })).toHaveAttribute("href", "/admin/contenido/primer-portal");
 });
+
+test("en «Cursos y precios» el precio y la opción gratis van juntos, y la ficha pública lo refleja", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin");
+  const row = () => page.locator("li", { has: page.getByLabel("Precio de El Portal de los Pasos Pequeños en pesos") });
+  await row().getByLabel("Gratis").check();
+  await row().getByRole("button", { name: "Guardar" }).click();
+  await expect(row().getByText("Guardado: el curso es gratis para todos.")).toBeVisible();
+  await page.goto("/programas/primer-portal");
+  await expect(page.locator("dl").getByText("Gratis", { exact: true })).toBeVisible();
+
+  await page.goto("/admin");
+  await row().getByLabel("Gratis").uncheck();
+  await row().getByLabel("Precio de El Portal de los Pasos Pequeños en pesos").fill("30000");
+  await row().getByRole("button", { name: "Guardar" }).click();
+  await expect(row().getByText(/Guardado: se vende a \$\s?30\.000/)).toBeVisible();
+  await page.goto("/programas/primer-portal");
+  await expect(page.locator("dl").getByText(/\$\s?30\.000/)).toBeVisible();
+
+  // Deja el precio como estaba.
+  await page.goto("/admin");
+  await row().getByLabel("Precio de El Portal de los Pasos Pequeños en pesos").fill("20000");
+  await row().getByRole("button", { name: "Guardar" }).click();
+  await expect(row().getByText(/Guardado: se vende a \$\s?20\.000/)).toBeVisible();
+});

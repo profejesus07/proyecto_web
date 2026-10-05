@@ -2,6 +2,7 @@
 
 import { randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { formatPrice } from "@/lib/data/queries";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import type { Profile } from "@/lib/data/types";
@@ -116,13 +117,18 @@ export async function setPriceAction(_prev: AdminFormState, formData: FormData):
   const raw = String(formData.get("price") ?? "").replace(/[^\d]/g, "");
   const price = raw === "" ? null : Number(raw);
   if (price !== null && (!Number.isSafeInteger(price) || price > 100_000_000)) return { error: MESSAGES.precio_invalido };
+  // Precio y «gratis» se guardan juntos: un curso gratis no cobra aunque tenga precio guardado.
+  const free = formData.get("free") === "on";
   try {
     await getRepo().adminSetPrice(viewer.id, course, price);
+    await getRepo().setCourseFree(course, free);
   } catch (e) {
     return { error: friendly(e, "No pudimos guardar el precio.") };
   }
   revalidatePath("/", "layout");
-  return { message: "Precio guardado." };
+  if (free) return { message: "Guardado: el curso es gratis para todos." };
+  if (price === null) return { message: "Guardado sin precio: nadie podrá comprarlo hasta que le pongas uno." };
+  return { message: `Guardado: se vende a ${formatPrice(price)}.` };
 }
 
 export async function createLinkedClassAction(_prev: AdminFormState, formData: FormData): Promise<AdminFormState> {

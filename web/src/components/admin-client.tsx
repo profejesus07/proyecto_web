@@ -130,14 +130,20 @@ export function GrantAccess({ userId, name, courses }: { userId: string; name: s
   );
 }
 
-export function PriceForm({ course, title, price }: { course: string; title: string; price: number | null }) {
+export function PriceForm({ course, title, price, isFree }: { course: string; title: string; price: number | null; isFree: boolean }) {
   const [state, action] = useActionState(setPriceAction, undefined);
+  const [free, setFree] = useState(isFree);
   return (
     <form action={action} className="flex flex-wrap items-center gap-2">
       <input type="hidden" name="course" value={course} />
+      <label className="mr-2 flex items-center gap-2 text-sm font-medium">
+        <input type="checkbox" name="free" checked={free} onChange={(e) => setFree(e.target.checked)} className="size-4 accent-[var(--cyan)]" />
+        Gratis
+      </label>
       <label htmlFor={`p-${course}`} className="sr-only">Precio de {title} en pesos</label>
       <span className="text-muted">$</span>
-      <input id={`p-${course}`} name="price" inputMode="numeric" defaultValue={price ?? ""} placeholder="Sin precio" className="input !w-36 !py-1.5" />
+      <input id={`p-${course}`} name="price" inputMode="numeric" defaultValue={price ?? ""} placeholder="Sin precio" disabled={free} className="input !w-36 !py-1.5 disabled:opacity-50" />
+      {free && price !== null && <input type="hidden" name="price" value={price} />}
       <span className="text-sm text-muted">COP</span>
       <Submit pending="Guardando…" className="btn btn-secondary btn-sm">Guardar</Submit>
       <Notice state={state} />
