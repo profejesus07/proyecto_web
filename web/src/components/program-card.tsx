@@ -9,7 +9,7 @@ import type { CatalogItem } from "@/lib/data/queries";
 export function ProgramCard({ c }: { c: CatalogItem }) {
   const color = ELEMENT_COLOR[c.element] ?? "#8a5cff";
   const g = guardianBySlug(c.guardian);
-  const meta = [KIND_LABEL[c.kind], c.kind === "curso" && c.hours ? `${c.hours} h` : c.grade ? `Grado ${c.grade}` : c.area].filter(Boolean).join(" · ");
+  const meta = [KIND_LABEL[c.kind], c.kind === "clase" ? (c.grade ? `Grado ${c.grade}` : c.area) : null, c.hours ? `${c.hours} h` : null].filter(Boolean).join(" · ");
   return (
     <li className="lift group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-panel">
       <div className="relative h-44 overflow-hidden" style={{ background: `radial-gradient(80% 120% at 75% 30%, ${color}66, transparent 70%), linear-gradient(160deg, #2c2185, #14123b)` }}>

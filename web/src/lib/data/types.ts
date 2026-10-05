@@ -1,5 +1,6 @@
 import type { ActivityKind, ActivityResponse, Solution } from "@/lib/activities";
 import type { AvatarLook } from "@/lib/avatar-look";
+import type { ImportPlan } from "@/lib/excel-import";
 
 export type Role = "estudiante" | "docente" | "familia" | "admin";
 export type AvatarBase = "aria" | "leo" | "tomas" | "nuri";
@@ -41,7 +42,7 @@ export interface Course {
   schoolYear: number | null;
   /** Último día de acceso de una clase (AAAA-MM-DD). */
   accessUntil: string | null;
-  /** Intensidad horaria de un curso corto (menos de 160). */
+  /** Intensidad horaria: un curso corto, menos de 160; una clase, horas en el año (hasta 2000). */
   hours: number | null;
   trainerName: string | null;
   trainerTitle: string | null;
@@ -72,7 +73,15 @@ export interface MissionSummary {
   period: number | null;
   /** Módulo de un curso corto. */
   moduleId: string | null;
+  /** «reto»: actividades. «explicacion»: texto (y video) para leer antes de practicar. */
+  lessonKind: LessonKind;
+  /** Texto de la explicación (párrafos, listas con «- » y **negrita**). */
+  body: string;
+  /** Video opcional de la explicación (YouTube o Vimeo). */
+  videoUrl: string | null;
 }
+
+export type LessonKind = "reto" | "explicacion";
 
 export interface CourseDetail extends Course {
   modules: Module[];
@@ -298,7 +307,7 @@ export interface CourseListItem extends Course {
 }
 
 export type CourseInput = Omit<Course, "slug" | "position" | "price" | "isFree">;
-export type MissionInput = { title: string; intro: string; xpReward: number; isBoss: boolean; period: number | null; moduleId: string | null };
+export type MissionInput = { title: string; intro: string; xpReward: number; isBoss: boolean; period: number | null; moduleId: string | null; lessonKind: LessonKind; body: string; videoUrl: string | null };
 export type QuestionInput = { prompt: string; kind: ActivityKind; options: string[]; correctIndex: number; data: { right?: string[] }; hint: string; explanation: string };
 export type ModuleInput = { title: string; summary: string; guardian: string };
 
@@ -420,6 +429,8 @@ export interface Repo {
   answerActivity(userId: string, missionId: string, index: number, response: ActivityResponse): Promise<AnswerResult>;
   /** Cierra el intento: la nota sale de las respuestas guardadas. */
   finishAttempt(userId: string, missionId: string, passMark: number, items: string[]): Promise<FinishResult>;
+  /** Marca como leída una lección de explicación (cuenta como aprobada). */
+  completeReading(userId: string, missionId: string): Promise<CompleteResult>;
   purchaseItem(userId: string, itemId: string, price: number): Promise<{ coins: number }>;
   setAvatar(userId: string, base: AvatarBase, look?: AvatarLook): Promise<void>;
   setDisplayName(userId: string, name: string): Promise<void>;
@@ -491,6 +502,8 @@ export interface Repo {
   listAllCourses(): Promise<CourseListItem[]>;
   getCourseForEdit(slug: string): Promise<EditableCourse | null>;
   createCourse(slug: string, input: CourseInput): Promise<void>;
+  /** Crea un curso completo (borrador) desde un plan de importación. Si algo falla, no deja nada a medias. */
+  importCourse(slug: string, plan: ImportPlan): Promise<void>;
   updateCourse(slug: string, input: CourseInput): Promise<void>;
   setCoursePublished(slug: string, published: boolean): Promise<void>;
   setCourseFree(slug: string, free: boolean): Promise<void>;

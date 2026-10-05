@@ -149,19 +149,19 @@ function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
       <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-gold text-ink" : "bg-white/10 text-muted"}`} aria-hidden="true">
-        {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : index}
+        {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : m.lessonKind === "explicacion" ? "📖" : index}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="font-display text-lg font-bold leading-tight">{m.title}</p>
+        <p className="font-display text-lg font-bold leading-tight">{m.lessonKind === "explicacion" && <span className="mr-1.5 rounded-md bg-cyan/15 px-1.5 py-0.5 align-middle text-xs font-bold text-cyan">Explicación</span>}{m.title}</p>
         <p className="text-sm text-muted">{m.lock === "suscripcion" ? "Incluida en la suscripción al curso." : locked ? "Termina la misión anterior para abrirla." : m.intro}</p>
       </div>
       <div className="shrink-0 text-right text-sm">
         {m.state === "completada" ? (
-          <><p className="font-bold text-green">{m.bestScore}%</p><p className="text-muted">Repetir</p></>
+          m.lessonKind === "explicacion" ? <p className="text-muted">Volver a leer</p> : <><p className="font-bold text-green">{m.bestScore}%</p><p className="text-muted">Repetir</p></>
         ) : locked ? (
           <p className="text-muted">{m.xpReward} XP</p>
         ) : (
-          <><p className="font-bold text-gold">+{m.xpReward} XP</p><p className="font-semibold text-cyan">Empezar →</p></>
+          <><p className="font-bold text-gold">+{m.xpReward} XP</p><p className="font-semibold text-cyan">{m.lessonKind === "explicacion" ? "Leer →" : "Empezar →"}</p></>
         )}
       </div>
     </div>

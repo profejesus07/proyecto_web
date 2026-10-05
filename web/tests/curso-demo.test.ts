@@ -37,3 +37,31 @@ describe("curso de demostración", () => {
     expect(r.correct).toBe(true);
   });
 });
+
+const explanations = readFileSync(path.resolve(import.meta.dirname, "../../supabase/contenido/explicaciones_demo.sql"), "utf8");
+
+describe("explicaciones del curso de demostración", () => {
+  it("cada módulo empieza con su explicación y nadie pierde su avance", async () => {
+    const h = await makeDb();
+    await h.addUser(S, { display_name: "Luna" });
+    await h.db.exec(script);
+    const first = (await h.db.query<{ id: string }>("select id from public.missions where course_slug = 'primer-portal' and position = 1")).rows[0].id;
+    await h.db.query("insert into public.mission_progress (user_id, mission_id, best_score, attempts, completed_at) values ($1, $2, 100, 1, now())", [S, first]);
+
+    await h.db.exec(explanations);
+    await h.db.exec(explanations); // se puede repetir
+
+    const rows = (await h.db.query<{ position: number; kind: string; is_boss: boolean; mod: number }>(
+      `select mi.position, mi.kind, mi.is_boss, mo.position as mod from public.missions mi join public.modules mo on mo.id = mi.module_id
+        where mi.course_slug = 'primer-portal' order by mi.position`)).rows;
+    expect(rows.map((r) => [r.position, r.mod, r.kind, r.is_boss])).toEqual([
+      [1, 1, "explicacion", false], [2, 1, "reto", false], [3, 1, "reto", false], [4, 1, "reto", false], [5, 1, "reto", true],
+      [6, 2, "explicacion", false], [7, 2, "reto", false], [8, 2, "reto", false], [9, 2, "reto", false], [10, 2, "reto", true],
+    ]);
+    // Ya había pasado la primera lección: la explicación anterior queda leída y la siguiente sigue abierta.
+    const reading = (await h.db.query<{ id: string }>("select id from public.missions where course_slug = 'primer-portal' and position = 1")).rows[0].id;
+    expect((await h.db.query("select 1 from public.mission_progress where user_id = $1 and mission_id = $2 and completed_at is not null", [S, reading])).rows.length).toBe(1);
+    const third = (await h.db.query<{ id: string }>("select id from public.missions where course_slug = 'primer-portal' and position = 3")).rows[0].id;
+    expect((await h.db.query<{ r: boolean }>("select public.mission_is_locked($1, $2) as r", [S, third])).rows[0].r).toBe(false);
+  });
+});

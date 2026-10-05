@@ -4,7 +4,7 @@ import { sanitizeLook } from "@/lib/avatar-look";
 import { todayBogota } from "@/lib/game/aids";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
-  AdminClass, AdminPayment, AdminUser, Module, Payment, PaymentProvider, PaymentStatus, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
+  AdminClass, AdminPayment, AdminUser, Module, Payment, PaymentProvider, PaymentStatus, Certificate, DocType, CourseInput, CourseListItem, EditableCourse, EditableQuestion, AidResult, AidUseRow, AnswerKeyRow, CompleteResult, AnswerResult, ClassReport, ClassSummary, FamilyChild, FamilyMessage, FinishResult, LinkedFamily, PowerPayload, PowerResult, AvatarBase, Course, CourseDetail, InventoryRow, MissionPlay, MissionSummary,
   Profile, ProgressRow, PublicQuestion, Repo,
 } from "./types";
 import { AVATAR_BASES } from "./types";
@@ -53,6 +53,9 @@ const mission = (r: Row): MissionSummary => ({
   intro: r.intro as string, xpReward: r.xp_reward as number, isBoss: r.is_boss as boolean,
   period: (r.period as number | null | undefined) ?? null,
   moduleId: (r.module_id as string | null | undefined) ?? null,
+  lessonKind: r.kind === "explicacion" ? "explicacion" : "reto",
+  body: (r.body as string | null | undefined) ?? "",
+  videoUrl: (r.video_url as string | null | undefined) ?? null,
 });
 
 export function createSupabaseRepo(): Repo {
@@ -172,6 +175,19 @@ export function createSupabaseRepo(): Repo {
         xp: r.xp as number, coins: r.coins as number, gems: r.gems as number, streak: r.streak as number,
         bossDefeated: r.boss_defeated as boolean, courseDone: r.course_done as boolean, granted: (r.granted as string[]) ?? [],
         answers: (r.answers as number[]) ?? [],
+      };
+      return out;
+    },
+
+    async completeReading(userId, missionId) {
+      const { data, error } = await db.rpc("complete_reading", { p_user: userId, p_mission: missionId });
+      if (error) fail(error, "completar explicación");
+      const r = data as Record<string, unknown>;
+      const out: CompleteResult = {
+        passed: r.passed as boolean, first: r.first as boolean, score: r.score as number,
+        xpGain: r.xp_gain as number, coinsGain: r.coins_gain as number, gemsGain: r.gems_gain as number,
+        xp: r.xp as number, coins: r.coins as number, gems: r.gems as number, streak: r.streak as number,
+        bossDefeated: r.boss_defeated as boolean, courseDone: r.course_done as boolean, granted: (r.granted as string[]) ?? [],
       };
       return out;
     },
@@ -609,6 +625,44 @@ export function createSupabaseRepo(): Repo {
       return out;
     },
 
+    async importCourse(slug, plan) {
+      const { data: last } = await db.from("courses").select("position").order("position", { ascending: false }).limit(1).maybeSingle();
+      const { error } = await db.from("courses").insert({
+        slug, ...courseRow(plan.course), price_cop: plan.price, is_free: plan.isFree,
+        position: ((last?.position as number | undefined) ?? 0) + 1, published: false,
+      });
+      if (error) fail(error, "importar curso");
+      try {
+        const modIds = new Map<number, string>();
+        if (plan.modules.length) {
+          const { data: mods, error: e1 } = await db.from("modules")
+            .insert(plan.modules.map((m, i) => ({ course_slug: slug, position: i + 1, title: m.title, summary: m.summary, guardian: m.guardian })))
+            .select("id,position");
+          if (e1) fail(e1, "importar módulos");
+          for (const r of mods ?? []) modIds.set(plan.modules[(r.position as number) - 1].number, r.id as string);
+        }
+        const { data: ms, error: e2 } = await db.from("missions").insert(plan.lessons.map((l, i) => ({
+          course_slug: slug, position: i + 1, title: l.mission.title, intro: l.mission.intro, xp_reward: l.mission.xpReward, is_boss: l.mission.isBoss,
+          period: l.mission.period, module_id: l.moduleNumber === null ? null : modIds.get(l.moduleNumber) ?? null,
+          kind: l.mission.lessonKind, body: l.mission.body, video_url: l.mission.videoUrl,
+        }))).select("id,position");
+        if (e2) fail(e2, "importar lecciones");
+        const missionId = new Map((ms ?? []).map((r) => [r.position as number, r.id as string]));
+        const rows = plan.lessons.flatMap((l, i) => l.activities.map((q, j) => ({
+          mission_id: missionId.get(i + 1), position: j + 1,
+          prompt: q.prompt, kind: q.kind, options: q.options, correct_index: q.correctIndex, data: q.data, hint: q.hint, explanation: q.explanation,
+        })));
+        for (let k = 0; k < rows.length; k += 500) {
+          const { error: e3 } = await db.from("questions").insert(rows.slice(k, k + 500));
+          if (e3) fail(e3, "importar actividades");
+        }
+      } catch (e) {
+        // Sin avance ni pagos todavía: se puede quitar el borrador completo.
+        await db.from("courses").delete().eq("slug", slug);
+        throw e;
+      }
+    },
+
     async createCourse(slug, input) {
       const { data: last } = await db.from("courses").select("position").order("position", { ascending: false }).limit(1).maybeSingle();
       const { error } = await db.from("courses").insert({ slug, ...courseRow(input), position: ((last?.position as number | undefined) ?? 0) + 1, published: false });
@@ -669,6 +723,7 @@ export function createSupabaseRepo(): Repo {
       const { data, error } = await db.from("missions").insert({
         course_slug: courseSlug, position: ((last?.position as number | undefined) ?? 0) + 1,
         title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period, module_id: input.moduleId,
+        kind: input.lessonKind, body: input.body, video_url: input.videoUrl,
       }).select("id").single();
       if (error) fail(error, "crear lección");
       // Queda al final de su módulo.
@@ -683,6 +738,7 @@ export function createSupabaseRepo(): Repo {
       const { data: before } = await db.from("missions").select("course_slug,module_id").eq("id", missionId).maybeSingle();
       const { error } = await db.from("missions").update({
         title: input.title, intro: input.intro, xp_reward: input.xpReward, is_boss: input.isBoss, period: input.period, module_id: input.moduleId,
+        kind: input.lessonKind, body: input.body, video_url: input.videoUrl,
       }).eq("id", missionId);
       if (error) fail(error, "guardar lección");
       // Si cambió de módulo, se reordena el curso.

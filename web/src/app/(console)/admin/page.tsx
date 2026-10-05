@@ -181,7 +181,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 <p className="font-semibold">{c.title}</p>
                 <p className="text-sm text-muted">
                   {c.isFree ? <><strong className="text-text">Gratis</strong> para todos{c.price ? ` (el precio guardado, ${formatPrice(c.price)}, no se cobra)` : ""}.</>
-                    : c.price ? <>Se vende a <strong className="text-text">{formatPrice(c.price)}</strong>. La primera lección siempre es gratis.</>
+                    : c.price ? <>Se vende a <strong className="text-text">{formatPrice(c.price)}</strong>. La muestra gratis llega hasta el primer reto.</>
                     : <>Sin precio: nadie puede comprarlo todavía.</>}
                 </p>
               </div>

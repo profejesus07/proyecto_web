@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DeleteButton } from "@/components/delete-button";
 import { AdminNav } from "@/components/admin-nav";
-import { NewCourseForm } from "@/components/editor-client";
+import { ImportForm, NewCourseForm } from "@/components/editor-client";
 import { Sprite, asset } from "@/components/sprite";
 import { PageTitle } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
@@ -30,6 +30,11 @@ export default async function ContentPage() {
         <NewCourseForm />
       </section>
 
+      <section aria-labelledby="importar-t" className="max-w-3xl space-y-3">
+        <h2 id="importar-t" className="text-2xl">Importar desde Excel</h2>
+        <ImportForm />
+      </section>
+
       {groups.map((g) => {
         const list = courses.filter((c) => c.kind === g.kind);
         return (
@@ -48,7 +53,7 @@ export default async function ContentPage() {
                         <span className="block text-xs text-muted">
                           {KIND_LABEL[c.kind]} · {c.missionCount} {c.missionCount === 1 ? "lección" : "lecciones"}
                           {c.kind === "clase" && c.grade ? ` · ${c.area ?? ""} ${c.grade} ${c.schoolYear ?? ""}` : ""}
-                          {c.kind === "curso" && c.hours ? ` · ${c.hours} h` : ""}
+                          {c.hours ? ` · ${c.hours} h` : ""}
                         </span>
                         <span className={`mt-1 inline-block rounded px-1.5 text-xs font-bold ${c.published ? "bg-green/15 text-[#b6f5cb]" : "bg-white/10 text-muted"}`}>{c.published ? "Publicado" : "Borrador"}</span>
                       </span>

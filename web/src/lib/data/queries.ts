@@ -1,3 +1,4 @@
+import { freeUntil } from "@/lib/lessons";
 import "server-only";
 import { getRepo } from "@/lib/data";
 import type { Course, CourseDetail, MissionSummary, ProgressRow } from "@/lib/data/types";
@@ -28,18 +29,19 @@ export interface CourseView extends CourseDetail {
 
 /**
  * Calcula, para cada misión, si está bloqueada, disponible o completada.
- * Misma regla que public.mission_is_locked: en orden dentro del curso; la primera lección es gratis
- * y las demás necesitan acceso al curso.
+ * Misma regla que public.mission_is_locked: en orden dentro del curso; son gratis las lecciones hasta
+ * el primer reto (incluido) y las demás necesitan acceso al curso.
  */
 export function buildCourseView(course: CourseDetail, progress: ProgressRow[], bosses: string[], hasAccess: boolean): CourseView {
   const byMission = new Map(progress.map((p) => [p.missionId, p]));
   let prevDone = true;
+  const free = freeUntil(course.missions);
   const missions: MissionView[] = [...course.missions]
     .sort((a, b) => a.position - b.position)
     .map((m) => {
       const p = byMission.get(m.id);
       const completed = !!p?.completed;
-      const paywalled = m.position > 1 && !hasAccess;
+      const paywalled = m.position > free && !hasAccess;
       const state: MissionState = completed ? "completada" : prevDone && !paywalled ? "disponible" : "bloqueada";
       const lock = state !== "bloqueada" ? null : paywalled ? "suscripcion" : "orden";
       prevDone = prevDone && completed;

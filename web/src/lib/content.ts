@@ -2,6 +2,8 @@ import type { CourseKind, EditableCourse } from "@/lib/data/types";
 
 /** Curso de educación informal: siempre menos de 160 horas (Decreto 1075 de 2015, art. 2.6.6.8). */
 export const MAX_INFORMAL_HOURS = 159;
+/** Intensidad horaria máxima de una clase anual (horas en el año). */
+export const MAX_CLASS_HOURS = 2000;
 
 /** Leyenda obligatoria en toda promoción de un curso de educación informal. */
 export const INFORMAL_NOTICE = "Educación informal (Ley 115 de 1994 y Decreto 1075 de 2015). No conduce a título ni a certificado de aptitud ocupacional; al finalizar se expide una constancia de asistencia.";
@@ -39,7 +41,9 @@ export function publishProblems(c: EditableCourse): string[] {
   }
   if (c.missions.length === 0) out.push("Agrega al menos una lección.");
   c.missions.forEach((m) => {
-    if (m.questions.length === 0) out.push(`La lección «${m.title}» no tiene preguntas.`);
+    if (m.lessonKind === "explicacion") {
+      if (m.body.trim().length < 20) out.push(`La explicación «${m.title}» no tiene texto.`);
+    } else if (m.questions.length === 0) out.push(`La lección «${m.title}» no tiene preguntas.`);
   });
   if (c.kind === "curso" && !c.modules.length) out.push("Organiza el curso en módulos (al menos uno).");
   if (c.kind === "curso" && c.modules.length) {
@@ -48,6 +52,7 @@ export function publishProblems(c: EditableCourse): string[] {
     for (const mod of c.modules) {
       const ls = c.missions.filter((m) => m.moduleId === mod.id).sort((a, b) => a.position - b.position);
       if (!ls.length) { out.push(`El módulo «${mod.title}» no tiene lecciones.`); continue; }
+      if (!ls.some((m) => m.lessonKind === "explicacion")) out.push(`El módulo «${mod.title}» necesita una lección de explicación (lo ideal: la primera).`);
       const bosses = ls.filter((m) => m.isBoss);
       if (bosses.length !== 1 || ls[ls.length - 1].id !== bosses[0].id) out.push(`El módulo «${mod.title}» debe terminar con una sola prueba de su Guardián (su última lección).`);
     }

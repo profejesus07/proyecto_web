@@ -706,6 +706,7 @@ test("el administrador elimina un grupo, un docente y un curso, siempre confirma
 });
 
 test("un curso corto por módulos, con actividades variadas, un Guardián por módulo y ofrecido gratis", async ({ page, context }) => {
+  test.setTimeout(90_000);
   await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
   await page.goto("/admin/contenido");
   await page.getByText("Curso corto", { exact: true }).click();
@@ -719,10 +720,12 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   await expect(page.getByText("Guardado.")).toBeVisible();
 
   const details = (text: string) => page.locator("details", { has: page.locator(":scope > summary", { hasText: text }) });
-  async function addLesson(module: string, title: string, boss = false) {
+  async function addLesson(module: string, title: string, { boss = false, reading = "" } = {}) {
     const d = details(`+ Agregar lección a «${module}»`);
     if (!(await d.getAttribute("open").then((v) => v !== null))) await d.locator(":scope > summary").click();
+    await d.getByText(reading ? "📖 Explicación (para leer)" : "⚔️ Reto (actividades)").click();
     await d.getByLabel("Título de la lección").fill(title);
+    if (reading) await d.getByRole("textbox", { name: /^Explicación/ }).fill(reading);
     if (boss) await d.getByLabel(/prueba del Guardián del módulo/).check();
     await d.getByRole("button", { name: "Crear lección" }).click();
     await expect(page.locator("summary", { hasText: title })).toBeVisible();
@@ -745,15 +748,18 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   await mod1.getByLabel("Título del módulo").fill("Seres vivos");
   await mod1.getByRole("button", { name: "Guardar módulo" }).click();
   await expect(page.getByText("Módulo guardado.")).toBeVisible();
+  // Cada módulo empieza con su lección de explicación.
+  await addLesson("Seres vivos", "Qué es la vida", { reading: "Todos los seres vivos nacen, crecen, se reproducen y mueren.\n\n- Están hechos de **células**." });
   await addLesson("Seres vivos", "La célula");
-  await addLesson("Seres vivos", "Prueba de Petrox", true);
+  await addLesson("Seres vivos", "Prueba de Petrox", { boss: true });
   const newMod = details("+ Agregar módulo");
   await newMod.locator(":scope > summary").click();
   await newMod.getByLabel("Título del módulo").fill("Energía");
   await newMod.getByLabel("Guardián del módulo").selectOption("ignaris");
   await newMod.getByRole("button", { name: "Crear módulo" }).click();
   await expect(page.getByText("Módulo creado.")).toBeVisible();
-  await addLesson("Energía", "Prueba de Ignaris", true);
+  await addLesson("Energía", "¿Qué es la energía?", { reading: "La energía es la capacidad de producir cambios: mover, calentar o iluminar." });
+  await addLesson("Energía", "Prueba de Ignaris", { boss: true });
 
   // Actividades de cada tipo.
   await addActivity("La célula", async (f) => {
@@ -804,8 +810,12 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   await expect(page.getByText("Guardián del módulo 2")).toBeVisible();
   await expect(page.getByRole("link", { name: "Desbloquear el curso" })).toHaveCount(0);
 
-  // Juega la lección con las cuatro actividades.
-  await page.getByRole("link", { name: /La célula/ }).click();
+  // Primero lee la explicación del módulo; luego juega la lección con las cuatro actividades.
+  await page.getByRole("link", { name: /Qué es la vida/ }).click();
+  await expect(page.getByText("células", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "¡Entendido! Continuar" }).click();
+  await page.getByRole("link", { name: "Ir a practicar →" }).click();
+  await expect(page.getByRole("heading", { name: "La célula" })).toBeVisible();
   const respond = async () => {
     await page.getByRole("button", { name: "Responder" }).click();
     await expect(page.locator("#feedback")).toBeVisible();
@@ -905,4 +915,43 @@ test("en «Cursos y precios» el precio y la opción gratis van juntos, y la fic
   await row().getByLabel("Precio de El Portal de los Pasos Pequeños en pesos").fill("20000");
   await row().getByRole("button", { name: "Guardar" }).click();
   await expect(row().getByText(/Guardado: se vende a \$\s?20\.000/)).toBeVisible();
+});
+
+test("se importa un curso desde Excel y el estudiante empieza por la lección de explicación", async ({ page, context }) => {
+  test.setTimeout(60_000);
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/contenido");
+  // La plantilla se descarga desde la consola y se sube tal cual (trae un ejemplo completo).
+  const plantilla = await page.request.get("/admin/contenido/plantilla");
+  expect(plantilla.ok()).toBe(true);
+  expect(plantilla.headers()["content-type"]).toContain("spreadsheetml");
+  await page.getByLabel("Archivo de Excel (.xlsx)").setInputFiles({ name: "curso.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: await plantilla.body() });
+  await page.getByRole("button", { name: "Importar" }).click();
+  await expect(page.getByText(/Importado desde Excel: 1 módulo, 3 lecciones y 5 actividades/)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "Aprender a aprender" })).toBeVisible();
+  const slug = page.url().split("/admin/contenido/")[1].split("?")[0];
+  await page.getByRole("button", { name: "Publicar" }).click();
+  await expect(page.getByText("¡Publicado! Ya lo ven tus estudiantes.")).toBeVisible();
+
+  // Un archivo que no es Excel se rechaza con un mensaje claro.
+  await page.goto("/admin/contenido");
+  await page.getByLabel("Archivo de Excel (.xlsx)").setInputFiles({ name: "notas.txt", mimeType: "text/plain", buffer: Buffer.from("hola") });
+  await page.getByRole("button", { name: "Importar" }).click();
+  await expect(page.getByText(/El archivo debe ser de Excel \(\.xlsx\)/)).toBeVisible();
+
+  // El estudiante: la primera lección del módulo es la explicación.
+  await context.clearCookies({ name: "umbral-vista" });
+  await page.goto(`/portales/${slug}`);
+  await page.getByRole("link", { name: /Misión 1: Cómo se come un elefante/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Cómo se come un elefante" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "El truco" })).toBeVisible();
+  await expect(page.getByText("pasos pequeños", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "¡Entendido! Continuar" }).click();
+  await expect(page.getByText("¡Explicación completada!")).toBeVisible();
+  await expect(page.getByText(/\+20 XP/)).toBeVisible();
+  // La muestra gratis incluye la explicación y el primer reto.
+  await page.getByRole("link", { name: "Ir a practicar →" }).click();
+  await expect(page.getByText("Pregunta 1 de 2", { exact: true })).toBeVisible();
+  await page.goto(`/portales/${slug}`);
+  await expect(page.getByText("Incluido en la suscripción al curso")).toBeVisible(); // el reto del Guardián
 });

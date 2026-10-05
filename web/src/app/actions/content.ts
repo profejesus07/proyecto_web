@@ -2,11 +2,14 @@
 
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { MAX_BODY, videoEmbedUrl } from "@/lib/lessons";
+import readXlsxFile from "read-excel-file/node";
+import { MAX_IMPORT_BYTES, parseWorkbook, type SheetIn } from "@/lib/excel-import";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { GUARDIANS } from "@/content/guardians";
 import { getViewer } from "@/lib/auth";
-import { MAX_INFORMAL_HOURS, publishProblems, slugify } from "@/lib/content";
+import { MAX_CLASS_HOURS, MAX_INFORMAL_HOURS, publishProblems, slugify } from "@/lib/content";
 import { getRepo } from "@/lib/data";
 import { asKind, normalizeActivity } from "@/lib/activities";
 import type { CourseInput, MissionInput, ModuleInput, QuestionInput } from "@/lib/data/types";
@@ -42,10 +45,10 @@ const courseSchema = z.object({
   grade: z.string().trim().min(1).max(20).nullable(),
   schoolYear: z.coerce.number().int().min(2020, "Año lectivo no válido.").max(2100, "Año lectivo no válido.").nullable(),
   accessUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha no válida.").nullable(),
-  hours: z.coerce.number().int().min(1, "La intensidad debe ser de al menos 1 hora.").max(MAX_INFORMAL_HOURS, "Un curso de educación informal debe durar menos de 160 horas.").nullable(),
+  hours: z.coerce.number().int().min(1, "La intensidad debe ser de al menos 1 hora.").max(MAX_CLASS_HOURS, `La intensidad puede ser de máximo ${MAX_CLASS_HOURS} horas.`).nullable(),
   trainerName: z.string().trim().min(3, "Nombre del formador: al menos 3 caracteres.").max(120).nullable(),
   trainerTitle: z.string().trim().min(3, "Título del formador: al menos 3 caracteres.").max(160).nullable(),
-});
+}).refine((c) => c.kind !== "curso" || c.hours === null || c.hours <= MAX_INFORMAL_HOURS, { message: "Un curso de educación informal debe durar menos de 160 horas.", path: ["hours"] });
 
 function readCourse(fd: FormData) {
   return courseSchema.safeParse({
@@ -68,11 +71,17 @@ export async function createCourseAction(_prev: EditorState, fd: FormData): Prom
   const kind = fd.get("kind") === "clase" ? "clase" : "curso";
   const title = String(fd.get("title") ?? "").trim();
   if (title.length < 3 || title.length > 80) return { error: "El título debe tener entre 3 y 80 caracteres." };
+  const rawHours = String(fd.get("hours") ?? "").trim();
+  const hours = rawHours === "" ? null : Number(rawHours);
+  const maxHours = kind === "curso" ? MAX_INFORMAL_HOURS : MAX_CLASS_HOURS;
+  if (hours !== null && (!Number.isInteger(hours) || hours < 1 || hours > maxHours)) {
+    return { error: kind === "curso" ? "Un curso corto debe durar entre 1 y 159 horas." : `Las horas de la clase deben estar entre 1 y ${MAX_CLASS_HOURS}.` };
+  }
   const slug = slugify(title, randomBytes(3).toString("hex").slice(0, 4));
   const input: CourseInput = {
     kind, title, summary: "", element: kind === "clase" ? "luz" : "eter", guardian: "petrox",
     area: null, grade: null, schoolYear: kind === "clase" ? new Date().getFullYear() + (new Date().getMonth() >= 9 ? 1 : 0) : null,
-    accessUntil: null, hours: null, trainerName: null, trainerTitle: null,
+    accessUntil: null, hours, trainerName: null, trainerTitle: null,
   };
   try {
     await getRepo().createCourse(slug, input);
@@ -83,6 +92,33 @@ export async function createCourseAction(_prev: EditorState, fd: FormData): Prom
   }
   refresh();
   redirect(`/admin/contenido/${slug}`);
+}
+
+export type ImportState = { error?: string; errors?: string[] } | undefined;
+
+/** Crea un curso o una clase completos (como borrador) desde la plantilla de Excel. */
+export async function importCourseAction(_prev: ImportState, fd: FormData): Promise<ImportState> {
+  if (!(await requireAdminId())) return { error: NOT_ADMIN };
+  const file = fd.get("file");
+  if (!(file instanceof File) || file.size === 0) return { error: "Elige el archivo de Excel (.xlsx)." };
+  if (!/\.xlsx$/i.test(file.name)) return { error: "El archivo debe ser de Excel (.xlsx). Si lo tienes en otro formato, guárdalo como «Libro de Excel»." };
+  if (file.size > MAX_IMPORT_BYTES) return { error: "El archivo es muy grande (máximo 900 KB). Quita imágenes o formatos que no hagan falta." };
+  let sheets: SheetIn[];
+  try {
+    sheets = (await readXlsxFile(Buffer.from(await file.arrayBuffer()))) as SheetIn[];
+  } catch {
+    return { error: "No pudimos leer el archivo. Revisa que sea un Excel (.xlsx) válido, basado en la plantilla." };
+  }
+  const r = parseWorkbook(sheets);
+  if (!r.ok) return { errors: r.errors };
+  const slug = slugify(r.plan.course.title, randomBytes(3).toString("hex").slice(0, 4));
+  try {
+    await getRepo().importCourse(slug, r.plan);
+  } catch {
+    return { error: "No pudimos guardar el curso. Inténtalo de nuevo." };
+  }
+  refresh();
+  redirect(`/admin/contenido/${slug}?importado=1`);
 }
 
 export async function saveCourseAction(slug: string, _prev: EditorState, fd: FormData): Promise<EditorState> {
@@ -98,7 +134,7 @@ export async function saveCourseAction(slug: string, _prev: EditorState, fd: For
     grade: v.kind === "clase" ? v.grade : null,
     schoolYear: v.kind === "clase" ? v.schoolYear : null,
     accessUntil: v.kind === "clase" ? v.accessUntil : null,
-    hours: v.kind === "curso" ? v.hours : null,
+    hours: v.hours,
     trainerName: v.kind === "curso" ? v.trainerName : null,
     trainerTitle: v.kind === "curso" ? v.trainerTitle : null,
   };
@@ -132,12 +168,20 @@ const missionSchema = z.object({
   isBoss: z.boolean(),
   period: z.coerce.number().int().min(1).max(4).nullable(),
   moduleId: z.string().regex(/^[\w-]{1,64}$/).nullable(),
+  lessonKind: z.enum(["reto", "explicacion"]),
+  body: z.string().trim().max(MAX_BODY, `La explicación puede tener máximo ${MAX_BODY} caracteres.`),
+  videoUrl: z.string().trim().nullable().refine((v) => v === null || videoEmbedUrl(v) !== null, "El video debe ser un enlace de YouTube o Vimeo."),
+}).superRefine((m, ctx) => {
+  if (m.lessonKind === "explicacion" && m.body.length < 20) ctx.addIssue({ code: "custom", message: "Escribe la explicación (al menos 20 caracteres)." });
+  if (m.lessonKind === "explicacion" && m.isBoss) ctx.addIssue({ code: "custom", message: "Una explicación no puede ser el reto del Guardián." });
 });
 
 function readMission(fd: FormData) {
   return missionSchema.safeParse({
     title: fd.get("title") ?? "", intro: fd.get("intro") ?? "", xpReward: fd.get("xpReward") ?? 50,
     isBoss: fd.get("isBoss") === "on", period: blankToNull(fd.get("period")), moduleId: blankToNull(fd.get("moduleId")),
+    lessonKind: fd.get("lessonKind") === "explicacion" ? "explicacion" : "reto",
+    body: fd.get("body") ?? "", videoUrl: blankToNull(fd.get("videoUrl")),
   });
 }
 
@@ -188,7 +232,7 @@ export async function setFreeAction(slug: string, free: boolean): Promise<Editor
   await getRepo().setCourseFree(slug, free);
   refresh(slug);
   revalidatePath("/", "layout");
-  return { message: free ? "Ahora es gratis: cualquier estudiante puede hacerlo completo." : "Ya no es gratis: después de la primera lección se pide acceso." };
+  return { message: free ? "Ahora es gratis: cualquier estudiante puede hacerlo completo." : "Ya no es gratis: después del primer reto se pide acceso." };
 }
 
 export async function saveMissionAction(slug: string, missionId: string | null, _prev: EditorState, fd: FormData): Promise<EditorState> {

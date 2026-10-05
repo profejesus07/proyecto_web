@@ -5,7 +5,7 @@ import { buildCourseView } from "./queries";
 const course: CourseDetail = {
   slug: "c", title: "C", summary: "", element: "naturaleza", guardian: "petrox", position: 1, price: 20000,
   kind: "curso", area: null, grade: null, schoolYear: null, accessUntil: null, hours: 8, trainerName: "T", trainerTitle: "Mgtr.", isFree: false, modules: [],
-  missions: [1, 2, 3, 4].map((n) => ({ id: `m${n}`, courseSlug: "c", position: n, title: `M${n}`, intro: "", xpReward: 10, isBoss: n === 4, period: null, moduleId: null })),
+  missions: [1, 2, 3, 4].map((n) => ({ id: `m${n}`, courseSlug: "c", position: n, title: `M${n}`, intro: "", xpReward: 10, isBoss: n === 4, period: null, moduleId: null, lessonKind: "reto" as const, body: "", videoUrl: null })),
 };
 const done = (id: string, score = 100): ProgressRow => ({ missionId: id, bestScore: score, attempts: 1, completed: true });
 

@@ -1,3 +1,4 @@
+import { freeUntil } from "@/lib/lessons";
 import intento from "@/content/portal-del-primer-intento.json";
 import primer from "@/content/primer-portal.json";
 import { gradeActivity, isChoiceKind, publicActivity, solutionOf, type ActivityKind } from "@/lib/activities";
@@ -123,7 +124,7 @@ function C(): Content {
     const missions: MissionSummary[] = SEEDS.flatMap(({ seed, prefix }) => seed.missions.map((m) => {
       const id = `${prefix}${m.position}`;
       questions.set(id, m.questions.map((q, i) => ({ id: `${id}q${i + 1}`, kind: "opcion" as const, data: {}, ...q })));
-      return { id, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss, period: null, moduleId: `mod-${seed.course.slug}` };
+      return { id, courseSlug: seed.course.slug, position: m.position, title: m.title, intro: m.intro, xpReward: m.xp_reward, isBoss: m.is_boss, period: null, moduleId: `mod-${seed.course.slug}`, lessonKind: "reto", body: "", videoUrl: null };
     }));
     gc.__umbralContent = {
       courses: SEEDS.map(({ seed }) => ({ ...(seed.course as Omit<Course, "price" | keyof typeof blank>), ...blank, price: null, published: true })),
@@ -155,10 +156,10 @@ function hasAccess(userId: string, slug: string): boolean {
   const s = state();
   return !!C().courses.find((c) => c.slug === slug)?.isFree || STAFF.has(userId) || s.profile.role === "docente" || s.profile.role === "admin" || s.access.has(slug);
 }
-/** Misma regla que public.mission_is_locked: misiones en orden dentro del curso; la primera gratis, el resto con acceso. */
+/** Misma regla que public.mission_is_locked: misiones en orden; gratis hasta el primer reto, el resto con acceso. */
 function isLocked(s: State, m: MissionSummary, userId: string): boolean {
   if (C().missions.some((p) => p.courseSlug === m.courseSlug && p.position < m.position && !s.progress.get(p.id)?.completed)) return true;
-  if (m.position > 1 && !hasAccess(userId, m.courseSlug)) throw new Error("requiere_suscripcion");
+  if (m.position > freeUntil(C().missions.filter((x) => x.courseSlug === m.courseSlug)) && !hasAccess(userId, m.courseSlug)) throw new Error("requiere_suscripcion");
   return false;
 }
 
@@ -267,6 +268,12 @@ export function createMemoryRepo(): Repo {
       s.attempts.delete(id);
       s.pastAttempts.set(id, [...(s.pastAttempts.get(id) ?? []), a]);
       return { ...complete(u, id, score, passMark, items), answers: a };
+    },
+    async completeReading(u, id): Promise<CompleteResult> {
+      const m = C().missions.find((x) => x.id === id);
+      if (!m) throw new Error("mision_no_encontrada");
+      if (m.lessonKind !== "explicacion") throw new Error("no_es_explicacion");
+      return complete(u, id, 100, 0, []);
     },
     async purchaseItem(_u, itemId, price) {
       const s = state();
@@ -623,6 +630,21 @@ export function createMemoryRepo(): Repo {
           questions: questions(m.id).map((q, i) => ({ id: q.id, position: i + 1, prompt: q.prompt, kind: q.kind, options: q.options, correctIndex: q.correct_index, right: q.data.right ?? [], hint: q.hint, explanation: q.explanation })),
         })),
       };
+    },
+    async importCourse(slug, plan) {
+      const c = C();
+      c.courses.push({ ...plan.course, slug, position: c.courses.length + 1, price: plan.price, published: false, isFree: plan.isFree });
+      const modIds = new Map<number, string>();
+      plan.modules.forEach((m, i) => {
+        const id = `mod-${c.seq++}`;
+        modIds.set(m.number, id);
+        c.modules.push({ id, courseSlug: slug, position: i + 1, title: m.title, summary: m.summary, guardian: m.guardian });
+      });
+      plan.lessons.forEach((l, i) => {
+        const id = `x${c.seq++}`;
+        c.missions.push({ id, courseSlug: slug, position: i + 1, ...l.mission, moduleId: l.moduleNumber === null ? null : modIds.get(l.moduleNumber) ?? null });
+        c.questions.set(id, l.activities.map((q, j) => ({ id: `${id}q${j + 1}`, prompt: q.prompt, kind: q.kind, options: q.options, correct_index: q.correctIndex, data: q.data, hint: q.hint, explanation: q.explanation })));
+      });
     },
     async createCourse(slug, input: CourseInput) {
       const c = C();

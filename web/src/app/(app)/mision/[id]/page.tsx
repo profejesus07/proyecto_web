@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { ExplanationLesson } from "@/components/explanation-lesson";
 import { Quiz, type QuizPowerState } from "@/components/quiz";
 import { BackLink } from "@/components/ui";
 import { guardianBySlug } from "@/content/guardians";
@@ -18,12 +19,30 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
   const { id } = await params;
   const viewer = await requirePlayer(`/mision/${id}`);
   const play = await getRepo().getMissionPlay(id);
-  if (!play || play.questions.length === 0) notFound();
+  if (!play) notFound();
+  const reading = play.mission.lessonKind === "explicacion";
+  if (!reading && play.questions.length === 0) notFound();
 
   const course = await loadCourseView(viewer.id, play.course.slug);
   const view = course?.missions.find((m) => m.id === id);
   if (!course || !view) notFound();
   if (view.state === "bloqueada") redirect(`/portales/${course.slug}`);
+
+  if (reading) {
+    const nextLesson = course.missions.find((m) => m.position === play.mission.position + 1);
+    const segment = segmentOf(course, play.mission.id);
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <BackLink href={`/portales/${course.slug}`}>{course.title}</BackLink>
+        <ExplanationLesson
+          missionId={play.mission.id} title={play.mission.title} intro={play.mission.intro} body={play.mission.body} videoUrl={play.mission.videoUrl}
+          courseTitle={segment?.module ? `${course.title} · ${segment.module.title}` : course.title} courseSlug={course.slug}
+          xpReward={play.mission.xpReward} done={view.state === "completada"} nextMissionId={nextLesson?.id ?? null}
+          subscribe={nextLesson?.lock === "suscripcion" ? { href: `/suscribirse/${course.slug}`, price: formatPrice(course.price) } : null}
+        />
+      </div>
+    );
+  }
 
   const repo = getRepo();
   const [stock, usesToday, open, key, inventory] = await Promise.all([
@@ -105,7 +124,7 @@ export default async function MissionPage({ params }: PageProps<"/mision/[id]">)
         revealed={revealed}
         nextMissionId={next?.id ?? null}
         certificateHref={course.kind === "curso" ? `/constancia/solicitar/${course.slug}` : null}
-        subscribe={next && !course.hasAccess ? { href: `/suscribirse/${course.slug}`, price: formatPrice(course.price) } : null}
+        subscribe={next?.lock === "suscripcion" ? { href: `/suscribirse/${course.slug}`, price: formatPrice(course.price) } : null}
       />
     </div>
   );

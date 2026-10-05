@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { createCourseAction, type EditorState } from "@/app/actions/content";
+import { createCourseAction, importCourseAction, type EditorState } from "@/app/actions/content";
+import { MAX_IMPORT_BYTES } from "@/lib/excel-import";
 import { GRADES, PERIODS } from "@/lib/content";
 import { ACTIVITY_KINDS, ACTIVITY_LABEL, type ActivityKind } from "@/lib/activities";
-import type { CourseKind, EditableQuestion, MissionSummary, Module } from "@/lib/data/types";
+import type { CourseKind, EditableQuestion, LessonKind, MissionSummary, Module } from "@/lib/data/types";
+import { LESSON_KIND_LABEL, MAX_BODY, READING_XP } from "@/lib/lessons";
 
 type FormAction = (prev: EditorState, fd: FormData) => Promise<EditorState>;
 type Quick = () => Promise<EditorState>;
@@ -59,9 +61,41 @@ export function NewCourseForm() {
       </fieldset>
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-0 flex-1"><Field label="Título"><input name="title" required minLength={3} maxLength={80} placeholder="Ej.: Matemáticas 6.° · 2027" className="input" /></Field></div>
+        <Field label="Horas" hint="Curso: menos de 160."><input name="hours" type="number" min={1} max={2000} placeholder="Ej.: 20" className="input !w-28" /></Field>
         <Submit pending="Creando…" className="btn btn-primary">Crear y editar</Submit>
       </div>
       <Notice state={state} />
+    </form>
+  );
+}
+
+/** Cargar un curso o una clase completos desde la plantilla de Excel. */
+export function ImportForm() {
+  const [state, action] = useActionState(importCourseAction, undefined);
+  const [tooBig, setTooBig] = useState(false);
+  return (
+    <form action={action} className="panel space-y-4 p-5">
+      <ol className="list-decimal space-y-1 pl-5 text-sm text-muted">
+        <li><a href="/admin/contenido/plantilla" download className="font-semibold text-cyan hover:underline">Descarga la plantilla de Excel</a>: trae instrucciones y un ejemplo completo.</li>
+        <li>Llena las hojas Curso, Módulos, Lecciones y Actividades (puedes borrar el ejemplo).</li>
+        <li>Súbela aquí. Se crea como borrador para que la revises antes de publicar.</li>
+      </ol>
+      <div className="flex flex-wrap items-end gap-3">
+        <Field label="Archivo de Excel (.xlsx)">
+          <input name="file" type="file" required accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            onChange={(e) => setTooBig((e.target.files?.[0]?.size ?? 0) > MAX_IMPORT_BYTES)}
+            className="input file:mr-3 file:rounded-lg file:border-0 file:bg-cyan/15 file:px-3 file:py-1 file:font-semibold file:text-cyan" />
+        </Field>
+        <Submit pending="Importando…" className="btn btn-primary">Importar</Submit>
+      </div>
+      {tooBig && <p role="alert" className="text-sm text-[#ffb3b3]">El archivo pesa más de 900 KB: quita imágenes o formatos que no hagan falta.</p>}
+      {state?.error && <p role="alert" className="text-sm text-[#ffb3b3]">{state.error}</p>}
+      {state?.errors && (
+        <div role="alert" className="space-y-2 rounded-xl border border-coral/40 bg-coral/10 p-3 text-sm">
+          <p className="font-bold">Corrige esto en el archivo y vuelve a subirlo:</p>
+          <ul className="list-disc space-y-1 pl-5">{state.errors.map((e) => <li key={e}>{e}</li>)}</ul>
+        </div>
+      )}
     </form>
   );
 }
@@ -116,6 +150,7 @@ export function CourseForm({ action, values, guardians, elements }: {
           </Field>
           <Field label="Año lectivo"><input name="schoolYear" type="number" min={2020} max={2100} defaultValue={values.schoolYear ?? ""} className="input" /></Field>
           <Field label="Fin del año lectivo" hint="Hasta ese día dura el acceso anual."><input name="accessUntil" type="date" defaultValue={values.accessUntil ?? ""} className="input" /></Field>
+          <Field label="Intensidad horaria (horas en el año)" hint="Opcional. Hasta 2000."><input name="hours" type="number" min={1} max={2000} defaultValue={values.hours ?? ""} className="input" /></Field>
         </fieldset>
       ) : (
         <fieldset className="grid gap-4 rounded-2xl border border-line p-4 sm:grid-cols-3">
@@ -165,14 +200,28 @@ export function PublishBar({ published, publish, unpublish }: { published: boole
   );
 }
 
-export function MissionForm({ action, kind, mission, submitLabel, modules = [], moduleId = null }: {
+export function MissionForm({ action, kind, mission, submitLabel, modules = [], moduleId = null, defaultLessonKind = "reto" }: {
   action: FormAction; kind: CourseKind; mission?: MissionSummary; submitLabel: string;
   /** Módulos del curso corto (para elegir o cambiar el módulo de la lección). */
   modules?: Pick<Module, "id" | "title">[]; moduleId?: string | null;
+  defaultLessonKind?: LessonKind;
 }) {
   const [state, run] = useActionState(action, undefined);
+  // Estado propio + campo oculto: así el tipo no se desincroniza cuando el formulario se reinicia.
+  const [lessonKind, setLessonKind] = useState<LessonKind>(mission?.lessonKind ?? defaultLessonKind);
+  const reading = lessonKind === "explicacion";
   return (
     <form action={run} className="space-y-3">
+      <input type="hidden" name="lessonKind" value={lessonKind} />
+      <fieldset className="flex flex-wrap gap-2">
+        <legend className="label mb-1">Tipo de lección</legend>
+        {(["explicacion", "reto"] as const).map((k) => (
+          <label key={k} className={`cursor-pointer rounded-full border px-3 py-1.5 text-sm font-semibold ${lessonKind === k ? "border-cyan bg-cyan/10 text-cyan" : "border-line text-muted"}`}>
+            <input type="radio" name="lessonKindPick" value={k} checked={lessonKind === k} onChange={() => setLessonKind(k)} className="sr-only" />
+            {k === "explicacion" ? "📖 " : "⚔️ "}{LESSON_KIND_LABEL[k]}
+          </label>
+        ))}
+      </fieldset>
       <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
         <Field label="Título de la lección"><input name="title" defaultValue={mission?.title ?? ""} required minLength={3} maxLength={120} className="input" /></Field>
         {kind === "curso" && modules.length > 0 && (
@@ -190,15 +239,25 @@ export function MissionForm({ action, kind, mission, submitLabel, modules = [], 
             </select>
           </Field>
         )}
-        <Field label="XP"><input name="xpReward" type="number" min={0} max={1000} defaultValue={mission?.xpReward ?? 50} className="input !w-24" /></Field>
+        <Field label="XP"><input key={lessonKind} name="xpReward" type="number" min={0} max={1000} defaultValue={mission?.xpReward ?? (reading ? READING_XP : 50)} className="input !w-24" /></Field>
       </div>
       <Field label="Introducción (la dice Sora antes de empezar)"><textarea name="intro" defaultValue={mission?.intro ?? ""} maxLength={400} rows={2} className="input" /></Field>
-      <label className="flex items-center gap-2 text-sm">
+      {reading && (
+        <>
+          <Field label="Explicación" hint="Párrafos separados por una línea en blanco. «## » para un subtítulo, «- » para una lista y **así** para negrita.">
+            <textarea name="body" defaultValue={mission?.body ?? ""} maxLength={MAX_BODY} rows={10} required minLength={20} className="input font-[inherit]" />
+          </Field>
+          <Field label="Video (opcional)" hint="Enlace de YouTube o Vimeo.">
+            <input name="videoUrl" type="url" defaultValue={mission?.videoUrl ?? ""} placeholder="https://www.youtube.com/watch?v=…" className="input" />
+          </Field>
+        </>
+      )}
+      {!reading && <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="isBoss" defaultChecked={mission?.isBoss ?? false} className="size-4 accent-[#2ee6d6]" />
         {kind === "curso" && modules.length > 0
           ? "Es la prueba del Guardián del módulo (debe ser la última lección del módulo)"
           : "Es la prueba final contra el Guardián (debe ser la última lección)"}
-      </label>
+      </label>}
       <div className="flex flex-wrap items-center gap-3">
         <Submit pending="Guardando…">{submitLabel}</Submit>
         <Notice state={state} />

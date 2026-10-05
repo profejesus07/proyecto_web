@@ -12,6 +12,7 @@ import { getRepo } from "@/lib/data";
 import { formatPrice } from "@/lib/data/queries";
 import { groupByModule } from "@/lib/modules";
 import { isAdmin } from "@/lib/roles";
+import { freeUntil } from "@/lib/lessons";
 import type { CourseDetail } from "@/lib/data/types";
 
 async function load(slug: string): Promise<CourseDetail | null> {
@@ -33,12 +34,13 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
   const [c, viewer] = await Promise.all([load(slug), getViewer()]);
   if (!c) notFound();
   const g = guardianBySlug(c.guardian);
+  const free = freeUntil(c.missions);
   const color = ELEMENT_COLOR[c.element] ?? "#8a5cff";
   const storyGuardians = new Set(c.modules.length ? c.modules.map((m) => m.guardian) : [c.guardian]);
   const chapters = CHAPTERS.filter((x) => x.guardian !== null && storyGuardians.has(x.guardian)).length;
   const facts = [
     { icon: "lesson" as const, label: "Lecciones", value: String(c.missions.length) },
-    c.kind === "curso" && c.hours ? { icon: "clock" as const, label: "Intensidad", value: `${c.hours} horas` } : null,
+    c.hours ? { icon: "clock" as const, label: "Intensidad", value: c.kind === "clase" ? `${c.hours} horas al año` : `${c.hours} horas` } : null,
     c.kind === "clase" && c.grade ? { icon: "people" as const, label: "Grado", value: c.grade } : null,
     c.isFree ? null : { icon: "play" as const, label: "Primera lección", value: "Gratis" },
     c.modules.length > 1 ? { icon: "seal" as const, label: "Módulos", value: String(c.modules.length) } : null,
@@ -107,7 +109,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                     <li key={m.id} className="flex items-center gap-4 px-5 py-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-[#2ee6d6]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
+                      {m.position <= free && !c.isFree && <span className="rounded-full bg-[#2ee6d6]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
+                      {m.lessonKind === "explicacion" && <span className="rounded-full bg-[#6d3ff2]/10 px-2.5 py-0.5 text-xs font-semibold text-[#6d3ff2]">📖 Explicación</span>}
                       {m.isBoss && <span className="rounded-full bg-[#ffc83d]/25 px-2.5 py-0.5 text-xs font-semibold text-[#7a5200]">Reto del Guardián</span>}
                     </li>
                   ))}

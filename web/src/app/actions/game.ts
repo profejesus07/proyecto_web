@@ -124,6 +124,38 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
   }
 }
 
+export type ReadingOutcome =
+  | { ok: true; result: CompleteResult; newRanks: string[]; chronicles: { id: string; title: string }[] }
+  | { ok: false; error: string };
+
+/** Marca como leída una lección de explicación: cuenta como aprobada y desbloquea la siguiente. */
+export async function completeReadingAction(missionId: string): Promise<ReadingOutcome> {
+  const parsed = submitSchema.safeParse({ missionId });
+  if (!parsed.success) return { ok: false, error: MESSAGES.mision_no_encontrada };
+  const viewer = await getViewer();
+  if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
+  try {
+    const repo = getRepo();
+    const play = await repo.getMissionPlay(parsed.data.missionId);
+    if (!play || play.mission.lessonKind !== "explicacion") return { ok: false, error: MESSAGES.mision_no_encontrada };
+    const detail = await repo.getCourse(play.course.slug);
+    const seg = (detail && segmentOf(detail, play.mission.id)) ?? { guardian: play.course.guardian, position: play.mission.position, total: play.mission.position, courseEnd: true, module: null };
+    const result = await repo.completeReading(viewer.id, play.mission.id);
+    revalidatePath("/gremio");
+    revalidatePath("/portales", "layout");
+    revalidatePath("/perfil");
+    revalidatePath("/cronicas", "layout");
+    return {
+      ok: true,
+      result,
+      newRanks: result.first ? ranksReached(viewer.xp, result.xp).map((r) => r.key) : [],
+      chronicles: result.first ? chaptersUnlockedBy(seg.guardian, seg.position, seg.total).map((c) => ({ id: c.id, title: c.title })) : [],
+    };
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos guardar tu avance. Inténtalo de nuevo.") };
+  }
+}
+
 export type BuyOutcome = { ok: true; coins: number; name: string; quantity?: number } | { ok: false; error: string };
 
 export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
