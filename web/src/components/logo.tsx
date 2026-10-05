@@ -21,7 +21,7 @@ export function Emblem({ size = 32 }: { size?: number }) {
 export function Logo({ href = "/" }: { href?: string; compact?: boolean }) {
   return (
     <Link href={href} className="inline-flex items-center" aria-label="Academia Virtual Umbral, ir al inicio">
-      <Brand name="academia-umbral-horizontal" className="h-12 w-auto sm:h-14" />
+      <Brand name="academia-umbral-horizontal" className="h-14 w-auto sm:h-[4.5rem]" />
     </Link>
   );
 }
