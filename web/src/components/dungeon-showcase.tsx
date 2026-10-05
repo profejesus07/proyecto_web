@@ -10,9 +10,9 @@ import { Sprite, asset } from "@/components/sprite";
  * del escenario (x − 160) / 960.
  */
 const SCENES = [
-  { state: "fuego", name: "Mazmorra de Fuego", hero: "aria", boss: "ignaris", bossName: "Ignaris" },
-  { state: "agua", name: "Mazmorra de Agua", hero: "leo", boss: "mirelle", bossName: "Mirelle" },
-  { state: "sombra", name: "Mazmorra de Sombra", hero: "nuri", boss: "brumalis", bossName: "Brumalis" },
+  { state: "fuego", name: "Mazmorra de Fuego", hero: "aria", boss: "sandrael", bossName: "Sandrael" },
+  { state: "agua", name: "Mazmorra de Agua", hero: "leo", boss: "quimax", bossName: "Quimax" },
+  { state: "sombra", name: "Mazmorra de Sombra", hero: "nuri", boss: "eclipsa", bossName: "Eclipsa" },
 ] as const;
 
 const STEP_MS = 6500;
@@ -50,11 +50,11 @@ export function DungeonShowcase() {
         </div>
       </div>
 
-      <div className="drift absolute -left-4 top-6 hidden rounded-2xl sm:block bg-white px-4 py-3 text-[#17142b] shadow-xl sm:-left-10" style={{ ["--r" as string]: "-4deg" }} aria-hidden="true">
-        <p className="text-xs font-bold uppercase tracking-wider text-[#ff5a36]">Misión superada</p>
+      <div className="drift absolute -left-4 top-6 hidden rounded-2xl sm:block bg-white px-4 py-3 text-[#14123b] shadow-xl sm:-left-10" style={{ ["--r" as string]: "-4deg" }} aria-hidden="true">
+        <p className="text-xs font-bold uppercase tracking-wider text-[#6d3ff2]">Misión superada</p>
         <p className="font-display text-xl font-extrabold">+60 XP ✨</p>
       </div>
-      <div className="drift absolute -top-5 right-2 min-w-44 rounded-2xl bg-[#ffc233] px-4 py-3 text-[#17142b] shadow-xl [animation-delay:1.5s] sm:-right-6" style={{ ["--r" as string]: "3deg" }} aria-hidden="true">
+      <div className="drift absolute -top-5 right-2 min-w-44 rounded-2xl bg-[#ffc83d] px-4 py-3 text-[#14123b] shadow-xl [animation-delay:1.5s] sm:-right-6" style={{ ["--r" as string]: "3deg" }} aria-hidden="true">
         <p className="text-xs font-bold uppercase tracking-wider">Guardián: {current.bossName}</p>
         <p key={current.state} className="font-display text-base font-extrabold leading-tight animate-[fadein_.6s_ease-out]">{current.name}</p>
       </div>

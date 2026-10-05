@@ -13,8 +13,6 @@ import { formatPrice } from "@/lib/data/queries";
 import { groupByModule } from "@/lib/modules";
 import type { CourseDetail } from "@/lib/data/types";
 
-const FACT_TONES = ["bg-[#5b3df5]/10 text-[#5b3df5]", "bg-[#ff5a36]/10 text-[#ff5a36]", "bg-[#0fa98f]/10 text-[#0fa98f]", "bg-[#ffc233]/20 text-[#a86f00]"];
-
 async function load(slug: string): Promise<CourseDetail | null> {
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) return null;
   try {
@@ -58,7 +56,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
                 <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
-                {c.isFree && <span className="rounded-full bg-[#ffc233] px-3 py-1 text-xs font-bold text-[#17142b]">Gratis</span>}
+                {c.isFree && <span className="rounded-full bg-[#ffc83d] px-3 py-1 text-xs font-bold text-[#14123b]">Gratis</span>}
               </div>
               <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
               <p className="text-lg text-white/85">{c.summary}</p>
@@ -82,9 +80,9 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
 
       <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
         <dl className={`relative -mt-10 grid gap-px overflow-hidden rounded-3xl border border-line bg-line shadow-lg sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
-          {facts.map((f, i) => (
+          {facts.map((f) => (
             <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
-              <span className={`grid size-10 place-items-center rounded-xl ${FACT_TONES[i % FACT_TONES.length]}`}><Icon name={f.icon} /></span>
+              <span className={`grid size-10 place-items-center rounded-xl bg-[#6d3ff2]/10 text-[#6d3ff2]`}><Icon name={f.icon} /></span>
               <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="font-display text-lg font-bold">{f.value}</dd></div>
             </div>
           ))}
@@ -106,8 +104,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                     <li key={m.id} className="flex items-center gap-4 px-5 py-4">
                       <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-[#1f8a4c]/10 px-2.5 py-0.5 text-xs font-semibold text-[#1f8a4c]">Gratis</span>}
-                      {m.isBoss && <span className="rounded-full bg-[#e2a019]/15 px-2.5 py-0.5 text-xs font-semibold text-[#8a5a00]">Reto del Guardián</span>}
+                      {m.position === 1 && !c.isFree && <span className="rounded-full bg-[#2ee6d6]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
+                      {m.isBoss && <span className="rounded-full bg-[#ffc83d]/25 px-2.5 py-0.5 text-xs font-semibold text-[#7a5200]">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>

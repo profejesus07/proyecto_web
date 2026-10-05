@@ -42,7 +42,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
       <header className="brand-hero relative isolate overflow-hidden">
         <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
         <div className="mx-auto max-w-6xl space-y-3 px-4 pb-16 pt-12 sm:px-6">
-          <p className="text-sm font-semibold text-[#ffc233]">Programas</p>
+          <p className="text-sm font-semibold text-[#ffc83d]">Programas</p>
           <h1 className="text-5xl font-extrabold sm:text-6xl">Todos los programas</h1>
           <p className="max-w-2xl text-lg text-white/85">La primera lección de cada programa es gratis. Entra, pruébala y decide.</p>
         </div>

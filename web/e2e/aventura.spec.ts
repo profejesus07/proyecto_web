@@ -419,7 +419,11 @@ test("Kael reta en cada misión y lleva el marcador de duelos en el Gremio", asy
 test("el docente elige su Maestro del Gremio y lo ve en su informe", async ({ page, context }) => {
   await context.addCookies([{ name: "umbral-vista", value: "docente", url: "http://localhost:3200" }]);
   await page.goto("/maestro");
-  await page.getByRole("radio", { name: "Maestro Ravi" }).check({ force: true });
+  // En frío, el primer clic puede llegar antes de que la página esté lista: se reintenta hasta que quede marcado.
+  const ravi = page.getByRole("radio", { name: "Maestro Ravi" });
+  await expect(async () => {
+    await ravi.check({ force: true, timeout: 2_000 });
+  }).toPass({ timeout: 15_000 });
   await expect(page.getByText("Maestro Ravi", { exact: true }).first()).toBeVisible();
   await page.reload();
   await expect(page.getByRole("region", { name: "Maestro del Gremio" }).getByText("Maestro Ravi")).toBeVisible();

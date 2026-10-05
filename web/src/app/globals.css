@@ -237,62 +237,63 @@ p { text-wrap: pretty; }
    · .theme-console: la consola de administración, neutra y sobria.
    ============================================================ */
 .theme-site {
+  /* Colores del logotipo: noche #14123b, violeta #8a5cff → turquesa #2ee6d6 y dorado #ffc83d.
+     Violeta = marca y acción; dorado = lo que se resalta; turquesa = detalles sobre fondo oscuro. */
   --bg: #fbfaff;
-  --bg-2: #f3f0ff;
+  --bg-2: #f4f1ff;
   --panel: #ffffff;
-  --panel-2: #f5f3ff;
-  --line: #e6e2f5;
-  --text: #17142b;
-  --muted: #5c5876;
-  --cyan: #5b3df5;   /* marca: índigo-violeta */
-  --violet: #5b3df5;
-  --gold: #ffc233;   /* resaltar */
-  --coral: #ff5a36;  /* acción */
-  --green: #0fa98f;  /* positivo */
-  --ink: #17142b;
-  --brand-deep: #2a1784;
-  color-scheme: light;
-  min-height: 100dvh;
+  --panel-2: #f6f3ff;
+  --line: #e7e3f6;
+  --text: #14123b;
+  --muted: #5a5779;
+  --cyan: #6d3ff2;   /* violeta de marca (texto y botones sobre blanco) */
+  --violet: #6d3ff2;
+  --gold: #ffc83d;
+  --coral: #6d3ff2;
+  --green: #0b9e93;  /* turquesa del logo, oscurecido para leerse sobre blanco */
+  --teal: #2ee6d6;
+  --ink: #14123b;
+  --brand-deep: #14123b;
   background: var(--bg);
   color: var(--text);
 }
-.theme-site ::selection { background: rgb(91 61 245 / 0.2); color: inherit; }
+.theme-site ::selection { background: rgb(109 63 242 / 0.2); color: inherit; }
 .theme-site :focus-visible { outline-color: var(--cyan); }
-.theme-site .panel { background: var(--panel); box-shadow: 0 1px 2px rgb(23 20 43 / 0.05); backdrop-filter: none; }
-.theme-site .panel-glow { box-shadow: 0 0 0 2px rgb(91 61 245 / 0.25); }
-.theme-site .btn-primary { background: var(--cyan); color: #fff; box-shadow: 0 8px 22px -10px rgb(91 61 245 / 0.8); }
-.theme-site .btn-primary:hover:not(:disabled) { background: #4a2de0; transform: translateY(-1px); box-shadow: 0 14px 28px -12px rgb(91 61 245 / 0.9); }
-.theme-site .btn-accent { background: var(--coral); color: #fff; box-shadow: 0 10px 24px -10px rgb(255 90 54 / 0.85); }
-.theme-site .btn-accent:hover:not(:disabled) { background: #f0471f; transform: translateY(-1px); }
+.theme-site .panel { background: var(--panel); box-shadow: 0 1px 2px rgb(20 18 59 / 0.05); backdrop-filter: none; }
+.theme-site .panel-glow { box-shadow: 0 0 0 2px rgb(109 63 242 / 0.25); }
+.theme-site .btn-primary { background: var(--cyan); color: #fff; box-shadow: 0 8px 22px -10px rgb(109 63 242 / 0.8); }
+.theme-site .btn-primary:hover:not(:disabled) { background: #5a2fdc; transform: translateY(-1px); box-shadow: 0 14px 28px -12px rgb(109 63 242 / 0.9); }
+.theme-site .btn-accent { background: var(--gold); color: var(--ink); box-shadow: 0 10px 24px -10px rgb(255 200 61 / 0.9); }
+.theme-site .btn-accent:hover:not(:disabled) { background: #ffd666; transform: translateY(-1px); }
 .theme-site .btn-secondary { background: #fff; border-color: var(--line); color: var(--ink); }
 .theme-site .btn-secondary:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
-.theme-site .btn-ghost:hover:not(:disabled) { background: rgb(91 61 245 / 0.07); }
-.theme-site .btn-light { background: #fff; color: var(--brand-deep); }
+.theme-site .btn-ghost:hover:not(:disabled) { background: rgb(109 63 242 / 0.07); }
+.theme-site .btn-light { background: #fff; color: var(--violet); }
 .theme-site .btn-light:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
 .theme-site .btn-outline-light { border-color: rgb(255 255 255 / 0.5); color: #fff; }
 .theme-site .btn-outline-light:hover:not(:disabled) { background: rgb(255 255 255 / 0.12); }
 .theme-site .input { background: #fff; }
 .theme-site .input::placeholder { color: #9b97b3; }
 .theme-site .input:hover { border-color: #c9c3e6; }
-.theme-site .chip { background: rgb(91 61 245 / 0.06); border-color: rgb(91 61 245 / 0.14); }
-.theme-site .bar { background: rgb(23 20 43 / 0.08); }
+.theme-site .chip { background: rgb(109 63 242 / 0.06); border-color: rgb(109 63 242 / 0.14); }
+.theme-site .bar { background: rgb(20 18 59 / 0.08); }
 .theme-site h1, .theme-site h2 { letter-spacing: -0.035em; }
 .theme-site .eyebrow { color: var(--cyan); }
 /* Fondo de marca: índigo con destellos de color. */
 .theme-site .brand-hero {
   background:
-    radial-gradient(40rem 26rem at 88% 8%, rgb(255 90 54 / 0.45), transparent 60%),
-    radial-gradient(34rem 24rem at 8% 100%, rgb(15 169 143 / 0.45), transparent 60%),
-    radial-gradient(28rem 20rem at 55% 40%, rgb(255 194 51 / 0.18), transparent 65%),
-    linear-gradient(135deg, #22106f 0%, #3d22c9 55%, #5b3df5 100%);
+    radial-gradient(38rem 26rem at 90% 6%, rgb(138 92 255 / 0.55), transparent 62%),
+    radial-gradient(34rem 22rem at 6% 104%, rgb(46 230 214 / 0.28), transparent 60%),
+    radial-gradient(22rem 16rem at 60% 30%, rgb(255 200 61 / 0.10), transparent 65%),
+    linear-gradient(140deg, #14123b 0%, #241c6e 50%, #4b2bc4 100%);
   color: #fff;
 }
-.theme-site .brand-band { background: linear-gradient(120deg, #2a1784 0%, #5b3df5 60%, #7b5cff 100%); color: #fff; }
-.theme-site .warm-band { background: linear-gradient(120deg, #ffc233 0%, #ff8a3d 55%, #ff5a36 100%); color: var(--ink); }
-.theme-site .hl { background: linear-gradient(180deg, transparent 58%, rgb(255 194 51 / 0.9) 58%); padding: 0 0.12em; border-radius: 0.1em; }
+.theme-site .brand-band { background: radial-gradient(30rem 18rem at 100% 0%, rgb(46 230 214 / 0.22), transparent 60%), linear-gradient(120deg, #14123b 0%, #2c2185 60%, #6d3ff2 100%); color: #fff; }
+.theme-site .warm-band { background: radial-gradient(26rem 16rem at 100% 100%, rgb(255 255 255 / 0.35), transparent 60%), linear-gradient(120deg, #ffd666 0%, #ffc83d 100%); color: var(--ink); }
+.theme-site .hl { background: linear-gradient(180deg, transparent 58%, rgb(255 200 61 / 0.85) 58%); padding: 0 0.12em; border-radius: 0.1em; }
 .theme-site .dots { background-image: radial-gradient(rgb(255 255 255 / 0.18) 1px, transparent 1px); background-size: 18px 18px; }
 .lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgb(23 20 43 / 0.45); }
+.lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgb(20 18 59 / 0.45); }
 @keyframes drift { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-8px) rotate(var(--r, 0deg)); } }
 .drift { animation: drift 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .drift { animation: none; } .lift:hover { transform: none; } }
