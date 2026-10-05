@@ -13,7 +13,7 @@ export default async function ConsoleLayout({ children }: LayoutProps<"/">) {
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:px-6">
           <Link href="/admin" className="flex items-center gap-2 font-semibold tracking-tight" aria-label="Academia Virtual Umbral · Consola de administración">
             <Emblem size={26} />
-            <span>UMBRAL</span>
+            <span className="sr-only">UMBRAL</span>
             <span className="rounded-md border border-line px-1.5 py-0.5 text-[0.7rem] font-semibold uppercase tracking-wider text-muted">Consola</span>
           </Link>
           <nav aria-label="Salidas" className="ml-auto flex items-center gap-1 text-sm">

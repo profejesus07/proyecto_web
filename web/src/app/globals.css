@@ -342,3 +342,8 @@ p { text-wrap: pretty; }
   mix-blend-mode: screen;
 }
 @media (prefers-reduced-motion: reduce) { .story-flash { animation: none; opacity: 0; } }
+
+/* Logotipo: dos tintas, se muestra la que corresponde al tema. */
+.brand-claro { display: none; }
+.theme-site .brand-oscuro { display: none; }
+.theme-site .brand-claro { display: inline-block; }
