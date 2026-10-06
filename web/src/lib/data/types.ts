@@ -479,6 +479,8 @@ export interface Repo {
   // Administración (cada función comprueba en la base de datos que quien llama es admin)
   adminUsers(adminId: string, query: string): Promise<AdminUser[]>;
   adminSetRole(adminId: string, userId: string, role: "estudiante" | "familia" | "docente"): Promise<void>;
+  /** Contraseña nueva para un estudiante o una familia (no para docentes ni administradores). */
+  adminSetPassword(adminId: string, userId: string, password: string): Promise<void>;
   adminGrantAccess(adminId: string, userId: string, course: string, expiresAt: string | null): Promise<void>;
   adminRevokeAccess(adminId: string, userId: string, course: string): Promise<void>;
   adminSetPrice(adminId: string, course: string, price: number | null): Promise<void>;
@@ -492,6 +494,8 @@ export interface Repo {
   adminAssignTeacher(adminId: string, classId: string, teacherId: string): Promise<void>;
   /** Crea una cuenta de docente ya confirmada, con una contraseña temporal. */
   createTeacherAccount(email: string, name: string, password: string): Promise<{ id: string }>;
+  /** Cuenta de estudiante creada por el administrador (ya confirmada, sin correo de bienvenida). */
+  createStudentAccount(email: string, name: string, password: string, avatar: AvatarBase): Promise<{ id: string }>;
   // Constancias
   getIssuerSettings(): Promise<IssuerSettings>;
   saveIssuerSettings(input: IssuerSettings): Promise<void>;

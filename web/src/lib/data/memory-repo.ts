@@ -66,7 +66,8 @@ interface State {
   settings: IssuerSettings;
   certificates: Certificate[];
   prices: Map<string, number | null>;
-  extraTeachers: AdminUser[];
+  /** Cuentas creadas desde la consola (docentes y estudiantes cargados). */
+  extraAccounts: AdminUser[];
   familyCode: string | null;
   /** La familia de prueba está vinculada al estudiante de prueba desde esta fecha. */
   familySince: string | null;
@@ -96,7 +97,7 @@ function state(): State {
       settings: { issuerName: null, issuerTitle: null, issuerDoc: null, city: null, signaturePng: null },
       certificates: [],
       prices: new Map([["primer-portal", 20000], ["portal-del-primer-intento", 25000]]),
-      extraTeachers: [],
+      extraAccounts: [],
       familyCode: null,
       familySince: null,
       familyMessages: [],
@@ -343,14 +344,15 @@ export function createMemoryRepo(): Repo {
       });
     },
     async joinClass(studentId, code) {
-      if (studentId !== PREVIEW_USER_ID) throw new Error("solo_estudiantes");
       const s = state();
+      const loaded = s.extraAccounts.some((a) => a.id === studentId && a.role === "estudiante");
+      if (studentId !== PREVIEW_USER_ID && !loaded) throw new Error("solo_estudiantes");
       const norm = code.toUpperCase().replace(/[^A-Z0-9]/g, "");
       const c = s.classes.find((x) => x.code === norm && !x.archived);
       if (!c) throw new Error("codigo_invalido");
       if (!s.members.some((m) => m.classId === c.id && m.studentId === studentId)) s.members.push({ classId: c.id, studentId, joinedAt: new Date().toISOString() });
       const course = c.courseSlug ? C().courses.find((x) => x.slug === c.courseSlug) : undefined;
-      if (course && (!s.access.has(course.slug) || s.viaClass.has(course.slug))) {
+      if (course && studentId === PREVIEW_USER_ID && (!s.access.has(course.slug) || s.viaClass.has(course.slug))) {
         s.access.add(course.slug);
         s.viaClass.set(course.slug, c.id);
       }
@@ -493,7 +495,7 @@ export function createMemoryRepo(): Repo {
           access: [...s.access].map((course) => ({ course, source: "admin", expiresAt: null })) },
         { id: PREVIEW_TEACHER_ID, email: "docente@vista-previa.co", name: TEACHER.displayName, role: "docente", xp: 0, createdAt: "2026-09-30T00:00:00Z", lastSignInAt: null, access: [] },
         { id: PREVIEW_ADMIN_ID, email: "admin@vista-previa.co", name: ADMIN.displayName, role: "admin", xp: 0, createdAt: "2026-09-29T00:00:00Z", lastSignInAt: null, access: [] },
-        ...s.extraTeachers,
+        ...s.extraAccounts,
       ];
       const q = query.trim().toLowerCase();
       return q ? all.filter((u) => u.email.includes(q) || u.name.toLowerCase().includes(q)) : all;
@@ -502,6 +504,11 @@ export function createMemoryRepo(): Repo {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
       if (userId === PREVIEW_USER_ID) state().profile = { ...state().profile, role };
       else throw new Error("no_permitido");
+    },
+    async adminSetPassword(adminId, userId) {
+      if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
+      const s = state();
+      if (userId !== PREVIEW_USER_ID && !s.extraAccounts.some((a) => a.id === userId && a.role === "estudiante")) throw new Error("no_permitido");
     },
     async adminGrantAccess(adminId, userId, course) {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
@@ -548,9 +555,9 @@ export function createMemoryRepo(): Repo {
       if (adminId !== PREVIEW_ADMIN_ID) throw new Error("solo_admin");
       if (userId === PREVIEW_ADMIN_ID) throw new Error("no_a_ti_mismo");
       const s = state();
-      const t = s.extraTeachers.find((u) => u.id === userId);
+      const t = s.extraAccounts.find((u) => u.id === userId);
       if (!t) throw new Error("solo_docentes_de_prueba");
-      s.extraTeachers = s.extraTeachers.filter((u) => u.id !== userId);
+      s.extraAccounts = s.extraAccounts.filter((u) => u.id !== userId);
       s.classes = s.classes.filter((x) => x.teacherId !== userId);
       return { name: t.name, role: t.role };
     },
@@ -578,11 +585,18 @@ export function createMemoryRepo(): Repo {
       if (!c) throw new Error("clase_no_encontrada");
       c.teacherId = teacherId;
     },
+    async createStudentAccount(email, name) {
+      const s = state();
+      if (s.extraAccounts.some((t) => t.email === email) || ["estudiante@vista-previa.co", "docente@vista-previa.co", "admin@vista-previa.co"].includes(email)) throw new Error("already been registered");
+      const id = crypto.randomUUID();
+      s.extraAccounts.push({ id, email, name, role: "estudiante", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
+      return { id };
+    },
     async createTeacherAccount(email, name) {
       const s = state();
-      if (s.extraTeachers.some((t) => t.email === email)) throw new Error("already been registered");
+      if (s.extraAccounts.some((t) => t.email === email)) throw new Error("already been registered");
       const id = crypto.randomUUID();
-      s.extraTeachers.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
+      s.extraAccounts.push({ id, email, name, role: "docente", xp: 0, createdAt: new Date().toISOString(), lastSignInAt: null, access: [] });
       return { id };
     },
     // ===== Constancias =====

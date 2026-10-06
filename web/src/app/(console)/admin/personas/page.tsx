@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AccessChip, CreateTeacherForm, GrantAccess, RoleSelect } from "@/components/admin-client";
+import { AccessChip, CreateTeacherForm, GrantAccess, ResetPassword, RoleSelect } from "@/components/admin-client";
 import { DeleteButton } from "@/components/delete-button";
 import { Icon } from "@/components/icons";
 import { shortDate } from "@/components/workspace/admin-format";
@@ -8,6 +8,7 @@ import { Empty, Kpi, PanelHeader, PanelSection } from "@/components/workspace/ui
 import { requireAdmin } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { ROLE_LABEL, isAccessActive } from "@/lib/roles";
+import { isUsernameAccount, loginLabel } from "@/lib/usernames";
 import type { Role } from "@/lib/data/types";
 
 export const metadata: Metadata = { title: "Personas · Consola" };
@@ -29,7 +30,9 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
 
   return (
     <div className="space-y-8">
-      <PanelHeader title="Personas" description="Cuentas, roles y acceso a los cursos." />
+      <PanelHeader title="Personas" description="Cuentas, roles y acceso a los cursos.">
+        <Link href="/admin/personas/cargar" className="btn btn-primary btn-sm"><Icon name="plus" className="size-4" /> Cargar estudiantes</Link>
+      </PanelHeader>
 
       <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi icon="people" label="Estudiantes" value={count("estudiante")} />
@@ -76,12 +79,13 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
                   <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#eef0f5] text-sm font-bold text-[#3b2f8f]" aria-hidden="true">{u.name.slice(0, 1).toUpperCase()}</span>
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 font-semibold"><span className="truncate">{u.name}</span> <span className={`badge ${ROLE_BADGE[u.role]}`}>{ROLE_LABEL[u.role]}</span></p>
-                    <p className="truncate text-sm text-muted">{u.email}</p>
+                    <p className="truncate text-sm text-muted">{isUsernameAccount(u.email) ? <>Usuario: <span className="font-mono">{loginLabel(u.email)}</span></> : u.email}</p>
                     <p className="text-xs text-muted">Desde {shortDate(u.createdAt)}{u.lastSignInAt ? ` · último ingreso ${shortDate(u.lastSignInAt)}` : ""}{u.role === "estudiante" ? ` · ${u.xp} XP` : ""}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <RoleSelect userId={u.id} role={u.role} name={u.name} />
+                  {(u.role === "estudiante" || u.role === "familia") && <ResetPassword userId={u.id} name={u.name} />}
                   {u.role !== "admin" && u.id !== viewer.id && (
                     <DeleteButton kind="cuenta" id={u.id} name={u.name} consequences={
                       u.role === "docente"

@@ -983,3 +983,52 @@ test("se importa un curso desde Excel y el estudiante empieza por la lección de
   await page.goto(`/portales/${slug}`);
   await expect(page.getByText("Incluido en la suscripción al curso")).toBeVisible(); // el reto del Guardián
 });
+
+test("el administrador carga estudiantes a mano y desde Excel, con usuario y contraseña", async ({ page, context }) => {
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/personas");
+  await page.getByRole("link", { name: "Cargar estudiantes" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Cargar estudiantes" })).toBeVisible();
+
+  // A mano: si una fila tiene un error, no se crea ninguna cuenta.
+  await page.getByLabel("Nombre del estudiante 1").fill("Ana Mora");
+  await page.getByLabel("Usuario o correo del estudiante 1").fill("ana.mora");
+  await page.getByLabel("Contraseña del estudiante 1").fill("corta");
+  await page.getByRole("button", { name: "Crear 1 cuenta" }).click();
+  await expect(page.getByText(/No se creó ninguna cuenta/)).toBeVisible();
+  await expect(page.getByText(/Fila 1:/)).toBeVisible();
+
+  await page.getByLabel("Contraseña del estudiante 1").fill("");
+  await page.getByLabel("Nombre del estudiante 2").fill("Luna Pérez");
+  await page.getByLabel("Usuario o correo del estudiante 2").fill("luna.perez");
+  await page.getByLabel("Contraseña del estudiante 2").fill("Luna2027");
+  await page.getByRole("button", { name: "Crear 2 cuentas" }).click();
+  await expect(page.getByText("✔ 2 cuentas creadas.")).toBeVisible();
+  const results = page.getByRole("region", { name: "Resultado de la carga" });
+  await expect(results.getByRole("row").filter({ hasText: "luna.perez" })).toContainText("Luna2027");
+  // Sin contraseña, la plataforma crea una.
+  await expect(results.getByRole("row").filter({ hasText: "ana.mora" })).toContainText(/[a-z]{4}-\d{4}-[a-z]{4}/);
+
+  // Desde Excel, con la plantilla de la consola.
+  const plantilla = await page.request.get("/admin/personas/plantilla");
+  expect(plantilla.headers()["content-type"]).toContain("spreadsheetml");
+  const { default: writeXlsxFile } = await import("write-excel-file/node");
+  const xlsx = await writeXlsxFile([{ sheet: "Estudiantes", data: [
+    [{ value: "Nombre" }, { value: "Usuario o correo" }, { value: "Contraseña" }],
+    [{ value: "Sara Gómez" }, { value: "sara.gomez" }, { value: "Sara2027x" }],
+  ] }] as never).toBuffer();
+  await page.getByRole("tab", { name: "Subir un Excel" }).click();
+  await page.getByLabel("Archivo de Excel con los estudiantes").setInputFiles({ name: "estudiantes.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: xlsx });
+  await page.getByRole("button", { name: "Cargar estudiantes" }).click();
+  await expect(page.getByText("✔ 1 cuenta creada.")).toBeVisible();
+
+  // Aparecen en Personas con su usuario, y el administrador les puede dar una contraseña nueva.
+  await page.goto("/admin/personas");
+  const luna = page.locator("li", { hasText: "Luna Pérez" });
+  await expect(luna).toContainText("Usuario: luna.perez");
+  await expect(page.locator("li", { hasText: "Sara Gómez" })).toBeVisible();
+  page.once("dialog", (d) => d.accept());
+  await luna.getByRole("button", { name: "Nueva contraseña para Luna Pérez" }).click();
+  await expect(luna.getByText(/Nueva contraseña: [a-z]{4}-\d{4}-[a-z]{4}/)).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
+});

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import {
-  assignTeacherAction, createLinkedClassAction, createTeacherAction, grantAccessAction, revokeAccessAction, setPriceAction, setRoleAction, type AdminFormState,
+  assignTeacherAction, createLinkedClassAction, createTeacherAction, grantAccessAction, resetPasswordAction, revokeAccessAction, setPriceAction, setRoleAction, type AdminFormState,
 } from "@/app/actions/admin";
 
 function Submit({ children, pending, className = "btn btn-primary" }: { children: React.ReactNode; pending: string; className?: string }) {
@@ -196,5 +196,23 @@ export function TeacherSelect({ classId, teacherId, teachers, name }: { classId:
       </select>
       {error && <p role="alert" className="mt-1 text-xs text-err">{error}</p>}
     </div>
+  );
+}
+
+/** Pone una contraseña temporal nueva y la muestra una vez (para cuentas con usuario, que no tienen correo). */
+export function ResetPassword({ userId, name }: { userId: string; name: string }) {
+  const [pending, start] = useTransition();
+  const [result, setResult] = useState<{ password?: string; error?: string } | null>(null);
+  if (result?.password) {
+    return <span role="status" className="inline-flex items-center gap-2 rounded-lg bg-[#e7f6ee] px-2.5 py-1 text-xs text-ok">Nueva contraseña: <strong className="font-mono text-sm text-text">{result.password}</strong></span>;
+  }
+  return (
+    <span className="inline-flex flex-col">
+      <button type="button" className="btn btn-ghost btn-sm" disabled={pending} aria-label={`Nueva contraseña para ${name}`}
+        onClick={() => { if (confirm(`¿Crear una contraseña nueva para ${name}? La actual dejará de funcionar.`)) start(async () => setResult(await resetPasswordAction(userId))); }}>
+        Nueva contraseña
+      </button>
+      {result?.error && <span role="alert" className="text-xs text-err">{result.error}</span>}
+    </span>
   );
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { loginEmail } from "@/lib/usernames";
 
 export const displayName = z
   .string()
@@ -41,7 +42,12 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.string().trim().toLowerCase().pipe(z.email("Escribe un correo válido.")),
+  // Correo o, en las cuentas que crea el administrador, nombre de usuario (ver usernames.ts).
+  email: z.string().trim().toLowerCase().transform((v, ctx) => {
+    const email = loginEmail(v);
+    if (!email) ctx.addIssue({ code: "custom", message: "Escribe tu correo o tu usuario." });
+    return email ?? v;
+  }),
   password: z.string().min(1, "Escribe tu contraseña."),
 });
 

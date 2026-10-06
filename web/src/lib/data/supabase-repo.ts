@@ -470,6 +470,17 @@ export function createSupabaseRepo(): Repo {
       if (error) fail(error, "rol");
     },
 
+    async adminSetPassword(adminId, userId, password) {
+      const { data: rows, error: e1 } = await db.from("profiles").select("id,role,is_admin").in("id", [adminId, userId]);
+      if (e1) fail(e1, "contraseña");
+      const admin = rows?.find((r) => r.id === adminId);
+      const target = rows?.find((r) => r.id === userId);
+      if (!admin?.is_admin) throw new Error("solo_admin");
+      if (!target || target.is_admin || (target.role !== "estudiante" && target.role !== "familia")) throw new Error("no_permitido");
+      const { error } = await db.auth.admin.updateUserById(userId, { password });
+      if (error) fail(error, "contraseña");
+    },
+
     async adminGrantAccess(adminId, userId, course, expiresAt) {
       const { error } = await db.rpc("admin_grant_access", { p_admin: adminId, p_user: userId, p_course: course, p_expires: expiresAt });
       if (error) fail(error, "acceso");
@@ -543,6 +554,15 @@ export function createSupabaseRepo(): Repo {
         email, password, email_confirm: true, app_metadata: { role: "docente" }, user_metadata: { display_name: name },
       });
       if (error) fail(error, "crear docente");
+      return { id: data.user.id };
+    },
+
+    async createStudentAccount(email, name, password, avatar) {
+      // Sin app_metadata.role: la base de datos la crea como estudiante. El consentimiento lo da la institución.
+      const { data, error } = await db.auth.admin.createUser({
+        email, password, email_confirm: true, user_metadata: { display_name: name, role: "estudiante", avatar },
+      });
+      if (error) fail(error, "crear estudiante");
       return { id: data.user.id };
     },
 

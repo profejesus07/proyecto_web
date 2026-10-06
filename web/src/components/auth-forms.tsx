@@ -181,8 +181,8 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
         )}
         <input type="hidden" name="siguiente" value={next ?? ""} />
         <div>
-          <label htmlFor="email" className="label">Correo electrónico</label>
-          <input id="email" name="email" type="email" required autoComplete="email" inputMode="email" className="input" placeholder="tu@correo.com" />
+          <label htmlFor="email" className="label">Correo o usuario</label>
+          <input id="email" name="email" type="text" required autoComplete="username" autoCapitalize="none" spellCheck={false} className="input" placeholder="tu@correo.com o tu usuario" />
         </div>
         <div>
           <div className="flex items-baseline justify-between gap-3">
@@ -229,7 +229,7 @@ export function ForgotPasswordForm() {
       <div>
         <label htmlFor="email" className="label">Correo de tu cuenta</label>
         <input id="email" name="email" type="email" required autoComplete="email" inputMode="email" className="input" placeholder="tu@correo.com" />
-        <p className="hint mt-1.5">Te enviaremos un enlace para crear una contraseña nueva. Si eres menor de edad, puede ser el correo de tu acudiente.</p>
+        <p className="hint mt-1.5">Te enviaremos un enlace para crear una contraseña nueva. Si eres menor de edad, puede ser el correo de tu acudiente. Si entras con un usuario (sin correo), pide una contraseña nueva a tu docente o a la academia.</p>
       </div>
       <Notice state={state} />
       <Submit pending="Enviando…">Enviar enlace</Submit>

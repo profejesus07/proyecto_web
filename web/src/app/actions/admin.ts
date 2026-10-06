@@ -1,11 +1,11 @@
 "use server";
 
-import { randomInt } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { formatPrice } from "@/lib/data/queries";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import type { Profile } from "@/lib/data/types";
+import { tempPassword } from "@/lib/passwords";
 import { isAdmin } from "@/lib/roles";
 import { emailSchema } from "@/lib/validation";
 
@@ -16,7 +16,7 @@ export type AdminFormState = { error?: string; message?: string; password?: stri
 const MESSAGES: Record<string, string> = {
   solo_admin: "Solo el administrador puede hacer esto.",
   rol_invalido: "Ese rol no existe.",
-  no_permitido: "No se puede cambiar el rol del administrador.",
+  no_permitido: "No se puede hacer este cambio en esa cuenta.",
   persona_no_encontrada: "No encontramos a esa persona.",
   curso_no_encontrado: "No encontramos ese curso.",
   precio_invalido: "El precio no es válido.",
@@ -34,14 +34,6 @@ function friendly(e: unknown, fallback: string): string {
 async function admin(): Promise<Profile | null> {
   const viewer = await getViewer();
   return viewer && isAdmin(viewer.role) ? viewer : null;
-}
-
-/** Contraseña temporal legible: cumple las reglas (letras y números) y evita caracteres que se confunden. */
-function tempPassword(): string {
-  const letters = "abcdefghjkmnpqrstuvwxyz";
-  const digits = "23456789";
-  const pick = (set: string, n: number) => Array.from({ length: n }, () => set[randomInt(set.length)]).join("");
-  return `${pick(letters, 4)}-${pick(digits, 4)}-${pick(letters, 4)}`;
 }
 
 export async function createTeacherAction(_prev: AdminFormState, formData: FormData): Promise<AdminFormState> {
@@ -74,6 +66,20 @@ export async function setRoleAction(userId: string, role: string): Promise<{ ok:
   }
   revalidatePath("/admin", "layout");
   return { ok: true };
+}
+
+/** Contraseña temporal nueva para un estudiante o una familia: se muestra una sola vez al administrador. */
+export async function resetPasswordAction(userId: string): Promise<{ ok: boolean; password?: string; error?: string }> {
+  const viewer = await admin();
+  if (!viewer) return { ok: false, error: MESSAGES.solo_admin };
+  if (typeof userId !== "string" || !userId) return { ok: false, error: MESSAGES.persona_no_encontrada };
+  const password = tempPassword();
+  try {
+    await getRepo().adminSetPassword(viewer.id, userId, password);
+  } catch (e) {
+    return { ok: false, error: friendly(e, "No pudimos cambiar la contraseña.") };
+  }
+  return { ok: true, password };
 }
 
 /** months: null = sin vencimiento; -1 = hasta el fin del año lectivo de la clase; 1..36 = meses. */
