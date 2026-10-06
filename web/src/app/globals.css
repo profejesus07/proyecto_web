@@ -343,8 +343,8 @@ p { text-wrap: pretty; }
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
-/* Portada interactiva (hero-stage.tsx): luz que sigue al cursor, cuadrícula que se ilumina,
-   escena con inclinación 3D y reflejo, y un paralaje leve del titular. */
+/* Portada interactiva (hero-stage.tsx): luz que sigue al cursor, cuadrícula que se ilumina
+   y un paralaje leve del titular. La escena animada queda fuera del efecto. */
 .hero-stage { --mx: 50%; --my: 50%; --px: 0; --py: 0; position: relative; isolation: isolate; }
 .hero-glow, .hero-grid { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; }
 .hero-glow { background: radial-gradient(34rem circle at var(--mx) var(--my), rgb(138 92 255 / 0.16), rgb(255 200 61 / 0.05) 35%, transparent 65%); }
@@ -358,21 +358,7 @@ p { text-wrap: pretty; }
 }
 .hero-stage[data-active] .hero-glow, .hero-stage[data-active] .hero-grid { opacity: 1; }
 .hero-parallax { transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px), 0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
-[data-hero-tilt] {
-  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%;
-  position: relative;
-  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
-  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
-  will-change: transform;
-}
-[data-hero-tilt]::after {
-  content: ""; position: absolute; inset: 0; border-radius: 2rem; pointer-events: none; opacity: 0;
-  background: radial-gradient(circle at var(--gx) var(--gy), rgb(255 255 255 / 0.28), transparent 45%);
-  mix-blend-mode: soft-light; transition: opacity 0.5s ease;
-}
-.hero-stage[data-active] [data-hero-tilt]::after { opacity: 1; }
-.hero-stage[data-active] [data-hero-tilt] { filter: drop-shadow(calc(var(--px) * -14px) calc(18px + var(--py) * -8px) 28px rgb(21 16 63 / 0.25)); }
-@media (prefers-reduced-motion: reduce) { .hero-parallax, [data-hero-tilt] { transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { .hero-parallax { transform: none !important; } }
 
 /* Recuadro guía del lector de QR, con una línea que lo recorre. */
 .qr-frame {
@@ -387,6 +373,14 @@ p { text-wrap: pretty; }
 .qr-frame::after { content: ""; position: absolute; left: 8%; right: 8%; top: 10%; height: 2px; background: linear-gradient(90deg, transparent, #b79bff, transparent); animation: qr-scan 2.2s ease-in-out infinite alternate; }
 @keyframes qr-scan { to { top: 88%; } }
 @media (prefers-reduced-motion: reduce) { .qr-frame::after { animation: none; top: 50%; } }
+
+/* Barra de garantías: cada icono se ilumina por turnos, muy despacio. */
+.promise-icon { animation: promise-glow 7.5s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 2.5s); }
+@keyframes promise-glow {
+  0%, 26%, 100% { transform: none; box-shadow: 0 0 0 0 rgb(74 34 201 / 0); background: #f3f1fa; }
+  10% { transform: translateY(-2px) scale(1.06); box-shadow: 0 0 0 5px rgb(74 34 201 / 0.08), 0 6px 14px -8px rgb(74 34 201 / 0.6); background: #ebe5ff; }
+}
+@media (prefers-reduced-motion: reduce) { .promise-icon { animation: none; } }
 
 /* Botón con un destello que cruza al pasar el cursor. */
 .btn-shine { position: relative; overflow: hidden; isolation: isolate; }

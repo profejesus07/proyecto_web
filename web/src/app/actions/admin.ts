@@ -11,7 +11,7 @@ import { emailSchema } from "@/lib/validation";
 
 // Cada acción comprueba aquí que quien llama es el administrador, y la base de datos lo vuelve a comprobar.
 
-export type AdminFormState = { error?: string; message?: string; password?: string; email?: string } | undefined;
+export type AdminFormState = { error?: string; message?: string; password?: string; email?: string; id?: string } | undefined;
 
 const MESSAGES: Record<string, string> = {
   solo_admin: "Solo el administrador puede hacer esto.",
@@ -139,9 +139,11 @@ export async function createLinkedClassAction(_prev: AdminFormState, formData: F
   const teacher = String(formData.get("teacher") ?? "");
   if (name.length < 2 || name.length > 60) return { error: "El nombre del grupo debe tener entre 2 y 60 caracteres." };
   try {
-    const r = await getRepo().adminCreateClass(viewer.id, course, name, teacher);
+    // Sin clase: grupo de seguimiento (el docente supervisa a los estudiantes que le asignes).
+    const r = course ? await getRepo().adminCreateClass(viewer.id, course, name, teacher) : await getRepo().createClass(teacher, name);
     revalidatePath("/admin", "layout");
-    return { message: `Grupo «${name}» creado. Código: ${r.code}` };
+    revalidatePath("/maestro", "layout");
+    return { message: `Grupo «${name}» creado. Código: ${r.code}`, id: r.id };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
     if (msg.includes("curso_no_encontrado")) return { error: "Elige una clase (no un curso corto)." };

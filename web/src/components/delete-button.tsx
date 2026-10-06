@@ -11,7 +11,8 @@ const ACTION = { curso: deleteCourseAction, grupo: deleteClassAction, cuenta: de
  * Botón para eliminar con confirmación fuerte: abre un cuadro que explica qué se pierde
  * y pide escribir ELIMINAR. No se puede deshacer.
  */
-export function DeleteButton({ kind, id, name, consequences }: { kind: Kind; id: string; name: string; consequences: string[] }) {
+/** after: a dónde ir después de eliminar (si la página actual deja de existir); si no, se refresca. */
+export function DeleteButton({ kind, id, name, consequences, after }: { kind: Kind; id: string; name: string; consequences: string[]; after?: string }) {
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -33,7 +34,8 @@ export function DeleteButton({ kind, id, name, consequences }: { kind: Kind; id:
       const r = await ACTION[kind](id, word);
       if (!r.ok) { setError(r.error ?? "No se pudo eliminar."); return; }
       ref.current?.close();
-      router.refresh();
+      if (after) router.push(after);
+      else router.refresh();
     });
   }
 

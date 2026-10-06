@@ -15,7 +15,7 @@ interface Step {
 }
 
 /** Bienvenida de la Maestra Sora: aparece una sola vez, la primera vez que se entra al Gremio. */
-export function SoraWelcome({ name, firstPortal, teacher = false }: { name: string; firstPortal: string | null; teacher?: boolean }) {
+export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: string | null }) {
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const [step, setStep] = useState(0);
@@ -30,9 +30,7 @@ export function SoraWelcome({ name, firstPortal, teacher = false }: { name: stri
       extra: { src: asset.kuro("saludar"), alt: "Kuro te saluda moviendo la cola" },
     },
     { anim: "abrir-portal", title: "Al final, un Guardián", text: "Cada portal lo custodia un Guardián atrapado por la niebla. No se vence con fuerza: se purifica con lo que aprendiste. Así ganas XP, monedas, objetos y subes de rango." },
-    teacher
-      ? { anim: "celebrar", title: "Tu panel de Maestro del Gremio", text: "En «Mi clase» creas grupos con un código. Tus estudiantes se unen desde su perfil y tú ves su avance y las preguntas que más les cuestan. También puedes jugar los portales para conocerlos." }
-      : { anim: "celebrar", title: "¿Listo para empezar?", text: "El Archivista Eon guarda toda esta historia en las Crónicas, y se irá abriendo a medida que avances. Tu primer portal te espera." },
+    { anim: "celebrar", title: "¿Listo para empezar?", text: "El Archivista Eon guarda toda esta historia en las Crónicas, y se irá abriendo a medida que avances. Tu primer portal te espera." },
   ];
   const s = steps[step];
   const last = step === steps.length - 1;
@@ -86,11 +84,7 @@ export function SoraWelcome({ name, firstPortal, teacher = false }: { name: stri
           ) : (
             <>
               <Link href="/cronicas/prologo" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); close("/cronicas/prologo"); }}>📜 Leer el prólogo</Link>
-              {teacher ? (
-                <button type="button" className="btn btn-primary" autoFocus onClick={() => close("/maestro")}>Crear mi primera clase</button>
-              ) : (
-                <button type="button" className="btn btn-primary" autoFocus onClick={() => close(firstPortal ? `/portales/${firstPortal}` : undefined)}>Cruzar mi primer portal</button>
-              )}
+              <button type="button" className="btn btn-primary" autoFocus onClick={() => close(firstPortal ? `/portales/${firstPortal}` : undefined)}>Cruzar mi primer portal</button>
             </>
           )}
         </div>

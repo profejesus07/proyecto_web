@@ -1,19 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import type { ClassAction } from "@/lib/data/types";
-import { isStaff } from "@/lib/roles";
+import { isAdmin } from "@/lib/roles";
 
 export type ClassFormState = { error?: string; message?: string } | undefined;
 
 const MESSAGES: Record<string, string> = {
-  solo_docentes: "Solo las cuentas de docente pueden crear clases.",
+  solo_docentes: "Elige una cuenta de docente.",
+  solo_admin: "Solo el administrador gestiona los grupos.",
   solo_estudiantes: "Solo las cuentas de estudiante pueden unirse a una clase.",
   nombre_invalido: "El nombre de la clase debe tener entre 2 y 60 caracteres.",
-  demasiadas_clases: "Llegaste al máximo de clases.",
+  demasiadas_clases: "Se llegó al máximo de grupos (30 por docente, 10 por estudiante).",
   codigo_invalido: "Ese código no existe o la clase ya no está activa. Revísalo con tu docente.",
   clase_llena: "Esa clase ya está llena. Habla con tu docente.",
   clase_no_encontrada: "No encontramos esa clase.",
@@ -25,35 +25,58 @@ function friendly(e: unknown, fallback: string): string {
   return fallback;
 }
 
-export async function createClassAction(_prev: ClassFormState, formData: FormData): Promise<ClassFormState> {
-  const viewer = await getViewer();
-  if (!viewer) return { error: "Tu sesión terminó. Vuelve a ingresar." };
-  if (!isStaff(viewer.role)) return { error: MESSAGES.solo_docentes };
-  const name = String(formData.get("name") ?? "").trim();
-  if (name.length < 2 || name.length > 60) return { error: MESSAGES.nombre_invalido };
-  let id: string;
-  try {
-    id = (await getRepo().createClass(viewer.id, name)).id;
-  } catch (e) {
-    return { error: friendly(e, "No pudimos crear la clase. Inténtalo de nuevo.") };
-  }
-  revalidatePath("/maestro");
-  redirect(`/maestro/${id}`);
-}
-
+/**
+ * Gestión de un grupo (renombrar, nuevo código, archivar, retirar a un estudiante). Solo el
+ * administrador: los docentes supervisan, no administran los grupos.
+ */
 export async function manageClassAction(classId: string, action: ClassAction, arg?: string): Promise<{ ok: boolean; error?: string }> {
   const viewer = await getViewer();
-  if (!viewer || !isStaff(viewer.role)) return { ok: false, error: MESSAGES.solo_docentes };
+  if (!viewer || !isAdmin(viewer.role)) return { ok: false, error: MESSAGES.solo_admin };
   if (typeof classId !== "string" || !["nuevo_codigo", "renombrar", "archivar", "quitar"].includes(action)) return { ok: false, error: "Acción no válida." };
+  const repo = getRepo();
   try {
-    await getRepo().manageClass(viewer.id, classId, action, typeof arg === "string" ? arg : undefined);
-    // Al retirar a un estudiante, pierde el acceso a la clase que le dio el código del grupo.
-    if (action === "quitar" && typeof arg === "string") await getRepo().revokeClassAccess(arg, classId);
+    const group = (await repo.adminClasses(viewer.id)).find((c) => c.id === classId);
+    if (!group) return { ok: false, error: MESSAGES.clase_no_encontrada };
+    await repo.manageClass(group.teacherId, classId, action, typeof arg === "string" ? arg : undefined);
+    // Al retirar a un estudiante, pierde el acceso a la clase que le dio el grupo.
+    if (action === "quitar" && typeof arg === "string") await repo.revokeClassAccess(arg, classId);
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos guardar el cambio. Inténtalo de nuevo.") };
   }
+  revalidatePath("/admin", "layout");
   revalidatePath("/maestro", "layout");
   return { ok: true };
+}
+
+const ID = /^[A-Za-z0-9-]{1,64}$/;
+
+/**
+ * El administrador asigna estudiantes a un grupo (y así a su docente). Entran igual que con el
+ * código del grupo: si el grupo está ligado a una clase, reciben su acceso anual.
+ */
+export async function assignStudentsAction(classId: string, studentIds: string[]): Promise<{ ok: boolean; added: number; error?: string }> {
+  const viewer = await getViewer();
+  if (!viewer || !isAdmin(viewer.role)) return { ok: false, added: 0, error: MESSAGES.solo_admin };
+  if (typeof classId !== "string" || !Array.isArray(studentIds) || studentIds.length === 0 || studentIds.length > 100 || !studentIds.every((x) => typeof x === "string" && ID.test(x))) {
+    return { ok: false, added: 0, error: "Elige al menos un estudiante." };
+  }
+  const repo = getRepo();
+  const group = (await repo.adminClasses(viewer.id)).find((c) => c.id === classId);
+  if (!group) return { ok: false, added: 0, error: MESSAGES.clase_no_encontrada };
+  if (group.archived) return { ok: false, added: 0, error: "El grupo está archivado: no se pueden asignar estudiantes." };
+  let added = 0;
+  let error: string | undefined;
+  for (const id of new Set(studentIds)) {
+    try {
+      await repo.joinClass(id, group.code);
+      added++;
+    } catch (e) {
+      error = friendly(e, "No pudimos asignar a algunos estudiantes.");
+    }
+  }
+  revalidatePath("/admin", "layout");
+  revalidatePath("/maestro", "layout");
+  return { ok: added > 0, added, error };
 }
 
 export async function joinClassAction(_prev: ClassFormState, formData: FormData): Promise<ClassFormState> {

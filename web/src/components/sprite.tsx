@@ -33,5 +33,6 @@ export const asset = {
   avatarAnim: (base: string, anim: string) => `/assets/avatares/${base}/${base}-${anim}.svg`,
   sora: (anim = "reposo") => `/assets/guias/sora/sora-${anim}.svg`,
   eon: (anim = "reposo") => `/assets/personajes/eon/eon-${anim}.svg`,
+  kael: (anim = "reposo") => `/assets/personajes/kael/kael-${anim}.svg`,
   kuro: (anim = "reposo", stage: "cachorro" | "joven" | "majestuoso" = "cachorro") => `/assets/guias/kuro-${stage}/kuro-${stage}-${anim}.svg`,
 };

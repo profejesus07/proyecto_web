@@ -14,7 +14,6 @@ import { getRepo } from "@/lib/data";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
 import { kuroStage } from "@/lib/game/battle";
-import { isStaff } from "@/lib/roles";
 import { rankForXp, rankProgress } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "El Gremio" };
@@ -113,14 +112,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
         </section>
       )}
 
-      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} teacher={isStaff(viewer.role)} />}
-
-      {isStaff(viewer.role) && (
-        <section aria-label="Maestro del Gremio" className="panel flex flex-wrap items-center justify-between gap-4 !border-gold/40 p-5">
-          <p><strong className="font-display text-lg">🧑‍🏫 Maestro del Gremio.</strong> <span className="text-muted">Crea clases y sigue el avance de tus estudiantes.</span></p>
-          <Link href="/maestro" className="btn btn-primary">Ir a mis clases</Link>
-        </section>
-      )}
+      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} />}
 
       {viewer.role === "familia" && (
         <section aria-label="Guardianes del Hogar" className="panel flex flex-wrap items-center justify-between gap-4 !border-cyan/40 p-5">

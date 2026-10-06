@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/icons";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
-import { DungeonShowcase } from "@/components/dungeon-showcase";
 import { HeroStage } from "@/components/hero-stage";
+import { HeroStory } from "@/components/hero-story";
 import { Sprite, asset } from "@/components/sprite";
 import { loadCatalog } from "@/lib/data/queries";
 
@@ -18,10 +18,10 @@ const PROMISES: { icon: IconName; text: string }[] = [
 
 /** Cómo funciona: tres pasos, cada uno con su personaje. */
 const STEPS: { title: string; text: string; sprite: string; alt: string }[] = [
-  { title: "Elige un curso", text: "Cursos cortos o clases por área.", sprite: asset.sora("saludar"), alt: "Sora, la guía" },
-  { title: "Aprende y practica", text: "Lecciones breves y retos con retroalimentación al instante.", sprite: asset.boss("petrox", "reposo"), alt: "Petrox, un Guardián" },
-  { title: "Obtén tu constancia", text: "Verificable en línea con un código.", sprite: asset.kuro("celebrar", "joven"), alt: "Kuro celebra" },
-];
+  { title: "Elige un curso", text: "Cursos cortos o clases por área.", sprite: asset.sora("abrir-portal"), alt: "Sora traza el portal de una lección" },
+  { title: "Aprende y practica", text: "Lecciones breves y retos con retroalimentación al instante.", sprite: asset.kael("derrota"), alt: "Kael, asombrado por la derrota" },
+  { title: "Obtén tu constancia", text: "Verificable en línea con un código.", sprite: asset.eon("animar"), alt: "Eon te da ánimo" },
+]
 
 export default async function Home() {
   const catalog = await loadCatalog();
@@ -48,7 +48,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="rise relative mx-auto w-full min-w-0 max-w-lg [animation-delay:120ms]">
-            <div data-hero-tilt><DungeonShowcase /></div>
+            <HeroStory />
           </div>
         </div>
       </HeroStage>
@@ -56,9 +56,9 @@ export default async function Home() {
       {/* ===== Lo esencial ===== */}
       <section aria-label="Lo esencial" className="border-b border-line">
         <ul className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:grid-cols-3 sm:px-6">
-          {PROMISES.map((p) => (
+          {PROMISES.map((p, i) => (
             <li key={p.text} className="flex items-center justify-center gap-3 font-medium sm:justify-start">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#f3f1fa] text-[#4a22c9]"><Icon name={p.icon} /></span>
+              <span className="promise-icon grid size-9 shrink-0 place-items-center rounded-lg bg-[#f3f1fa] text-[#4a22c9]" style={{ ["--i" as string]: i }}><Icon name={p.icon} /></span>
               {p.text}
             </li>
           ))}
@@ -92,7 +92,7 @@ export default async function Home() {
             <li key={s.title} className="relative rounded-2xl border border-line bg-white p-6 pt-5">
               <div className="flex items-start justify-between">
                 <span className="serif text-5xl text-[#4a22c9]/20">{i + 1}</span>
-                <Sprite src={s.sprite} alt={s.alt} className="h-28 w-auto" />
+                <Sprite src={s.sprite} alt={s.alt} className="h-36 w-auto" />
               </div>
               <h3 className="mt-2 text-xl">{s.title}</h3>
               <p className="mt-1 text-muted">{s.text}</p>

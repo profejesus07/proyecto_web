@@ -43,7 +43,7 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
           <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name="plus" /></span>
           <div>
             <h2 id="docente-t" className="text-lg">Crear cuenta de docente</h2>
-            <p className="text-sm text-muted">Queda lista para entrar con una contraseña temporal. El docente crea clases y ve el avance de sus estudiantes; no cambia sus datos ni sus notas.</p>
+            <p className="text-sm text-muted">Queda lista para entrar con una contraseña temporal. El docente supervisa a los estudiantes que le asignes en Grupos; no juega ni cambia sus datos o sus notas.</p>
           </div>
         </div>
         <CreateTeacherForm />

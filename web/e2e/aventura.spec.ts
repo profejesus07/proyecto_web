@@ -232,35 +232,49 @@ test("el registro muestra qué le falta a la contraseña", async ({ page }) => {
   expect(await pass.evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(true);
 });
 
-test("el docente crea una clase, el estudiante se une con el código y aparece en el informe", async ({ page, context }) => {
+test("el administrador asigna estudiantes a un docente, que supervisa su avance y no juega", async ({ page, context }) => {
   // Un estudiante no puede entrar al panel del docente.
   await page.goto("/maestro");
   await expect(page).toHaveURL(/\/gremio$/);
 
-  // En la vista previa, esta cookie entra como el docente de prueba.
+  // El administrador crea un grupo de seguimiento para el docente y le asigna al estudiante.
+  const asAdmin = { name: "umbral-vista", value: "admin", url: "http://localhost:3200" };
+  await context.addCookies([asAdmin]);
+  await page.goto("/admin/grupos");
+  await page.getByLabel("Nombre del grupo").fill("6.º B · Ciencias");
+  await page.getByLabel("Docente que lo supervisa").selectOption({ label: "Profe de prueba" });
+  await page.getByRole("button", { name: "Crear grupo" }).click();
+  await page.getByRole("link", { name: "Asignar estudiantes →" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "6.º B · Ciencias" })).toBeVisible();
+  await page.getByLabel("Asignar a Despertado").check();
+  await page.getByRole("button", { name: "Asignar (1)" }).click();
+  await expect(page.getByText("1 estudiante asignado.")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Estudiantes del grupo" }).getByText("Despertado")).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
+
+  // El docente ve el grupo en su panel, con el informe y el detalle de cada estudiante.
   const asTeacher = { name: "umbral-vista", value: "docente", url: "http://localhost:3200" };
   await context.addCookies([asTeacher]);
   await page.goto("/maestro");
-  await expect(page.getByRole("heading", { name: "Tus clases" })).toBeVisible();
-  await page.getByLabel("Nombre de la clase").fill("6.º B · Ciencias");
-  await page.getByRole("button", { name: "Crear clase" }).click();
-  await expect(page.getByRole("heading", { name: "6.º B · Ciencias" })).toBeVisible();
-  const code = (await page.getByLabel(/^Código de la clase/).textContent())!.trim();
-  expect(code).toMatch(/^[A-Z2-9]{6}$/);
-
-  await context.clearCookies({ name: "umbral-vista" });
-  await page.goto("/perfil");
-  await page.getByLabel("Código de la clase").fill(code.toLowerCase());
-  await page.getByRole("button", { name: "Unirme" }).click();
-  await expect(page.getByText("¡Listo! Ya estás en la clase «6.º B · Ciencias».")).toBeVisible();
-
-  await context.addCookies([asTeacher]);
-  await page.goto("/maestro");
+  await expect(page.getByRole("heading", { level: 1, name: "Resumen" })).toBeVisible();
+  await expect(page.getByText("Estudiantes asignados")).toBeVisible();
   await page.getByRole("main").getByRole("link", { name: /6\.º B · Ciencias/ }).click();
   await expect(page.getByRole("rowheader", { name: /Despertado/ })).toBeVisible();
   await expect(page.getByRole("rowheader", { name: /Valentina \(demo\)/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Preguntas que más cuestan" })).toBeVisible();
   await expect(page.getByText("Respuesta correcta:").first()).toBeVisible();
+  // Solo supervisa: no gestiona el grupo.
+  await expect(page.getByRole("button", { name: /^Quitar a/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Nuevo código" })).toHaveCount(0);
+  await page.getByRole("link", { name: "Valentina (demo)" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Valentina (demo)" })).toBeVisible();
+  await expect(page.getByText("Promedio de notas")).toBeVisible();
+
+  // El docente no juega: las páginas del juego lo llevan a su panel.
+  for (const path of ["/gremio", "/portales", "/mision/m1", "/tienda", "/perfil"]) {
+    await page.goto(path);
+    await expect(page, `${path} debe llevar al panel docente`).toHaveURL(/\/maestro$/);
+  }
   await context.clearCookies({ name: "umbral-vista" });
 });
 
@@ -349,7 +363,7 @@ test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita
   await page.goto("/admin/grupos");
   await page.getByRole("combobox", { name: /^Clase/ }).selectOption({ label: "Ciencias 5.° · 2027" });
   await page.getByLabel("Nombre del grupo").fill("5.° A");
-  await page.getByLabel("Docente que lo gestiona").selectOption({ label: "Profe de prueba" });
+  await page.getByLabel("Docente que lo supervisa").selectOption({ label: "Profe de prueba" });
   await page.getByRole("button", { name: "Crear grupo" }).click();
   const msg = await page.getByText(/Grupo «5\.° A» creado\. Código: [A-Z2-9]{6}/).textContent();
   const code = msg!.match(/Código: ([A-Z2-9]{6})/)![1];
@@ -433,20 +447,6 @@ test("Kael reta en cada misión y lleva el marcador de duelos en el Gremio", asy
   await expect(kael.getByText(/Tú \d+ · Kael \d+/)).toBeVisible();
 });
 
-test("el docente elige su Maestro del Gremio y lo ve en su informe", async ({ page, context }) => {
-  await context.addCookies([{ name: "umbral-vista", value: "docente", url: "http://localhost:3200" }]);
-  await page.goto("/maestro");
-  // En frío, el primer clic puede llegar antes de que la página esté lista: se reintenta hasta que quede marcado.
-  const ravi = page.getByRole("radio", { name: "Maestro Ravi" });
-  await expect(async () => {
-    await ravi.check({ force: true, timeout: 2_000 });
-  }).toPass({ timeout: 15_000 });
-  await expect(page.getByText("Maestro Ravi", { exact: true }).first()).toBeVisible();
-  await page.reload();
-  await expect(page.getByRole("region", { name: "Maestro del Gremio" }).getByText("Maestro Ravi")).toBeVisible();
-  await context.clearCookies({ name: "umbral-vista" });
-});
-
 test("el Bestiario registra las criaturas encontradas y deja en sombra a los Guardianes sin portal", async ({ page }) => {
   await page.goto("/cronicas");
   await page.getByRole("link", { name: /Abrir el Bestiario/ }).click();
@@ -464,10 +464,11 @@ test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proye
   await expect(page.getByText("Próximamente")).toHaveCount(0);
   // Sin buscador en la portada.
   await expect(page.getByRole("search")).toHaveCount(0);
-  // La escena de la portada cuenta una historia en cada mazmorra: reto, giro (el aventurero evoluciona) y victoria.
-  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris, el Guardián, ataca/ })).toBeVisible();
-  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Aria evoluciona/ })).toBeVisible({ timeout: 8_000 });
-  await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris queda purificado/ })).toBeVisible({ timeout: 8_000 });
+  // La escena de la portada cuenta una historia: Aria cruza el portal, sube de rango y purifica a Petrox.
+  await expect(page.getByRole("img", { name: /^Capítulo 1 de 9: En el Gremio, Sora invita a Aria/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /^Capítulo 2 de 9: En la Sala de Portales/ })).toBeVisible({ timeout: 8_000 });
+  // El botón de la cabecera lleva a ingresar.
+  await expect(page.locator("header").getByRole("link", { name: "Ingresar" })).toHaveAttribute("href", "/ingresar");
   const destacados = page.getByRole("region", { name: "Cursos destacados" });
   await expect(destacados.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
 
@@ -909,9 +910,9 @@ test("la cuenta de administración no entra al juego: todo la lleva a su consola
     await expect(page, `${path} debe llevar a la consola`).toHaveURL(/\/admin$/);
   }
   await expect(page.getByRole("link", { name: "Ir al Gremio" })).toHaveCount(0);
-  // Los informes de grupo sí se abren, con cabecera de administración (sin monedas ni avatar).
+  // El panel docente lo lleva a sus grupos en la consola (sin monedas ni avatar).
   await page.goto("/maestro");
-  await expect(page).toHaveURL(/\/maestro$/);
+  await expect(page).toHaveURL(/\/admin\/grupos$/);
   await expect(page.getByRole("navigation", { name: "Consola" }).getByRole("link", { name: "Resumen" })).toHaveAttribute("href", "/admin");
   await expect(page.getByLabel(/monedas$/)).toHaveCount(0);
   // En la ficha pública, en lugar de «Ir al programa», puede editarlo.

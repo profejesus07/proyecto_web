@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
@@ -82,7 +83,7 @@ export function RoleSelect({ userId, role, name }: { userId: string; role: strin
       <select id={`rol-${userId}`} defaultValue={role} disabled={pending} className="input !w-auto !py-1.5 text-sm"
         onChange={(e) => {
           const next = e.target.value;
-          if (next === "docente" && !confirm(`¿Dar a ${name} una cuenta de docente? Podrá crear clases y ver el avance de sus estudiantes.`)) { e.target.value = role; return; }
+          if (next === "docente" && !confirm(`¿Dar a ${name} una cuenta de docente? Supervisará el avance de los estudiantes que le asignes y dejará de jugar.`)) { e.target.value = role; return; }
           run(() => setRoleAction(userId, next));
         }}>
         <option value="estudiante">Estudiante</option>
@@ -151,26 +152,34 @@ export function PriceForm({ course, title, price, isFree }: { course: string; ti
   );
 }
 
+/** Crea un grupo: un docente supervisa a sus estudiantes; si se liga a una clase, también les da su acceso anual. */
 export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: string; title: string }[]; teachers: { id: string; name: string }[] }) {
   const [state, action] = useActionState(createLinkedClassAction, undefined);
-  if (!clases.length) return <p className="text-sm text-muted">Primero crea una clase en «Contenido».</p>;
   return (
     <form action={action} className="space-y-3">
-      <div className="grid gap-3 md:grid-cols-[1.4fr_1fr_1fr_auto] md:items-end">
-        <label className="block space-y-1"><span className="label">Clase</span>
-          <select name="course" className="input">{clases.map((c) => <option key={c.slug} value={c.slug}>{c.title}</option>)}</select>
-        </label>
+      <div className="grid gap-3 md:grid-cols-[1fr_1fr_1.3fr_auto] md:items-end">
         <label className="block space-y-1"><span className="label">Nombre del grupo</span>
-          <input name="name" required minLength={2} maxLength={60} placeholder="6.° A" className="input" />
+          <input name="name" required minLength={2} maxLength={60} placeholder="6.° A · Ciencias" className="input" />
         </label>
-        <label className="block space-y-1"><span className="label">Docente que lo gestiona</span>
+        <label className="block space-y-1"><span className="label">Docente que lo supervisa</span>
           <select name="teacher" className="input">{teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
+        </label>
+        <label className="block space-y-1"><span className="label">Clase (opcional)</span>
+          <select name="course" className="input">
+            <option value="">Ninguna: solo seguimiento</option>
+            {clases.map((c) => <option key={c.slug} value={c.slug}>{c.title}</option>)}
+          </select>
         </label>
         <Submit pending="Creando…">Crear grupo</Submit>
       </div>
       <div aria-live="polite">
         {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
-        {state?.message && <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">✔ {state.message}</p>}
+        {state?.message && (
+          <p role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">
+            ✔ {state.message}
+            {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-[#4a22c9] underline underline-offset-4">Asignar estudiantes →</Link>}
+          </p>
+        )}
       </div>
     </form>
   );

@@ -67,6 +67,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
               <div className="flex flex-wrap gap-3 pt-1">
                 {viewer && isAdmin(viewer.role) ? (
                   <Link href={`/admin/contenido/${c.slug}`} className="btn btn-primary btn-lg">Editar en la consola</Link>
+                ) : viewer?.role === "docente" ? (
+                  <Link href="/maestro" className="btn btn-primary btn-lg">Ir a mi panel</Link>
                 ) : viewer ? (
                   <Link href={`/portales/${c.slug}`} className="btn btn-primary btn-lg">Ir al programa</Link>
                 ) : (

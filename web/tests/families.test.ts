@@ -162,10 +162,10 @@ describe("mensajes de la familia", () => {
 });
 
 describe("inicio según el rol", () => {
-  it("la familia entra a «Mi familia», el administrador a su consola y los demás, al Gremio", () => {
+  it("la familia entra a «Mi familia», el docente a su panel, el administrador a su consola y el estudiante al Gremio", () => {
     expect(homePath("familia")).toBe("/familia");
     expect(homePath("estudiante")).toBe("/gremio");
-    expect(homePath("docente")).toBe("/gremio");
+    expect(homePath("docente")).toBe("/maestro");
     expect(homePath("admin")).toBe("/admin");
   });
 });

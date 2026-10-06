@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getViewer } from "@/lib/auth";
+import { getPlayer } from "@/lib/auth";
 import { FREE_FRAME, canWearGear, equippedItems, sanitizeLook } from "@/lib/avatar-look";
 import { chapterById, chaptersUnlockedBy } from "@/content/cronicas";
 import type { ActivityKind, ActivityResponse, Solution } from "@/lib/activities";
@@ -62,7 +62,7 @@ export type AnswerOutcome = ({ ok: true } & AnswerResult) | { ok: false; error: 
 export async function answerQuestionAction(missionId: string, index: number, response: ActivityResponse): Promise<AnswerOutcome> {
   const parsed = answerSchema.safeParse({ missionId, index, response });
   if (!parsed.success) return { ok: false, error: "No pudimos leer tu respuesta." };
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
   try {
     const r = await getRepo().answerActivity(viewer.id, parsed.data.missionId, parsed.data.index, parsed.data.response);
@@ -77,7 +77,7 @@ export async function submitMissionAction(missionId: string): Promise<SubmitOutc
   const parsed = submitSchema.safeParse({ missionId });
   if (!parsed.success) return { ok: false, error: "No encontramos esa misión." };
 
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
 
   try {
@@ -132,7 +132,7 @@ export type ReadingOutcome =
 export async function completeReadingAction(missionId: string): Promise<ReadingOutcome> {
   const parsed = submitSchema.safeParse({ missionId });
   if (!parsed.success) return { ok: false, error: MESSAGES.mision_no_encontrada };
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar para guardar tu avance." };
   try {
     const repo = getRepo();
@@ -160,7 +160,7 @@ export type BuyOutcome = { ok: true; coins: number; name: string; quantity?: num
 
 export async function buyItemAction(itemId: string): Promise<BuyOutcome> {
   const aid = typeof itemId === "string" ? consumableRule(itemId) : undefined;
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const item = typeof itemId === "string" ? getItem(itemId) : undefined;
   const price = item ? priceOf(item) : null;
@@ -216,7 +216,7 @@ export async function activateAidAction(questionId: string, kind: string): Promi
   if (typeof questionId !== "string" || questionId.length < 1 || questionId.length > 64 || !(kind in AIDS)) {
     return { ok: false, error: "No pudimos usar esa ayuda." };
   }
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const rule = AIDS[kind as AidKind];
   try {
@@ -251,7 +251,7 @@ export async function activatePowerAction(missionId: string, index: number, kind
   if (typeof missionId !== "string" || missionId.length > 64 || !Number.isInteger(index) || index < 0 || !(kind in POWERS)) {
     return { ok: false, error: "No pudimos usar ese poder." };
   }
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, error: "Tu sesión terminó. Vuelve a ingresar." };
   const rule = POWERS[kind as PowerKind];
   try {
@@ -267,7 +267,7 @@ export async function activatePowerAction(missionId: string, index: number, kind
 
 /** Guarda el avatar del Vestidor: personaje, colores y atuendo (solo de rangos alcanzados). */
 export async function saveAvatarAction(base: string, rawLook: unknown): Promise<{ ok: boolean }> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer || !(AVATAR_BASES as readonly string[]).includes(base)) return { ok: false };
   const look = sanitizeLook(rawLook);
   if (look.gear && !canWearGear(look.gear, rankForXp(viewer.xp).key)) return { ok: false };
@@ -286,7 +286,7 @@ export type NameState = { ok: boolean; message: string } | null;
 
 /** Cambia el nombre de aventurero (el que ven el docente y el Gremio). */
 export async function updateDisplayNameAction(_prev: NameState, form: FormData): Promise<NameState> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false, message: "Tu sesión terminó. Vuelve a ingresar." };
   const parsed = displayName.safeParse(form.get("displayName"));
   if (!parsed.success) return { ok: false, message: parsed.error.issues[0]?.message ?? "Nombre no válido." };
@@ -297,7 +297,7 @@ export async function updateDisplayNameAction(_prev: NameState, form: FormData):
 
 /** La bienvenida de Sora ya se vio (no vuelve a aparecer sola). */
 export async function markIntroSeenAction(): Promise<{ ok: boolean }> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { ok: false };
   await getRepo().markIntroSeen(viewer.id);
   revalidatePath("/gremio");
@@ -306,7 +306,7 @@ export async function markIntroSeenAction(): Promise<{ ok: boolean }> {
 
 /** Marca un capítulo de las Crónicas como leído (solo si existe). */
 export async function markChapterReadAction(id: string): Promise<{ ok: boolean }> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer || typeof id !== "string" || !chapterById(id)) return { ok: false };
   if (!viewer.chroniclesRead.includes(id)) await getRepo().markChapterRead(viewer.id, id);
   return { ok: true };

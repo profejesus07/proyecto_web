@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getViewer } from "@/lib/auth";
+import { getPlayer, getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { PAYMENT_PROVIDERS, type PaymentProvider } from "@/lib/data/types";
 import { isPreview } from "@/lib/env";
@@ -32,7 +32,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Crea el pago (el valor sale de la base de datos) y lleva al checkout de la pasarela. */
 export async function startPaymentAction(_prev: PayFormState, formData: FormData): Promise<PayFormState> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { error: "Tu sesión terminó. Vuelve a ingresar." };
   const course = String(formData.get("course") ?? "");
   const provider = String(formData.get("provider") ?? "") as PaymentProvider;

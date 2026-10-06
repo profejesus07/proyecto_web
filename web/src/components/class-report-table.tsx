@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Icon } from "@/components/icons";
 
@@ -20,6 +21,8 @@ export interface ReportRow {
   done: number;
   total: number;
   cells: Record<string, ReportCell | null>;
+  /** Página de detalle del estudiante. */
+  href?: string;
   action?: React.ReactNode;
 }
 
@@ -128,7 +131,7 @@ export function ClassReportTable({ columns, rows, passMark, fileName, editable }
                     <span className="flex items-center gap-2.5">
                       {r.avatar}
                       <span className="min-w-0">
-                        <span className="block truncate">{r.name}</span>
+                        {r.href ? <Link href={r.href} className="block truncate hover:text-[#4a22c9] hover:underline">{r.name}</Link> : <span className="block truncate">{r.name}</span>}
                         <span className="flex items-center gap-1.5 text-xs font-normal text-muted">
                           <span className="rounded px-1 text-[0.65rem] font-extrabold text-[#14123b]" style={{ background: r.rankColor }}>{r.rankKey}</span>
                           {r.xp} XP{r.title && <> · «{r.title}»</>}

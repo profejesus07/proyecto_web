@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { createClassAction, joinClassAction, leaveClassAction, manageClassAction, type ClassFormState } from "@/app/actions/classes";
+import { assignStudentsAction, joinClassAction, leaveClassAction, manageClassAction, type ClassFormState } from "@/app/actions/classes";
 
 function Submit({ children, pending }: { children: React.ReactNode; pending: string }) {
   const { pending: busy } = useFormStatus();
@@ -17,21 +17,6 @@ function Notice({ state }: { state: ClassFormState }) {
       {state?.error && <p role="alert" className="mt-2 text-sm font-medium text-err">{state.error}</p>}
       {state?.message && <p role="status" className="mt-2 text-sm font-medium text-green">{state.message}</p>}
     </div>
-  );
-}
-
-export function CreateClassForm() {
-  const [state, action] = useActionState(createClassAction, undefined);
-  return (
-    <form action={action} className="panel space-y-3 p-5">
-      <label htmlFor="class-name" className="label">Nombre de la clase</label>
-      <div className="flex flex-wrap gap-2">
-        <input id="class-name" name="name" required minLength={2} maxLength={60} placeholder="Por ejemplo: 6.º B · Ciencias" className="input min-w-0 flex-1" />
-        <Submit pending="Creando…">Crear clase</Submit>
-      </div>
-      <p className="hint">Recibirás un código de 6 caracteres para compartir con tus estudiantes.</p>
-      <Notice state={state} />
-    </form>
   );
 }
 
@@ -90,7 +75,7 @@ export function ClassActions({ classId, name }: { classId: string; name: string 
             Nuevo código
           </button>
           <button type="button" className="btn btn-ghost btn-sm" disabled={pending}
-            onClick={() => { if (confirm("La clase se archivará: nadie más podrá unirse y dejará de aparecer a tus estudiantes. ¿Archivar?")) run("archivar", undefined, () => router.push("/maestro")); }}>
+            onClick={() => { if (confirm("El grupo se archivará: nadie más podrá unirse y dejará de aparecer a sus estudiantes. ¿Archivar?")) run("archivar", undefined, () => router.push("/admin/grupos")); }}>
             Archivar
           </button>
         </div>
@@ -104,9 +89,9 @@ export function RemoveStudentButton({ classId, studentId, name }: { classId: str
   const router = useRouter();
   const [pending, start] = useTransition();
   return (
-    <button type="button" className="btn btn-ghost btn-sm" disabled={pending} aria-label={`Quitar a ${name} de la clase`}
+    <button type="button" className="btn btn-ghost btn-sm" disabled={pending} aria-label={`Quitar a ${name} del grupo`}
       onClick={() => {
-        if (!confirm(`¿Quitar a ${name} de la clase? Su progreso no se borra.`)) return;
+        if (!confirm(`¿Quitar a ${name} del grupo? Su progreso no se borra.`)) return;
         start(async () => {
           const r = await manageClassAction(classId, "quitar", studentId);
           if (r.ok) router.refresh();
@@ -146,5 +131,50 @@ export function LeaveClassButton({ classId, name }: { classId: string; name: str
       }}>
       Salir
     </button>
+  );
+}
+
+/** El administrador elige estudiantes (con búsqueda) y los asigna al grupo. */
+export function AssignStudents({ classId, students }: { classId: string; students: { id: string; name: string; email: string }[] }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [q, setQ] = useState("");
+  const [chosen, setChosen] = useState<Set<string>>(new Set());
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const norm = (t: string) => t.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+  const shown = students.filter((s) => norm(`${s.name} ${s.email}`).includes(norm(q.trim())));
+  const toggle = (id: string) => setChosen((c) => { const n = new Set(c); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+
+  if (!students.length) return <p className="text-sm text-muted">Todos los estudiantes registrados ya están en este grupo.</p>;
+  return (
+    <div className="space-y-3">
+      <div className="relative">
+        <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
+        <label htmlFor={`buscar-${classId}`} className="sr-only">Buscar estudiantes para asignar</label>
+        <input id={`buscar-${classId}`} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nombre o correo" className="input !pl-9" />
+      </div>
+      <ul className="max-h-72 divide-y divide-line overflow-y-auto rounded-xl border border-line">
+        {shown.length === 0 && <li className="px-4 py-3 text-sm text-muted">Nadie coincide con la búsqueda.</li>}
+        {shown.map((s) => (
+          <li key={s.id}>
+            <label className="flex cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-[#fafafd]">
+              <input type="checkbox" checked={chosen.has(s.id)} onChange={() => toggle(s.id)} className="size-4 accent-[#4a22c9]" aria-label={`Asignar a ${s.name}`} />
+              <span className="min-w-0"><span className="block truncate font-medium">{s.name}</span><span className="block truncate text-xs text-muted">{s.email}</span></span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" className="btn btn-primary btn-sm" disabled={pending || chosen.size === 0}
+          onClick={() => start(async () => {
+            const r = await assignStudentsAction(classId, [...chosen]);
+            setMsg(r.added ? { ok: true, text: `${r.added} ${r.added === 1 ? "estudiante asignado" : "estudiantes asignados"}.${r.error ? ` ${r.error}` : ""}` } : { ok: false, text: r.error ?? "No pudimos asignar." });
+            if (r.added) { setChosen(new Set()); router.refresh(); }
+          })}>
+          <Icon name="plus" className="size-4" /> Asignar {chosen.size > 0 ? `(${chosen.size})` : ""}
+        </button>
+        <p aria-live="polite" className={`text-sm font-medium ${msg?.ok ? "text-ok" : "text-err"}`}>{msg?.text}</p>
+      </div>
+    </div>
   );
 }

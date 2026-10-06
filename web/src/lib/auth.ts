@@ -35,16 +35,22 @@ export async function requireViewer(next?: string): Promise<Profile> {
 }
 
 /**
- * Páginas del juego (Gremio, portales, misiones, tienda, perfil…). La cuenta de administración
- * es solo para administrar: no juega, así que va a su consola.
+ * Páginas del juego (Gremio, portales, misiones, tienda, perfil…). Docentes y administración
+ * no juegan: supervisan desde su panel o su consola, así que van allí.
  */
 export async function requirePlayer(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
-  if (isAdmin(viewer.role)) redirect("/admin");
+  if (isStaff(viewer.role)) redirect(homePath(viewer.role));
   return viewer;
 }
 
-/** Páginas del Maestro del Gremio: docentes y administrador. */
+/** Para las acciones del juego: la persona con sesión, salvo docentes y administración (null). */
+export async function getPlayer(): Promise<Profile | null> {
+  const viewer = await getViewer();
+  return viewer && !isStaff(viewer.role) ? viewer : null;
+}
+
+/** Panel docente (supervisión de estudiantes): docentes y administrador. */
 export async function requireTeacher(next: string): Promise<Profile> {
   const viewer = await requireViewer(next);
   if (!isStaff(viewer.role)) redirect(homePath(viewer.role));

@@ -5,7 +5,11 @@ import { requireTeacher } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { isAdmin } from "@/lib/roles";
 
-/** Panel docente (y los informes de grupo que también abre el administrador): marco claro y profesional. */
+/**
+ * Panel docente: el docente supervisa a los estudiantes que el administrador le asigna (por
+ * grupos). No juega ni administra: ve progreso y estadísticas. El administrador también abre
+ * aquí los informes, con el menú de su consola.
+ */
 export default async function PanelLayout({ children }: LayoutProps<"/">) {
   const viewer = await requireTeacher("/maestro");
   if (isAdmin(viewer.role)) {
@@ -13,12 +17,8 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
   }
   const classes = (await getRepo().listTeacherClasses(viewer.id)).filter((c) => !c.archived);
   const groups: WorkspaceGroup[] = [
-    { links: [{ href: "/maestro", label: "Mis clases", icon: "grid", exact: true }] },
-    ...(classes.length ? [{ title: "Informes", links: classes.map((c) => ({ href: `/maestro/${c.id}`, label: c.name, icon: "chart" as const, meta: String(c.members) })) }] : []),
-    { title: "Gremio", links: [
-      { href: "/gremio", label: "Ir al Gremio", icon: "play" as const },
-      { href: "/perfil", label: "Mi perfil", icon: "user" as const },
-    ] },
+    { links: [{ href: "/maestro", label: "Resumen", icon: "grid", exact: true }] },
+    ...(classes.length ? [{ title: "Mis grupos", links: classes.map((c) => ({ href: `/maestro/${c.id}`, label: c.name, icon: "people" as const, meta: String(c.members) })) }] : []),
   ];
   return <Workspace viewer={viewer} badge="Panel docente" home="/maestro" groups={groups} navLabel="Panel docente">{children}</Workspace>;
 }

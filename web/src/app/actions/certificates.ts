@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getViewer } from "@/lib/auth";
+import { getPlayer, getViewer } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { isAdmin } from "@/lib/roles";
 
@@ -26,7 +26,7 @@ const requestSchema = z.object({
 });
 
 export async function requestCertificateAction(slug: string, _prev: CertState, fd: FormData): Promise<CertState> {
-  const viewer = await getViewer();
+  const viewer = await getPlayer();
   if (!viewer) return { error: "Tu sesión terminó. Vuelve a ingresar." };
   const parsed = requestSchema.safeParse({ name: fd.get("name"), docType: fd.get("docType"), docNumber: fd.get("docNumber"), confirm: fd.get("confirm") });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Revisa tus datos." };

@@ -5,7 +5,7 @@ export const ADMIN_GROUPS: WorkspaceGroup[] = [
   { links: [{ href: "/admin", label: "Resumen", icon: "grid", exact: true }] },
   { title: "Comunidad", links: [
     { href: "/admin/personas", label: "Personas", icon: "people" },
-    { href: "/admin/grupos", label: "Grupos y códigos", icon: "hash" },
+    { href: "/admin/grupos", label: "Grupos y códigos", icon: "hash", match: ["/maestro"] },
   ] },
   { title: "Ventas", links: [
     { href: "/admin/pagos", label: "Pagos", icon: "coins" },
@@ -14,6 +14,5 @@ export const ADMIN_GROUPS: WorkspaceGroup[] = [
   { title: "Académico", links: [
     { href: "/admin/contenido", label: "Contenido", icon: "lesson" },
     { href: "/admin/constancias", label: "Constancias", icon: "seal" },
-    { href: "/maestro", label: "Informes de grupos", icon: "chart" },
   ] },
 ];

@@ -12,6 +12,8 @@ export interface WorkspaceLink {
   meta?: string;
   /** true: activo solo en esa ruta exacta. */
   exact?: boolean;
+  /** Otras rutas que también lo marcan como activo. */
+  match?: string[];
 }
 
 export interface WorkspaceGroup { title?: string; links: WorkspaceLink[] }
@@ -19,7 +21,8 @@ export interface WorkspaceGroup { title?: string; links: WorkspaceLink[] }
 /** Menú lateral del panel (en celular, una fila desplazable). Marca la sección donde está la persona. */
 export function WorkspaceNav({ groups, label }: { groups: WorkspaceGroup[]; label: string }) {
   const path = usePathname();
-  const isActive = (l: WorkspaceLink) => (l.exact ? path === l.href : path === l.href || path.startsWith(`${l.href}/`));
+  const under = (base: string) => path === base || path.startsWith(`${base}/`);
+  const isActive = (l: WorkspaceLink) => (l.exact ? path === l.href : under(l.href) || !!l.match?.some(under));
   return (
     <nav aria-label={label} className="ws-nav flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:gap-5 lg:overflow-visible lg:pb-0">
       {groups.map((g, i) => (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Footer } from "@/components/footer";
 import { logoutAction } from "@/app/actions/auth";
+import { Icon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
 import { GuideFace } from "@/components/guide-face";
@@ -15,18 +16,18 @@ import { SiteNav } from "./site-nav";
 export async function SiteHeader() {
   const viewer = await getViewer();
   const rank = viewer ? rankProgress(viewer.xp).rank : null;
-  // Docentes y familias se ven con su Maestro o Guardián del Hogar.
+  // Las familias se ven con su Guardián del Hogar.
   const adultGuide = viewer ? guideFor(viewer) : null;
 
-  // El administrador no juega: en las pocas páginas compartidas (informes de grupo, constancias,
-  // contraseña) ve una cabecera de administración, sin monedas, avatar ni menú del juego.
-  if (viewer && isAdmin(viewer.role)) {
+  // Docentes y administración no juegan: en las pocas páginas compartidas (constancias, contraseña)
+  // ven una cabecera sencilla, sin monedas, avatar ni menú del juego.
+  if (viewer && isStaff(viewer.role)) {
     return (
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-4 px-4 sm:px-6">
-          <Logo href="/admin" compact />
+          <Logo href={homePath(viewer.role)} compact />
           <nav aria-label="Administración" className="flex items-center gap-2">
-            <Link href="/admin" className="btn btn-secondary btn-sm">← Volver a la consola</Link>
+            <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
             <form action={logoutAction}>
               <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
             </form>
@@ -44,7 +45,7 @@ export async function SiteHeader() {
 
           {viewer ? (
             <>
-              <NavLinks className="hidden md:flex" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />
+              <NavLinks className="hidden md:flex" family={viewer.role === "familia"} />
               <div className="flex items-center gap-1 sm:gap-3">
                 <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
@@ -71,14 +72,14 @@ export async function SiteHeader() {
         </div>
       </header>
       {/* Fuera del <header>: su backdrop-blur haría que «fixed» se anclara a la cabecera y la tapara. */}
-      {viewer && <NavLinks mobile className="md:hidden" teacher={isStaff(viewer.role)} admin={isAdmin(viewer.role)} family={viewer.role === "familia"} />}
+      {viewer && <NavLinks mobile className="md:hidden" family={viewer.role === "familia"} />}
     </>
   );
 }
 
 /** Cabecera del sitio público: no depende de quién mira, así las páginas se sirven estáticas desde la CDN.
- *  Logo, las tres secciones al centro y, separada por una línea fina, la acción principal: crear la cuenta.
- *  En celular, el menú baja a una segunda fila y el botón se acorta. */
+ *  Logo, las tres secciones al centro y, separado por una línea fina, el botón para ingresar.
+ *  En celular, el menú baja a una segunda fila. */
 export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md print:hidden">
@@ -88,9 +89,8 @@ export function PublicHeader() {
         <SiteNav className="hidden md:flex" />
         <div className="flex items-center gap-3">
           <span className="hidden h-8 w-px bg-line lg:block" aria-hidden="true" />
-          <Link href="/registro" className="btn btn-primary btn-shine max-sm:min-h-10 max-sm:px-3.5 max-sm:text-sm">
-            <svg viewBox="0 0 24 24" className="size-4 text-[#ffc83d]" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z" /></svg>
-            <span className="sm:hidden">Crear cuenta</span><span className="hidden sm:inline">Crear cuenta gratis</span>
+          <Link href="/ingresar" className="btn btn-primary btn-shine max-sm:min-h-10 max-sm:px-3.5 max-sm:text-sm">
+            <Icon name="user" className="size-4" /> Ingresar
           </Link>
         </div>
       </div>
