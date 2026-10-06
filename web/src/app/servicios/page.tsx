@@ -70,7 +70,7 @@ export default function ServicesPage() {
           <p className="eyebrow">Contacto</p>
           <h2 id="contacto-t" className="mt-2 text-3xl sm:text-4xl">Cuéntanos qué quieres lograr</h2>
           <p className="mx-auto mt-3 max-w-lg text-white/75">Escríbenos con el nombre de tu institución y lo que necesitas. Te respondemos con una propuesta.</p>
-          <a href={mail("Solicitud de propuesta")} className="btn btn-gold btn-lg mt-8 max-w-full whitespace-normal">Escribir a {SUPPORT_EMAIL}</a>
+          <a href={mail("Solicitud de propuesta")} className="btn btn-primary btn-lg mt-8 max-w-full whitespace-normal">Escribir a {SUPPORT_EMAIL}</a>
         </div>
       </section>
     </SiteShell>
