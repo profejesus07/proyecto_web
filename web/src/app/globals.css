@@ -1,20 +1,46 @@
 @import "tailwindcss";
 
-/* ===== Umbral · sistema de diseño ===== */
+/* ===== UNEX Academy · sistema de diseño =====
+   Marca UNEX: copia literal de docs/marca/tokens.css (repositorio unex-education-web). No cambiar aquí. */
 :root {
-  --bg: #0f0d2e;
-  --bg-2: #15103f;
-  --panel: #1b1745;
-  --panel-2: #2a1f7a;
-  --line: #3a2d8f;
-  --text: #f4f2ff;
-  --muted: #b4afe0;
-  --cyan: #b79bff;
-  --violet: #8a5cff;
-  --gold: #ffc83d;
+  /* Base */
+  --unex-cosmos: #15173F;
+  --unex-polvo: #F5F4FB;
+  --unex-nova: #F8B630;          /* solo estrella y logros; nunca texto sobre fondo claro */
+  /* Plataformas (submarcas) */
+  --unex-aurora: #1FBFA9;        /* Academy */
+  --unex-indigo: #5866F5;        /* Gestión */
+  --unex-nebulosa: #EC4A82;      /* Evaluación */
+  --unex-plasma: #A35CF0;        /* Apps */
+  /* Versiones claras para texto sobre Cosmos */
+  --unex-indigo-claro: #8E98FF;
+  --unex-nebulosa-clara: #F27BA3;
+  --unex-plasma-claro: #C597FF;
+  /* Tonos oscuros para texto y botones sobre fondo claro */
+  --unex-aurora-oscuro: #137365;
+  --unex-indigo-oscuro: #4050F4;
+  --unex-nebulosa-oscuro: #C81553;
+  --unex-plasma-oscuro: #892EEC;
+}
+
+/* Tokens de la interfaz. Conservan sus nombres antiguos; los valores son UNEX en versión oscura
+   (el Gremio y el sitio público). El mapeo y sus contrastes están en CLAUDE.md, «Marca UNEX». */
+:root {
+  --bg: #0D0F2B;           /* Fondo oscuro */
+  --bg-2: #15173F;         /* Cosmos */
+  --panel: #161941;        /* Superficie oscura */
+  --panel-2: #20234F;      /* derivado: Superficie y Líneas al 50 % */
+  --line: #2A2D5C;         /* Líneas: solo decorativa */
+  --line-fuerte: #646AA6;  /* bordes de campos (3,3:1) */
+  --text: #EEEDF9;
+  --muted: #A3A5CB;
+  --cyan: #1FBFA9;         /* acento: Aurora, tono claro sobre Cosmos */
+  --accion: #1FBFA9;       /* Aurora */
+  --violet: #1FBFA9;       /* gráficos (barras, anillos): Aurora base, 7,3:1 sobre panel */
+  --gold: #F8B630;         /* Nova: solo monedas, rangos, recompensas, logros y la estrella del menú activo */
   --coral: #ff6b6b;
   --green: #4ade80;
-  --ink: #14123b;
+  --ink: #15173F;          /* Cosmos: texto sobre Aurora y Nova */
   /* Estados (avisos, pagos, notas): tonos pastel que se leen sobre el fondo oscuro del Gremio. */
   --ok: #b6f5cb;
   --warn: #ffe3a0;
@@ -27,9 +53,14 @@
   --color-panel: var(--panel);
   --color-panel-2: var(--panel-2);
   --color-line: var(--line);
+  --color-line-fuerte: var(--line-fuerte);
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-cyan: var(--cyan);
+  --color-accion: var(--accion);
+  /* Solo en .theme-panel (consola y panel docente). */
+  --color-accion-fuerte: var(--accion-fuerte);
+  --color-accion-suave: var(--accion-suave);
   --color-violet: var(--violet);
   --color-gold: var(--gold);
   --color-coral: var(--coral);
@@ -357,19 +388,24 @@ p { text-wrap: pretty; }
 /* Panel de trabajo (consola de administración y panel docente): claro, neutro y profesional.
    Tipografía sans, tablas legibles, el violeta solo para la acción y el estado activo. */
 .theme-panel {
-  --bg: #f5f6fa;
-  --bg-2: #ffffff;
-  --panel: #ffffff;
-  --panel-2: #f8f8fc;
-  --line: #e4e6ee;
-  --text: #171433;
-  --muted: #62657f;
-  --cyan: #4a22c9;
-  --violet: #6b3bf5;
-  --gold: #a86a00;
+  /* Paleta UNEX en versión clara. */
+  --bg: #F5F4FB;           /* Polvo */
+  --bg-2: #FFFFFF;
+  --panel: #FFFFFF;
+  --panel-2: #FAF9FD;      /* derivado: Polvo y blanco */
+  --line: #DDDBEE;
+  --line-fuerte: #85839F;  /* bordes de campos (3,4:1) */
+  --text: #15173F;         /* Cosmos */
+  --muted: #585A7E;
+  --cyan: #137365;         /* acento: Aurora oscuro (5,2:1 sobre Polvo) */
+  --accion: #137365;
+  --accion-fuerte: #0E5A4F;  /* hover; texto blanco 8,1:1 */
+  --accion-suave: #E3F4F1;   /* fondos; --accion encima 5,0:1 */
+  --violet: #137365;       /* gráficos: Aurora base no llega a 3:1 sobre claro */
+  --gold: #a86a00;         /* ámbar oscuro (Nova nunca va como texto sobre claro) */
   --coral: #c0362c;
   --green: #12804a;
-  --ink: #171433;
+  --ink: #15173F;
   --ok: #0f6b3a;
   --warn: #8a5a00;
   --err: #b42318;
