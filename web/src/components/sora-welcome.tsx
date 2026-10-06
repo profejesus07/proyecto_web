@@ -64,7 +64,7 @@ export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: 
         <div aria-live="polite" data-bubble className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-bold uppercase tracking-wider text-cyan">Maestra Sora · {step + 1} de {steps.length}</p>
-            <SpeakButton key={step} name="Maestra Sora" text={`${s.title} ${s.text}`} auto />
+            <SpeakButton key={step} name="Maestra Sora" text={`${s.title}\n${s.text}`} auto />
           </div>
           <h2 id="sora-title" className="text-2xl leading-tight sm:text-3xl">{s.title}</h2>
           <p className="text-muted sm:text-lg">{s.text}</p>

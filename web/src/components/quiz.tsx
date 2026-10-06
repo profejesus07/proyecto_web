@@ -620,7 +620,7 @@ export function Quiz(p: QuizProps) {
         <div id="feedback" data-bubble tabIndex={-1} role="status" className={`pop space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-gold/50 bg-gold/10"}`}>
           <div className="flex justify-end">
             <SpeakButton name="Kuro" auto key={`${q.id}-${res.correct}`}
-              text={`${res.correct ? CHEERS[idx % CHEERS.length] : "No era esa, pero tranquilo."} ${res.explanation}`} />
+              text={`${res.correct ? CHEERS[idx % CHEERS.length] : "No era esa, pero tranquilo."}\n${res.explanation}`} />
           </div>
           <p className="font-display text-xl font-bold">
             {res.correct

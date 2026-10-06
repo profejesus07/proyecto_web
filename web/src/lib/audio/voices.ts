@@ -7,7 +7,8 @@ import { getSettings } from "./settings";
  *  · se elige la voz en español más natural disponible (las «Natural», «Neural», «Online» o de Google
  *    y Apple de mejor calidad), prefiriendo acentos latinoamericanos;
  *  · cada personaje cambia solo un poco el tono y la velocidad (los extremos suenan a robot);
- *  · el texto se limpia (sin emojis ni símbolos) y se lee frase por frase, con pausas naturales.
+ *  · el texto se limpia (sin emojis ni símbolos) y se lee frase por frase, con pausas como las de una
+ *    persona: más largas tras un título o un párrafo, medianas tras un punto y cortas tras una coma.
  */
 
 export type Gender = "f" | "m";
@@ -99,7 +100,7 @@ export function pickVoice(p: VoiceProfile, list: SpeechSynthesisVoice[] = voices
   return { voice: es[0], matched: false };
 }
 
-/** Limpia el texto para que se lea natural: sin emojis, comillas ni símbolos. */
+/** Limpia el texto para que se lea natural: sin emojis, comillas ni símbolos. Conserva los saltos de línea (pausas largas). */
 export function speakable(text: string): string {
   return text
     .replace(/\p{Extended_Pictographic}|️|‍/gu, "")
@@ -107,27 +108,59 @@ export function speakable(text: string): string {
     .replace(/\b50\/50\b/g, "cincuenta cincuenta")
     .replace(/\bXP\b/g, "puntos de experiencia")
     .replace(/(\d)\s?%/g, "$1 por ciento")
-    .replace(/\s*[·•|→]\s*/g, ", ")
+    .replace(/[^\S\n]*[·•|→][^\S\n]*/g, ", ")
     .replace(/\.{3}|…/g, "… ")
-    .replace(/\s+/g, " ")
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/\s*\n\s*/g, "\n")
     .trim();
 }
 
-/** Parte el texto en frases cortas (la síntesis suena mejor y no se corta en textos largos). */
-export function sentences(text: string): string[] {
-  const out: string[] = [];
-  for (const s of speakable(text).split(/(?<=[.!?¡¿…:;])\s+(?=[\p{Lu}¿¡\d])/u)) {
-    if (s.length <= 200) { if (s.trim()) out.push(s.trim()); continue; }
-    let rest = s;
-    while (rest.length > 200) {
-      const cut = rest.lastIndexOf(",", 200);
-      const at = cut > 60 ? cut + 1 : 200;
-      out.push(rest.slice(0, at).trim());
-      rest = rest.slice(at);
+export interface Phrase { text: string; /** Silencio después de la frase, en milisegundos. */ pause: number }
+
+/** Pausas como las de una persona que lee en voz alta: más largas al cerrar una idea o un título. */
+const PAUSE = { titulo: 750, parrafo: 650, punto: 480, pregunta: 520, dosPuntos: 400, puntoYComa: 340, coma: 220 };
+
+function pauseAfter(phrase: string, endOfLine: boolean): number {
+  const end = phrase.trim().slice(-1);
+  if (endOfLine) return /[.!?…:;,]/.test(end) ? PAUSE.parrafo : PAUSE.titulo; // una línea sin punto final es un título
+  if (end === "?" || end === "!") return PAUSE.pregunta;
+  if (end === "…") return PAUSE.parrafo;
+  if (end === ":") return PAUSE.dosPuntos;
+  if (end === ";") return PAUSE.puntoYComa;
+  if (end === ",") return PAUSE.coma;
+  return PAUSE.punto;
+}
+
+/**
+ * Parte el texto en frases cortas, cada una con su pausa (la síntesis suena mejor, no se corta
+ * en textos largos y no lee todo de corrido). Cada salto de línea (título, párrafo) es una pausa larga.
+ */
+export function phrases(text: string): Phrase[] {
+  const out: Phrase[] = [];
+  const lines = speakable(text).split("\n").filter((l) => l.trim());
+  lines.forEach((line, li) => {
+    const parts: string[] = [];
+    for (const s of line.split(/(?<=[.!?…])\s+(?=[\p{Lu}¿¡\d])|(?<=[:;])\s+/u)) {
+      let rest = s.trim();
+      while (rest.length > 200) {
+        const cut = rest.lastIndexOf(",", 200);
+        const at = cut > 60 ? cut + 1 : 200;
+        parts.push(rest.slice(0, at).trim());
+        rest = rest.slice(at).trim();
+      }
+      if (rest) parts.push(rest);
     }
-    if (rest.trim()) out.push(rest.trim());
-  }
+    parts.forEach((t, i) => {
+      const last = i === parts.length - 1;
+      out.push({ text: t, pause: last && li === lines.length - 1 ? 0 : pauseAfter(t, last) });
+    });
+  });
   return out;
+}
+
+/** Solo el texto de cada frase. */
+export function sentences(text: string): string[] {
+  return phrases(text).map((p) => p.text);
 }
 
 // ----- Reproducción -----
@@ -166,7 +199,7 @@ export function speak(text: string, character: string, id = character): Promise<
   stopSpeaking();
   const my = ++token;
   const p = profileFor(character);
-  const parts = sentences(text);
+  const parts = phrases(text);
   if (!parts.length) return Promise.resolve();
   const synth = window.speechSynthesis;
   const run = () => new Promise<void>((resolve) => {
@@ -178,13 +211,14 @@ export function speak(text: string, character: string, id = character): Promise<
     const next = () => {
       if (my !== token) return resolve();
       if (i >= parts.length) { setSpeaking(null); return resolve(); }
-      const u = new SpeechSynthesisUtterance(parts[i++]);
+      const part = parts[i++];
+      const u = new SpeechSynthesisUtterance(part.text);
       if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = "es-CO";
       u.pitch = pitch;
       // Pequeña variación entre frases: el habla humana no tiene un ritmo fijo.
       u.rate = p.rate * (1 + (((i * 37) % 7) - 3) / 100);
       u.volume = 1;
-      u.onend = () => setTimeout(next, 140);
+      u.onend = () => setTimeout(next, part.pause);
       u.onerror = () => { if (my === token) setSpeaking(null); resolve(); };
       synth.speak(u);
     };

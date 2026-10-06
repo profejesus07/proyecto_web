@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("./music", () => ({ duckMusic: () => {} }));
-const { pickVoice, profileFor, sentences, speakable, voiceGender, voiceScore } = await import("./voices");
+const { phrases, pickVoice, profileFor, sentences, speakable, voiceGender, voiceScore } = await import("./voices");
 
 const v = (name: string, lang: string, localService = true) => ({ name, lang, localService, voiceURI: name, default: false }) as SpeechSynthesisVoice;
 const LIST = [
@@ -62,5 +62,15 @@ describe("voces de los personajes", () => {
     expect(sentences("Hola. ¿Cómo estás? Bien.")).toEqual(["Hola.", "¿Cómo estás?", "Bien."]);
     const long = "Una frase muy larga, ".repeat(20);
     expect(sentences(long).every((s) => s.length <= 200)).toBe(true);
+  });
+
+  it("hace pausa después de un título y entre frases, más larga al cerrar una idea", () => {
+    const p = phrases("Bienvenido al Gremio\nSoy la Maestra Sora. ¿Listo? Vamos, paso a paso: así se aprende.");
+    expect(p.map((x) => x.text)).toEqual(["Bienvenido al Gremio", "Soy la Maestra Sora.", "¿Listo?", "Vamos, paso a paso:", "así se aprende."]);
+    const [titulo, punto, pregunta] = p.map((x) => x.pause);
+    expect(titulo).toBeGreaterThan(punto);
+    expect(punto).toBeGreaterThanOrEqual(400);
+    expect(pregunta).toBeGreaterThanOrEqual(punto);
+    expect(p.at(-1)!.pause).toBe(0);
   });
 });

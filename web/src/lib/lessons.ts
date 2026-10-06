@@ -94,7 +94,7 @@ export function freeUntil(missions: { position: number; lessonKind: LessonKind }
   return retos.length ? Math.min(...retos) : 1;
 }
 
-/** Texto plano (para leerlo en voz alta). */
+/** Texto plano (para leerlo en voz alta): cada título, párrafo y punto de lista en su línea, para hacer pausa. */
 export function plainBody(body: string): string {
-  return parseBody(body).map((b) => (b.type === "ul" || b.type === "ol" ? b.items.join(". ") : b.text)).join(". ").replace(/\*\*/g, "");
+  return parseBody(body).map((b) => (b.type === "ul" || b.type === "ol" ? b.items.join("\n") : b.text)).join("\n").replace(/\*\*/g, "");
 }

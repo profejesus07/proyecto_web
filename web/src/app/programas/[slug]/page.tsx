@@ -111,7 +111,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                   {missions.map((m) => (
                     <li key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
                       <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-cyan/10 text-sm font-semibold text-cyan">{m.position}</span>
-                      <span className="flex-1 font-medium">{m.title}</span>
+                      <span className="min-w-0 grow basis-48 font-medium">{m.title}</span>
                       {m.position <= free && !c.isFree && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-warn">Gratis</span>}
                       {m.lessonKind === "explicacion" && <span className="rounded-md bg-cyan/10 px-2 py-0.5 text-xs font-semibold text-cyan">Explicación</span>}
                       {m.isBoss && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">Reto del Guardián</span>}

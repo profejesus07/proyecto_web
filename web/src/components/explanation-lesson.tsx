@@ -38,7 +38,7 @@ export function ExplanationLesson({ missionId, title, intro, body, videoUrl, cou
       )}
 
       <section className="panel space-y-4 p-6 sm:p-8" aria-label="Contenido de la explicación">
-        <div className="flex justify-end"><SpeakButton name="Archivista Eon" text={plainBody(body)} /></div>
+        <div className="flex justify-end"><SpeakButton name="Archivista Eon" text={`${title}\n${plainBody(body)}`} /></div>
         <div className="space-y-4 text-lg leading-relaxed text-text/90">
           {parseBody(body).map((b, i) => {
             if (b.type === "h") return <h2 key={i} className="pt-2 text-2xl text-gold"><Inline text={b.text} /></h2>;

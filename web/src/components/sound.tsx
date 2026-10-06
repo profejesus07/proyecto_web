@@ -115,11 +115,9 @@ export function SpeakButton({ name, auto = false, text }: { name: string; auto?:
   const speaking = useSpeaking(id);
   const ready = useSyncExternalStore(noop, isSpeechAvailable, () => false);
 
-  const read = () => {
-    const bubble = ref.current?.closest("[data-bubble]");
-    const said = text ?? bubble?.querySelector("[data-say]")?.textContent ?? "";
-    return speak(said, name, id);
-  };
+  // innerText respeta los saltos entre párrafos (la voz hace pausa en ellos); textContent los pegaría.
+  const said = () => text ?? ref.current?.closest("[data-bubble]")?.querySelector<HTMLElement>("[data-say]")?.innerText ?? "";
+  const read = () => speak(said(), name, id);
 
   // Anima el retrato mientras habla.
   useEffect(() => {
@@ -131,8 +129,7 @@ export function SpeakButton({ name, auto = false, text }: { name: string; auto?:
 
   useEffect(() => {
     if (!auto || !ready || !s.voices || !s.autoRead) return;
-    const said = text ?? ref.current?.closest("[data-bubble]")?.querySelector("[data-say]")?.textContent ?? "";
-    const key = `${name}:${said}`;
+    const key = `${name}:${said()}`;
     const active = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive ?? false;
     if (!active || autoplayed.has(key)) return;
     autoplayed.add(key);

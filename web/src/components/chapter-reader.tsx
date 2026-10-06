@@ -46,7 +46,7 @@ export function ChapterReader({
       <div data-bubble className="panel space-y-5 !border-violet/40 p-6 sm:p-8">
         <div className="flex justify-end">
           {/* El Archivista Eon narra cada página con su voz. */}
-          <SpeakButton key={page} name="Archivista Eon" text={pages[page]} auto />
+          <SpeakButton key={page} name="Archivista Eon" text={page === 0 ? `${title}\n${pages[0]}` : pages[page]} auto />
         </div>
         <div ref={textRef} tabIndex={-1} aria-live="polite" className="min-h-28 outline-none">
           <p key={page} className="pop font-display text-xl leading-relaxed sm:text-2xl">{pages[page]}</p>

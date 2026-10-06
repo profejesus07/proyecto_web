@@ -123,7 +123,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       {newest && (
         <section aria-label="Crónicas nuevas" className="panel flex flex-wrap items-center gap-4 !border-violet/40 p-4 sm:p-5">
-          <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet" className="min-w-0 flex-1">
+          <SpeechBubble name="Archivista Eon" src={asset.eon("cronica")} alt="El Archivista Eon con su libro" tone="violet" className="min-w-0 grow basis-72">
             {unread === 1 ? "Se abrió un capítulo nuevo de las Crónicas: " : `Tienes ${unread} capítulos nuevos en las Crónicas. El más reciente: `}
             <strong>«{newest.chapter.title}»</strong>.
           </SpeechBubble>
@@ -133,7 +133,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       {isStudent && (
         <section aria-label="Kael, tu rival" className="panel flex flex-wrap items-center gap-4 !border-coral/40 p-4 sm:p-5">
-          <SpeechBubble name={kael.ally ? "Kael, tu aliado" : "Kael, tu rival"} src={`/assets/personajes/kael/kael-${kaelSays.anim}.svg`} alt="Kael" tone="coral" className="min-w-0 flex-1">
+          <SpeechBubble name={kael.ally ? "Kael, tu aliado" : "Kael, tu rival"} src={`/assets/personajes/kael/kael-${kaelSays.anim}.svg`} alt="Kael" tone="coral" className="min-w-0 grow basis-72">
             {kaelSays.text}
           </SpeechBubble>
           <div className="flex items-center gap-3">

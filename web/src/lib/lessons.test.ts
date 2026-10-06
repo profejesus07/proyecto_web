@@ -24,6 +24,6 @@ describe("parseBody", () => {
   });
   it("marca la negrita y deja el texto plano para la voz", () => {
     expect(inlineParts("Esto es **clave** hoy")).toEqual([{ text: "Esto es ", bold: false }, { text: "clave", bold: true }, { text: " hoy", bold: false }]);
-    expect(plainBody("Hola **mundo**\n- a")).toBe("Hola mundo. a");
+    expect(plainBody("Hola **mundo**\n- a")).toBe("Hola mundo\na");
   });
 });
