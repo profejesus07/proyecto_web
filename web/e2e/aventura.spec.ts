@@ -459,18 +459,14 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
 
 test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proyectos, y los filtros ordenan el catálogo", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Cursos en línea");
-  await expect(page.getByRole("heading", { name: "Elige un curso" })).toBeVisible();
+  // Portada: la bienvenida de Kuro, con el estilo del Gremio.
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bienvenido al Gremio");
+  await expect(page.getByRole("img", { name: "Kuro te da la bienvenida" })).toBeVisible();
   await expect(page.getByText("Próximamente")).toHaveCount(0);
-  // Sin buscador en la portada.
   await expect(page.getByRole("search")).toHaveCount(0);
-  // La escena de la portada cuenta una historia: Aria cruza el portal, sube de rango y purifica a Petrox.
-  await expect(page.getByRole("img", { name: /^Capítulo 1 de 9: En el Gremio, Sora invita a Aria/ })).toBeVisible();
-  await expect(page.getByRole("img", { name: /^Capítulo 2 de 9: En la Sala de Portales/ })).toBeVisible({ timeout: 8_000 });
-  // El botón de la cabecera lleva a ingresar.
   await expect(page.locator("header").getByRole("link", { name: "Ingresar" })).toHaveAttribute("href", "/ingresar");
-  const destacados = page.getByRole("region", { name: "Cursos destacados" });
-  await expect(destacados.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
+  const destacados = page.getByRole("region", { name: "Cursos para empezar" });
+  await expect(destacados.getByRole("link", { name: /El Portal de los Pasos Pequeños/ })).toBeVisible();
 
   // El menú de la cabecera: solo Cursos, Servicios y Proyectos.
   const menu = page.locator("header").getByRole("navigation", { name: "Secciones" }).first();

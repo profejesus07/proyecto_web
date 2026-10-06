@@ -80,9 +80,9 @@ export async function SiteHeader() {
 /** Cabecera del sitio público: no depende de quién mira, así las páginas se sirven estáticas desde la CDN.
  *  Logo, las tres secciones al centro y, separado por una línea fina, el botón para ingresar.
  *  En celular, el menú baja a una segunda fila. */
-export function PublicHeader() {
+export function PublicHeader({ gremio = false }: { gremio?: boolean }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md print:hidden">
+    <header className={`sticky top-0 z-40 border-b backdrop-blur-md print:hidden ${gremio ? "border-line/60 bg-bg/80" : "border-line bg-white/90"}`}>
       <div className="site-header-line" aria-hidden="true" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
         <Logo href="/" size="h-12 sm:h-14 lg:h-16" />
@@ -99,11 +99,14 @@ export function PublicHeader() {
   );
 }
 
-/** Envoltura del sitio público (tema claro y académico), con su cabecera y su pie. */
-export function SiteShell({ children }: { children: React.ReactNode }) {
+/**
+ * Envoltura del sitio público, con su cabecera y su pie. Por defecto, tema claro y académico;
+ * con «gremio», el estilo oscuro del Gremio (el mismo de ingresar y registro).
+ */
+export function SiteShell({ children, gremio = false }: { children: React.ReactNode; gremio?: boolean }) {
   return (
-    <div className="theme-site">
-      <PublicHeader />
+    <div className={gremio ? "theme-gremio" : "theme-site"}>
+      <PublicHeader gremio={gremio} />
       <main id="contenido">{children}</main>
       <Footer />
     </div>
