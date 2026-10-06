@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Footer } from "@/components/footer";
-import { SiteHeader } from "@/components/site-header";
+import { SiteShell } from "@/components/site-header";
 import { CODE_PATTERN, LEGAL_FOOTER, docShort, longDate, maskDoc } from "@/lib/certificates";
 import { getRepo } from "@/lib/data";
 
@@ -11,14 +10,13 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
   const { code } = await params;
   const cert = CODE_PATTERN.test(code) ? await getRepo().getCertificate(code) : null;
   return (
-    <>
-      <SiteHeader />
-      <main id="contenido" className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6">
+    <SiteShell>
+      <div className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6">
         <p className="eyebrow">Verificación de constancia</p>
         {cert ? (
           <section className="mt-4 space-y-5">
             <div className="panel flex items-center gap-4 !border-green/60 p-5">
-              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-green text-2xl text-ink">✓</span>
+              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-green text-2xl text-white">✓</span>
               <div>
                 <h1 className="text-2xl">Constancia auténtica</h1>
                 <p className="text-sm text-muted">Expedida por la Academia Virtual Umbral. Código <strong className="font-mono text-text">{cert.code}</strong> · N.º {String(cert.number).padStart(6, "0")}</p>
@@ -38,7 +36,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
         ) : (
           <section className="mt-4 space-y-4">
             <div className="panel flex items-center gap-4 !border-coral/60 p-5">
-              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-2xl text-ink">✕</span>
+              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-2xl text-white">✕</span>
               <div>
                 <h1 className="text-2xl">No encontramos esa constancia</h1>
                 <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por la Academia Virtual Umbral.</p>
@@ -47,8 +45,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
             <Link href="/verificar" className="btn btn-secondary">Probar con otro código</Link>
           </section>
         )}
-      </main>
-      <Footer />
-    </>
+      </div>
+    </SiteShell>
   );
 }

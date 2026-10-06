@@ -440,36 +440,41 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
-test("la portada explica que es una academia de cursos, busca en el catálogo y lleva a servicios y proyectos", async ({ page }) => {
+test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proyectos, y los filtros ordenan el catálogo", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Cursos en línea");
-  await expect(page.getByText("Elige un curso")).toBeVisible();
-  await expect(page.getByRole("heading", { name: /No solo cursos/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Elige un curso" })).toBeVisible();
   await expect(page.getByText("Próximamente")).toHaveCount(0);
+  // Sin buscador en la portada.
+  await expect(page.getByRole("search")).toHaveCount(0);
   // La escena de la portada cuenta una historia en cada mazmorra: reto, giro (el aventurero evoluciona) y victoria.
   await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris, el Guardián, ataca/ })).toBeVisible();
   await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Aria evoluciona/ })).toBeVisible({ timeout: 8_000 });
   await expect(page.getByRole("img", { name: /^Mazmorra de Fuego: Ignaris queda purificado/ })).toBeVisible({ timeout: 8_000 });
-  const programas = page.getByRole("region", { name: "Cursos y clases" });
-  await expect(programas.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
-  // El buscador lleva al catálogo filtrado.
-  await page.getByLabel("¿Qué quieres aprender?").fill("intento");
-  await page.getByRole("button", { name: "Buscar" }).click();
-  await expect(page).toHaveURL(/\/programas\?q=intento/);
-  await expect(page.getByRole("link", { name: "El Portal del Primer Intento" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toHaveCount(0);
-  await page.goto("/");
+  const destacados = page.getByRole("region", { name: "Cursos destacados" });
+  await expect(destacados.getByRole("link", { name: "El Portal de los Pasos Pequeños" })).toBeVisible();
 
-  // Servicios y proyectos.
-  await page.getByRole("link", { name: "Ver servicios y proyectos" }).click();
+  // El menú de la cabecera: solo Cursos, Servicios y Proyectos.
+  const menu = page.locator("header").getByRole("navigation", { name: "Secciones" }).first();
+  await expect(menu.getByRole("link")).toHaveText(["Cursos", "Servicios", "Proyectos"]);
+  await menu.getByRole("link", { name: "Proyectos" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Proyectos" })).toHaveAttribute("aria-current", "page");
+
+  // Servicios.
+  await menu.getByRole("link", { name: "Servicios" }).click();
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Escribir a profejesus365@gmail\.com/ })).toHaveAttribute("href", /^mailto:/);
 
+  // Los filtros del catálogo.
+  await page.goto("/programas?tipo=clase");
+  await expect(page.getByRole("link", { name: "El Portal del Primer Intento" })).toHaveCount(0);
+
   // Catálogo, preguntas frecuentes y ficha del programa.
   await page.goto("/programas");
-  await expect(page.getByRole("heading", { level: 1, name: "Todos los programas" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
   await page.getByText("¿Cuánto cuesta?").click();
   await expect(page.getByText(/se pagan en línea con Wompi o Mercado Pago/)).toBeVisible();
   await page.getByRole("link", { name: "El Portal del Primer Intento" }).click();

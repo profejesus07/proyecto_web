@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
-import { normAnswer } from "@/lib/activities";
 import { loadCatalog } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
-  title: "Programas",
+  title: "Cursos",
   description: "Cursos cortos y clases de la Academia Virtual Umbral. La primera lección de cada programa es gratis.",
 };
-
 
 const FAQ = [
   { q: "¿Cuánto cuesta?", a: "Crear la cuenta es gratis y la primera lección de cada programa también. Algunos programas son gratis completos; los demás tienen su precio en pesos colombianos y se pagan en línea con Wompi o Mercado Pago (PSE, Nequi, tarjeta y más)." },
@@ -19,76 +17,63 @@ const FAQ = [
 ];
 
 const FILTERS = [["", "Todos"], ["curso", "Cursos cortos"], ["clase", "Clases"], ["gratis", "Gratis"]] as const;
+const GROUPS = [
+  { kind: "curso", title: "Cursos cortos", text: "Con constancia de asistencia al terminar." },
+  { kind: "clase", title: "Clases", text: "Por área y periodos, durante el año lectivo." },
+] as const;
 
 export default async function ProgramsPage({ searchParams }: PageProps<"/programas">) {
   const sp = await searchParams;
-  const q = typeof sp.q === "string" ? sp.q.slice(0, 80).trim() : "";
   const tipo = typeof sp.tipo === "string" && ["curso", "clase", "gratis"].includes(sp.tipo) ? sp.tipo : "";
-  const words = normAnswer(q).split(" ").filter(Boolean);
-  // Búsqueda sencilla: todas las palabras deben aparecer en el título, la descripción o el área.
-  const catalog = (await loadCatalog()).filter((c) => {
-    if (tipo === "gratis" ? !c.isFree : tipo && c.kind !== tipo) return false;
-    const hay = normAnswer(`${c.title} ${c.summary} ${c.area ?? ""}`);
-    return words.every((w) => hay.includes(w));
-  });
-  const href = (t: string) => `/programas?${new URLSearchParams({ ...(q && { q }), ...(t && { tipo: t }) }).toString()}`;
-  const groups = [
-    { kind: "curso", title: "Cursos cortos", text: "Educación informal con constancia de asistencia al terminar." },
-    { kind: "clase", title: "Clases", text: "Por área y periodos, con acceso durante el año lectivo." },
-  ].map((g) => ({ ...g, items: catalog.filter((c) => c.kind === g.kind) })).filter((g) => g.items.length);
+  const catalog = (await loadCatalog()).filter((c) => (tipo === "gratis" ? c.isFree : !tipo || c.kind === tipo));
+  const groups = GROUPS.map((g) => ({ ...g, items: catalog.filter((c) => c.kind === g.kind) })).filter((g) => g.items.length);
 
   return (
     <SiteShell>
-      <header className="brand-hero relative isolate overflow-hidden">
-        <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
-        <div className="mx-auto max-w-6xl space-y-3 px-4 pb-16 pt-12 sm:px-6">
-          <p className="text-sm font-semibold text-[#ffc83d]">Programas</p>
-          <h1 className="text-5xl font-extrabold sm:text-6xl">Todos los programas</h1>
-          <p className="max-w-2xl text-lg text-white/85">La primera lección de cada programa es gratis. Entra, pruébala y decide.</p>
-        </div>
-      </header>
-      <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <div className="relative -mt-7 flex flex-wrap items-center gap-3 rounded-3xl border border-line bg-panel p-3 shadow-lg">
-          <form action="/programas" role="search" className="flex w-full max-w-md items-center gap-2 rounded-full border border-line bg-[var(--bg)] p-1.5 pl-5 focus-within:border-[var(--cyan)]">
-            <label htmlFor="buscar" className="sr-only">Buscar programas</label>
-            <input id="buscar" name="q" defaultValue={q} placeholder="Buscar programas" className="min-w-0 flex-1 bg-transparent py-1.5 outline-none placeholder:text-muted" />
-            {tipo && <input type="hidden" name="tipo" value={tipo} />}
-            <button type="submit" className="btn btn-primary btn-sm">Buscar</button>
-          </form>
-          <nav aria-label="Filtrar" className="flex flex-wrap gap-2 text-sm">
+      <header className="paper border-b border-line">
+        <div className="mx-auto max-w-6xl px-4 pb-10 pt-12 sm:px-6 sm:pt-16">
+          <p className="eyebrow">Catálogo</p>
+          <h1 className="mt-2 text-4xl sm:text-5xl">Cursos</h1>
+          <p className="mt-3 max-w-xl text-lg text-muted">La primera lección de cada curso es gratis.</p>
+          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-[#f4f2fa] p-1 ring-1 ring-line sm:inline-flex sm:w-auto">
             {FILTERS.map(([t, label]) => (
-              <Link key={t} href={href(t)} aria-current={tipo === t ? "page" : undefined}
-                className={`rounded-full border px-3.5 py-1.5 font-medium ${tipo === t ? "border-[var(--cyan)] bg-[var(--cyan)] text-white" : "border-line bg-panel hover:border-[var(--cyan)] hover:text-[var(--cyan)]"}`}>{label}</Link>
+              <Link key={t} href={t ? `/programas?tipo=${t}` : "/programas"} aria-current={tipo === t ? "page" : undefined}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-white text-[#15103f] shadow-sm ring-1 ring-line" : "text-muted hover:text-text"}`}>{label}</Link>
             ))}
           </nav>
         </div>
+      </header>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {groups.length === 0 ? (
-          <p className="mt-12 rounded-2xl border border-line bg-panel p-8 text-center text-muted">
-            {q || tipo ? <>No encontramos programas con esa búsqueda. <Link href="/programas" className="font-semibold text-cyan underline underline-offset-4">Ver todos</Link></> : "Muy pronto publicaremos los primeros programas."}
+          <p className="mt-12 rounded-2xl border border-dashed border-line p-10 text-center text-muted">
+            {tipo ? <>No hay cursos en esta categoría todavía. <Link href="/programas" className="font-semibold text-[#4a22c9] underline underline-offset-4">Ver todos</Link></> : "Muy pronto publicaremos los primeros cursos."}
           </p>
         ) : (
           groups.map((g) => (
-            <section key={g.kind} aria-labelledby={`g-${g.kind}`} className="mt-14 space-y-6">
-              <div>
+            <section key={g.kind} aria-labelledby={`g-${g.kind}`} className="mt-14">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
                 <h2 id={`g-${g.kind}`} className="text-2xl">{g.title}</h2>
                 <p className="text-sm text-muted">{g.text}</p>
               </div>
-              <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {g.items.map((c) => <ProgramCard key={c.slug} c={c} />)}
               </ul>
             </section>
           ))
         )}
-        <section aria-labelledby="preguntas-t" className="mx-auto mt-20 max-w-3xl">
-          <h2 id="preguntas-t" className="text-center text-3xl font-extrabold sm:text-4xl">Preguntas frecuentes</h2>
-          <div className="mt-8 divide-y divide-line rounded-3xl border border-line bg-panel">
+        <section aria-labelledby="preguntas-t" className="mx-auto mt-24 grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.6fr]">
+          <div>
+            <p className="eyebrow">Ayuda</p>
+            <h2 id="preguntas-t" className="mt-2 text-3xl">Preguntas frecuentes</h2>
+          </div>
+          <div className="divide-y divide-line border-y border-line">
             {FAQ.map((f) => (
-              <details key={f.q} className="group px-6 py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-full border border-line text-muted transition group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-[#f3f1fa] text-[#4a22c9] transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-muted">{f.a}</p>
+                <p className="mt-3 max-w-2xl text-muted">{f.a}</p>
               </details>
             ))}
           </div>

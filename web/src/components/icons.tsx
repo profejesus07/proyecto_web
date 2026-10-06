@@ -10,6 +10,14 @@ const PATHS = {
   clock: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 7v5l3 2",
   arrow: "M5 12h14M13 6l6 6-6 6",
   check: "M5 12.5 10 17.5 19 7",
+  /** Birrete: cursos. */
+  cap: "M2 9.5 12 5l10 4.5L12 14zM6 11.3V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.7M22 9.5V15",
+  /** Maletín: servicios. */
+  briefcase: "M3 8.5A1.5 1.5 0 0 1 4.5 7h15A1.5 1.5 0 0 1 21 8.5v10a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5zM9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 13h18M11 13v2h2v-2",
+  /** Capas: proyectos. */
+  layers: "M12 3 2.5 8 12 13l9.5-5zM2.5 12.5 12 17.5l9.5-5M2.5 16.5 12 21.5l9.5-5",
+  /** Dispositivos. */
+  device: "M3 5.5A1.5 1.5 0 0 1 4.5 4h15A1.5 1.5 0 0 1 21 5.5V15H3zM1.5 18h21M9 18v1h6v-1",
 } as const;
 
 export type IconName = keyof typeof PATHS;

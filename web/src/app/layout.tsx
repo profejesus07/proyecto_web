@@ -10,6 +10,13 @@ const display = localFont({
   weight: "200 800",
   display: "swap",
 });
+// Serif de los títulos del sitio público (Fraunces, licencia OFL).
+const serif = localFont({
+  src: "./fonts/fraunces.woff2",
+  variable: "--font-serif",
+  weight: "400 700",
+  display: "swap",
+});
 const body = localFont({
   src: "./fonts/dmsans.woff2",
   variable: "--font-body",
@@ -32,7 +39,7 @@ export const viewport: Viewport = { themeColor: "#0f0d2e", colorScheme: "dark", 
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" data-scroll-behavior="smooth" className={`${display.variable} ${body.variable}`}>
+    <html lang="es" data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${body.variable}`}>
       <body>
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
         <PageTransition />

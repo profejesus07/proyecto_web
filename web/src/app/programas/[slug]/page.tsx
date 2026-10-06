@@ -49,69 +49,70 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
 
   return (
     <SiteShell>
-      <header className="brand-hero relative isolate overflow-hidden">
-        <div className="dots absolute inset-0 -z-10 opacity-60" aria-hidden="true" />
-        <div className="mx-auto max-w-6xl px-4 pb-20 pt-8 sm:px-6">
-          <Link href="/programas" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white">
-            <Icon name="arrow" className="size-4 rotate-180" /> Todos los programas
-          </Link>
-          <section className="mt-6 grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
+      <header className="paper border-b border-line">
+        <div className="mx-auto max-w-6xl px-4 pb-14 pt-8 sm:px-6">
+          <nav aria-label="Ruta" className="text-sm text-muted">
+            <Link href="/programas" className="hover:text-text hover:underline hover:underline-offset-4">Cursos</Link>
+            <span className="mx-2" aria-hidden="true">/</span>
+            <span className="text-text">{c.title}</span>
+          </nav>
+          <section className="mt-8 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
-                {c.isFree && <span className="rounded-full bg-[#ffc83d] px-3 py-1 text-xs font-bold text-[#14123b]">Gratis</span>}
+                <span className="chip">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
+                {c.isFree && <span className="rounded-full bg-[#ffc83d] px-3 py-1 text-xs font-bold text-[#15103f]">Gratis</span>}
               </div>
-              <h1 className="text-5xl font-extrabold sm:text-6xl">{c.title}</h1>
-              <p className="text-lg text-white/85">{c.summary}</p>
-              <div className="flex flex-wrap gap-3">
+              <h1 className="text-4xl leading-tight sm:text-5xl">{c.title}</h1>
+              <p className="max-w-2xl text-lg text-muted">{c.summary}</p>
+              <div className="flex flex-wrap gap-3 pt-1">
                 {viewer && isAdmin(viewer.role) ? (
-                  <Link href={`/admin/contenido/${c.slug}`} className="btn btn-accent btn-lg">Editar en la consola</Link>
+                  <Link href={`/admin/contenido/${c.slug}`} className="btn btn-primary btn-lg">Editar en la consola</Link>
                 ) : viewer ? (
-                  <Link href={`/portales/${c.slug}`} className="btn btn-accent btn-lg">Ir al programa</Link>
+                  <Link href={`/portales/${c.slug}`} className="btn btn-primary btn-lg">Ir al programa</Link>
                 ) : (
                   <>
-                    <Link href="/registro" className="btn btn-accent btn-lg">Empieza gratis</Link>
-                    <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-outline-light btn-lg">Ya tengo cuenta</Link>
+                    <Link href="/registro" className="btn btn-primary btn-lg">Empieza gratis</Link>
+                    <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-secondary btn-lg">Ya tengo cuenta</Link>
                   </>
                 )}
               </div>
             </div>
-            <div className="relative h-72 overflow-hidden rounded-[2rem] border-4 border-white/25 shadow-2xl" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}55, transparent 70%), linear-gradient(180deg, #1b1745, #14123b)` }}>
+            <div className="relative h-72 overflow-hidden rounded-3xl border border-line shadow-[0_24px_48px_-30px_rgb(21_16_63/0.5)]" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}55, transparent 70%), linear-gradient(180deg, #2a1f7a, #15103f)` }}>
               <Sprite src={asset.boss(c.guardian)} alt={g ? `${g.name}, el Guardián de este programa` : "El Guardián del programa"} className="absolute bottom-0 left-1/2 h-[92%] w-auto -translate-x-1/2" />
             </div>
           </section>
         </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <dl className={`relative -mt-10 grid gap-px overflow-hidden rounded-3xl border border-line bg-line shadow-lg sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <dl className={`relative -mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_12px_30px_-20px_rgb(21_16_63/0.35)] sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
           {facts.map((f) => (
-            <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
-              <span className={`grid size-10 place-items-center rounded-xl bg-[#6b3bf5]/10 text-[#6b3bf5]`}><Icon name={f.icon} /></span>
-              <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="font-display text-lg font-bold">{f.value}</dd></div>
+            <div key={f.label} className="flex items-center gap-3 bg-white p-5">
+              <span className="grid size-10 place-items-center rounded-xl bg-[#f3f1fa] text-[#4a22c9]"><Icon name={f.icon} /></span>
+              <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="text-lg font-semibold">{f.value}</dd></div>
             </div>
           ))}
         </dl>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
-          <section aria-labelledby="contenido-t" className="space-y-4">
-            <h2 id="contenido-t" className="text-2xl">Contenido</h2>
+        <div className="mt-14 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+          <section aria-labelledby="contenido-t" className="space-y-5">
+            <h2 id="contenido-t" className="text-3xl">Contenido</h2>
             {groupByModule(c.modules, c.missions).map(({ module: mod, missions }, gi) => (
               <div key={mod?.id ?? "todas"} className="space-y-2">
                 {mod && c.modules.length > 0 && (
                   <h3 className="text-lg">
-                    <span className="text-[var(--cyan)]">Módulo {gi + 1}</span>{mod.title.trim().toLowerCase() !== `módulo ${gi + 1}` && <> · {mod.title}</>}
-                    <span className="ml-2 text-sm font-normal text-muted">Guardián: {guardianBySlug(mod.guardian)?.name ?? mod.guardian}</span>
+                    <span className="text-[#4a22c9]">Módulo {gi + 1}</span>{mod.title.trim().toLowerCase() !== `módulo ${gi + 1}` && <> · {mod.title}</>}
+                    <span className="ml-2 font-sans text-sm font-normal text-muted">Guardián: {guardianBySlug(mod.guardian)?.name ?? mod.guardian}</span>
                   </h3>
                 )}
-                <ol className="divide-y divide-line/70 rounded-2xl border border-line bg-panel">
+                <ol className="divide-y divide-line rounded-2xl border border-line bg-white">
                   {missions.map((m) => (
-                    <li key={m.id} className="flex items-center gap-4 px-5 py-4">
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line font-display text-sm font-bold text-muted">{m.position}</span>
+                    <li key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f3f1fa] text-sm font-semibold text-[#4a22c9]">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position <= free && !c.isFree && <span className="rounded-full bg-[#b79bff]/15 px-2.5 py-0.5 text-xs font-semibold text-[#08756d]">Gratis</span>}
-                      {m.lessonKind === "explicacion" && <span className="rounded-full bg-[#6b3bf5]/10 px-2.5 py-0.5 text-xs font-semibold text-[#6b3bf5]">📖 Explicación</span>}
-                      {m.isBoss && <span className="rounded-full bg-[#ffc83d]/25 px-2.5 py-0.5 text-xs font-semibold text-[#7a5200]">Reto del Guardián</span>}
+                      {m.position <= free && !c.isFree && <span className="rounded-md bg-[#ffc83d]/30 px-2 py-0.5 text-xs font-semibold text-[#7a5200]">Gratis</span>}
+                      {m.lessonKind === "explicacion" && <span className="rounded-md bg-[#f3f1fa] px-2 py-0.5 text-xs font-semibold text-[#4a22c9]">Explicación</span>}
+                      {m.isBoss && <span className="rounded-md bg-[#15103f] px-2 py-0.5 text-xs font-semibold text-white">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>
@@ -120,27 +121,24 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
           </section>
 
           <aside className="space-y-5">
-            {(c.modules.length > 1 ? c.modules.map((m) => guardianBySlug(m.guardian)) : [g]).filter((x, i, all) => x && all.indexOf(x) === i).map((gg) => gg && (
-              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line bg-panel p-6">
-                <h2 className="text-xl">{c.modules.length > 1 ? `Guardián: ${gg.name}` : `El reto final: ${gg.name}`}</h2>
-                <p className="mt-2 text-muted">{gg.blurb}</p>
-                <p className="mt-3 text-sm"><span className="text-muted">Representa: </span><strong>{gg.obstacle}</strong></p>
-                <p className="text-sm"><span className="text-muted">Se supera con: </span><strong>{gg.weakness}</strong></p>
-              </section>
-            ))}
-            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line bg-panel p-6">
+            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line bg-white p-6">
               <h2 id="incluye-t" className="text-xl">Incluye</h2>
-              <ul className="mt-3 space-y-2 text-sm">
+              <ul className="mt-4 space-y-2.5 text-sm">
                 {[
                   "Retroalimentación inmediata en cada pregunta",
                   "Diploma del programa al superar el reto final",
                   c.kind === "curso" ? "Constancia de asistencia verificable en línea" : "Acceso durante el año lectivo",
                   chapters ? `${chapters} capítulos de las Crónicas` : null,
-                  "Actividades variadas: selección, verdadero o falso, completar, ordenar y relacionar",
                   c.trainerName ? `Formador: ${c.trainerName}${c.trainerTitle ? `, ${c.trainerTitle}` : ""}` : null,
-                ].filter(Boolean).map((t) => <li key={t} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-cyan" />{t}</li>)}
+                ].filter(Boolean).map((t) => <li key={t} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-[#4a22c9]" />{t}</li>)}
               </ul>
             </section>
+            {(c.modules.length > 1 ? c.modules.map((m) => guardianBySlug(m.guardian)) : [g]).filter((x, i, all) => x && all.indexOf(x) === i).map((gg) => gg && (
+              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line bg-[#f7f6fb] p-6">
+                <h2 className="text-xl">{c.modules.length > 1 ? `Guardián: ${gg.name}` : `El reto final: ${gg.name}`}</h2>
+                <p className="mt-2 text-sm text-muted">{gg.blurb}</p>
+              </section>
+            ))}
             {c.kind === "curso" && <p className="text-xs text-muted">{INFORMAL_NOTICE}</p>}
           </aside>
         </div>

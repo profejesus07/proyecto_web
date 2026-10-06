@@ -10,6 +10,7 @@ import { rankProgress } from "@/lib/game/ranks";
 import { homePath, isAdmin, isStaff } from "@/lib/roles";
 import { NavLinks } from "./nav-links";
 import { SoundControl } from "./sound";
+import { SiteNav } from "./site-nav";
 
 export async function SiteHeader() {
   const viewer = await getViewer();
@@ -75,51 +76,26 @@ export async function SiteHeader() {
   );
 }
 
-/** Cabecera de la portada: no depende de quién mira, así la portada se sirve estática y rápida desde la CDN. */
-const PUBLIC_NAV = [
-  { href: "/programas", label: "Cursos" },
-  { href: "/servicios", label: "Servicios y proyectos" },
-  { href: "/#filosofia", label: "Filosofía" },
-];
-
-export function PublicHeader({ bold = false }: { bold?: boolean }) {
+/** Cabecera del sitio público: no depende de quién mira, así las páginas se sirven estáticas desde la CDN.
+ *  Solo el logo y las tres secciones; en celular, el menú baja a una segunda fila. */
+export function PublicHeader() {
   return (
-    <header className={`sticky top-0 z-40 backdrop-blur-md print:hidden ${bold ? "bg-bg/70" : "border-b border-line/70 bg-bg/85"}`}>
-      <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-4 px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md print:hidden">
+      <div className="site-header-line" aria-hidden="true" />
+      <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr] items-center gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
         <Logo href="/" />
-        <nav aria-label="Academia" className="hidden items-center gap-1 lg:flex">
-          {PUBLIC_NAV.map((l) => (
-            <Link key={l.href} href={l.href} className={`rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-text ${bold ? "text-[0.95rem] font-bold text-text hover:underline underline-offset-8" : "text-sm font-medium text-muted"}`}>{l.label}</Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <nav className="flex items-center gap-2" aria-label="Cuenta">
-            <Link href="/ingresar" className="btn btn-ghost btn-sm hidden sm:inline-flex">Ingresar</Link>
-            <Link href="/registro" className={`btn btn-sm ${bold ? "btn-white" : "btn-primary"}`}>Crear cuenta</Link>
-          </nav>
-          <details className="group relative lg:hidden">
-            <summary className="grid size-9 cursor-pointer list-none place-items-center rounded-lg border border-line text-muted hover:text-text [&::-webkit-details-marker]:hidden" aria-label="Menú">
-              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-            </summary>
-            <nav aria-label="Academia" className="absolute right-0 top-11 w-56 rounded-xl border border-line bg-bg-2 p-2 shadow-2xl">
-              {PUBLIC_NAV.map((l) => (
-                <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-white/5 hover:text-text">{l.label}</Link>
-              ))}
-              <Link href="/ingresar" className="mt-1 block rounded-lg border-t border-line px-3 py-2 text-sm font-semibold hover:bg-white/5 sm:hidden">Ingresar</Link>
-            </nav>
-          </details>
-        </div>
+        <SiteNav className="hidden justify-self-end md:flex" />
       </div>
+      <div className="px-4 pb-2.5 md:hidden"><SiteNav className="mx-auto flex max-w-md" /></div>
     </header>
   );
 }
 
-/** Envoltura del sitio principal, con su cabecera y su pie. variant: estilos de portada en prueba. «atrevido» = oscuro y moderno; «sobrio» = blanco y elegante; «claro» = el Gremio en modo claro. */
-export function SiteShell({ children, variant }: { children: React.ReactNode; variant?: "atrevido" | "sobrio" | "claro" }) {
-  const theme = variant === "atrevido" ? "theme-bold" : variant === "sobrio" ? "theme-sobrio" : variant === "claro" ? "theme-claro" : "theme-site";
+/** Envoltura del sitio público (tema claro y académico), con su cabecera y su pie. */
+export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className={theme}>
-      <PublicHeader bold={variant === "atrevido"} />
+    <div className="theme-site">
+      <PublicHeader />
       <main id="contenido">{children}</main>
       <Footer />
     </div>

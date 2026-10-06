@@ -233,67 +233,106 @@ p { text-wrap: pretty; }
 /* ============================================================
    Temas por zona. Cada zona redefine los mismos tokens:
    · el Gremio (estudiantes, familias, docentes) usa los de :root;
-   · .theme-site: el sitio principal, editorial y claro;
+   · .theme-site: el sitio público (portada, cursos, servicios, legales): claro y académico;
    · .theme-console: la consola de administración, neutra y sobria.
    ============================================================ */
 .theme-site {
-  /* Paleta del logotipo: índigo #15103f / #14123b, violeta #4a22c9 · #6b3bf5 · #8a5cff, lavanda #b79bff y dorado #ffc83d (monedas y "gratis").
-     Violeta = marca y acción; lavanda = detalles sobre fondo oscuro; dorado = lo que se resalta. */
-  --bg: #fbfaff;
-  --bg-2: #f4f2ff;
+  /* Paleta del logotipo sobre papel claro: índigo para el texto, violeta profundo para la acción,
+     lavanda para los fondos suaves y el dorado solo para lo que se resalta (gratis, el subrayado). */
+  --bg: #ffffff;
+  --bg-2: #f7f6fb;
   --panel: #ffffff;
-  --panel-2: #f4f2ff;
-  --line: #e7e3f6;
-  --text: #14123b;
-  --muted: #5a5779;
-  --cyan: #6b3bf5;   /* violeta de marca (texto y botones sobre blanco) */
-  --violet: #6b3bf5;
+  --panel-2: #f7f6fb;
+  --line: #e8e5f0;
+  --text: #15103f;
+  --muted: #5e5b78;
+  --cyan: #4a22c9;
+  --violet: #4a22c9;
   --gold: #ffc83d;
-  --coral: #6b3bf5;
-  --green: #0b9e93;  /* turquesa del logo, oscurecido para leerse sobre blanco */
-  --teal: #b79bff;
-  --ink: #14123b;
-  --brand-deep: #14123b;
+  --coral: #c0362c;
+  --green: #12804a;
+  --ink: #15103f;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--text);
+  color-scheme: light;
 }
-.theme-site ::selection { background: rgb(107 59 245 / 0.2); color: inherit; }
-.theme-site :focus-visible { outline-color: var(--cyan); }
-.theme-site .panel { background: var(--panel); box-shadow: 0 1px 2px rgb(20 18 59 / 0.05); backdrop-filter: none; }
-.theme-site .panel-glow { box-shadow: 0 0 0 2px rgb(107 59 245 / 0.25); }
-.theme-site .btn-primary { background: var(--cyan); color: #fff; box-shadow: 0 8px 22px -10px rgb(107 59 245 / 0.8); }
-.theme-site .btn-primary:hover:not(:disabled) { background: #4a22c9; transform: translateY(-1px); box-shadow: 0 14px 28px -12px rgb(107 59 245 / 0.9); }
-.theme-site .btn-accent { background: var(--gold); color: var(--ink); box-shadow: 0 10px 24px -10px rgb(255 200 61 / 0.9); }
-.theme-site .btn-accent:hover:not(:disabled) { background: #ffd666; transform: translateY(-1px); }
-.theme-site .btn-secondary { background: #fff; border-color: var(--line); color: var(--ink); }
-.theme-site .btn-secondary:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
-.theme-site .btn-ghost:hover:not(:disabled) { background: rgb(107 59 245 / 0.07); }
-.theme-site .btn-light { background: #fff; color: var(--violet); }
-.theme-site .btn-light:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
-.theme-site .btn-outline-light { border-color: rgb(255 255 255 / 0.5); color: #fff; }
-.theme-site .btn-outline-light:hover:not(:disabled) { background: rgb(255 255 255 / 0.12); }
-.theme-site .input { background: #fff; }
-.theme-site .input::placeholder { color: #9b97b3; }
-.theme-site .input:hover { border-color: #c9c3e6; }
-.theme-site .chip { background: rgb(107 59 245 / 0.06); border-color: rgb(107 59 245 / 0.14); }
-.theme-site .bar { background: rgb(20 18 59 / 0.08); }
-.theme-site h1, .theme-site h2 { letter-spacing: -0.035em; }
-.theme-site .eyebrow { color: var(--cyan); }
-/* Fondo de marca: índigo con destellos de color. */
-.theme-site .brand-hero {
+.theme-site > main { flex: 1; }
+.theme-site ::selection { background: rgb(74 34 201 / 0.16); color: inherit; }
+.theme-site :focus-visible { outline-color: #4a22c9; }
+/* Títulos: serif académica (Fraunces), sin mayúsculas forzadas. */
+.theme-site h1, .theme-site h2, .theme-site h3, .theme-site .serif {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 72;
+}
+.theme-site h3 { font-variation-settings: "opsz" 24; letter-spacing: -0.01em; }
+.theme-site .eyebrow { color: #4a22c9; letter-spacing: 0.12em; font-weight: 700; }
+.theme-site .panel { background: #fff; box-shadow: 0 1px 2px rgb(21 16 63 / 0.04); backdrop-filter: none; border-radius: 1rem; }
+.theme-site .btn { border-radius: 0.75rem; font-weight: 600; }
+.theme-site .btn-primary { background: #4a22c9; color: #fff; box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 8px 18px -10px rgb(74 34 201 / 0.9); }
+.theme-site .btn-primary:hover:not(:disabled) { background: #3b1aa6; transform: translateY(-1px); box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 12px 22px -12px rgb(74 34 201 / 0.9); }
+.theme-site .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--text); }
+.theme-site .btn-secondary:hover:not(:disabled) { border-color: #4a22c9; color: #4a22c9; background: #fff; }
+.theme-site .btn-gold { background: #ffc83d; color: #15103f; }
+.theme-site .btn-gold:hover:not(:disabled) { background: #ffd666; transform: translateY(-1px); }
+.theme-site .btn-white { background: #fff; color: #15103f; }
+.theme-site .btn-white:hover:not(:disabled) { background: #f1edff; }
+.theme-site .btn-ghost:hover:not(:disabled) { background: #f3f1fa; }
+.theme-site .input { background: #fff; border-radius: 0.75rem; }
+.theme-site .input::placeholder { color: #9a97b0; }
+.theme-site .input:hover { border-color: #cbc5e3; }
+.theme-site .input:focus { border-color: #4a22c9; box-shadow: 0 0 0 4px rgb(74 34 201 / 0.12); }
+.theme-site .chip { background: #f3f1fa; border-color: #e5e0f5; color: #3b2f8f; }
+/* Subrayado dorado a mano alzada para una palabra del titular. */
+.theme-site .underline-gold {
+  background: linear-gradient(transparent 68%, rgb(255 200 61 / 0.9) 68%, rgb(255 200 61 / 0.9) 92%, transparent 92%);
+  padding: 0 0.06em;
+}
+/* Papel cuadriculado muy suave, como un cuaderno. */
+.theme-site .paper {
+  background-image:
+    linear-gradient(rgb(74 34 201 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(74 34 201 / 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+/* Banda índigo para llamados importantes. */
+.theme-site .ink-band {
   background:
-    radial-gradient(38rem 26rem at 90% 6%, rgb(138 92 255 / 0.55), transparent 62%),
-    radial-gradient(34rem 22rem at 6% 104%, rgb(183 155 255 / 0.28), transparent 60%),
-    radial-gradient(22rem 16rem at 60% 30%, rgb(255 200 61 / 0.10), transparent 65%),
-    linear-gradient(140deg, #15103f 0%, #2a1f7a 50%, #4a22c9 100%);
+    radial-gradient(28rem 18rem at 100% 0%, rgb(138 92 255 / 0.45), transparent 60%),
+    radial-gradient(20rem 14rem at 0% 100%, rgb(255 200 61 / 0.12), transparent 60%),
+    #15103f;
   color: #fff;
 }
-.theme-site .brand-band { background: radial-gradient(30rem 18rem at 100% 0%, rgb(183 155 255 / 0.22), transparent 60%), linear-gradient(120deg, #15103f 0%, #2a1f7a 60%, #6b3bf5 100%); color: #fff; }
-.theme-site .warm-band { background: radial-gradient(26rem 16rem at 100% 100%, rgb(255 255 255 / 0.35), transparent 60%), linear-gradient(120deg, #ffd666 0%, #ffc83d 100%); color: var(--ink); }
-.theme-site .hl { background: linear-gradient(180deg, transparent 58%, rgb(255 200 61 / 0.85) 58%); padding: 0 0.12em; border-radius: 0.1em; }
-.theme-site .dots { background-image: radial-gradient(rgb(255 255 255 / 0.18) 1px, transparent 1px); background-size: 18px 18px; }
+.theme-site .ink-band .eyebrow { color: #ffc83d; }
+
+/* Cabecera pública: línea de portal (violeta → lavanda → dorado) y menú segmentado. */
+.site-header-line { height: 3px; background: linear-gradient(90deg, #4a22c9, #8a5cff 40%, #b79bff 70%, #ffc83d); }
+.site-nav { position: relative; gap: 0.25rem; padding: 0.3rem; border-radius: 999px; background: #f4f2fa; box-shadow: inset 0 0 0 1px #e8e5f0; }
+.site-nav a {
+  position: relative; display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 0.45rem;
+  padding: 0.55rem 1.1rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; color: #3f3b5e;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.site-nav a svg { width: 1.1rem; height: 1.1rem; opacity: 0.7; transition: opacity 0.2s, transform 0.2s; }
+.site-nav a:hover { color: #15103f; background: #fff; box-shadow: 0 1px 3px rgb(21 16 63 / 0.08); }
+.site-nav a:hover svg { opacity: 1; transform: translateY(-1px) rotate(-6deg); }
+.site-nav a[aria-current="page"] { color: #fff; background: #15103f; box-shadow: 0 6px 16px -8px rgb(21 16 63 / 0.7); }
+.site-nav a[aria-current="page"] svg { opacity: 1; color: #ffc83d; }
+/* Estrella dorada que marca la sección activa. */
+@media (max-width: 767px) {
+  .site-nav a { min-width: 0; padding: 0.5rem 0.4rem; gap: 0.35rem; font-size: 0.9rem; }
+}
+.site-nav a[aria-current="page"]::after {
+  content: ""; position: absolute; top: -3px; right: 10px; width: 7px; height: 7px; background: #ffc83d;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
 .lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgb(20 18 59 / 0.45); }
+.lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgb(20 18 59 / 0.35); }
 @keyframes drift { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-8px) rotate(var(--r, 0deg)); } }
 .drift { animation: drift 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .drift { animation: none; } .lift:hover { transform: none; } }
@@ -347,170 +386,3 @@ p { text-wrap: pretty; }
 .brand-claro { display: none; }
 .theme-site .brand-oscuro { display: none; }
 .theme-site .brand-claro { display: inline-block; }
-
-/* ============================================================
-   .theme-bold: portada moderna y atrevida (inspirada en Discord).
-   Fondo espacial índigo, titulares gigantes en mayúsculas, botones en píldora.
-   ============================================================ */
-.theme-bold {
-  --bg: #0f0d2e;
-  --bg-2: #15103f;
-  --panel: #1a1550;
-  --panel-2: #221a66;
-  --line: #2f2585;
-  --text: #ffffff;
-  --muted: #c4bdf2;
-  --cyan: #b79bff;
-  --violet: #8a5cff;
-  --gold: #ffc83d;
-  --ink: #15103f;
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: clip;
-}
-.theme-bold .display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.03em;
-  line-height: 0.92;
-  text-wrap: balance;
-}
-/* Estrellas: dos capas de puntos que titilan despacio. */
-.theme-bold .stars,
-.theme-bold .stars::after {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
-    radial-gradient(2px 2px at 46% 32%, #b79bff 50%, transparent 51%),
-    radial-gradient(1px 1px at 63% 12%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 78% 58%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 91% 26%, #b79bff 50%, transparent 51%),
-    radial-gradient(1px 1px at 8% 88%, #fff 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 55% 90%, #fff 50%, transparent 51%);
-  background-size: 420px 420px;
-  opacity: 0.7;
-}
-.theme-bold .stars::after { content: ""; background-size: 260px 260px; background-position: 90px 140px; opacity: 0.5; animation: twinkle 5s ease-in-out infinite alternate; }
-@keyframes twinkle { from { opacity: 0.15; } to { opacity: 0.6; } }
-/* Horizonte: un planeta violeta que asoma bajo la portada. */
-.theme-bold .horizon {
-  position: absolute; left: 50%; bottom: -78vw; width: 160vw; height: 100vw; transform: translateX(-50%);
-  border-radius: 50%; pointer-events: none;
-  background: radial-gradient(closest-side, #15103f 92%, transparent 100%);
-  box-shadow: 0 -2px 0 0 rgb(183 155 255 / 0.55), 0 -40px 120px 10px rgb(138 92 255 / 0.55), 0 -10px 40px rgb(107 59 245 / 0.6) inset;
-}
-.theme-bold .glow { position: absolute; border-radius: 9999px; filter: blur(80px); pointer-events: none; }
-.theme-bold .btn { border-radius: 9999px; font-weight: 700; }
-.theme-bold .btn-white { background: #fff; color: #15103f; }
-.theme-bold .btn-white:hover:not(:disabled) { color: #6b3bf5; transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgb(0 0 0 / 0.6); }
-.theme-bold .btn-dark { background: #15103f; color: #fff; box-shadow: inset 0 0 0 1px rgb(183 155 255 / 0.35); }
-.theme-bold .btn-dark:hover:not(:disabled) { background: #2a1f7a; transform: translateY(-2px); box-shadow: inset 0 0 0 1px rgb(183 155 255 / 0.6), 0 14px 30px -12px rgb(107 59 245 / 0.8); }
-.theme-bold .btn-primary { background: #6b3bf5; color: #fff; box-shadow: none; }
-.theme-bold .btn-primary:hover:not(:disabled) { background: #8a5cff; transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgb(138 92 255 / 0.9); }
-.theme-bold .btn-ghost:hover:not(:disabled) { background: rgb(255 255 255 / 0.08); }
-.theme-bold .eyebrow { color: var(--cyan); }
-/* Tarjeta con borde de luz. */
-.theme-bold .card-bold {
-  position: relative; border-radius: 2rem; background: linear-gradient(160deg, #221a66, #15103f 70%);
-  box-shadow: inset 0 0 0 1px rgb(183 155 255 / 0.18), 0 30px 60px -30px rgb(0 0 0 / 0.8);
-}
-.theme-bold a.card-bold, .theme-bold .card-bold.hoverable { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.theme-bold a.card-bold:hover, .theme-bold .card-bold.hoverable:hover { transform: translateY(-6px); box-shadow: inset 0 0 0 1px rgb(183 155 255 / 0.5), 0 30px 60px -24px rgb(107 59 245 / 0.7); }
-.theme-bold .panel { background: var(--panel); }
-.theme-bold .input { background: #15103f; }
-@media (prefers-reduced-motion: reduce) { .theme-bold .stars::after { animation: none; } }
-
-/* ============================================================
-   .theme-sobrio: portada sobria y elegante (inspirada en EducaciónIT).
-   Blanco, tipografía sans sin adornos, un solo acento violeta profundo, bordes finos.
-   ============================================================ */
-.theme-sobrio {
-  --bg: #ffffff;
-  --bg-2: #f7f7fa;
-  --panel: #ffffff;
-  --panel-2: #f7f7fa;
-  --line: #e6e4ee;
-  --text: #14123b;
-  --muted: #5d5a78;
-  --cyan: #4a22c9;
-  --violet: #4a22c9;
-  --gold: #ffc83d;
-  --ink: #14123b;
-  background: var(--bg);
-  color: var(--text);
-}
-.theme-sobrio h1, .theme-sobrio h2, .theme-sobrio h3 { font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.02em; }
-.theme-sobrio ::selection { background: rgb(74 34 201 / 0.15); }
-.theme-sobrio .brand-oscuro { display: none; }
-.theme-sobrio .brand-claro { display: inline-block; }
-.theme-sobrio .btn { border-radius: 0.5rem; font-weight: 600; box-shadow: none; }
-.theme-sobrio .btn-primary { background: #4a22c9; color: #fff; }
-.theme-sobrio .btn-primary:hover:not(:disabled) { background: #3a199f; transform: none; box-shadow: none; }
-.theme-sobrio .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--text); }
-.theme-sobrio .btn-secondary:hover:not(:disabled) { border-color: #4a22c9; color: #4a22c9; background: #fff; }
-.theme-sobrio .btn-ghost:hover:not(:disabled) { background: #f3f1fa; }
-.theme-sobrio .eyebrow { color: #4a22c9; font-weight: 600; letter-spacing: 0.08em; }
-.theme-sobrio .input { background: #fff; }
-.theme-sobrio .panel { background: #fff; box-shadow: none; backdrop-filter: none; }
-/* Tarjetas más contenidas: radio pequeño y elevación suave. */
-.theme-sobrio .lift { border-radius: 0.75rem; }
-.theme-sobrio .lift:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -18px rgb(20 18 59 / 0.35); }
-
-/* ============================================================
-   .theme-claro: el estilo del Gremio (paneles, botones dorados, personajes)
-   en un modo claro y profesional.
-   ============================================================ */
-.theme-claro {
-  --bg: #f7f5ff;
-  --bg-2: #efebff;
-  --panel: #ffffff;
-  --panel-2: #f3efff;
-  --line: #e1daf8;
-  --text: #15103f;
-  --muted: #5d5a7e;
-  --cyan: #6b3bf5;
-  --violet: #6b3bf5;
-  --gold: #ffc83d;
-  --coral: #d9363e;
-  --green: #148a4b;
-  --ink: #15103f;
-  min-height: 100dvh;
-  color: var(--text);
-  color-scheme: light;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(60rem 36rem at 12% -10%, rgb(138 92 255 / 0.16), transparent 60%),
-    radial-gradient(44rem 28rem at 96% 0%, rgb(255 200 61 / 0.14), transparent 60%),
-    radial-gradient(40rem 30rem at 50% 110%, rgb(183 155 255 / 0.18), transparent 60%);
-  background-attachment: fixed;
-}
-.theme-claro ::selection { background: rgb(107 59 245 / 0.2); color: inherit; }
-.theme-claro .brand-oscuro { display: none; }
-.theme-claro .brand-claro { display: inline-block; }
-.theme-claro .panel {
-  background: linear-gradient(180deg, #ffffff, #fbfaff);
-  box-shadow: 0 1px 0 #fff inset, 0 1px 2px rgb(21 16 63 / 0.04), 0 18px 40px -26px rgb(74 34 201 / 0.35);
-  backdrop-filter: none;
-}
-.theme-claro .panel-glow { box-shadow: 0 0 0 1px rgb(107 59 245 / 0.35), 0 0 32px -8px rgb(107 59 245 / 0.3), 0 18px 40px -26px rgb(74 34 201 / 0.35); }
-.theme-claro .btn-primary { box-shadow: 0 8px 20px -10px rgb(214 150 0 / 0.7), 0 -3px 0 rgb(0 0 0 / 0.12) inset; }
-.theme-claro .btn-primary:hover:not(:disabled) { box-shadow: 0 12px 24px -10px rgb(214 150 0 / 0.8), 0 -3px 0 rgb(0 0 0 / 0.12) inset; }
-.theme-claro .btn-secondary { background: rgb(107 59 245 / 0.06); border-color: rgb(107 59 245 / 0.45); color: #4a22c9; }
-.theme-claro .btn-secondary:hover:not(:disabled) { background: rgb(107 59 245 / 0.12); }
-.theme-claro .btn-ghost:hover:not(:disabled), .theme-claro .hover\:bg-white\/5:hover { background: rgb(21 16 63 / 0.05); }
-.theme-claro .input { background: #fff; }
-.theme-claro .input::placeholder { color: #9a95bd; }
-.theme-claro .input:hover { border-color: #c4baf0; }
-.theme-claro .input:focus { box-shadow: 0 0 0 4px rgb(107 59 245 / 0.15); }
-.theme-claro .chip { background: rgb(107 59 245 / 0.07); border-color: rgb(107 59 245 / 0.16); }
-.theme-claro .bar { background: rgb(21 16 63 / 0.08); }
-.theme-claro .eyebrow { color: #6b3bf5; }
-.theme-claro .bg-bg\/40 { background: #fff; }
-/* Avisos de los formularios: tonos legibles sobre blanco. */
-.theme-claro .text-\[\#ffb3b3\] { color: #b42318; }
-.theme-claro .text-\[\#b6f5cb\] { color: #0f6b3a; }
-.theme-claro .text-\[\#ffe3a0\] { color: #8a5a00; }
-.theme-claro .dots-claro { background-image: radial-gradient(rgb(107 59 245 / 0.14) 1px, transparent 1px); background-size: 20px 20px; }
-.theme-claro .marker { background: linear-gradient(180deg, transparent 60%, rgb(255 200 61 / 0.85) 60%); padding: 0 0.1em; border-radius: 0.1em; }
