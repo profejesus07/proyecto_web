@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
+import { KuroGreeter } from "@/components/kuro-greeter";
 import { SiteShell } from "@/components/site-header";
 import { Sprite, asset } from "@/components/sprite";
 import { formatPrice, loadCatalog } from "@/lib/data/queries";
@@ -16,8 +17,9 @@ export default async function Home() {
       <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <section aria-labelledby="bienvenida-t" className="mx-auto grid max-w-3xl items-center gap-8 md:grid-cols-[1fr_1.2fr]">
           <aside className="text-center">
-            <Sprite src={asset.kuro("saludar")} alt="Kuro te da la bienvenida" priority className="mx-auto h-40 w-auto md:h-56" />
+            <KuroGreeter />
             <p className="mt-3 font-display text-xl font-bold">¡Hola! Soy Kuro.</p>
+            <p className="text-sm text-muted">Tócame, ¡me encanta saludar!</p>
           </aside>
           <div className="panel space-y-5 p-6 sm:p-8">
             <p className="eyebrow">Academia Virtual Umbral</p>

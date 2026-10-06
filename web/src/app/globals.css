@@ -338,6 +338,12 @@ p { text-wrap: pretty; }
 @media (max-width: 767px) {
   .site-nav a { min-width: 0; padding: 0.5rem 0.4rem; gap: 0.35rem; font-size: 0.9rem; }
 }
+/* Kuro de la portada (kuro-greeter.tsx): se inclina hacia el cursor y salta un poco al tocarlo. */
+.kuro-greeter { --kx: 0; --ky: 0; transform: translate(calc(var(--kx) * 10px), calc(var(--ky) * 5px)) rotate(calc(var(--kx) * 7deg)); transform-origin: 50% 90%; transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.kuro-greeter:hover { filter: drop-shadow(0 0 18px rgb(183 155 255 / 0.45)); }
+.kuro-greeter:active { transform: translate(calc(var(--kx) * 10px), calc(var(--ky) * 5px - 6px)) rotate(calc(var(--kx) * 7deg)) scale(1.04); }
+@media (prefers-reduced-motion: reduce) { .kuro-greeter, .kuro-greeter:active { transform: none; } }
+
 /* En el estilo del Gremio (fondo oscuro), el menú usa sus colores. */
 .theme-gremio { min-height: 100dvh; display: flex; flex-direction: column; }
 .theme-gremio > main { flex: 1; }
