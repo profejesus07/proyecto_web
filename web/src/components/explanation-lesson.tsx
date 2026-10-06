@@ -66,7 +66,7 @@ export function ExplanationLesson({ missionId, title, intro, body, videoUrl, cou
               <div>
                 <p className="font-display text-xl font-bold">¡Explicación completada!</p>
                 {outcome?.ok && outcome.result.first && <p className="text-sm text-gold">+{outcome.result.xpGain} XP · +{outcome.result.coinsGain} monedas</p>}
-                {outcome?.ok && outcome.newRanks.length > 0 && <p className="text-sm font-bold text-[#b6f5cb]">¡Subiste a rango {outcome.newRanks.at(-1)}!</p>}
+                {outcome?.ok && outcome.newRanks.length > 0 && <p className="text-sm font-bold text-ok">¡Subiste a rango {outcome.newRanks.at(-1)}!</p>}
               </div>
             </div>
             <Link href={next.href} className="btn btn-primary">{next.label}</Link>
@@ -80,7 +80,7 @@ export function ExplanationLesson({ missionId, title, intro, body, videoUrl, cou
             </button>
           </>
         )}
-        {outcome && !outcome.ok && <p role="alert" className="w-full text-sm text-[#ffb3b3]">{outcome.error}</p>}
+        {outcome && !outcome.ok && <p role="alert" className="w-full text-sm text-err">{outcome.error}</p>}
       </div>
     </article>
   );

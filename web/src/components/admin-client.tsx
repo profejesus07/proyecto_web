@@ -15,7 +15,7 @@ function Submit({ children, pending, className = "btn btn-primary" }: { children
 function Notice({ state }: { state: AdminFormState }) {
   return (
     <div aria-live="polite">
-      {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
+      {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
       {state?.message && !state.password && <p role="status" className="text-sm font-medium text-green">{state.message}</p>}
     </div>
   );
@@ -40,7 +40,7 @@ export function CreateTeacherForm() {
       <Notice state={state} />
       {state?.password && (
         <div role="status" className="space-y-2 rounded-2xl border border-green/50 bg-green/10 p-4">
-          <p className="font-semibold text-[#b6f5cb]">✔ {state.message}</p>
+          <p className="font-semibold text-ok">✔ {state.message}</p>
           <p className="text-sm">Envíale estos datos para que ingrese. <strong>La contraseña solo se muestra ahora</strong>; pídele que la cambie en Perfil → Cambiar mi contraseña.</p>
           <dl className="grid gap-1 rounded-xl bg-bg/50 p-3 font-mono text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
             <dt className="text-muted">Correo</dt><dd>{state.email}</dd>
@@ -89,7 +89,7 @@ export function RoleSelect({ userId, role, name }: { userId: string; role: strin
         <option value="familia">Familia</option>
         <option value="docente">Docente</option>
       </select>
-      {error && <p role="alert" className="mt-1 text-xs text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="mt-1 text-xs text-err">{error}</p>}
     </div>
   );
 }
@@ -97,7 +97,7 @@ export function RoleSelect({ userId, role, name }: { userId: string; role: strin
 export function AccessChip({ userId, course, title, expiresAt, expired }: { userId: string; course: string; title: string; expiresAt: string | null; expired: boolean }) {
   const { pending, run } = useRun();
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold ${expired ? "bg-coral/15 text-[#ffb3b3]" : "bg-green/15 text-[#b6f5cb]"}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold ${expired ? "bg-coral/15 text-err" : "bg-green/15 text-ok"}`}>
       {title}{expiresAt ? ` · ${expired ? "venció" : "hasta"} ${new Date(expiresAt).toLocaleDateString("es-CO")}` : ""}
       <button type="button" disabled={pending} aria-label={`Quitar acceso a ${title}`} className="rounded px-1 hover:bg-white/10"
         onClick={() => { if (confirm(`¿Quitar el acceso a «${title}»?`)) run(() => revokeAccessAction(userId, course)); }}>✕</button>
@@ -125,7 +125,7 @@ export function GrantAccess({ userId, name, courses }: { userId: string; name: s
         <option value="12">1 año</option>
       </select>
       <button type="submit" disabled={pending} className="btn btn-secondary btn-sm">Activar</button>
-      {error && <p role="alert" className="w-full text-xs text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="w-full text-xs text-err">{error}</p>}
     </form>
   );
 }
@@ -169,8 +169,8 @@ export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: st
         <Submit pending="Creando…">Crear grupo</Submit>
       </div>
       <div aria-live="polite">
-        {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
-        {state?.message && <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-[#b6f5cb]">✔ {state.message}</p>}
+        {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
+        {state?.message && <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">✔ {state.message}</p>}
       </div>
     </form>
   );
@@ -185,7 +185,7 @@ export function TeacherSelect({ classId, teacherId, teachers, name }: { classId:
         onChange={(e) => run(() => assignTeacherAction(classId, e.target.value))}>
         {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
       </select>
-      {error && <p role="alert" className="mt-1 text-xs text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="mt-1 text-xs text-err">{error}</p>}
     </div>
   );
 }

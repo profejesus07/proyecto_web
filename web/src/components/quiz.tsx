@@ -469,7 +469,7 @@ export function Quiz(p: QuizProps) {
               </ul>
             )}
             {newRanks.length > 0 && (
-              <p className="rounded-xl border border-gold/60 bg-gold/15 px-5 py-3 text-lg font-bold text-[#ffe3a0]">
+              <p className="rounded-xl border border-gold/60 bg-gold/15 px-5 py-3 text-lg font-bold text-warn">
                 🎉 ¡Subiste al rango {newRanks[newRanks.length - 1]} · {RANKS.find((r) => r.key === newRanks[newRanks.length - 1])?.name}!
               </p>
             )}
@@ -488,7 +488,7 @@ export function Quiz(p: QuizProps) {
               </div>
             )}
             {win && p.subscribe && (
-              <p className="max-w-lg rounded-xl border border-gold/50 bg-gold/10 px-5 py-3 text-[#ffe3a0]">
+              <p className="max-w-lg rounded-xl border border-gold/50 bg-gold/10 px-5 py-3 text-warn">
                 ¡Superaste la lección gratis! Para seguir con las demás misiones y enfrentar a {p.guardian.name}, suscríbete al curso ({p.subscribe.price}).
               </p>
             )}
@@ -627,7 +627,7 @@ export function Quiz(p: QuizProps) {
               ? p.isBoss ? `${CHEERS[idx % CHEERS.length]} ${p.guardian.name} pierde fuerza.` : `${CHEERS[idx % CHEERS.length]} El ${enemy.name} se desvanece en luz.`
               : p.isBoss ? `¡Uy! ${p.guardian.name} se crece un momento. Kuro te explica:` : "¡Uy, no era esa! Kuro te explica:"}
           </p>
-          <p className={res.correct ? "text-muted" : "text-[#ffe3a0]"}>💡 {res.explanation}</p>
+          <p className={res.correct ? "text-muted" : "text-warn"}>💡 {res.explanation}</p>
           {!choiceKind && !res.correct && <SolutionView kind={q.kind} solution={res.solution} />}
           {bonus && res.correct && <p className="font-bold text-gold">🌠 ¡La Lluvia de Estrellas te da +{bonus} XP!</p>}
           {!res.correct && canUse("aliento") && (
@@ -635,7 +635,7 @@ export function Quiz(p: QuizProps) {
               {POWERS.aliento.icon} Segundo Aliento · responder otra vez
             </button>
           )}
-          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-[#d9c9ff]" : "text-[#ffb3b3]"}`}>{powerMsg.text}</p>}
+          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-[#d9c9ff]" : "text-err"}`}>{powerMsg.text}</p>}
           {p.isBoss && !res.correct && !stillPossible && (
             <p className="text-sm text-muted">Esta vez no alcanzarás el {PASS_MARK}%, pero termina la prueba: cada respuesta te prepara para la revancha.</p>
           )}
@@ -708,7 +708,7 @@ export function Quiz(p: QuizProps) {
 
         {!res && (
           <>
-            {hintText && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-[#ffe3a0]">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
+            {hintText && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-warn">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
             {ps.rayo?.lead && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-sm">⚡ Fíjate en esto: «{ps.rayo.lead}»</p>}
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
               <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
@@ -731,7 +731,7 @@ export function Quiz(p: QuizProps) {
               {aidPending && <span className="text-sm text-muted">Usando ayuda…</span>}
               {needShop && <Link href="/tienda?c=ayuda" className="text-sm font-semibold text-cyan underline-offset-4 hover:underline">Conseguir más en la tienda</Link>}
             </div>
-            <p aria-live="polite" className="text-sm font-medium text-[#ffb3b3] empty:hidden">{aidMsg}</p>
+            <p aria-live="polite" className="text-sm font-medium text-err empty:hidden">{aidMsg}</p>
             {prePowers.length > 0 && (
               <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Poderes">
                 <span className="mr-1 text-sm font-bold text-muted">Poderes:</span>
@@ -747,12 +747,12 @@ export function Quiz(p: QuizProps) {
                 })}
               </div>
             )}
-            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-[#d9c9ff]" : "text-[#ffb3b3]"}`}>{powerMsg?.text}</p>
+            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-[#d9c9ff]" : "text-err"}`}>{powerMsg?.text}</p>
           </>
         )}
       </fieldset>
 
-      {error && <p role="alert" className="rounded-xl border border-coral/50 bg-coral/10 px-4 py-3 font-medium text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="rounded-xl border border-coral/50 bg-coral/10 px-4 py-3 font-medium text-err">{error}</p>}
 
       {!res && (
         <div className="flex items-center justify-end gap-3">

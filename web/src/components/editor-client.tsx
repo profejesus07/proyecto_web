@@ -21,8 +21,8 @@ function Submit({ children, pending, className = "btn btn-primary btn-sm" }: { c
 function Notice({ state }: { state: EditorState }) {
   return (
     <div aria-live="polite" className="empty:hidden">
-      {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
-      {state?.problems && <ul className="mt-1 list-disc pl-5 text-sm text-[#ffe3a0]">{state.problems.map((p) => <li key={p}>{p}</li>)}</ul>}
+      {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
+      {state?.problems && <ul className="mt-1 list-disc pl-5 text-sm text-warn">{state.problems.map((p) => <li key={p}>{p}</li>)}</ul>}
       {state?.message && <p role="status" className="text-sm font-medium text-green">{state.message}</p>}
     </div>
   );
@@ -88,8 +88,8 @@ export function ImportForm() {
         </Field>
         <Submit pending="Importando…" className="btn btn-primary">Importar</Submit>
       </div>
-      {tooBig && <p role="alert" className="text-sm text-[#ffb3b3]">El archivo pesa más de 900 KB: quita imágenes o formatos que no hagan falta.</p>}
-      {state?.error && <p role="alert" className="text-sm text-[#ffb3b3]">{state.error}</p>}
+      {tooBig && <p role="alert" className="text-sm text-err">El archivo pesa más de 900 KB: quita imágenes o formatos que no hagan falta.</p>}
+      {state?.error && <p role="alert" className="text-sm text-err">{state.error}</p>}
       {state?.errors && (
         <div role="alert" className="space-y-2 rounded-xl border border-coral/40 bg-coral/10 p-3 text-sm">
           <p className="font-bold">Corrige esto en el archivo y vuelve a subirlo:</p>
@@ -188,7 +188,7 @@ export function PublishBar({ published, publish, unpublish }: { published: boole
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-3">
-        <span className={`chip text-sm ${published ? "!border-green/60 !bg-green/15 text-[#b6f5cb]" : "text-muted"}`}>{published ? "● Publicado" : "○ Borrador"}</span>
+        <span className={`chip text-sm ${published ? "!border-green/60 !bg-green/15 text-ok" : "text-muted"}`}>{published ? "● Publicado" : "○ Borrador"}</span>
         {published ? (
           <button type="button" className="btn btn-ghost btn-sm" disabled={pending} onClick={() => run(unpublish, "¿Despublicar? Los estudiantes dejarán de verlo (su avance se conserva).")}>Despublicar</button>
         ) : (

@@ -42,7 +42,7 @@ export function GuidePicker({ options, current, legend }: { options: readonly Gu
           </label>
         ))}
       </div>
-      {error && <p role="alert" className="text-sm text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="text-sm text-err">{error}</p>}
     </fieldset>
   );
 }

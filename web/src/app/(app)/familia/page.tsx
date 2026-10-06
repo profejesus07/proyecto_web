@@ -58,7 +58,7 @@ function Unlock({ c, pay }: { c: FamilyChild; pay: PayInfo }) {
             <li key={k.slug} className="space-y-3 rounded-xl border border-line bg-bg/40 p-4">
               <p className="flex flex-wrap items-baseline justify-between gap-2 font-bold">{k.title} <span className="font-display text-xl text-gold">{formatPrice(price.get(k.slug) ?? null)}</span></p>
               {waiting && (
-                <p role="status" className="text-sm text-[#ffe3a0]">⏳ Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
+                <p role="status" className="text-sm text-warn">⏳ Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
               )}
               {pay.options.length
                 ? <PayButtons course={k.slug} student={c.id} options={pay.options} test={pay.test} />
@@ -127,7 +127,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
                   <ul className="flex flex-wrap gap-2">
                     {k.lessons.map((l) => (
                       <li key={l.position} title={`${l.title}: mejor nota ${l.bestScore}% en ${l.attempts} ${l.attempts === 1 ? "intento" : "intentos"}`}
-                        className={`rounded-lg px-2 py-1 text-xs font-bold ${l.completed ? "bg-green/20 text-[#b6f5cb]" : "bg-gold/15 text-[#ffe3a0]"}`}>
+                        className={`rounded-lg px-2 py-1 text-xs font-bold ${l.completed ? "bg-green/20 text-ok" : "bg-gold/15 text-warn"}`}>
                         L{l.position} · {l.bestScore}%{l.completed ? " ✔" : ""}
                       </li>
                     ))}
@@ -214,7 +214,7 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
         </section>
       )}
 
-      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok">✔ Tu contraseña quedó guardada.</p>}
 
       {children.map((c) => <ChildCard key={c.id} c={c} guide={guide} left={left[c.id] ?? FAMILY_MESSAGES_PER_DAY}
         pay={{ options, test, courses, access: access.get(c.id) ?? new Set(), pending }} />)}

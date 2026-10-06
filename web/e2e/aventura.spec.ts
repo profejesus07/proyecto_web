@@ -256,7 +256,7 @@ test("el docente crea una clase, el estudiante se une con el código y aparece e
 
   await context.addCookies([asTeacher]);
   await page.goto("/maestro");
-  await page.getByRole("link", { name: /6\.º B · Ciencias/ }).click();
+  await page.getByRole("main").getByRole("link", { name: /6\.º B · Ciencias/ }).click();
   await expect(page.getByRole("rowheader", { name: /Despertado/ })).toBeVisible();
   await expect(page.getByRole("rowheader", { name: /Valentina \(demo\)/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Preguntas que más cuestan" })).toBeVisible();
@@ -283,6 +283,8 @@ test("el administrador crea docentes, activa cursos y pone precios", async ({ pa
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Administración" })).toBeVisible();
 
+  await page.getByRole("navigation", { name: "Consola" }).getByRole("link", { name: "Personas" }).click();
+  await expect(page).toHaveURL(/\/admin\/personas$/);
   await page.getByLabel("Nombre que verán sus estudiantes").fill("Profe Ana");
   await page.getByLabel("Correo del docente").fill("ana@colegio.edu.co");
   await page.getByRole("button", { name: "Crear cuenta" }).click();
@@ -344,7 +346,7 @@ test("el administrador crea una clase con el editor, la publica y un estudiante 
 
 test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita", async ({ page, context }) => {
   await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
-  await page.goto("/admin");
+  await page.goto("/admin/grupos");
   await page.getByRole("combobox", { name: /^Clase/ }).selectOption({ label: "Ciencias 5.° · 2027" });
   await page.getByLabel("Nombre del grupo").fill("5.° A");
   await page.getByLabel("Docente que lo gestiona").selectOption({ label: "Profe de prueba" });
@@ -377,7 +379,7 @@ test("al terminar un curso corto se expide la constancia, que se puede verificar
   await page.getByLabel("Título del formador").fill("Magíster en Educación");
   await page.getByRole("button", { name: "Guardar datos" }).click();
   await expect(page.getByText("Guardado.")).toBeVisible();
-  await page.goto("/admin");
+  await page.goto("/admin/constancias");
   await page.getByLabel("Ciudad de expedición").fill("Bogotá D. C.");
   const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", "base64");
   await page.getByLabel(/^Firma \(PNG/).setInputFiles({ name: "firma.png", mimeType: "image/png", buffer: png });
@@ -406,6 +408,21 @@ test("al terminar un curso corto se expide la constancia, que se puede verificar
   await expect(page.getByText("C.C. ••••••5678")).toBeVisible();
   await page.goto("/verificar/UMB-AAAA-BBBB");
   await expect(page.getByRole("heading", { name: "No encontramos esa constancia" })).toBeVisible();
+
+  // Verificación con el código QR: se sube una foto del QR y lleva a la constancia.
+  const QRCode = await import("qrcode");
+  const qr = await QRCode.toBuffer(`http://localhost:3200/verificar/${code}`, { width: 360 });
+  await page.goto("/verificar");
+  await page.getByText("Subir foto del QR").setInputFiles({ name: "qr.png", mimeType: "image/png", buffer: qr });
+  await expect(page).toHaveURL(new RegExp(`/verificar/${code}$`));
+  await expect(page.getByRole("heading", { name: "Constancia auténtica" })).toBeVisible();
+
+  // El administrador la ve en su consola, tal como la recibió el estudiante.
+  await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
+  await page.goto("/admin/constancias");
+  await page.getByRole("link", { name: "Ver la constancia de Luna María Pérez Gómez" }).click();
+  await expect(page.getByRole("article", { name: "Constancia de asistencia" }).getByText("Luna María Pérez Gómez")).toBeVisible();
+  await context.clearCookies({ name: "umbral-vista" });
 });
 
 test("Kael reta en cada misión y lleva el marcador de duelos en el Gremio", async ({ page }) => {
@@ -622,11 +639,12 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
   const asAdmin = { name: "umbral-vista", value: "admin", url: "http://localhost:3200" };
   // El administrador quita el acceso que dio a mano en una prueba anterior.
   await context.addCookies([asAdmin]);
-  await page.goto("/admin");
+  await page.goto("/admin/personas");
   const student = page.locator("li", { hasText: "estudiante@vista-previa.co" });
   page.once("dialog", (d) => d.accept());
   await student.getByRole("button", { name: /Quitar acceso a El Portal del Primer Intento/ }).click();
   await expect(student.getByRole("button", { name: /Quitar acceso a El Portal del Primer Intento/ })).toHaveCount(0);
+  await page.goto("/admin/pagos");
   await expect(page.getByRole("heading", { name: "Pagos en línea" })).toBeVisible();
   await expect(page.getByText("Todavía no hay pagos.")).toBeVisible();
   await context.clearCookies({ name: "umbral-vista" });
@@ -665,7 +683,9 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
   // (la cuenta de administración no abre páginas del juego: va a su consola)
   await page.goto(`/pago/${ref}`);
   await expect(page).toHaveURL(/\/admin$/);
-  await page.goto("/admin");
+  // El resumen muestra el pago y la sección de pagos lo detalla.
+  await expect(page.getByRole("region", { name: "Últimos pagos" })).toContainText("Aprobado");
+  await page.goto("/admin/pagos");
   const table = page.getByRole("table");
   await expect(table.getByRole("row").filter({ hasText: ref })).toContainText("Aprobado");
   await expect(table.getByRole("row").filter({ hasText: "Wompi" })).toContainText("Rechazado");
@@ -674,10 +694,10 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
 
 test("el administrador elimina un grupo, un docente y un curso, siempre confirmando con ELIMINAR", async ({ page, context }) => {
   await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
-  await page.goto("/admin");
+  await page.goto("/admin/grupos");
 
   // Grupo «5.° A» (creado en una prueba anterior).
-  const grupos = page.getByRole("region", { name: "Grupos y códigos" });
+  const grupos = page.getByRole("region", { name: "Todos los grupos" });
   await grupos.getByRole("button", { name: "Eliminar grupo 5.° A" }).click();
   const dialog = page.getByRole("dialog", { name: /¿Eliminar el grupo «5\.° A»\?/ });
   await expect(dialog).toBeVisible();
@@ -688,6 +708,7 @@ test("el administrador elimina un grupo, un docente y un curso, siempre confirma
   await expect(grupos.getByRole("button", { name: "Eliminar grupo 5.° A" })).toHaveCount(0);
 
   // Cuenta de docente «Profe Ana»; el administrador no tiene botón para eliminarse.
+  await page.goto("/admin/personas");
   const ana = page.locator("li", { hasText: "ana@colegio.edu.co" });
   await ana.getByRole("button", { name: /Eliminar cuenta/ }).click();
   const d2 = page.getByRole("dialog", { name: /Profe Ana/ });
@@ -891,7 +912,7 @@ test("la cuenta de administración no entra al juego: todo la lleva a su consola
   // Los informes de grupo sí se abren, con cabecera de administración (sin monedas ni avatar).
   await page.goto("/maestro");
   await expect(page).toHaveURL(/\/maestro$/);
-  await expect(page.getByRole("link", { name: "← Volver a la consola" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Consola" }).getByRole("link", { name: "Resumen" })).toHaveAttribute("href", "/admin");
   await expect(page.getByLabel(/monedas$/)).toHaveCount(0);
   // En la ficha pública, en lugar de «Ir al programa», puede editarlo.
   await page.goto("/programas/primer-portal");
@@ -900,7 +921,7 @@ test("la cuenta de administración no entra al juego: todo la lleva a su consola
 
 test("en «Cursos y precios» el precio y la opción gratis van juntos, y la ficha pública lo refleja", async ({ page, context }) => {
   await context.addCookies([{ name: "umbral-vista", value: "admin", url: "http://localhost:3200" }]);
-  await page.goto("/admin");
+  await page.goto("/admin/cursos");
   const row = () => page.locator("li", { has: page.getByLabel("Precio de El Portal de los Pasos Pequeños en pesos") });
   await row().getByLabel("Gratis").check();
   await row().getByRole("button", { name: "Guardar" }).click();
@@ -908,7 +929,7 @@ test("en «Cursos y precios» el precio y la opción gratis van juntos, y la fic
   await page.goto("/programas/primer-portal");
   await expect(page.locator("dl").getByText("Gratis", { exact: true })).toBeVisible();
 
-  await page.goto("/admin");
+  await page.goto("/admin/cursos");
   await row().getByLabel("Gratis").uncheck();
   await row().getByLabel("Precio de El Portal de los Pasos Pequeños en pesos").fill("30000");
   await row().getByRole("button", { name: "Guardar" }).click();
@@ -917,7 +938,7 @@ test("en «Cursos y precios» el precio y la opción gratis van juntos, y la fic
   await expect(page.locator("dl").getByText(/\$\s?30\.000/)).toBeVisible();
 
   // Deja el precio como estaba.
-  await page.goto("/admin");
+  await page.goto("/admin/cursos");
   await row().getByLabel("Precio de El Portal de los Pasos Pequeños en pesos").fill("20000");
   await row().getByRole("button", { name: "Guardar" }).click();
   await expect(row().getByText(/Guardado: se vende a \$\s?20\.000/)).toBeVisible();

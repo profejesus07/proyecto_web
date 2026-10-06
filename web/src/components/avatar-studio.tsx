@@ -165,7 +165,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
           <button type="button" onClick={() => { setLook((l) => sanitizeLook({ gear: l.gear, style: l.style, wear: l.wear, frame: l.frame, title: l.title, pet: l.pet })); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
             Colores originales
           </button>
-          <p aria-live="polite" className={`text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
+          <p aria-live="polite" className={`text-xs font-medium ${msg?.ok ? "text-green" : "text-err"}`}>{msg?.text}</p>
         </div>
       </section>
 

@@ -57,7 +57,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
 
       {course.hasAccess ? (
         <div className="panel flex flex-wrap items-center justify-between gap-4 !border-green/50 p-5">
-          <p className="font-semibold text-[#b6f5cb]">✔ Ya tienes este curso completo.</p>
+          <p className="font-semibold text-ok">✔ Ya tienes este curso completo.</p>
           <Link href={course.next ? `/mision/${course.next.id}` : `/portales/${course.slug}`} className="btn btn-primary">Continuar</Link>
         </div>
       ) : (

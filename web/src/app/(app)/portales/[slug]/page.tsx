@@ -189,7 +189,7 @@ function BossCard({ boss, guardian, normalCount, label }: { boss: MissionView; g
             <p className="inline-flex items-center gap-2 rounded-xl border border-line bg-bg/60 px-4 py-2 text-sm font-semibold"><span aria-hidden="true">{boss.lock === "suscripcion" ? "🔑" : "🔒"}</span> {boss.lock === "suscripcion" ? "Incluido en la suscripción al curso" : `Termina las ${normalCount} misiones anteriores para desbloquearlo`}</p>
           ) : boss.state === "completada" ? (
             <div className="flex flex-wrap items-center gap-3">
-              <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Purificado · mejor nota {boss.bestScore}%</span>
+              <span className="chip !border-green/60 !bg-green/15 text-sm text-ok">✔ Purificado · mejor nota {boss.bestScore}%</span>
               <Link href={`/mision/${boss.id}`} className="btn btn-secondary btn-sm">Volver a enfrentarlo</Link>
             </div>
           ) : (

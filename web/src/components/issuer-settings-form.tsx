@@ -54,8 +54,8 @@ export function IssuerSettingsForm({ settings }: { settings: IssuerSettings }) {
       </div>
       <input type="hidden" name="signaturePng" value={signature} />
       <div aria-live="polite">
-        {fileError && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{fileError}</p>}
-        {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
+        {fileError && <p role="alert" className="text-sm font-medium text-err">{fileError}</p>}
+        {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
         {state?.message && <p role="status" className="text-sm font-medium text-green">{state.message}</p>}
       </div>
       <Submit />

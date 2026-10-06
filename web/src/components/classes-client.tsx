@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
@@ -13,7 +14,7 @@ function Submit({ children, pending }: { children: React.ReactNode; pending: str
 function Notice({ state }: { state: ClassFormState }) {
   return (
     <div aria-live="polite">
-      {state?.error && <p role="alert" className="mt-2 text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
+      {state?.error && <p role="alert" className="mt-2 text-sm font-medium text-err">{state.error}</p>}
       {state?.message && <p role="status" className="mt-2 text-sm font-medium text-green">{state.message}</p>}
     </div>
   );
@@ -46,9 +47,9 @@ export function CodeCard({ code }: { code: string }) {
     }
   }
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <span className="rounded-xl border-2 border-dashed border-gold/70 bg-gold/10 px-4 py-2 font-mono text-3xl font-bold tracking-[0.3em] text-gold" aria-label={`Código de la clase: ${code.split("").join(" ")}`}>{code}</span>
-      <button type="button" className="btn btn-secondary btn-sm" onClick={copy}>{copied ? "✔ Copiado" : "Copiar código"}</button>
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="rounded-lg border border-dashed border-[#b9a8f0] bg-[#f6f3ff] px-3.5 py-1.5 font-mono text-2xl font-bold tracking-[0.3em] text-[#3b1aa6]" aria-label={`Código de la clase: ${code.split("").join(" ")}`}>{code}</span>
+      <button type="button" className="btn btn-secondary btn-sm" onClick={copy}><Icon name={copied ? "check" : "copy"} className="size-4" />{copied ? "Copiado" : "Copiar código"}</button>
     </div>
   );
 }
@@ -83,18 +84,18 @@ export function ClassActions({ classId, name }: { classId: string; name: string 
         </form>
       ) : (
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="btn btn-ghost btn-sm" disabled={pending} onClick={() => setRenaming(true)}>✏️ Renombrar</button>
+          <button type="button" className="btn btn-ghost btn-sm" disabled={pending} onClick={() => setRenaming(true)}>Renombrar</button>
           <button type="button" className="btn btn-ghost btn-sm" disabled={pending}
             onClick={() => { if (confirm("El código actual dejará de funcionar. Quienes ya están en la clase siguen dentro. ¿Generar uno nuevo?")) run("nuevo_codigo"); }}>
-            🔄 Nuevo código
+            Nuevo código
           </button>
           <button type="button" className="btn btn-ghost btn-sm" disabled={pending}
             onClick={() => { if (confirm("La clase se archivará: nadie más podrá unirse y dejará de aparecer a tus estudiantes. ¿Archivar?")) run("archivar", undefined, () => router.push("/maestro")); }}>
-            🗄️ Archivar
+            Archivar
           </button>
         </div>
       )}
-      {error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="text-sm font-medium text-err">{error}</p>}
     </div>
   );
 }

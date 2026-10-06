@@ -39,7 +39,7 @@ export function DeleteButton({ kind, id, name, consequences }: { kind: Kind; id:
 
   return (
     <>
-      <button type="button" onClick={open} className="btn btn-sm border-coral/50 text-[#ffb3b3] hover:bg-coral/10" aria-label={`Eliminar ${kind} ${name}`}>
+      <button type="button" onClick={open} className="btn btn-sm border-coral/50 text-err hover:bg-coral/10" aria-label={`Eliminar ${kind} ${name}`}>
         Eliminar
       </button>
       <dialog ref={ref} aria-labelledby={titleId} className="m-auto w-[min(92vw,30rem)] rounded-2xl border border-coral/40 bg-bg-2 p-0 text-text backdrop:bg-black/70">
@@ -47,13 +47,13 @@ export function DeleteButton({ kind, id, name, consequences }: { kind: Kind; id:
           <h2 id={titleId} className="text-xl">¿Eliminar {kind === "cuenta" ? "la cuenta de" : kind === "grupo" ? "el grupo" : "el curso"} «{name}»?</h2>
           <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
             {consequences.map((c) => <li key={c}>{c}</li>)}
-            <li className="font-semibold text-[#ffb3b3]">No se puede deshacer.</li>
+            <li className="font-semibold text-err">No se puede deshacer.</li>
           </ul>
           <div>
             <label htmlFor={inputId} className="label">Escribe <strong>ELIMINAR</strong> para confirmar</label>
             <input id={inputId} value={word} onChange={(e) => setWord(e.target.value)} autoComplete="off" spellCheck={false} className="input font-mono uppercase" />
           </div>
-          {error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{error}</p>}
+          {error && <p role="alert" className="text-sm font-medium text-err">{error}</p>}
           <div className="flex flex-wrap justify-end gap-2">
             <button type="button" className="btn btn-ghost" onClick={() => ref.current?.close()}>Cancelar</button>
             <button type="submit" disabled={!ready || pending} className="btn bg-coral font-bold text-ink disabled:opacity-50">

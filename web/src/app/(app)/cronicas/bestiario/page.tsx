@@ -55,7 +55,7 @@ export default async function BestiaryPage() {
                     <>
                       <p className="text-sm">{lore.lore}</p>
                       <p className="text-sm"><strong className="text-coral">⚡ {lore.special}</strong></p>
-                      <p className="text-sm text-[#b6f5cb]">🛡️ {lore.howTo}</p>
+                      <p className="text-sm text-ok">🛡️ {lore.howTo}</p>
                     </>
                   ) : (
                     <p className="text-sm text-muted">{e.slug === "cofre-mimico" ? "Termina una misión larga para descubrirla." : "Termina tu primera misión para descubrirla."}</p>
@@ -89,7 +89,7 @@ export default async function BestiaryPage() {
                   <>
                     <p className="text-sm text-muted">{g.blurb}</p>
                     <p className="text-sm"><strong>Obstáculo:</strong> {g.obstacle}</p>
-                    <p className="text-sm text-[#b6f5cb]"><strong>Se vence con:</strong> {g.weakness}</p>
+                    <p className="text-sm text-ok"><strong>Se vence con:</strong> {g.weakness}</p>
                   </>
                 )}
               </li>

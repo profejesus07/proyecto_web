@@ -64,6 +64,6 @@ export async function saveIssuerSettingsAction(_prev: CertState, fd: FormData): 
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Revisa los datos." };
   await getRepo().saveIssuerSettings(parsed.data);
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { message: "Datos del responsable guardados." };
 }

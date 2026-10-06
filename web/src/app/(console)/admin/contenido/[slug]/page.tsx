@@ -88,7 +88,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
     <div className="space-y-8">
       <BackLink href="/admin/contenido">Contenido</BackLink>
       {imported && (
-        <p role="status" className="panel p-4 font-medium text-[#b6f5cb]">
+        <p role="status" className="panel p-4 font-medium text-ok">
           ✔ Importado desde Excel: {course.modules.length > 0 ? `${course.modules.length} ${course.modules.length === 1 ? "módulo" : "módulos"}, ` : ""}{n} {n === 1 ? "lección" : "lecciones"} y {course.missions.reduce((k, m) => k + m.questions.length, 0)} actividades. Quedó como borrador: revísalo y publícalo cuando esté listo.
         </p>
       )}
@@ -107,7 +107,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
 
       {!course.published && problems.length > 0 && (
         <div role="note" className="panel !border-gold/50 p-4 text-sm">
-          <p className="font-semibold text-[#ffe3a0]">Para publicar falta:</p>
+          <p className="font-semibold text-warn">Para publicar falta:</p>
           <ul className="mt-1 list-disc pl-5 text-muted">{problems.map((p) => <li key={p}>{p}</li>)}</ul>
         </div>
       )}
@@ -154,10 +154,10 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
                   </div>
                 </details>
               ) : (
-                <p className="font-display text-lg font-bold text-[#ffe3a0]">Lecciones sin módulo · ábrelas y elige su módulo</p>
+                <p className="font-display text-lg font-bold text-warn">Lecciones sin módulo · ábrelas y elige su módulo</p>
               )}
               {mod && !missions.some((m) => m.lessonKind === "explicacion") && (
-                <p className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-[#ffe3a0]">📖 Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
+                <p className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-warn">📖 Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
               )}
               <ol className="space-y-3">
                 {missions.map((m, i) => <li key={m.id}>{lesson(m, i, missions.length)}</li>)}

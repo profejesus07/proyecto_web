@@ -24,7 +24,7 @@ export function LinkFamilyForm() {
       </div>
       <p id="family-code-hint" className="hint">Tu hijo o hija lo encuentra en su perfil, en «Mi familia».</p>
       <div aria-live="polite">
-        {state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}
+        {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
         {state?.message && <p role="status" className="text-sm font-medium text-green">{state.message}</p>}
       </div>
     </form>
@@ -49,7 +49,7 @@ export function UnlinkButton({ otherId, label, confirmText }: { otherId: string;
         }}>
         {pending ? "Quitando…" : label}
       </button>
-      {error && <span role="alert" className="text-xs text-[#ffb3b3]">{error}</span>}
+      {error && <span role="alert" className="text-xs text-err">{error}</span>}
     </span>
   );
 }
@@ -87,7 +87,7 @@ export function FamilyCodeCard() {
         <button type="button" className="btn btn-secondary btn-sm" disabled={pending} onClick={() => load(false)}>
           {pending ? "Cargando…" : "👪 Mostrar mi código de familia"}
         </button>
-        {error && <p role="alert" className="text-sm text-[#ffb3b3]">{error}</p>}
+        {error && <p role="alert" className="text-sm text-err">{error}</p>}
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function FamilyCodeCard() {
         onClick={() => window.confirm("¿Cambiar el código? El anterior dejará de servir (las familias ya vinculadas siguen vinculadas).") && load(true)}>
         {pending ? "Cambiando…" : "Cambiar código"}
       </button>
-      {error && <p role="alert" className="text-sm text-[#ffb3b3]">{error}</p>}
+      {error && <p role="alert" className="text-sm text-err">{error}</p>}
     </div>
   );
 }
@@ -143,7 +143,7 @@ export function SendMessage({ studentId, name, left }: { studentId: string; name
         <button type="button" className="btn btn-primary btn-sm" disabled={!choice || pending} onClick={send}>{pending ? "Enviando…" : "💌 Enviar"}</button>
         <span className="text-xs text-muted">{remaining > 0 ? `Te quedan ${remaining} hoy.` : "Ya enviaste los mensajes de hoy."}</span>
       </div>
-      <p aria-live="polite" className={`text-sm font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
+      <p aria-live="polite" className={`text-sm font-medium ${msg?.ok ? "text-green" : "text-err"}`}>{msg?.text}</p>
     </fieldset>
   );
 }

@@ -15,6 +15,10 @@
   --coral: #ff6b6b;
   --green: #4ade80;
   --ink: #14123b;
+  /* Estados (avisos, pagos, notas): tonos pastel que se leen sobre el fondo oscuro del Gremio. */
+  --ok: #b6f5cb;
+  --warn: #ffe3a0;
+  --err: #ffb3b3;
 }
 
 @theme inline {
@@ -31,6 +35,9 @@
   --color-coral: var(--coral);
   --color-green: var(--green);
   --color-ink: var(--ink);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-err: var(--err);
   --font-sans: var(--font-body), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: var(--font-display), "Trebuchet MS", system-ui, sans-serif;
   --radius-xl: 1rem;
@@ -184,10 +191,12 @@ p { text-wrap: pretty; }
 /* Impresión (constancias): hoja horizontal, fondo blanco y solo el documento. */
 @media print {
   @page { size: A4 landscape; margin: 8mm; }
+  html { color-scheme: light; }
   html, body { background: #fff !important; color: #14123b !important; }
-  body * { visibility: hidden; }
-  .certificate, .certificate * { visibility: visible; }
-  .certificate { position: absolute; inset: 0; margin: 0 auto; }
+  /* Con una constancia en la página, solo se imprime ella, en una sola hoja: se ocultan los
+     elementos que ni la contienen ni están dentro de ella. */
+  body:has(.certificate) *:not(:has(.certificate), .certificate, .certificate *) { display: none !important; }
+  .certificate { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: min(100vw, 141.4vh); }
 }
 
 /* Efecto de un poder al aparecer sobre la escena de la misión. */
@@ -234,7 +243,7 @@ p { text-wrap: pretty; }
    Temas por zona. Cada zona redefine los mismos tokens:
    · el Gremio (estudiantes, familias, docentes) usa los de :root;
    · .theme-site: el sitio público (portada, cursos, servicios, legales): claro y académico;
-   · .theme-console: la consola de administración, neutra y sobria.
+   · .theme-panel: la consola de administración y el panel docente, claros y profesionales.
    ============================================================ */
 .theme-site {
   /* Paleta del logotipo sobre papel claro: índigo para el texto, violeta profundo para la acción,
@@ -252,6 +261,9 @@ p { text-wrap: pretty; }
   --coral: #c0362c;
   --green: #12804a;
   --ink: #15103f;
+  --ok: #0f6b3a;
+  --warn: #8a5a00;
+  --err: #b42318;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -331,39 +343,129 @@ p { text-wrap: pretty; }
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
+/* Portada interactiva (hero-stage.tsx): luz que sigue al cursor, cuadrícula que se ilumina,
+   escena con inclinación 3D y reflejo, y un paralaje leve del titular. */
+.hero-stage { --mx: 50%; --my: 50%; --px: 0; --py: 0; position: relative; isolation: isolate; }
+.hero-glow, .hero-grid { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; }
+.hero-glow { background: radial-gradient(34rem circle at var(--mx) var(--my), rgb(138 92 255 / 0.16), rgb(255 200 61 / 0.05) 35%, transparent 65%); }
+.hero-grid {
+  background-image:
+    linear-gradient(rgb(74 34 201 / 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(74 34 201 / 0.22) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(16rem circle at var(--mx) var(--my), #000, transparent 75%);
+  mask-image: radial-gradient(16rem circle at var(--mx) var(--my), #000, transparent 75%);
+}
+.hero-stage[data-active] .hero-glow, .hero-stage[data-active] .hero-grid { opacity: 1; }
+.hero-parallax { transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px), 0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+[data-hero-tilt] {
+  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%;
+  position: relative;
+  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+[data-hero-tilt]::after {
+  content: ""; position: absolute; inset: 0; border-radius: 2rem; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle at var(--gx) var(--gy), rgb(255 255 255 / 0.28), transparent 45%);
+  mix-blend-mode: soft-light; transition: opacity 0.5s ease;
+}
+.hero-stage[data-active] [data-hero-tilt]::after { opacity: 1; }
+.hero-stage[data-active] [data-hero-tilt] { filter: drop-shadow(calc(var(--px) * -14px) calc(18px + var(--py) * -8px) 28px rgb(21 16 63 / 0.25)); }
+@media (prefers-reduced-motion: reduce) { .hero-parallax, [data-hero-tilt] { transform: none !important; } }
+
+/* Recuadro guía del lector de QR, con una línea que lo recorre. */
+.qr-frame {
+  position: relative;
+  box-shadow: 0 0 0 100vmax rgb(21 16 63 / 0.45);
+  background:
+    linear-gradient(#ffc83d, #ffc83d) top left / 22% 3px no-repeat, linear-gradient(#ffc83d, #ffc83d) top left / 3px 22% no-repeat,
+    linear-gradient(#ffc83d, #ffc83d) top right / 22% 3px no-repeat, linear-gradient(#ffc83d, #ffc83d) top right / 3px 22% no-repeat,
+    linear-gradient(#ffc83d, #ffc83d) bottom left / 22% 3px no-repeat, linear-gradient(#ffc83d, #ffc83d) bottom left / 3px 22% no-repeat,
+    linear-gradient(#ffc83d, #ffc83d) bottom right / 22% 3px no-repeat, linear-gradient(#ffc83d, #ffc83d) bottom right / 3px 22% no-repeat;
+}
+.qr-frame::after { content: ""; position: absolute; left: 8%; right: 8%; top: 10%; height: 2px; background: linear-gradient(90deg, transparent, #b79bff, transparent); animation: qr-scan 2.2s ease-in-out infinite alternate; }
+@keyframes qr-scan { to { top: 88%; } }
+@media (prefers-reduced-motion: reduce) { .qr-frame::after { animation: none; top: 50%; } }
+
+/* Botón con un destello que cruza al pasar el cursor. */
+.btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shine::after {
+  content: ""; position: absolute; inset: -2px; z-index: -1; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.35) 48%, transparent 66%);
+  transform: translateX(-120%); transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.btn-shine:hover::after { transform: translateX(120%); }
+@media (prefers-reduced-motion: reduce) { .btn-shine::after { display: none; } }
+
 .lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgb(20 18 59 / 0.35); }
 @keyframes drift { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-8px) rotate(var(--r, 0deg)); } }
 .drift { animation: drift 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .drift { animation: none; } .lift:hover { transform: none; } }
 
-.theme-console {
-  --bg: #0d0f14;
-  --bg-2: #12151c;
-  --panel: #161a23;
-  --panel-2: #1c2130;
-  --line: #262c3a;
-  --text: #e7eaf1;
-  --muted: #98a0b2;
-  --cyan: #b79bff;
-  --violet: #8a5cff;
-  --gold: #f2b84b;
-  --ink: #0b1220;
+/* Panel de trabajo (consola de administración y panel docente): claro, neutro y profesional.
+   Tipografía sans, tablas legibles, el violeta solo para la acción y el estado activo. */
+.theme-panel {
+  --bg: #f5f6fa;
+  --bg-2: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f8f8fc;
+  --line: #e4e6ee;
+  --text: #171433;
+  --muted: #62657f;
+  --cyan: #4a22c9;
+  --violet: #6b3bf5;
+  --gold: #a86a00;
+  --coral: #c0362c;
+  --green: #12804a;
+  --ink: #171433;
+  --ok: #0f6b3a;
+  --warn: #8a5a00;
+  --err: #b42318;
   min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
+  color-scheme: light;
   font-size: 0.95rem;
 }
-.theme-console h1, .theme-console h2, .theme-console h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.015em; }
-.theme-console .panel { background: var(--panel); border-radius: 0.75rem; box-shadow: none; backdrop-filter: none; }
-.theme-console .panel-glow { box-shadow: 0 0 0 1px rgb(183 155 255 / 0.35); }
-.theme-console .btn { border-radius: 0.55rem; font-weight: 600; }
-.theme-console .btn-primary { background: var(--cyan); color: #0f0d2e; box-shadow: none; }
-.theme-console .btn-primary:hover:not(:disabled) { background: #c9b4ff; box-shadow: none; transform: none; }
-.theme-console .btn-secondary { background: rgb(183 155 255 / 0.08); border-color: rgb(183 155 255 / 0.45); color: var(--cyan); }
-.theme-console .input { background: #0f1218; border-radius: 0.55rem; min-height: 2.6rem; }
-.theme-console .eyebrow { color: var(--muted); letter-spacing: 0.1em; }
-.theme-console .chip { border-radius: 0.4rem; }
+.theme-panel ::selection { background: rgb(74 34 201 / 0.16); color: inherit; }
+.theme-panel :focus-visible { outline-color: #4a22c9; }
+.theme-panel h1, .theme-panel h2, .theme-panel h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.02em; }
+.theme-panel .font-display { font-family: var(--font-sans); }
+.theme-panel .panel { background: #fff; border-radius: 0.875rem; box-shadow: 0 1px 2px rgb(23 20 51 / 0.04); backdrop-filter: none; }
+.theme-panel .panel-glow { box-shadow: 0 0 0 1px rgb(74 34 201 / 0.35); }
+.theme-panel .btn { border-radius: 0.6rem; font-weight: 600; border-width: 1px; }
+.theme-panel .btn-primary { background: #4a22c9; color: #fff; box-shadow: 0 1px 2px rgb(23 20 51 / 0.12); }
+.theme-panel .btn-primary:hover:not(:disabled) { background: #3b1aa6; box-shadow: 0 1px 2px rgb(23 20 51 / 0.12); transform: none; }
+.theme-panel .btn-secondary { background: #fff; border-color: var(--line); color: var(--text); }
+.theme-panel .btn-secondary:hover:not(:disabled) { background: #f6f5fb; border-color: #c9c3e6; }
+.theme-panel .btn-ghost { color: var(--muted); }
+.theme-panel .btn-ghost:hover:not(:disabled) { background: #eef0f5; color: var(--text); }
+.theme-panel .input { background: #fff; border-radius: 0.6rem; min-height: 2.6rem; border-width: 1px; }
+.theme-panel .input::placeholder { color: #9a9cb3; }
+.theme-panel .input:hover { border-color: #c9c3e6; }
+.theme-panel .input:focus { border-color: #4a22c9; box-shadow: 0 0 0 3px rgb(74 34 201 / 0.14); }
+.theme-panel .eyebrow { color: #4a22c9; letter-spacing: 0.1em; }
+.theme-panel .chip { border-radius: 0.4rem; background: #f3f1fa; border-color: #e5e0f5; color: #3b2f8f; }
+.theme-panel .bar { background: #eceef4; }
+.theme-panel .hint { color: var(--muted); }
+.theme-panel .hover\:bg-white\/5:hover, .theme-panel .hover\:bg-white\/10:hover { background: #eef0f5; }
+.theme-panel .brand-oscuro { display: none; }
+.theme-panel .brand-claro { display: inline-block; }
+/* Insignias de estado (pagos, actividad). */
+.badge { display: inline-flex; align-items: center; gap: 0.3rem; border-radius: 999px; padding: 0.15rem 0.55rem; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.badge-ok { background: #e7f6ee; color: #0f6b3a; }
+.badge-warn { background: #fff4d6; color: #8a5a00; }
+.badge-err { background: #fdecea; color: #b42318; }
+.badge-muted { background: #eef0f5; color: #555a75; }
+.badge-brand { background: #efeafe; color: #4a22c9; }
+/* Navegación lateral del panel. */
+.ws-nav a { display: flex; flex-shrink: 0; align-items: center; gap: 0.65rem; border-radius: 0.6rem; padding: 0.55rem 0.75rem; font-weight: 500; color: #4b4e69; transition: background 0.15s, color 0.15s; }
+.ws-nav a svg { width: 1.15rem; height: 1.15rem; color: #8a8da6; transition: color 0.15s; }
+.ws-nav a:hover { background: #eef0f5; color: var(--text); }
+.ws-nav a[aria-current="page"] { background: #efeafe; color: #3b1aa6; font-weight: 600; }
+.ws-nav a[aria-current="page"] svg { color: #4a22c9; }
 
 /* Cambio de página con recarga completa (formularios, redirecciones): fundido del navegador. */
 @view-transition { navigation: auto; }

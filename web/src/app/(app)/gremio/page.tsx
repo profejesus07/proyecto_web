@@ -93,7 +93,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
         </div>
       </section>
 
-      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-[#b6f5cb]">✔ Tu contraseña quedó guardada.</p>}
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok">✔ Tu contraseña quedó guardada.</p>}
 
       {messages.length > 0 && (
         <section aria-labelledby="msg-t" className="panel space-y-3 !border-green/40 p-4 sm:p-5">

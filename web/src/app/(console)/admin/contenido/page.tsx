@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DeleteButton } from "@/components/delete-button";
-import { AdminNav } from "@/components/admin-nav";
 import { ImportForm, NewCourseForm } from "@/components/editor-client";
 import { Sprite, asset } from "@/components/sprite";
-import { PageTitle } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { PanelHeader } from "@/components/workspace/ui";
 import { requireAdmin } from "@/lib/auth";
 import { KIND_LABEL } from "@/lib/content";
 import { getRepo } from "@/lib/data";
@@ -20,34 +20,34 @@ export default async function ContentPage() {
   ];
   return (
     <div className="space-y-8">
-      <PageTitle eyebrow="Panel del administrador" title="Contenido">
-        <p>Crea clases y cursos cortos, sus lecciones y preguntas. Nada se ve hasta que lo publiques.</p>
-      </PageTitle>
-      <AdminNav current="contenido" />
+      <PanelHeader title="Contenido" description="Clases y cursos cortos, con sus lecciones y actividades. Nada se ve hasta que lo publiques.">
+        <Link href="/admin/cursos" className="btn btn-secondary btn-sm"><Icon name="tag" className="size-4" /> Precios</Link>
+      </PanelHeader>
 
-      <section aria-labelledby="nuevo-t" className="max-w-3xl space-y-3">
-        <h2 id="nuevo-t" className="text-2xl">Nuevo portal</h2>
-        <NewCourseForm />
-      </section>
-
-      <section aria-labelledby="importar-t" className="max-w-3xl space-y-3">
-        <h2 id="importar-t" className="text-2xl">Importar desde Excel</h2>
-        <ImportForm />
-      </section>
+      <div className="grid gap-6 xl:grid-cols-2">
+        <section aria-labelledby="nuevo-t" className="panel space-y-3 p-5 sm:p-6">
+          <h2 id="nuevo-t" className="flex items-center gap-2 text-lg"><Icon name="plus" className="size-5 text-[#4a22c9]" /> Nuevo portal</h2>
+          <NewCourseForm />
+        </section>
+        <section aria-labelledby="importar-t" className="panel space-y-3 p-5 sm:p-6">
+          <h2 id="importar-t" className="flex items-center gap-2 text-lg"><Icon name="download" className="size-5 text-[#4a22c9]" /> Importar desde Excel</h2>
+          <ImportForm />
+        </section>
+      </div>
 
       {groups.map((g) => {
         const list = courses.filter((c) => c.kind === g.kind);
         return (
           <section key={g.kind} aria-labelledby={`g-${g.kind}`} className="space-y-3">
-            <h2 id={`g-${g.kind}`} className="text-2xl">{g.title}</h2>
+            <h2 id={`g-${g.kind}`} className="text-lg">{g.title} <span className="font-normal text-muted">· {list.length}</span></h2>
             {list.length === 0 ? (
               <p className="panel p-5 text-muted">Todavía no hay ninguno.</p>
             ) : (
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((c) => (
-                  <li key={c.slug} className="panel flex h-full flex-col transition hover:border-cyan/50">
+                  <li key={c.slug} className="panel flex h-full flex-col transition hover:border-[#c9c3e6] hover:shadow-md">
                     <Link href={`/admin/contenido/${c.slug}`} className="flex flex-1 items-center gap-3 p-4">
-                      <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 object-contain" />
+                      <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 rounded-lg bg-[#f3f1fa] object-contain p-1" />
                       <span className="min-w-0">
                         <span className="block truncate font-semibold">{c.title}</span>
                         <span className="block text-xs text-muted">
@@ -55,10 +55,10 @@ export default async function ContentPage() {
                           {c.kind === "clase" && c.grade ? ` · ${c.area ?? ""} ${c.grade} ${c.schoolYear ?? ""}` : ""}
                           {c.hours ? ` · ${c.hours} h` : ""}
                         </span>
-                        <span className={`mt-1 inline-block rounded px-1.5 text-xs font-bold ${c.published ? "bg-green/15 text-[#b6f5cb]" : "bg-white/10 text-muted"}`}>{c.published ? "Publicado" : "Borrador"}</span>
+                        <span className={`badge mt-1.5 ${c.published ? "badge-ok" : "badge-muted"}`}>{c.published ? "Publicado" : "Borrador"}</span>
                       </span>
                     </Link>
-                    <div className="flex justify-end border-t border-line/60 px-4 py-2">
+                    <div className="flex justify-end border-t border-line px-4 py-2">
                       <DeleteButton kind="curso" id={c.slug} name={c.title} consequences={[
                         "Se borran sus lecciones, sus preguntas y el avance de todos los estudiantes en este curso.",
                         "Se quitan los accesos al curso. Sus pagos quedan en la copia contable y las constancias ya expedidas siguen verificables.",

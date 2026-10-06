@@ -38,7 +38,7 @@ export function PayButtons({ course, student, options, test }: { course: string;
         ))}
       </div>
       {test && <p className="text-center text-xs font-semibold text-gold">🧪 Modo de prueba: no se cobra dinero real.</p>}
-      <div aria-live="polite">{state?.error && <p role="alert" className="text-sm font-medium text-[#ffb3b3]">{state.error}</p>}</div>
+      <div aria-live="polite">{state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}</div>
     </div>
   );
 }

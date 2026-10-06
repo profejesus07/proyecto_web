@@ -33,7 +33,7 @@ function PortalCard({ c }: { c: CourseView }) {
         <p className="text-xs font-bold uppercase tracking-wider" style={{ color }}>{eyebrow} · {ELEMENT_LABEL[c.element]}</p>
         <h3 className="text-xl">{c.title}</h3>
         <p className="text-sm text-muted">{c.summary}</p>
-        <p className={`w-fit rounded-lg px-2.5 py-1 text-xs font-bold ${c.hasAccess ? "bg-green/15 text-[#b6f5cb]" : "bg-gold/15 text-[#ffe3a0]"}`}>
+        <p className={`w-fit rounded-lg px-2.5 py-1 text-xs font-bold ${c.hasAccess ? "bg-green/15 text-ok" : "bg-gold/15 text-warn"}`}>
           {c.hasAccess ? (c.kind === "clase" ? "✔ Acceso anual activo" : "✔ Curso completo") : `Lección 1 gratis · ${c.kind === "clase" ? "año completo" : "completo"}: ${formatPrice(c.price)}`}
         </p>
         <div className="mt-auto space-y-2 pt-2">

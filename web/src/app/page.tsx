@@ -3,6 +3,7 @@ import { Icon, type IconName } from "@/components/icons";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
 import { DungeonShowcase } from "@/components/dungeon-showcase";
+import { HeroStage } from "@/components/hero-stage";
 import { Sprite, asset } from "@/components/sprite";
 import { loadCatalog } from "@/lib/data/queries";
 
@@ -29,26 +30,28 @@ export default async function Home() {
   return (
     <SiteShell>
       {/* ===== Portada ===== */}
-      <section className="paper relative isolate overflow-hidden border-b border-line">
+      <HeroStage className="paper overflow-hidden border-b border-line">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_28rem_at_85%_30%,rgb(138_92_255/0.14),transparent_70%),linear-gradient(to_bottom,transparent_60%,white)]" aria-hidden="true" />
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:py-20">
-          <div className="rise min-w-0 space-y-6">
-            <p className="eyebrow">Academia virtual</p>
-            <h1 className="text-[2.6rem] leading-[1.05] sm:text-6xl">
-              Cursos en línea que se aprenden como una <span className="underline-gold">aventura</span>
-            </h1>
-            <p className="max-w-lg text-lg text-muted">Lecciones breves, práctica guiada y una historia que te acompaña de principio a fin.</p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/programas" className="btn btn-primary btn-lg">Ver cursos <Icon name="arrow" className="size-5" /></Link>
-              <Link href="/registro" className="btn btn-secondary btn-lg">Crear cuenta gratis</Link>
+          <div className="rise min-w-0">
+            <div className="hero-parallax space-y-6">
+              <p className="eyebrow">Academia virtual</p>
+              <h1 className="text-[2.6rem] leading-[1.05] sm:text-6xl">
+                Cursos en línea que se aprenden como una <span className="underline-gold">aventura</span>
+              </h1>
+              <p className="max-w-lg text-lg text-muted">Lecciones breves, práctica guiada y una historia que te acompaña de principio a fin.</p>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/programas" className="btn btn-primary btn-lg">Ver cursos <Icon name="arrow" className="size-5" /></Link>
+                <Link href="/registro" className="btn btn-secondary btn-lg">Crear cuenta gratis</Link>
+              </div>
+              <p className="text-sm text-muted">¿Ya tienes cuenta? <Link href="/ingresar" className="font-semibold text-[#4a22c9] underline underline-offset-4">Ingresar</Link></p>
             </div>
-            <p className="text-sm text-muted">¿Ya tienes cuenta? <Link href="/ingresar" className="font-semibold text-[#4a22c9] underline underline-offset-4">Ingresar</Link></p>
           </div>
           <div className="rise relative mx-auto w-full min-w-0 max-w-lg [animation-delay:120ms]">
-            <DungeonShowcase />
+            <div data-hero-tilt><DungeonShowcase /></div>
           </div>
         </div>
-      </section>
+      </HeroStage>
 
       {/* ===== Lo esencial ===== */}
       <section aria-label="Lo esencial" className="border-b border-line">

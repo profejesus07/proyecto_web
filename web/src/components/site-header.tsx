@@ -77,14 +77,22 @@ export async function SiteHeader() {
 }
 
 /** Cabecera del sitio público: no depende de quién mira, así las páginas se sirven estáticas desde la CDN.
- *  Solo el logo y las tres secciones; en celular, el menú baja a una segunda fila. */
+ *  Logo, las tres secciones al centro y, separada por una línea fina, la acción principal: crear la cuenta.
+ *  En celular, el menú baja a una segunda fila y el botón se acorta. */
 export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur-md print:hidden">
       <div className="site-header-line" aria-hidden="true" />
-      <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr] items-center gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
-        <Logo href="/" />
-        <SiteNav className="hidden justify-self-end md:flex" />
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
+        <Logo href="/" size="h-12 sm:h-14 lg:h-16" />
+        <SiteNav className="hidden md:flex" />
+        <div className="flex items-center gap-3">
+          <span className="hidden h-8 w-px bg-line lg:block" aria-hidden="true" />
+          <Link href="/registro" className="btn btn-primary btn-shine max-sm:min-h-10 max-sm:px-3.5 max-sm:text-sm">
+            <svg viewBox="0 0 24 24" className="size-4 text-[#ffc83d]" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.1 6.4 6.4 2.1-6.4 2.1L12 19.5l-2.1-6.4L3.5 11l6.4-2.1z" /></svg>
+            <span className="sm:hidden">Crear cuenta</span><span className="hidden sm:inline">Crear cuenta gratis</span>
+          </Link>
+        </div>
       </div>
       <div className="px-4 pb-2.5 md:hidden"><SiteNav className="mx-auto flex max-w-md" /></div>
     </header>

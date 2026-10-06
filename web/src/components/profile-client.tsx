@@ -14,7 +14,7 @@ export function DisplayNameForm({ current }: { current: string }) {
         <input id="displayName" name="displayName" defaultValue={current} required minLength={2} maxLength={24} autoComplete="nickname" className="input min-w-0 flex-1" aria-describedby="displayName-msg" />
         <button type="submit" className="btn btn-primary btn-sm" disabled={pending}>{pending ? "Guardando…" : "Guardar"}</button>
       </div>
-      <p id="displayName-msg" aria-live="polite" className={`text-sm font-medium ${state?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{state?.message}</p>
+      <p id="displayName-msg" aria-live="polite" className={`text-sm font-medium ${state?.ok ? "text-green" : "text-err"}`}>{state?.message}</p>
     </form>
   );
 }
@@ -36,7 +36,7 @@ export function BuyButton({ itemId, price, coins, owned, open = true, stack, use
   if (owned) {
     return (
       <div className="space-y-2">
-        <span className="chip !border-green/60 !bg-green/15 text-sm text-[#b6f5cb]">✔ Ya lo tienes</span>
+        <span className="chip !border-green/60 !bg-green/15 text-sm text-ok">✔ Ya lo tienes</span>
         {/* Tras comprar, la página se actualiza y el objeto ya es suyo: el mensaje se conserva. */}
         {msg?.ok && <p role="status" className="text-xs font-medium text-green">{msg.text}</p>}
         {useLink}
@@ -71,7 +71,7 @@ export function BuyButton({ itemId, price, coins, owned, open = true, stack, use
         {pending ? "Comprando…" : full ? "Mochila llena" : <>🪙 {price} · Comprar</>}
       </button>
       {poor && !full && !msg && <p className="text-center text-xs text-muted">Te faltan {price - coins} monedas</p>}
-      <p aria-live="polite" className={`text-center text-xs font-medium ${msg?.ok ? "text-green" : "text-[#ffb3b3]"}`}>{msg?.text}</p>
+      <p aria-live="polite" className={`text-center text-xs font-medium ${msg?.ok ? "text-green" : "text-err"}`}>{msg?.text}</p>
       {msg?.ok && useLink}
     </div>
   );

@@ -59,7 +59,7 @@ export async function createTeacherAction(_prev: AdminFormState, formData: FormD
     if (/already|registered|exists/i.test(msg)) return { error: "Ese correo ya tiene cuenta. Búscalo en «Personas» y cámbiale el rol a Docente." };
     return { error: "No pudimos crear la cuenta. Inténtalo de nuevo." };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { message: `Cuenta de docente creada para ${name}.`, email: email.data, password };
 }
 
@@ -72,7 +72,7 @@ export async function setRoleAction(userId: string, role: string): Promise<{ ok:
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos cambiar el rol.") };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { ok: true };
 }
 
@@ -94,7 +94,7 @@ export async function grantAccessAction(userId: string, course: string, months: 
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos activar el curso.") };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { ok: true };
 }
 
@@ -106,7 +106,7 @@ export async function revokeAccessAction(userId: string, course: string): Promis
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos quitar el acceso.") };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { ok: true };
 }
 
@@ -140,7 +140,7 @@ export async function createLinkedClassAction(_prev: AdminFormState, formData: F
   if (name.length < 2 || name.length > 60) return { error: "El nombre del grupo debe tener entre 2 y 60 caracteres." };
   try {
     const r = await getRepo().adminCreateClass(viewer.id, course, name, teacher);
-    revalidatePath("/admin");
+    revalidatePath("/admin", "layout");
     return { message: `Grupo «${name}» creado. Código: ${r.code}` };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
@@ -158,7 +158,7 @@ export async function assignTeacherAction(classId: string, teacherId: string): P
   } catch {
     return { ok: false, error: "No pudimos cambiar el docente." };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin", "layout");
   return { ok: true };
 }
 
@@ -191,7 +191,7 @@ export async function deleteClassAction(classId: string, word: string): Promise<
   if (!UUID.test(classId) && !/^[\w-]{1,40}$/.test(classId)) return { ok: false, error: MESSAGES.clase_no_encontrada };
   try {
     const r = await getRepo().adminDeleteClass(viewer.id, classId);
-    revalidatePath("/admin");
+    revalidatePath("/admin", "layout");
     return { ok: true, message: `Se eliminó el grupo «${r.name}».` };
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos eliminar el grupo.") };
@@ -206,7 +206,7 @@ export async function deleteUserAction(userId: string, word: string): Promise<De
   if (userId === viewer.id) return { ok: false, error: MESSAGES.no_a_ti_mismo };
   try {
     const r = await getRepo().adminDeleteUser(viewer.id, userId);
-    revalidatePath("/admin");
+    revalidatePath("/admin", "layout");
     return { ok: true, message: `Se eliminó la cuenta de ${r.name}.` };
   } catch (e) {
     return { ok: false, error: friendly(e, "No pudimos eliminar la cuenta.") };
