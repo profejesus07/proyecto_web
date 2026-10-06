@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <SiteShell gremio>
       <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
-        <section aria-labelledby="bienvenida-t" className="mx-auto grid max-w-4xl items-center gap-8 md:grid-cols-[1fr_1.5fr]">
+        <section aria-labelledby="bienvenida-t" className="mx-auto grid max-w-3xl items-center gap-8 md:grid-cols-[1fr_1.2fr]">
           <aside className="text-center">
             <KuroGreeter />
             <p className="mt-3 font-display text-xl font-bold">¡Hola! Soy Kuro.</p>
