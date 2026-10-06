@@ -10,8 +10,8 @@ export function ProgramCard({ c }: { c: CatalogItem }) {
   const color = ELEMENT_COLOR[c.element] ?? "#8a5cff";
   const meta = [c.kind === "clase" ? (c.grade ? `Grado ${c.grade}` : c.area) : c.area, c.hours ? `${c.hours} h` : null].filter(Boolean).join(" · ");
   return (
-    <li className="lift group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-white">
-      <div className="relative h-40 overflow-hidden border-b border-line" style={{ background: `radial-gradient(90% 120% at 80% 20%, ${color}40, transparent 70%), linear-gradient(160deg, #f7f6fb, #ece8fb)` }}>
+    <li className="lift group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-panel">
+      <div className="relative h-40 overflow-hidden border-b border-line" style={{ background: `radial-gradient(90% 120% at 80% 20%, ${color}40, transparent 70%), linear-gradient(160deg, #241f5c, #14123b)` }}>
         <Sprite src={asset.boss(c.guardian)} alt="" decorative className="absolute -bottom-2 right-3 h-[112%] w-auto transition-transform duration-300 group-hover:scale-105" />
         <span className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-[#15103f] shadow-sm">{KIND_LABEL[c.kind]}</span>
       </div>

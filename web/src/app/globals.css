@@ -242,84 +242,9 @@ p { text-wrap: pretty; }
 /* ============================================================
    Temas por zona. Cada zona redefine los mismos tokens:
    · el Gremio (estudiantes, familias, docentes) usa los de :root;
-   · .theme-site: el sitio público (portada, cursos, servicios, legales): claro y académico;
+   · .theme-gremio: el sitio público (portada, cursos, servicios, legales), con los mismos colores del Gremio;
    · .theme-panel: la consola de administración y el panel docente, claros y profesionales.
    ============================================================ */
-.theme-site {
-  /* Paleta del logotipo sobre papel claro: índigo para el texto, violeta profundo para la acción,
-     lavanda para los fondos suaves y el dorado solo para lo que se resalta (gratis, el subrayado). */
-  --bg: #ffffff;
-  --bg-2: #f7f6fb;
-  --panel: #ffffff;
-  --panel-2: #f7f6fb;
-  --line: #e8e5f0;
-  --text: #15103f;
-  --muted: #5e5b78;
-  --cyan: #4a22c9;
-  --violet: #4a22c9;
-  --gold: #ffc83d;
-  --coral: #c0362c;
-  --green: #12804a;
-  --ink: #15103f;
-  --ok: #0f6b3a;
-  --warn: #8a5a00;
-  --err: #b42318;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
-  color-scheme: light;
-}
-.theme-site > main { flex: 1; }
-.theme-site ::selection { background: rgb(74 34 201 / 0.16); color: inherit; }
-.theme-site :focus-visible { outline-color: #4a22c9; }
-/* Títulos: serif académica (Fraunces), sin mayúsculas forzadas. */
-.theme-site h1, .theme-site h2, .theme-site h3, .theme-site .serif {
-  font-family: var(--font-serif), Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  font-variation-settings: "opsz" 72;
-}
-.theme-site h3 { font-variation-settings: "opsz" 24; letter-spacing: -0.01em; }
-.theme-site .eyebrow { color: #4a22c9; letter-spacing: 0.12em; font-weight: 700; }
-.theme-site .panel { background: #fff; box-shadow: 0 1px 2px rgb(21 16 63 / 0.04); backdrop-filter: none; border-radius: 1rem; }
-.theme-site .btn { border-radius: 0.75rem; font-weight: 600; }
-.theme-site .btn-primary { background: #4a22c9; color: #fff; box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 8px 18px -10px rgb(74 34 201 / 0.9); }
-.theme-site .btn-primary:hover:not(:disabled) { background: #3b1aa6; transform: translateY(-1px); box-shadow: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 12px 22px -12px rgb(74 34 201 / 0.9); }
-.theme-site .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--text); }
-.theme-site .btn-secondary:hover:not(:disabled) { border-color: #4a22c9; color: #4a22c9; background: #fff; }
-.theme-site .btn-gold { background: #ffc83d; color: #15103f; }
-.theme-site .btn-gold:hover:not(:disabled) { background: #ffd666; transform: translateY(-1px); }
-.theme-site .btn-white { background: #fff; color: #15103f; }
-.theme-site .btn-white:hover:not(:disabled) { background: #f1edff; }
-.theme-site .btn-ghost:hover:not(:disabled) { background: #f3f1fa; }
-.theme-site .input { background: #fff; border-radius: 0.75rem; }
-.theme-site .input::placeholder { color: #9a97b0; }
-.theme-site .input:hover { border-color: #cbc5e3; }
-.theme-site .input:focus { border-color: #4a22c9; box-shadow: 0 0 0 4px rgb(74 34 201 / 0.12); }
-.theme-site .chip { background: #f3f1fa; border-color: #e5e0f5; color: #3b2f8f; }
-/* Subrayado dorado a mano alzada para una palabra del titular. */
-.theme-site .underline-gold {
-  background: linear-gradient(transparent 68%, rgb(255 200 61 / 0.9) 68%, rgb(255 200 61 / 0.9) 92%, transparent 92%);
-  padding: 0 0.06em;
-}
-/* Papel cuadriculado muy suave, como un cuaderno. */
-.theme-site .paper {
-  background-image:
-    linear-gradient(rgb(74 34 201 / 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(74 34 201 / 0.045) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-/* Banda índigo para llamados importantes. */
-.theme-site .ink-band {
-  background:
-    radial-gradient(28rem 18rem at 100% 0%, rgb(138 92 255 / 0.45), transparent 60%),
-    radial-gradient(20rem 14rem at 0% 100%, rgb(255 200 61 / 0.12), transparent 60%),
-    #15103f;
-  color: #fff;
-}
-.theme-site .ink-band .eyebrow { color: #ffc83d; }
 
 /* Cabecera pública: línea de portal (violeta → lavanda → dorado) y menú segmentado. */
 .site-header-line { height: 3px; background: linear-gradient(90deg, #4a22c9, #8a5cff 40%, #b79bff 70%, #ffc83d); }
@@ -343,6 +268,22 @@ p { text-wrap: pretty; }
 .kuro-greeter:hover { filter: drop-shadow(0 0 18px rgb(183 155 255 / 0.45)); }
 .kuro-greeter:active { transform: translate(calc(var(--kx) * 10px), calc(var(--ky) * 5px - 6px)) rotate(calc(var(--kx) * 7deg)) scale(1.04); }
 @media (prefers-reduced-motion: reduce) { .kuro-greeter, .kuro-greeter:active { transform: none; } }
+
+/* Piezas del sitio público en el estilo del Gremio (fondo oscuro). */
+.theme-gremio .paper {
+  background-image:
+    linear-gradient(rgb(183 155 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(183 155 255 / 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.theme-gremio .ink-band {
+  background: radial-gradient(28rem 18rem at 100% 0%, rgb(138 92 255 / 0.4), transparent 60%), linear-gradient(135deg, #241f5c, #15103f);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.theme-gremio .ink-band .eyebrow { color: var(--gold); }
+.theme-gremio .btn-gold { background: linear-gradient(180deg, #ffd86b, var(--gold)); color: var(--ink); }
+.theme-gremio .serif { font-family: var(--font-display); font-weight: 700; }
 
 /* En el estilo del Gremio (fondo oscuro), el menú usa sus colores. */
 .theme-gremio { min-height: 100dvh; display: flex; flex-direction: column; }
@@ -495,5 +436,3 @@ p { text-wrap: pretty; }
 
 /* Logotipo: dos tintas, se muestra la que corresponde al tema. */
 .brand-claro { display: none; }
-.theme-site .brand-oscuro { display: none; }
-.theme-site .brand-claro { display: inline-block; }

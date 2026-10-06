@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /* Logotipo de Academia Umbral (SVG en /public/brand). Hay dos tintas: texto claro para fondos
-   oscuros (juego, consola) y texto índigo para el sitio claro (.theme-site); el CSS muestra la que toca. */
+   oscuros (juego y sitio público) y texto índigo para fondos claros (paneles de trabajo); el CSS muestra la que toca. */
 function Brand({ name, className, ...size }: { name: string; className?: string; width?: number; height?: number }) {
   return (
     <>

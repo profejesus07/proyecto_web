@@ -13,7 +13,7 @@ export default async function Home() {
   const featured = (await loadCatalog()).slice(0, 3);
 
   return (
-    <SiteShell gremio>
+    <SiteShell>
       <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <section aria-labelledby="bienvenida-t" className="mx-auto grid max-w-3xl items-center gap-8 md:grid-cols-[1fr_1.2fr]">
           <aside className="text-center">

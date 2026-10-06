@@ -89,8 +89,8 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <dl className={`relative -mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_12px_30px_-20px_rgb(21_16_63/0.35)] sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
           {facts.map((f) => (
-            <div key={f.label} className="flex items-center gap-3 bg-white p-5">
-              <span className="grid size-10 place-items-center rounded-xl bg-[#f3f1fa] text-[#4a22c9]"><Icon name={f.icon} /></span>
+            <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
+              <span className="grid size-10 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name={f.icon} /></span>
               <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="text-lg font-semibold">{f.value}</dd></div>
             </div>
           ))}
@@ -103,18 +103,18 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
               <div key={mod?.id ?? "todas"} className="space-y-2">
                 {mod && c.modules.length > 0 && (
                   <h3 className="text-lg">
-                    <span className="text-[#4a22c9]">Módulo {gi + 1}</span>{mod.title.trim().toLowerCase() !== `módulo ${gi + 1}` && <> · {mod.title}</>}
+                    <span className="text-cyan">Módulo {gi + 1}</span>{mod.title.trim().toLowerCase() !== `módulo ${gi + 1}` && <> · {mod.title}</>}
                     <span className="ml-2 font-sans text-sm font-normal text-muted">Guardián: {guardianBySlug(mod.guardian)?.name ?? mod.guardian}</span>
                   </h3>
                 )}
-                <ol className="divide-y divide-line rounded-2xl border border-line bg-white">
+                <ol className="divide-y divide-line rounded-2xl border border-line bg-panel">
                   {missions.map((m) => (
                     <li key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
-                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f3f1fa] text-sm font-semibold text-[#4a22c9]">{m.position}</span>
+                      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-cyan/10 text-sm font-semibold text-cyan">{m.position}</span>
                       <span className="flex-1 font-medium">{m.title}</span>
-                      {m.position <= free && !c.isFree && <span className="rounded-md bg-[#ffc83d]/30 px-2 py-0.5 text-xs font-semibold text-[#7a5200]">Gratis</span>}
-                      {m.lessonKind === "explicacion" && <span className="rounded-md bg-[#f3f1fa] px-2 py-0.5 text-xs font-semibold text-[#4a22c9]">Explicación</span>}
-                      {m.isBoss && <span className="rounded-md bg-[#15103f] px-2 py-0.5 text-xs font-semibold text-white">Reto del Guardián</span>}
+                      {m.position <= free && !c.isFree && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-warn">Gratis</span>}
+                      {m.lessonKind === "explicacion" && <span className="rounded-md bg-cyan/10 px-2 py-0.5 text-xs font-semibold text-cyan">Explicación</span>}
+                      {m.isBoss && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>
@@ -123,7 +123,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
           </section>
 
           <aside className="space-y-5">
-            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line bg-white p-6">
+            <section aria-labelledby="incluye-t" className="rounded-2xl border border-line bg-panel p-6">
               <h2 id="incluye-t" className="text-xl">Incluye</h2>
               <ul className="mt-4 space-y-2.5 text-sm">
                 {[
@@ -132,11 +132,11 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                   c.kind === "curso" ? "Constancia de asistencia verificable en línea" : "Acceso durante el año lectivo",
                   chapters ? `${chapters} capítulos de las Crónicas` : null,
                   c.trainerName ? `Formador: ${c.trainerName}${c.trainerTitle ? `, ${c.trainerTitle}` : ""}` : null,
-                ].filter(Boolean).map((t) => <li key={t} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-[#4a22c9]" />{t}</li>)}
+                ].filter(Boolean).map((t) => <li key={t} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-cyan" />{t}</li>)}
               </ul>
             </section>
             {(c.modules.length > 1 ? c.modules.map((m) => guardianBySlug(m.guardian)) : [g]).filter((x, i, all) => x && all.indexOf(x) === i).map((gg) => gg && (
-              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line bg-[#f7f6fb] p-6">
+              <section key={gg.slug} aria-label={`Guardián ${gg.name}`} className="rounded-2xl border border-line bg-panel-2 p-6">
                 <h2 className="text-xl">{c.modules.length > 1 ? `Guardián: ${gg.name}` : `El reto final: ${gg.name}`}</h2>
                 <p className="mt-2 text-sm text-muted">{gg.blurb}</p>
               </section>

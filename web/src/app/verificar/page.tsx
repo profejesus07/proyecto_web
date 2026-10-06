@@ -20,9 +20,9 @@ export default async function VerifyFormPage({ searchParams }: PageProps<"/verif
         </div>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-2">
-        <section aria-labelledby="qr-t" className="space-y-4 rounded-2xl border border-line bg-white p-6">
+        <section aria-labelledby="qr-t" className="space-y-4 rounded-2xl border border-line bg-panel p-6">
           <div className="flex items-start gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f3f1fa] text-[#4a22c9]"><Icon name="qr" /></span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name="qr" /></span>
             <div>
               <h2 id="qr-t" className="text-xl">Escanea el código QR</h2>
               <p className="text-sm text-muted">Está en la esquina inferior derecha de la constancia.</p>
@@ -30,9 +30,9 @@ export default async function VerifyFormPage({ searchParams }: PageProps<"/verif
           </div>
           <QrScanner />
         </section>
-        <section aria-labelledby="codigo-t" className="space-y-4 rounded-2xl border border-line bg-white p-6">
+        <section aria-labelledby="codigo-t" className="space-y-4 rounded-2xl border border-line bg-panel p-6">
           <div className="flex items-start gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f3f1fa] text-[#4a22c9]"><Icon name="search" /></span>
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name="search" /></span>
             <div>
               <h2 id="codigo-t" className="text-xl">O escribe el código</h2>
               <p className="text-sm text-muted">Por ejemplo, UMB-7K3D-9QXA.</p>

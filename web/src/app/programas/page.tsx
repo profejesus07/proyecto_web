@@ -35,10 +35,10 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
           <p className="eyebrow">Catálogo</p>
           <h1 className="mt-2 text-4xl sm:text-5xl">Cursos</h1>
           <p className="mt-3 max-w-xl text-lg text-muted">La primera lección de cada curso es gratis.</p>
-          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-[#f4f2fa] p-1 ring-1 ring-line sm:inline-flex sm:w-auto">
+          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-white/5 p-1 ring-1 ring-line sm:inline-flex sm:w-auto">
             {FILTERS.map(([t, label]) => (
               <Link key={t} href={t ? `/programas?tipo=${t}` : "/programas"} aria-current={tipo === t ? "page" : undefined}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-white text-[#15103f] shadow-sm ring-1 ring-line" : "text-muted hover:text-text"}`}>{label}</Link>
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-gold text-ink shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
             ))}
           </nav>
         </div>
@@ -46,7 +46,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {groups.length === 0 ? (
           <p className="mt-12 rounded-2xl border border-dashed border-line p-10 text-center text-muted">
-            {tipo ? <>No hay cursos en esta categoría todavía. <Link href="/programas" className="font-semibold text-[#4a22c9] underline underline-offset-4">Ver todos</Link></> : "Muy pronto publicaremos los primeros cursos."}
+            {tipo ? <>No hay cursos en esta categoría todavía. <Link href="/programas" className="font-semibold text-cyan underline underline-offset-4">Ver todos</Link></> : "Muy pronto publicaremos los primeros cursos."}
           </p>
         ) : (
           groups.map((g) => (
@@ -71,7 +71,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
               <details key={f.q} className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-[#f3f1fa] text-[#4a22c9] transition group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-cyan/10 text-cyan transition group-open:rotate-45">+</span>
                 </summary>
                 <p className="mt-3 max-w-2xl text-muted">{f.a}</p>
               </details>

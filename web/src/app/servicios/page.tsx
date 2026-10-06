@@ -32,17 +32,17 @@ export default function ServicesPage() {
       <section id="servicios" aria-label="Servicios" className="mx-auto max-w-6xl scroll-mt-28 px-4 pt-16 sm:px-6">
         <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((s) => (
-            <li key={s.id} className="lift flex flex-col rounded-2xl border border-line bg-white p-7">
-              <span className={`grid size-12 place-items-center rounded-xl ${s.main ? "bg-[#4a22c9] text-white" : "bg-[#f3f1fa] text-[#4a22c9]"}`}><Icon name={s.icon} className="size-6" /></span>
+            <li key={s.id} className="lift flex flex-col rounded-2xl border border-line bg-panel p-7">
+              <span className={`grid size-12 place-items-center rounded-xl ${s.main ? "bg-violet text-white" : "bg-cyan/10 text-cyan"}`}><Icon name={s.icon} className="size-6" /></span>
               <h3 className="mt-5 text-xl leading-snug">{s.title}</h3>
               <p className="mt-2 text-sm text-muted">{s.lead}</p>
               <ul className="mt-4 space-y-1.5 text-sm">
-                {s.features.slice(0, 3).map((f) => <li key={f} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-[#4a22c9]" />{f}</li>)}
+                {s.features.slice(0, 3).map((f) => <li key={f} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-cyan" />{f}</li>)}
               </ul>
               {s.main ? (
-                <Link href="/programas" className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-[#4a22c9] hover:underline hover:underline-offset-4">Ver cursos <Icon name="arrow" className="size-4" /></Link>
+                <Link href="/programas" className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-cyan hover:underline hover:underline-offset-4">Ver cursos <Icon name="arrow" className="size-4" /></Link>
               ) : (
-                <a href={mail(`Me interesa: ${s.title}`)} className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-[#4a22c9] hover:underline hover:underline-offset-4">Solicitar demo <Icon name="arrow" className="size-4" /></a>
+                <a href={mail(`Me interesa: ${s.title}`)} className="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-semibold text-cyan hover:underline hover:underline-offset-4">Solicitar demo <Icon name="arrow" className="size-4" /></a>
               )}
             </li>
           ))}
@@ -55,8 +55,8 @@ export default function ServicesPage() {
         <h2 id="proceso-t" className="mt-2 text-3xl sm:text-4xl">Cómo trabajamos</h2>
         <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {PROCESS.map((p, i) => (
-            <li key={p.title} className="border-t-2 border-[#4a22c9] pt-5">
-              <span className="serif text-sm text-[#4a22c9]">Paso {i + 1}</span>
+            <li key={p.title} className="border-t-2 border-cyan pt-5">
+              <span className="serif text-sm text-cyan">Paso {i + 1}</span>
               <h3 className="mt-1 text-xl">{p.title}</h3>
               <p className="mt-1 text-sm text-muted">{p.text}</p>
             </li>
