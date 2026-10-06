@@ -24,8 +24,8 @@ export async function SiteHeader() {
   if (viewer && isStaff(viewer.role)) {
     return (
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
-        <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-4 px-4 sm:px-6">
-          <Logo href={homePath(viewer.role)} compact />
+        <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+          <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
           <nav aria-label="Administración" className="flex items-center gap-2">
             <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
             <form action={logoutAction}>
@@ -40,8 +40,8 @@ export async function SiteHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
-        <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-4 px-4 sm:px-6">
-          <Logo href={viewer ? homePath(viewer.role) : "/"} compact={!!viewer} />
+        <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-2 px-4 sm:h-20 sm:gap-4 sm:px-6">
+          <Logo href={viewer ? homePath(viewer.role) : "/"} compact size="h-14 lg:h-[4.5rem]" />
 
           {viewer ? (
             <>

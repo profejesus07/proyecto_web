@@ -17,11 +17,15 @@ export function Emblem({ size = 32 }: { size?: number }) {
   return <Brand name="academia-umbral-isotipo-estatico" className="shrink-0" width={size} height={size} />;
 }
 
-/** compact se conserva por compatibilidad: el logotipo ya es una sola pieza que escala. size: clases de alto del logotipo. */
-export function Logo({ href = "/", size = "h-14 sm:h-[4.5rem]" }: { href?: string; compact?: boolean; size?: string }) {
+/**
+ * Logotipo horizontal que lleva al inicio. size: clases de alto. compact: en celular (menos de 640 px)
+ * se muestra solo el isotipo, para que la cabecera quepa junto a los botones de la cuenta.
+ */
+export function Logo({ href = "/", size = "h-14 sm:h-[4.5rem]", compact = false }: { href?: string; compact?: boolean; size?: string }) {
   return (
     <Link href={href} className="inline-flex shrink-0 items-center" aria-label="Academia Virtual Umbral, ir al inicio">
-      <Brand name="academia-umbral-horizontal" className={`${size} w-auto`} />
+      {compact && <span className="inline-flex sm:hidden"><Brand name="academia-umbral-isotipo-estatico" className="size-11" /></span>}
+      <span className={compact ? "hidden sm:inline-flex" : "inline-flex"}><Brand name="academia-umbral-horizontal" className={`${size} w-auto`} /></span>
     </Link>
   );
 }

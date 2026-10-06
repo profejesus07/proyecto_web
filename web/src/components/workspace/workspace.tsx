@@ -21,8 +21,8 @@ export function Workspace({ viewer, badge, home, groups, navLabel, children }: {
   return (
     <div className="theme-panel">
       <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
-        <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-3 px-4 sm:px-6">
-          <Logo href={home} size="h-10" />
+        <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-2 px-4 sm:gap-3 sm:px-6">
+          <Logo href={home} size="h-10" compact />
           <span className="badge badge-brand hidden sm:inline-flex">{badge}</span>
           <nav aria-label="Cuenta" className="ml-auto flex items-center gap-1">
             <Link href="/" className="btn btn-ghost btn-sm hidden md:inline-flex"><Icon name="external" className="size-4" /> Ver el sitio</Link>
@@ -42,7 +42,7 @@ export function Workspace({ viewer, badge, home, groups, navLabel, children }: {
         </div>
       </header>
       <div className="mx-auto grid max-w-[90rem] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[15rem_1fr] lg:gap-10 lg:py-8">
-        <aside className="print:hidden lg:sticky lg:top-24 lg:self-start">
+        <aside className="min-w-0 print:hidden lg:sticky lg:top-24 lg:self-start">
           <WorkspaceNav groups={groups} label={navLabel} />
         </aside>
         <main id="contenido" className="min-w-0">{children}</main>
