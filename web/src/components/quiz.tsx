@@ -142,7 +142,7 @@ function ScoreRing({ score, passed }: { score: number; passed: boolean }) {
     <div className="relative grid size-36 place-items-center" role="img" aria-label={`${score} por ciento de aciertos`}>
       <svg viewBox="0 0 120 120" className="absolute inset-0 -rotate-90" aria-hidden="true">
         <circle cx="60" cy="60" r={r} fill="none" stroke="rgb(255 255 255 / 0.1)" strokeWidth="10" />
-        <circle cx="60" cy="60" r={r} fill="none" stroke={passed ? "#4ade80" : "#ffc83d"} strokeWidth="10" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} style={{ transition: "stroke-dashoffset 1s ease-out" }} />
+        <circle cx="60" cy="60" r={r} fill="none" stroke={passed ? "var(--green)" : "var(--warn)"} strokeWidth="10" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} style={{ transition: "stroke-dashoffset 1s ease-out" }} />
       </svg>
       <span className="font-display text-4xl font-extrabold">{score}<span className="text-xl">%</span></span>
     </div>
@@ -590,7 +590,7 @@ export function Quiz(p: QuizProps) {
                 <span className="text-muted">{hp === 0 ? "¡Listo para purificarlo!" : `Faltan ${Math.max(0, needed - rightCount)} aciertos`}</span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`Vida de ${p.guardian.name}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(hp * 100)}>
-                <div className="h-full rounded-full bg-gradient-to-r from-coral to-gold transition-[width] duration-700 ease-out" style={{ width: `${hp * 100}%` }} />
+                <div className="h-full rounded-full bg-coral transition-[width] duration-700 ease-out" style={{ width: `${hp * 100}%` }} />
               </div>
             </div>
           ) : (
