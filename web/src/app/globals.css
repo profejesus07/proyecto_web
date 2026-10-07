@@ -50,6 +50,7 @@
   --riel: rgb(255 255 255 / 0.09);                           /* fondo de las barras */
   --hover-suave: rgb(255 255 255 / 0.07);
   --sombra-panel: 0 18px 40px -24px rgb(0 0 0 / 0.7);
+  --palomita: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%2315173F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");  /* casilla marcada: Cosmos sobre Aurora */
   /* Estados (avisos, pagos, notas): tonos pastel que se leen sobre el fondo oscuro del Gremio. */
   --ok: #b6f5cb;
   --warn: #ffe3a0;
@@ -379,6 +380,7 @@ p { text-wrap: pretty; }
   --riel: #DDDBEE;
   --hover-suave: color-mix(in srgb, #15173F 6%, transparent);
   --sombra-panel: 0 16px 32px -24px rgb(21 23 63 / 0.3);
+  --palomita: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23FFFFFF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");  /* casilla marcada: blanco sobre Aurora oscuro */
   --ok: #0f6b3a;
   --warn: #8a5a00;
   --err: #b42318;
@@ -463,6 +465,18 @@ html:has([data-tema="claro"]), html:has([data-tema="claro"]) body { background: 
 [data-tema="claro"] .brand-claro { display: inline-block; }
 [data-tema="claro"] [data-tema="oscuro"] .brand-oscuro { display: inline-block; }
 [data-tema="claro"] [data-tema="oscuro"] .brand-claro { display: none; }
+
+/* Casilla con la marca (registro): borde de campo (≥ 3:1) y, marcada, el color de acción con su palomita. */
+.casilla {
+  appearance: none; flex-shrink: 0; width: 1.25rem; height: 1.25rem; margin: 0.125rem 0 0;
+  border: 1.5px solid var(--line-fuerte); border-radius: 0.375rem; background: var(--campo);
+  cursor: pointer; transition: background-color 0.15s, border-color 0.15s;
+}
+.casilla:hover { border-color: var(--accion); }
+.casilla:checked { border-color: var(--accion); background: var(--accion) var(--palomita) center / 100% no-repeat; }
+.casilla:focus-visible { outline: 3px solid var(--accion); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .casilla { transition: none; } }
+@media (forced-colors: active) { .casilla { appearance: auto; } }
 
 /* Escala del sitio principal (manual §6). En la capa base: las clases de cada página pueden ajustarla. */
 @layer base {
