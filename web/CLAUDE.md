@@ -95,6 +95,11 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   es la fecha de corte: antes, Academia Virtual Umbral (logo, sello, texto y fuentes de entonces); desde ese
   momento, UNEX Academy. No hay cambios en la base de datos.
 - `CODE_PATTERN` y la URL de verificación del QR no cambian.
+- Todo lo que depende de la marca está en `MARCAS` y `marcaDeConstancia()` (`src/lib/certificates.ts`): logo,
+  sello, marca de agua y emisor de `/verificar`. Las de UNEX Academy usan `unex-academy.svg`, el isotipo
+  monocromo al 5 % y texto en Lexend; las anteriores, exactamente lo de antes (DM Sans, logo y sello Umbral).
+- El documento fija `font-normal`: no hereda el peso 350 del sitio.
+- `MARCA_UNEX_DESDE` es provisional (2099) hasta el commit «Fija la fecha», justo antes del merge.
 
 ### Al trabajar
 - Rama `marca-unex`, nunca `main` ni la rama de producción (`claude/focused-cannon-jwalw4`). El usuario hace

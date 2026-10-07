@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 import { dmSans, fraunces } from "@/app/fonts/documentos";
-import { LEGAL_FOOTER, docShort, longDate } from "@/lib/certificates";
+import { LEGAL_FOOTER, docShort, longDate, marcaDeConstancia, type MarcaConstancia } from "@/lib/certificates";
 import type { Certificate } from "@/lib/data/types";
 
 /** Esquinas ornamentales del marco (se rotan para cada esquina). */
@@ -22,8 +22,12 @@ const SEAL_POINTS = Array.from({ length: 72 }, (_, i) => {
   return `${(60 + r * Math.cos(a)).toFixed(2)},${(60 + r * Math.sin(a)).toFixed(2)}`;
 }).join(" ");
 
-/** Sello dorado de la academia. */
-function Seal() {
+/**
+ * Sello dorado de la constancia. El de la marca anterior se conserva tal cual; el de UNEX Academy cambia
+ * el texto y usa Cosmos y Nova en el centro.
+ */
+function Seal({ marca }: { marca: MarcaConstancia }) {
+  const unex = marca.id === "unex";
   return (
     <svg viewBox="0 0 120 120" className="w-full" aria-hidden="true">
       <defs>
@@ -37,11 +41,11 @@ function Seal() {
       <polygon points={SEAL_POINTS} fill="url(#cert-seal)" />
       <circle cx="60" cy="60" r="49" fill="none" stroke="#a87b18" strokeWidth="0.8" />
       <circle cx="60" cy="60" r="44" fill="none" stroke="#fff6d6" strokeWidth="1.2" />
-      <circle cx="60" cy="60" r="33" fill="#15103f" />
-      <text fontSize="6.6" fontWeight="700" fill="#15103f" fontFamily="system-ui, sans-serif">
-        <textPath href="#cert-seal-arc" textLength="252" lengthAdjust="spacing">ACADEMIA VIRTUAL UMBRAL · CONSTANCIA VERIFICABLE ·</textPath>
+      <circle cx="60" cy="60" r="33" fill={unex ? "#15173F" : "#15103f"} />
+      <text fontSize="6.6" fontWeight="700" fill={unex ? "#15173F" : "#15103f"} fontFamily="system-ui, sans-serif">
+        <textPath href="#cert-seal-arc" textLength="252" lengthAdjust="spacing">{marca.sello}</textPath>
       </text>
-      <path d="M60 42l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="#ffc83d" />
+      <path d="M60 42l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill={unex ? "#F8B630" : "#ffc83d"} />
     </svg>
   );
 }
@@ -50,21 +54,26 @@ function Seal() {
  * Constancia de asistencia (educación informal). Documento horizontal con proporción de hoja A4,
  * pensado para verse en pantalla y para imprimir o guardar como PDF. Las medidas van en unidades
  * del contenedor (cqw), así la composición es idéntica a cualquier tamaño.
- * Los datos vienen de la «foto» fija de la constancia.
+ * Los datos vienen de la «foto» fija de la constancia. La marca (logo, sello, marca de agua y fuente del
+ * texto) es la de la fecha en que se emitió: ver MARCA_UNEX_DESDE en lib/certificates.ts.
  */
 export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { cert: Certificate; verifyUrl: string; signaturePng: string | null }) {
   const qr = await QRCode.toString(verifyUrl, { type: "svg", margin: 0, color: { dark: "#15103f", light: "#ffffff00" } });
   const number = String(cert.number).padStart(6, "0");
+  const marca = marcaDeConstancia(cert);
+  // Texto en DM Sans en las anteriores al corte (como se emitieron) y en Lexend en las de UNEX Academy.
+  // font-normal: el documento no hereda el peso 350 del sitio.
+  const texto = marca.id === "umbral" ? dmSans.className : "";
   return (
     <div className="rounded-2xl print:rounded-none">
       <article aria-label="Constancia de asistencia"
-        className={`${fraunces.variable} ${dmSans.className} certificate relative mx-auto aspect-[297/210] w-full max-w-[1100px] overflow-hidden bg-[#fffdf8] text-[#15103f] shadow-[0_30px_60px_-30px_rgb(21_16_63/0.45)] [container-type:inline-size] print:max-w-none print:shadow-none`}>
+        className={`${fraunces.variable} ${texto} font-normal certificate relative mx-auto aspect-[297/210] w-full max-w-[1100px] overflow-hidden bg-[#fffdf8] text-[#15103f] shadow-[0_30px_60px_-30px_rgb(21_16_63/0.45)] [container-type:inline-size] print:max-w-none print:shadow-none`}>
         {/* Fondo: guilloche suave y marca de agua. */}
         <div className="absolute inset-0" aria-hidden="true" style={{
           backgroundImage: "repeating-radial-gradient(circle at 50% 120%, rgb(176 138 46 / 0.06) 0 1px, transparent 1px 9px), radial-gradient(70% 60% at 50% 45%, #fffdf8, #f6f0e2)",
         }} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/academia-umbral-isotipo-estatico-claro.svg" alt="" aria-hidden="true" className="absolute left-1/2 top-1/2 w-[34%] -translate-x-1/2 -translate-y-1/2 opacity-[0.045]" />
+        <img src={marca.marcaDeAgua.src} alt="" aria-hidden="true" className="absolute left-1/2 top-1/2 w-[34%] -translate-x-1/2 -translate-y-1/2" style={{ opacity: marca.marcaDeAgua.opacidad }} />
 
         {/* Marco doble: índigo y dorado. */}
         <div className="absolute inset-[2.2%] border-[0.25cqw] border-[#15103f]" aria-hidden="true" />
@@ -78,7 +87,7 @@ export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { c
           <header className="flex items-start justify-between">
             <p className="w-[22%] text-left text-[1cqw] uppercase tracking-[0.18em] text-[#6b6788]">Educación informal<br /><span className="text-[#15103f]">Modalidad virtual</span></p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/academia-umbral-horizontal-claro.svg" alt="Academia Virtual Umbral" className="w-[24%]" />
+            <img src={marca.logo.src} alt={marca.logo.alt} className="w-[24%]" />
             <p className="w-[22%] text-right text-[1cqw] uppercase tracking-[0.18em] text-[#6b6788]">Constancia N.º<br /><strong className="font-mono text-[1.25cqw] tracking-[0.12em] text-[#15103f]">{number}</strong></p>
           </header>
 
@@ -109,7 +118,7 @@ export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { c
               <p className="mt-[3%] text-[1.25cqw] font-semibold">{cert.issuerName}</p>
               {cert.issuerTitle && <p className="text-[1.05cqw] text-[#6b6788]">{cert.issuerTitle}</p>}
             </div>
-            <div className="w-[11cqw]"><Seal /></div>
+            <div className="w-[11cqw]"><Seal marca={marca} /></div>
             <div className="flex items-center justify-center gap-[5%] text-left">
               <div className="size-[8.5cqw] shrink-0 rounded-[0.6cqw] bg-white p-[0.5cqw] ring-1 ring-[#e6dcc2] [&>svg]:size-full" aria-hidden="true" dangerouslySetInnerHTML={{ __html: qr }} />
               <div className="min-w-0 text-[1cqw] leading-snug text-[#3b3770]">
