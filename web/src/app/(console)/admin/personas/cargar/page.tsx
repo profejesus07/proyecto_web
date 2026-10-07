@@ -23,7 +23,7 @@ export default async function LoadStudentsPage() {
           { icon: "people" as const, title: "Grupo", text: "Opcional: el estudiante queda en ese grupo y su docente lo supervisa desde ya." },
         ].map((t) => (
           <div key={t.title} className="flex gap-3 rounded-xl border border-line bg-white p-4">
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name={t.icon} className="size-4" /></span>
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name={t.icon} className="size-4" /></span>
             <span><strong className="block">{t.title}</strong><span className="text-muted">{t.text}</span></span>
           </div>
         ))}

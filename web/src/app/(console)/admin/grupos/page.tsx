@@ -23,13 +23,13 @@ export default async function GroupsPage() {
 
       <dl className="grid gap-4 sm:grid-cols-3">
         <Kpi icon="hash" label="Grupos activos" value={active.length} />
-        <Kpi icon="people" label="Estudiantes en grupos" value={active.reduce((n, c) => n + c.members, 0)} tone="ok" />
+        <Kpi icon="people" label="Estudiantes en grupos" value={active.reduce((n, c) => n + c.members, 0)} tone="brand" />
         <Kpi icon="user" label="Docentes supervisando" value={new Set(active.map((c) => c.teacherId)).size} tone="muted" />
       </dl>
 
       <section aria-labelledby="nuevo-grupo-t" className="panel space-y-3 p-5 sm:p-6">
         <div className="flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name="plus" /></span>
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name="plus" /></span>
           <div>
             <h2 id="nuevo-grupo-t" className="text-lg">Crear grupo</h2>
             <p className="text-sm text-muted">Elige el docente que lo supervisa. Después asigna sus estudiantes.</p>
@@ -43,10 +43,10 @@ export default async function GroupsPage() {
           <ul className="panel divide-y divide-line">
             {classes.map((c) => (
               <li key={c.id} className="flex flex-wrap items-center gap-4 p-4">
-                <span className="rounded-lg bg-[#f3f1fa] px-2.5 py-1.5 font-mono text-sm font-bold tracking-[0.2em] text-[#3b1aa6]">{c.code}</span>
+                <span className="rounded-lg bg-accion-suave px-2.5 py-1.5 font-mono text-sm font-bold tracking-[0.2em] text-accion-fuerte">{c.code}</span>
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-2">
-                    <Link href={`/admin/grupos/${c.id}`} className="font-semibold hover:text-[#4a22c9] hover:underline">{c.name}</Link>
+                    <Link href={`/admin/grupos/${c.id}`} className="font-semibold hover:text-accion hover:underline">{c.name}</Link>
                     {c.archived && <span className="badge badge-muted">Archivado</span>}
                   </p>
                   <p className="text-sm text-muted">

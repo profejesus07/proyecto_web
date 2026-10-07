@@ -16,7 +16,7 @@ export function PanelHeader({ title, description, eyebrow, children }: { title: 
 
 /** Indicador con icono, valor y una nota opcional. */
 export function Kpi({ icon, label, value, hint, tone = "brand" }: { icon: IconName; label: string; value: React.ReactNode; hint?: React.ReactNode; tone?: "brand" | "ok" | "warn" | "muted" }) {
-  const tones = { brand: "bg-[#efeafe] text-[#4a22c9]", ok: "bg-[#e7f6ee] text-[#0f6b3a]", warn: "bg-[#fff4d6] text-[#8a5a00]", muted: "bg-[#eef0f5] text-[#555a75]" };
+  const tones = { brand: "bg-accion-suave text-accion", ok: "bg-[#e7f6ee] text-[#0f6b3a]", warn: "bg-[#fff4d6] text-[#8a5a00]", muted: "bg-[#eef0f5] text-[#555a75]" };
   return (
     <div className="panel flex items-start gap-4 p-5">
       <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${tones[tone]}`}><Icon name={icon} /></span>

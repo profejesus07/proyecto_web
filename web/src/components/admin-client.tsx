@@ -177,7 +177,7 @@ export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: st
         {state?.message && (
           <p role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">
             ✔ {state.message}
-            {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-[#4a22c9] underline underline-offset-4">Asignar estudiantes →</Link>}
+            {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-accion underline underline-offset-4">Asignar estudiantes →</Link>}
           </p>
         )}
       </div>

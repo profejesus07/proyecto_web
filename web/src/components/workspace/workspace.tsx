@@ -29,7 +29,7 @@ export function Workspace({ viewer, badge, home, groups, navLabel, children }: {
             <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm hidden md:inline-flex"><Icon name="key" className="size-4" /> Contraseña</Link>
             <span className="mx-1 hidden h-6 w-px bg-line md:block" aria-hidden="true" />
             <span className="flex items-center gap-2 pl-1">
-              <span className="grid size-8 place-items-center rounded-full bg-[#15103f] text-xs font-bold text-white" aria-hidden="true">{initials(viewer.displayName)}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-ink text-xs font-bold text-white" aria-hidden="true">{initials(viewer.displayName)}</span>
               <span className="hidden leading-tight sm:block">
                 <span className="block max-w-40 truncate text-sm font-semibold">{viewer.displayName}</span>
                 <span className="block text-xs text-muted">{ROLE_LABEL[viewer.role]}</span>

@@ -50,7 +50,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
             <li key={a.href} className={`flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3 text-sm ${a.tone === "warn" ? "border-[#f5dfa0] bg-[#fffaeb]" : "border-line bg-white"}`}>
               <Icon name="alert" className={`size-5 shrink-0 ${a.tone === "warn" ? "text-warn" : "text-muted"}`} />
               <span className="flex-1">{a.text}</span>
-              <Link href={a.href} className="font-semibold text-[#4a22c9] hover:underline">{a.cta} →</Link>
+              <Link href={a.href} className="font-semibold text-accion hover:underline">{a.cta} →</Link>
             </li>
           ))}
         </ul>
@@ -59,7 +59,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
       <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi icon="people" label="Estudiantes" value={count("estudiante")} hint={`${count("familia")} familias vinculadas`} />
         <Kpi icon="user" label="Docentes" value={count("docente")} hint={`${groups.length} grupos activos`} tone="muted" />
-        <Kpi icon="key" label="Cursos activados" value={activeAccess} hint="Accesos vigentes" tone="ok" />
+        <Kpi icon="key" label="Cursos activados" value={activeAccess} hint="Accesos vigentes" tone="muted" />
         <Kpi icon="coins" label="Ingresos aprobados" value={formatPrice(income)} hint={pending ? `${pending} pagos pendientes` : `${approved.length} pagos`} tone="warn" />
       </dl>
 
@@ -67,10 +67,10 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {ACTIONS.map((a) => (
             <li key={a.href}>
-              <Link href={a.href} className="panel group flex h-full items-center gap-3 p-4 transition hover:border-[#c9c3e6]">
-                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name={a.icon} /></span>
+              <Link href={a.href} className="panel group flex h-full items-center gap-3 p-4 transition hover:border-line-fuerte">
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name={a.icon} /></span>
                 <span className="min-w-0 flex-1"><span className="block font-semibold">{a.label}</span><span className="block text-xs text-muted">{a.text}</span></span>
-                <Icon name="arrow" className="size-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-[#4a22c9]" />
+                <Icon name="arrow" className="size-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-accion" />
               </Link>
             </li>
           ))}
@@ -78,7 +78,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
       </PanelSection>
 
       <div className="grid gap-8 xl:grid-cols-2">
-        <PanelSection id="ult-pagos-t" title="Últimos pagos" action={<Link href="/admin/pagos" className="text-sm font-semibold text-[#4a22c9] hover:underline">Ver todos →</Link>}>
+        <PanelSection id="ult-pagos-t" title="Últimos pagos" action={<Link href="/admin/pagos" className="text-sm font-semibold text-accion hover:underline">Ver todos →</Link>}>
           {payments.length === 0 ? <Empty icon="coins">Todavía no hay pagos.</Empty> : (
             <ul className="panel divide-y divide-line">
               {payments.slice(0, 6).map((p) => (
@@ -91,13 +91,13 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
             </ul>
           )}
         </PanelSection>
-        <PanelSection id="ult-const-t" title="Últimas constancias" action={<Link href="/admin/constancias" className="text-sm font-semibold text-[#4a22c9] hover:underline">Ver todas →</Link>}>
+        <PanelSection id="ult-const-t" title="Últimas constancias" action={<Link href="/admin/constancias" className="text-sm font-semibold text-accion hover:underline">Ver todas →</Link>}>
           {certs.length === 0 ? <Empty icon="seal">Todavía no se ha expedido ninguna constancia.</Empty> : (
             <ul className="panel divide-y divide-line">
               {certs.slice(0, 6).map((c) => (
                 <li key={c.code}>
                   <Link href={`/admin/constancias/${c.code}`} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-[#f8f8fc]">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name="seal" className="size-4" /></span>
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name="seal" className="size-4" /></span>
                     <span className="min-w-0 flex-1"><span className="block truncate font-medium">{c.participantName}</span><span className="block truncate text-xs text-muted">{c.courseTitle} · {shortDate(c.issuedAt)}</span></span>
                     <span className="font-mono text-xs text-muted">{c.code}</span>
                   </Link>

@@ -13,7 +13,7 @@ import type { Role } from "@/lib/data/types";
 
 export const metadata: Metadata = { title: "Personas · Consola" };
 
-const ROLE_BADGE: Record<Role, string> = { estudiante: "badge-brand", familia: "badge-muted", docente: "badge-ok", admin: "badge-warn" };
+const ROLE_BADGE: Record<Role, string> = { estudiante: "badge-brand", familia: "badge-muted", docente: "badge-muted", admin: "badge-warn" };
 const FILTERS: [string, string][] = [["", "Todas"], ["estudiante", "Estudiantes"], ["docente", "Docentes"], ["familia", "Familias"]];
 
 export default async function PeoplePage({ searchParams }: PageProps<"/admin/personas">) {
@@ -36,14 +36,14 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
 
       <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi icon="people" label="Estudiantes" value={count("estudiante")} />
-        <Kpi icon="user" label="Docentes" value={count("docente")} tone="ok" />
+        <Kpi icon="user" label="Docentes" value={count("docente")} tone="muted" />
         <Kpi icon="people" label="Familias" value={count("familia")} tone="muted" />
         <Kpi icon="key" label="Cursos activados" value={found.reduce((n, u) => n + u.access.filter((a) => isAccessActive(a.expiresAt)).length, 0)} tone="warn" />
       </dl>
 
       <section aria-labelledby="docente-t" className="panel space-y-3 p-5 sm:p-6">
         <div className="flex items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#efeafe] text-[#4a22c9]"><Icon name="plus" /></span>
+          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name="plus" /></span>
           <div>
             <h2 id="docente-t" className="text-lg">Crear cuenta de docente</h2>
             <p className="text-sm text-muted">Queda lista para entrar con una contraseña temporal. El docente supervisa a los estudiantes que le asignes en Grupos; no juega ni cambia sus datos o sus notas.</p>
@@ -68,7 +68,7 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
         <nav aria-label="Filtrar por rol" className="flex flex-wrap gap-1">
           {FILTERS.map(([v, label]) => (
             <Link key={v} href={href(v)} aria-current={rol === v ? "page" : undefined}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${rol === v ? "bg-[#15103f] text-white" : "text-muted hover:bg-[#eef0f5] hover:text-text"}`}>{label}</Link>
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${rol === v ? "bg-ink text-white" : "text-muted hover:bg-[#eef0f5] hover:text-text"}`}>{label}</Link>
           ))}
         </nav>
         {users.length === 0 ? <Empty icon="search">No hay personas que coincidan.</Empty> : (
@@ -76,7 +76,7 @@ export default async function PeoplePage({ searchParams }: PageProps<"/admin/per
             {users.map((u) => (
               <li key={u.id} className="grid gap-3 p-4 lg:grid-cols-[1.3fr_auto_1.7fr] lg:items-center">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#eef0f5] text-sm font-bold text-[#3b2f8f]" aria-hidden="true">{u.name.slice(0, 1).toUpperCase()}</span>
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#eef0f5] text-sm font-bold text-accion-fuerte" aria-hidden="true">{u.name.slice(0, 1).toUpperCase()}</span>
                   <div className="min-w-0">
                     <p className="flex flex-wrap items-center gap-2 font-semibold"><span className="truncate">{u.name}</span> <span className={`badge ${ROLE_BADGE[u.role]}`}>{ROLE_LABEL[u.role]}</span></p>
                     <p className="truncate text-sm text-muted">{isUsernameAccount(u.email) ? <>Usuario: <span className="font-mono">{loginLabel(u.email)}</span></> : u.email}</p>

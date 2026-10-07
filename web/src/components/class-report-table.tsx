@@ -80,7 +80,7 @@ export function ClassReportTable({ columns, rows, passMark, fileName, editable }
         <div role="group" aria-label="Filtrar estudiantes" className="flex flex-wrap gap-1">
           {FILTERS.map(([f, label]) => (
             <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}
-              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === f ? "bg-[#15103f] text-white" : "text-muted hover:bg-[#eef0f5] hover:text-text"}`}>
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${filter === f ? "bg-ink text-white" : "text-muted hover:bg-[#eef0f5] hover:text-text"}`}>
               {label} <span className={filter === f ? "text-white/70" : "text-muted"}>{counts[f]}</span>
             </button>
           ))}
@@ -131,9 +131,9 @@ export function ClassReportTable({ columns, rows, passMark, fileName, editable }
                     <span className="flex items-center gap-2.5">
                       {r.avatar}
                       <span className="min-w-0">
-                        {r.href ? <Link href={r.href} className="block truncate hover:text-[#4a22c9] hover:underline">{r.name}</Link> : <span className="block truncate">{r.name}</span>}
+                        {r.href ? <Link href={r.href} className="block truncate hover:text-accion hover:underline">{r.name}</Link> : <span className="block truncate">{r.name}</span>}
                         <span className="flex items-center gap-1.5 text-xs font-normal text-muted">
-                          <span className="rounded px-1 text-[0.65rem] font-extrabold text-[#14123b]" style={{ background: r.rankColor }}>{r.rankKey}</span>
+                          <span className="rounded px-1 text-[0.65rem] font-extrabold text-ink" style={{ background: r.rankColor }}>{r.rankKey}</span>
                           {r.xp} XP{r.title && <> · «{r.title}»</>}
                         </span>
                       </span>
@@ -142,7 +142,7 @@ export function ClassReportTable({ columns, rows, passMark, fileName, editable }
                   <td className="px-3 py-3">
                     <span className="flex items-center gap-2">
                       <span className="h-1.5 w-20 overflow-hidden rounded-full bg-[#eceef4]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Avance de ${r.name}`}>
-                        <span className="block h-full rounded-full bg-[#4a22c9]" style={{ width: `${pct}%` }} />
+                        <span className="block h-full rounded-full bg-violet" style={{ width: `${pct}%` }} />
                       </span>
                       <span className="tabular-nums text-muted">{r.done}/{r.total}</span>
                     </span>

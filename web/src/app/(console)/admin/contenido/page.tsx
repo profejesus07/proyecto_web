@@ -26,11 +26,11 @@ export default async function ContentPage() {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <section aria-labelledby="nuevo-t" className="panel space-y-3 p-5 sm:p-6">
-          <h2 id="nuevo-t" className="flex items-center gap-2 text-lg"><Icon name="plus" className="size-5 text-[#4a22c9]" /> Nuevo portal</h2>
+          <h2 id="nuevo-t" className="flex items-center gap-2 text-lg"><Icon name="plus" className="size-5 text-accion" /> Nuevo portal</h2>
           <NewCourseForm />
         </section>
         <section aria-labelledby="importar-t" className="panel space-y-3 p-5 sm:p-6">
-          <h2 id="importar-t" className="flex items-center gap-2 text-lg"><Icon name="download" className="size-5 text-[#4a22c9]" /> Importar desde Excel</h2>
+          <h2 id="importar-t" className="flex items-center gap-2 text-lg"><Icon name="download" className="size-5 text-accion" /> Importar desde Excel</h2>
           <ImportForm />
         </section>
       </div>
@@ -45,9 +45,9 @@ export default async function ContentPage() {
             ) : (
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((c) => (
-                  <li key={c.slug} className="panel flex h-full flex-col transition hover:border-[#c9c3e6] hover:shadow-md">
+                  <li key={c.slug} className="panel flex h-full flex-col transition hover:border-line-fuerte hover:shadow-md">
                     <Link href={`/admin/contenido/${c.slug}`} className="flex flex-1 items-center gap-3 p-4">
-                      <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 rounded-lg bg-[#f3f1fa] object-contain p-1" />
+                      <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 rounded-lg bg-bg object-contain p-1" />
                       <span className="min-w-0">
                         <span className="block truncate font-semibold">{c.title}</span>
                         <span className="block text-xs text-muted">

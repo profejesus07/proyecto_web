@@ -102,7 +102,7 @@ export default async function GroupReportPage({ params }: PageProps<"/maestro/[i
       </dl>
 
       <div className={`flex items-start gap-3 rounded-xl border p-4 text-sm ${insight.warn ? "border-[#f5dfa0] bg-[#fffaeb]" : "border-line bg-white"}`}>
-        <Icon name={insight.warn ? "alert" : "chart"} className={`mt-0.5 size-5 shrink-0 ${insight.warn ? "text-warn" : "text-[#4a22c9]"}`} />
+        <Icon name={insight.warn ? "alert" : "chart"} className={`mt-0.5 size-5 shrink-0 ${insight.warn ? "text-warn" : "text-accion"}`} />
         <p>{insight.text}</p>
       </div>
 
@@ -130,7 +130,7 @@ export default async function GroupReportPage({ params }: PageProps<"/maestro/[i
       </PanelSection>
 
       <p className="flex items-center gap-1.5 text-sm text-muted"><Icon name="shield" className="size-4" /> Muestra el nombre de aventurero, el rango y el avance de cada estudiante; nunca su correo ni su contraseña.</p>
-      {admin && <p className="text-sm"><Link href={`/admin/grupos/${id}`} className="font-semibold text-[#4a22c9] hover:underline">Asignar o quitar estudiantes →</Link></p>}
+      {admin && <p className="text-sm"><Link href={`/admin/grupos/${id}`} className="font-semibold text-accion hover:underline">Asignar o quitar estudiantes →</Link></p>}
     </div>
   );
 }

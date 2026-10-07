@@ -24,7 +24,7 @@ export default async function PricesPage() {
           <ul className="panel divide-y divide-line">
             {courses.map((c) => (
               <li key={c.slug} className="flex flex-wrap items-center gap-4 p-4">
-                <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-12 shrink-0 rounded-lg bg-[#f3f1fa] object-contain p-1" />
+                <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-12 shrink-0 rounded-lg bg-bg object-contain p-1" />
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-2 font-semibold">{c.title} <span className="badge badge-muted">{KIND_LABEL[c.kind]}</span>{c.isFree && <span className="badge badge-ok">Gratis</span>}</p>
                   <p className="text-sm text-muted">
