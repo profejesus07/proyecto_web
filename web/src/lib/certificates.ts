@@ -58,7 +58,7 @@ export const MARCAS: Record<MarcaConstancia["id"], MarcaConstancia> = {
     id: "unex",
     emisor: "UNEX Academy",
     logo: { src: "/brand/unex-academy.svg", alt: "UNEX Academy" },
-    marcaDeAgua: { src: "/brand/unex-isotipo-monocromo.svg", opacidad: 0.05 },
+    marcaDeAgua: { src: "/brand/unex-isotipo-monocromo.svg", opacidad: 0.04 },
     sello: "UNEX ACADEMY · CONSTANCIA VERIFICABLE ·",
   },
 };
