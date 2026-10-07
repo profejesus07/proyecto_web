@@ -36,9 +36,9 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
 - `unex-academy-negativo.svg` sobre fondos oscuros; `unex-academy.svg` sobre fondos claros.
 - El logo horizontal **nunca por debajo de 160 px de ancho** en pantalla. Donde no quepa, el isotipo de
   Academy (`unex-academy-isotipo*.svg`, mínimo 24 px). `src/components/logo.tsx` aplica esta regla.
-- Favicon: `unex-favicon.svg` en `src/app/icon.svg` (regla del manual por debajo de 24 px). Se comparó a
-  16 px con el isotipo de Academy, que se veía fino. En pestañas oscuras los trazos Cosmos se pierden; no se
-  arregla editando el SVG.
+- Favicon: `unex-favicon-adaptativo.svg` (aprobado por la marca) en `src/app/icon.svg`, sin modificar. Es el
+  favicon del manual para menos de 24 px con una regla interna `prefers-color-scheme`: trazos Cosmos en
+  navegadores claros y Polvo en oscuros.
 - Excepciones en documentos (constancias, diplomas, PDF), según el manual: marca de agua con el isotipo
   monocromo al 4–6 % de opacidad; en un documento escalado en pantalla cuenta el tamaño impreso (mínimo 40 mm).
 - Los SVG `public/brand/academia-umbral-*` **no se borran**: los usan las constancias anteriores al cambio.
