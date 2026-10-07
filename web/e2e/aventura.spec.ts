@@ -509,6 +509,12 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
     await expect(menu.getByRole("link", { name: seccion })).toHaveAttribute("aria-current", "page");
   }
 
+  // El pie público: las secciones, la cuenta y las plataformas UNEX.
+  const pie = page.getByRole("contentinfo");
+  await expect(pie.getByRole("navigation", { name: "UNEX Academy" }).getByRole("link")).toHaveText(["Cursos", "Cómo se juega", "Familias y docentes"]);
+  await expect(pie.getByRole("link", { name: "Verificar una constancia" })).toHaveAttribute("href", "/verificar");
+  await expect(pie.getByRole("navigation", { name: "Plataformas UNEX" }).getByRole("link", { name: "UNEX Education" })).toBeVisible();
+
   // Proyectos y Servicios ya no están en el menú, pero sus páginas siguen.
   await page.goto("/proyectos");
   await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();

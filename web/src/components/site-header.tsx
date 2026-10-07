@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EncabezadoPublico } from "@/components/encabezado/EncabezadoPublico";
 import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
-import { Footer } from "@/components/footer";
+import { PiePublico } from "@/components/PiePublico";
 import { logoutAction } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
@@ -89,7 +89,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <div className="theme-gremio">
       <EncabezadoPublico />
       <main id="contenido">{children}</main>
-      <Footer />
+      <PiePublico />
     </div>
   );
 }

@@ -1,0 +1,101 @@
+/* Pie público: sobre Cosmos, igual que el encabezado y que el pie del sitio principal. Solo tokens de marca. */
+
+.pie {
+  margin-top: 4.5rem;
+  background: var(--unex-cosmos);
+  color: var(--unex-polvo);
+}
+
+.pie :focus-visible {
+  outline: 3px solid var(--unex-polvo);
+  outline-offset: 3px;
+}
+
+.contenido {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 2rem 3rem;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 3rem 16px 2rem;
+}
+
+.marca {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .contenido {
+    grid-template-columns: 1.6fr repeat(4, 1fr);
+  }
+
+  .marca {
+    grid-column: auto;
+  }
+}
+
+.marca p {
+  max-width: 22rem;
+  margin: 0.75rem 0 0;
+  color: color-mix(in srgb, var(--unex-polvo) 80%, transparent);
+  font-weight: 300;
+}
+
+.correo {
+  color: var(--unex-polvo);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--unex-polvo) 40%, transparent);
+  text-underline-offset: 4px;
+}
+
+.correo:hover {
+  text-decoration-color: currentColor;
+}
+
+.titulo {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lista {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista a {
+  display: inline-block;
+  padding-block: 0.15rem;
+  color: var(--unex-polvo);
+  text-decoration: none;
+}
+
+.lista a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.inactivo {
+  color: color-mix(in srgb, var(--unex-polvo) 72%, transparent);
+}
+
+.pronto {
+  font-size: 0.875rem;
+}
+
+.legal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 16px 2rem;
+  border-top: 1px solid color-mix(in srgb, var(--unex-polvo) 15%, transparent);
+  color: color-mix(in srgb, var(--unex-polvo) 72%, transparent);
+  font-size: 0.875rem;
+}
