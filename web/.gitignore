@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+# resultados de Playwright (se generan en cada corrida)
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
