@@ -37,7 +37,7 @@ export function NavLinks({ className = "", mobile = false, family = false }: { c
   });
   if (mobile) {
     return (
-      <nav aria-label="Principal" className={`fixed inset-x-0 bottom-0 z-40 flex print:hidden border-t border-line bg-bg/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md ${className}`}>
+      <nav aria-label="Principal" data-fija="abajo" className={`fixed inset-x-0 bottom-0 z-40 flex print:hidden border-t border-line bg-bg/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md ${className}`}>
         {items}
       </nav>
     );

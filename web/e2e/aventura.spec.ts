@@ -1,7 +1,26 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 // Respuestas correctas del primer portal (índices de cada pregunta).
 const CORRECT = { m1: [1, 1, 0, 1], m2: [0, 1, 1, 1], m3: [1, 1, 1, 0], m4: [1, 1, 1, 1, 1, 0], c2m1: [1, 0, 2, 0] };
+
+/**
+ * Elige una opción como lo haría una persona: toca su etiqueta visible (el radio es sr-only) y comprueba que
+ * quedó marcada. Sin force: si algo la tapa (por ejemplo, la cabecera fija), Playwright reintenta en vez de
+ * hacer clic encima de otro elemento.
+ */
+async function elegir(radio: Locator) {
+  await radio.locator("xpath=ancestor::label[1]").click();
+  await expect(radio).toBeChecked();
+}
+
+/*
+ * AVISOS tras una acción que llama a router.refresh() («Ahora tienes 1», «¡Listo! Tu avatar se guardó.»,
+ * «1 estudiante asignado.», «¡Enviado!…»): viven en el estado de React. Con `next dev`, la primera vez que se
+ * compila una ruta, el servidor a veces recarga la página justo después de la acción y el aviso se pierde,
+ * aunque la acción sí se guardó. Por eso estas pruebas comprueban el resultado que queda guardado (la mochila,
+ * «✔ Ya lo tienes», «Guardado ✔», el estudiante en el grupo, los mensajes que quedan hoy). Si las e2e pasan a
+ * correr contra la versión compilada, se pueden volver a comprobar los avisos.
+ */
 
 async function play(page: Page, id: string, answers: number[]) {
   await page.goto(`/mision/${id}`);
@@ -157,22 +176,23 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await expect(nav.getByRole("link", { name: "Poderes" })).toBeVisible();
   await expect(page.getByText(/Próximamente/)).toHaveCount(0);
   const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
+  // Tras cada compra se comprueba lo que queda guardado (la mochila), no el aviso: ver AVISOS más arriba.
   await card("50/50").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("50/50").getByText("Ahora tienes 1")).toBeVisible();
+  await expect(card("50/50").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
   await card("Pista").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("Pista").getByText("Ahora tienes 1")).toBeVisible();
+  await expect(card("Pista").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
 
   // Una capa: se ve puesta en la tienda, se compra y se lleva al Vestidor.
   await nav.getByRole("link", { name: "Cosméticos" }).click();
   await expect(card("Capa de hojas").getByRole("img", { name: /Así te queda: Capa de hojas/ })).toHaveAttribute("src", /c=[^&]*K1/);
   await card("Capa de hojas").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("Capa de hojas").getByText("¡Conseguiste Capa de hojas!")).toBeVisible();
+  await expect(card("Capa de hojas").getByText("✔ Ya lo tienes")).toBeVisible();
   await card("Capa de hojas").getByRole("link", { name: /Póntelo en el Vestidor/ }).click();
   await expect(page).toHaveURL(/\/perfil\/avatar$/);
-  await page.getByRole("group", { name: /^Capa/ }).getByRole("radio", { name: "Capa de hojas" }).check({ force: true });
-  await page.getByRole("group", { name: /Marco del retrato/ }).getByRole("radio", { name: "Marco básico" }).check({ force: true });
+  await elegir(page.getByRole("group", { name: /^Capa/ }).getByRole("radio", { name: "Capa de hojas" }));
+  await elegir(page.getByRole("group", { name: /Marco del retrato/ }).getByRole("radio", { name: "Marco básico" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByText("¡Listo! Tu avatar se guardó.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
   await page.goto("/perfil");
   await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=[^&]*K1/);
   // Lo que no tiene no aparece para ponérselo.
@@ -193,7 +213,7 @@ test("los poderes se compran en la tienda y el Rayo de Claridad ilumina la pregu
   await expect(card("Sombra Dorada")).toHaveCount(0);
   await expect(card("Aura de Concentración").getByText(/Se desbloquea en rango B/)).toBeVisible();
   await card("Rayo de Claridad").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("Rayo de Claridad").getByText("Ahora tienes 1")).toBeVisible();
+  await expect(card("Rayo de Claridad").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
 
   await page.goto("/mision/m1");
   const poderes = page.getByRole("group", { name: "Poderes" });
@@ -248,7 +268,6 @@ test("el administrador asigna estudiantes a un docente, que supervisa su avance 
   await expect(page.getByRole("heading", { level: 1, name: "6.º B · Ciencias" })).toBeVisible();
   await page.getByLabel("Asignar a Despertado").check();
   await page.getByRole("button", { name: "Asignar (1)" }).click();
-  await expect(page.getByText("1 estudiante asignado.")).toBeVisible();
   await expect(page.getByRole("region", { name: "Estudiantes del grupo" }).getByText("Despertado")).toBeVisible();
   await context.clearCookies({ name: "umbral-vista" });
 
@@ -541,13 +560,13 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await expect(page.getByRole("heading", { level: 1, name: "Vestidor" })).toBeVisible();
   await expect(page.getByRole("radio", { name: /Armadura de leyenda, rango S, bloqueado/ })).toBeDisabled();
 
-  await page.getByRole("group", { name: /Cabello/ }).getByRole("radio", { name: "Rubio" }).check({ force: true });
-  await page.getByRole("group", { name: /Chaqueta/ }).getByRole("radio", { name: "Rojo" }).check({ force: true });
-  await page.getByRole("group", { name: "Peinados femeninos" }).getByRole("radio", { name: "Dos trenzas" }).check({ force: true });
+  await elegir(page.getByRole("group", { name: /Cabello/ }).getByRole("radio", { name: "Rubio" }));
+  await elegir(page.getByRole("group", { name: /Chaqueta/ }).getByRole("radio", { name: "Rojo" }));
+  await elegir(page.getByRole("group", { name: "Peinados femeninos" }).getByRole("radio", { name: "Dos trenzas" }));
   await expect(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio")).toHaveCount(7);
   await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3y9/);
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByText("¡Listo! Tu avatar se guardó.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
 
   // La imagen con colores se sirve como SVG.
   const res = await page.request.get("/avatar/aria/aria-rango-e-reposo.svg?c=h4t3");
@@ -560,7 +579,7 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   // Se deja como estaba para las demás pruebas.
   await page.goto("/perfil/avatar");
   await page.getByRole("button", { name: "Colores originales" }).click();
-  await page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio", { name: "Original" }).check({ force: true });
+  await elegir(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio", { name: "Original" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
 });
@@ -601,11 +620,13 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   await expect(page.getByRole("region", { name: "La Terraza del Hogar" }).getByRole("img", { name: "Macetas en flor" })).toBeVisible();
 
   // La familia elige su Guardián del Hogar y envía un mensaje de apoyo.
-  await page.getByRole("radio", { name: "Papá Kenji" }).check({ force: true });
+  await elegir(page.getByRole("radio", { name: "Papá Kenji" }));
   await expect(page.locator("header").getByRole("link", { name: /Tu perfil/ })).toBeVisible();
   await card.getByText("¿Me cuentas hoy qué aprendiste?").click();
+  const quedan = card.getByText(/^Te quedan \d+ hoy\.$|^Ya enviaste los mensajes de hoy\.$/);
+  const antes = await quedan.textContent();
   await card.getByRole("button", { name: /Enviar/ }).click();
-  await expect(card.getByText(/¡Enviado!/)).toBeVisible();
+  await expect(quedan).not.toHaveText(antes!);
 
   // El estudiante lo ve en el Gremio, con el Guardián de su familia, y da las gracias.
   await context.clearCookies({ name: "umbral-vista" });
