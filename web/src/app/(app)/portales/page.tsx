@@ -10,7 +10,7 @@ import { type CourseView, formatPrice, loadCourseViews } from "@/lib/data/querie
 export const metadata: Metadata = { title: "Sala de Portales" };
 
 const STATUS = {
-  nuevo: { label: "Nuevo", cls: "bg-gold text-ink" },
+  nuevo: { label: "Nuevo", cls: "bg-accion text-ink" },
   "en-curso": { label: "En curso", cls: "bg-cyan text-ink" },
   completado: { label: "Completado", cls: "bg-green text-ink" },
 } as const;
@@ -33,7 +33,7 @@ function PortalCard({ c }: { c: CourseView }) {
         <p className="text-xs font-bold uppercase tracking-wider" style={{ color }}>{eyebrow} · {ELEMENT_LABEL[c.element]}</p>
         <h3 className="text-xl">{c.title}</h3>
         <p className="text-sm text-muted">{c.summary}</p>
-        <p className={`w-fit rounded-lg px-2.5 py-1 text-xs font-bold ${c.hasAccess ? "bg-green/15 text-ok" : "bg-gold/15 text-warn"}`}>
+        <p className={`w-fit rounded-lg px-2.5 py-1 text-xs font-bold ${c.hasAccess ? "bg-green/15 text-ok" : "bg-warn/15 text-warn"}`}>
           {c.hasAccess ? (c.kind === "clase" ? "✔ Acceso anual activo" : "✔ Curso completo") : `Lección 1 gratis · ${c.kind === "clase" ? "año completo" : "completo"}: ${formatPrice(c.price)}`}
         </p>
         <div className="mt-auto space-y-2 pt-2">

@@ -94,7 +94,7 @@ export function FamilyCodeCard() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <span className="rounded-xl border-2 border-dashed border-gold/70 bg-gold/10 px-4 py-2 font-mono text-2xl font-bold tracking-[0.25em] text-gold"
+        <span className="rounded-xl border-2 border-dashed border-cyan/70 bg-cyan/10 px-4 py-2 font-mono text-2xl font-bold tracking-[0.25em] text-cyan"
           aria-label={`Tu código de familia: ${code.split("").join(" ")}`}>{code}</span>
         <button type="button" className="btn btn-secondary btn-sm" onClick={copy}>{copied ? "✔ Copiado" : "Copiar"}</button>
       </div>
@@ -135,7 +135,7 @@ export function SendMessage({ studentId, name, left }: { studentId: string; name
         {Object.entries(FAMILY_MESSAGES).map(([key, m]) => (
           <label key={key} className="cursor-pointer">
             <input type="radio" name={`msg-${studentId}`} checked={choice === key} onChange={() => { setChoice(key); setMsg(null); }} className="peer sr-only" />
-            <span className="block rounded-full border-2 border-line bg-bg/40 px-3 py-1.5 text-sm transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{m.text}</span>
+            <span className="block rounded-full border-2 border-line bg-bg/40 px-3 py-1.5 text-sm transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{m.text}</span>
           </label>
         ))}
       </div>

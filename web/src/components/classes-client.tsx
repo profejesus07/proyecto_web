@@ -33,7 +33,7 @@ export function CodeCard({ code }: { code: string }) {
   }
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="rounded-lg border border-dashed border-[#b9a8f0] bg-[#f6f3ff] px-3.5 py-1.5 font-mono text-2xl font-bold tracking-[0.3em] text-[#3b1aa6]" aria-label={`Código de la clase: ${code.split("").join(" ")}`}>{code}</span>
+      <span className="rounded-lg border border-dashed border-accion/40 bg-accion-suave px-3.5 py-1.5 font-mono text-2xl font-bold tracking-[0.3em] text-accion-fuerte" aria-label={`Código de la clase: ${code.split("").join(" ")}`}>{code}</span>
       <button type="button" className="btn btn-secondary btn-sm" onClick={copy}><Icon name={copied ? "check" : "copy"} className="size-4" />{copied ? "Copiado" : "Copiar código"}</button>
     </div>
   );
@@ -158,7 +158,7 @@ export function AssignStudents({ classId, students }: { classId: string; student
         {shown.map((s) => (
           <li key={s.id}>
             <label className="flex cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-[#fafafd]">
-              <input type="checkbox" checked={chosen.has(s.id)} onChange={() => toggle(s.id)} className="size-4 accent-[#4a22c9]" aria-label={`Asignar a ${s.name}`} />
+              <input type="checkbox" checked={chosen.has(s.id)} onChange={() => toggle(s.id)} className="size-4 accent-accion" aria-label={`Asignar a ${s.name}`} />
               <span className="min-w-0"><span className="block truncate font-medium">{s.name}</span><span className="block truncate text-xs text-muted">{s.email}</span></span>
             </label>
           </li>

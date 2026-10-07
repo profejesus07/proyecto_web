@@ -45,11 +45,11 @@ export function CreateTeacherForm() {
           <p className="text-sm">Envíale estos datos para que ingrese. <strong>La contraseña solo se muestra ahora</strong>; pídele que la cambie en Perfil → Cambiar mi contraseña.</p>
           <dl className="grid gap-1 rounded-xl bg-bg/50 p-3 font-mono text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
             <dt className="text-muted">Correo</dt><dd>{state.email}</dd>
-            <dt className="text-muted">Contraseña temporal</dt><dd className="font-bold text-gold">{state.password}</dd>
+            <dt className="text-muted">Contraseña temporal</dt><dd className="font-bold text-accion-fuerte">{state.password}</dd>
           </dl>
           <button type="button" className="btn btn-secondary btn-sm" onClick={async () => {
             try {
-              await navigator.clipboard.writeText(`Academia Virtual Umbral — tu cuenta de docente\nIngresa en: ${location.origin}/ingresar\nCorreo: ${state.email}\nContraseña temporal: ${state.password}\nCámbiala en Perfil → Cambiar mi contraseña.`);
+              await navigator.clipboard.writeText(`UNEX Academy — tu cuenta de docente\nIngresa en: ${location.origin}/ingresar\nCorreo: ${state.email}\nContraseña temporal: ${state.password}\nCámbiala en Perfil → Cambiar mi contraseña.`);
               setCopied(true);
             } catch { setCopied(false); }
           }}>{copied ? "✔ Copiado" : "Copiar mensaje para enviar"}</button>
@@ -177,7 +177,7 @@ export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: st
         {state?.message && (
           <p role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">
             ✔ {state.message}
-            {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-[#4a22c9] underline underline-offset-4">Asignar estudiantes →</Link>}
+            {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-accion underline underline-offset-4">Asignar estudiantes →</Link>}
           </p>
         )}
       </div>

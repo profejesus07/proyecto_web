@@ -7,7 +7,7 @@ export function RankCard({ xp }: { xp: number }) {
   const p = rankProgress(xp);
   return (
     <section className="panel flex items-center gap-4 p-5" aria-label="Tu rango">
-      <span className="grid size-16 shrink-0 place-items-center rounded-2xl font-display text-3xl font-extrabold" style={{ background: p.rank.color, color: "#14123b" }} aria-hidden="true">{p.rank.key}</span>
+      <span className="grid size-16 shrink-0 place-items-center rounded-2xl font-display text-3xl font-extrabold" style={{ background: p.rank.color, color: "var(--ink)" }} aria-hidden="true">{p.rank.key}</span>
       <div className="min-w-0 flex-1 space-y-2">
         <p className="font-display text-xl font-bold leading-tight">Rango {p.rank.key} · {p.rank.name}</p>
         <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={p.pct} aria-label="Avance hacia el siguiente rango"><i style={{ width: `${p.pct}%` }} /></div>

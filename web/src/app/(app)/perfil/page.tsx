@@ -49,7 +49,7 @@ export default async function ProfilePage() {
         <div className="space-y-5 self-center">
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
-          {title && <p className="w-fit rounded-lg bg-violet/20 px-3 py-1 text-sm font-bold text-[#d9c9ff]">🎖️ «{title}»</p>}
+          {title && <p className="w-fit rounded-lg bg-gold/15 px-3 py-1 text-sm font-bold text-gold">🎖️ «{title}»</p>}
           <div className="flex flex-wrap gap-2">
             <Link href="/perfil/avatar" className="btn btn-primary btn-sm">🎨 Personalizar avatar</Link>
             <a href="#editar" className="btn btn-secondary btn-sm">✏️ Editar perfil</a>
@@ -101,7 +101,7 @@ export default async function ProfilePage() {
           <div className="space-y-3">
             <h2 id="clases-t" className="text-2xl">Mis clases</h2>
             {myClasses.length === 0 ? (
-              <p className="text-muted">Si tu docente o tu colegio usan UMBRAL, te darán un código de 6 caracteres. Con él te unes a tu grupo y, si es una clase, entras gratis durante el año lectivo.</p>
+              <p className="text-muted">Si tu docente o tu colegio usan UNEX Academy, te darán un código de 6 caracteres. Con él te unes a tu grupo y, si es una clase, entras gratis durante el año lectivo.</p>
             ) : (
               <ul className="space-y-2">
                 {myClasses.map((c) => (
@@ -140,7 +140,7 @@ export default async function ProfilePage() {
             <Terrace decor={inventory.map((i) => i.itemId)} />
             <p className="hint">La Terraza del Hogar de tu familia{families.length ? "" : " (cuando se vinculen)"}. <Link href="/tienda?c=decoracion" className="font-semibold text-cyan underline underline-offset-4">Decórala en la tienda</Link>.</p>
             <FamilyCodeCard />
-            <p className="hint">Tu familia lo escribe en su cuenta de UMBRAL (tipo «Familia»), en «Mi familia». Si lo compartiste con quien no debías, cámbialo.</p>
+            <p className="hint">Tu familia lo escribe en su cuenta de UNEX Academy (tipo «Familia»), en «Mi familia». Si lo compartiste con quien no debías, cámbialo.</p>
           </div>
         </section>
       )}

@@ -60,7 +60,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
                 <span className="chip">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
-                {c.isFree && <span className="rounded-full bg-[#ffc83d] px-3 py-1 text-xs font-bold text-[#15103f]">Gratis</span>}
+                {c.isFree && <span className="rounded-full bg-accion px-3 py-1 text-xs font-bold text-ink">Gratis</span>}
               </div>
               <h1 className="text-4xl leading-tight sm:text-5xl">{c.title}</h1>
               <p className="max-w-2xl text-lg text-muted">{c.summary}</p>
@@ -112,9 +112,9 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                     <li key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4">
                       <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-cyan/10 text-sm font-semibold text-cyan">{m.position}</span>
                       <span className="min-w-0 grow basis-48 font-medium">{m.title}</span>
-                      {m.position <= free && !c.isFree && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-warn">Gratis</span>}
+                      {m.position <= free && !c.isFree && <span className="rounded-md bg-cyan/15 px-2 py-0.5 text-xs font-semibold text-cyan">Gratis</span>}
                       {m.lessonKind === "explicacion" && <span className="rounded-md bg-cyan/10 px-2 py-0.5 text-xs font-semibold text-cyan">Explicación</span>}
-                      {m.isBoss && <span className="rounded-md bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">Reto del Guardián</span>}
+                      {m.isBoss && <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-semibold text-text">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>

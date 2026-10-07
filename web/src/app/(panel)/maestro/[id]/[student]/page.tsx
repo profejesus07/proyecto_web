@@ -47,7 +47,7 @@ export default async function StudentDetailPage({ params }: PageProps<"/maestro/
 
       <PanelHeader eyebrow={`Estudiante · ${report.class.name}`} title={s.name} description={
         <span className="flex flex-wrap items-center gap-2">
-          <span className="rounded px-1.5 text-xs font-extrabold text-[#14123b]" style={{ background: rank.color }}>Rango {rank.key}</span>
+          <span className="rounded px-1.5 text-xs font-extrabold text-ink" style={{ background: rank.color }}>Rango {rank.key}</span>
           <span>{s.xp} XP</span>
           {title && <span>· «{title}»</span>}
           <span>· Última actividad: {lastSeen(s.lastActive)}</span>
@@ -76,7 +76,7 @@ export default async function StudentDetailPage({ params }: PageProps<"/maestro/
         const pct = c.missions.length ? Math.round((done / c.missions.length) * 100) : 0;
         return (
           <PanelSection key={c.slug} id={`curso-${c.slug}`} title={c.title} description={`Guardián: ${guardianBySlug(c.guardian)?.name ?? c.guardian} · ${done} de ${c.missions.length} misiones superadas`}
-            action={<span className="flex w-48 items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#eceef4]"><span className="block h-full rounded-full bg-[#4a22c9]" style={{ width: `${pct}%` }} /></span><span className="text-sm font-semibold tabular-nums">{pct} %</span></span>}>
+            action={<span className="flex w-48 items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#eceef4]"><span className="block h-full rounded-full bg-violet" style={{ width: `${pct}%` }} /></span><span className="text-sm font-semibold tabular-nums">{pct} %</span></span>}>
             <div className="panel overflow-x-auto">
               <table className="w-full min-w-[36rem] text-left text-sm">
                 <caption className="sr-only">Avance de {s.name} en {c.title}</caption>

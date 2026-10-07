@@ -71,7 +71,7 @@ export function QrScanner() {
         ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
         const text = decode(ctx.getImageData(0, 0, canvas.width, canvas.height));
         if (text && found(text)) return;
-        if (text) setStatus({ tone: "error", text: "Ese código QR no es de una constancia de la Academia Virtual Umbral." });
+        if (text) setStatus({ tone: "error", text: "Ese código QR no es de una constancia de UNEX Academy (antes Academia Virtual Umbral)." });
       }
       requestAnimationFrame(tick);
     };
@@ -90,7 +90,7 @@ export function QrScanner() {
       const ctx = canvas.getContext("2d")!;
       ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
       const text = decode(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      if (!found(text)) setStatus({ tone: "error", text: text ? "Ese código QR no es de una constancia de la Academia Virtual Umbral." : "No encontramos un código QR en la imagen. Prueba con una foto más cercana y nítida." });
+      if (!found(text)) setStatus({ tone: "error", text: text ? "Ese código QR no es de una constancia de UNEX Academy (antes Academia Virtual Umbral)." : "No encontramos un código QR en la imagen. Prueba con una foto más cercana y nítida." });
     } catch {
       setStatus({ tone: "error", text: "No pudimos leer esa imagen." });
     }
@@ -109,7 +109,7 @@ export function QrScanner() {
           <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void fromFile(e.target.files?.[0]); e.target.value = ""; }} />
         </label>
       </div>
-      <div className={`relative overflow-hidden rounded-2xl bg-[#15103f] ${scanning ? "" : "hidden"}`}>
+      <div className={`relative overflow-hidden rounded-2xl bg-bg-2 ${scanning ? "" : "hidden"}`}>
         <video ref={video} playsInline muted className="aspect-square w-full object-cover sm:aspect-video" aria-label="Vista de la cámara" />
         {/* Marco guía para centrar el QR. */}
         <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden="true">

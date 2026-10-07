@@ -25,7 +25,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
   const color = ELEMENT_COLOR[course.element];
   const chapters = CHAPTERS.filter((c) => c.guardian === course.guardian).length;
   const subject = `Quiero suscribirme a «${course.title}»`;
-  const body = `Hola. Quiero activar el curso completo «${course.title}».\nMi nombre de aventurero en UMBRAL es: ${viewer.displayName}\nEl correo de mi cuenta es: `;
+  const body = `Hola. Quiero activar el curso completo «${course.title}».\nMi nombre de aventurero en UNEX Academy es: ${viewer.displayName}\nEl correo de mi cuenta es: `;
   const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   const { options, test } = payOptions();
   const canPay = options.length > 0 && (course.price ?? 0) > 0 && viewer.role === "estudiante";
@@ -40,7 +40,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
         <div className="space-y-4">
           <p className="eyebrow">{course.kind === "clase" ? "Acceso anual a la clase" : "Curso completo"}</p>
           <h1 className="text-3xl leading-tight sm:text-4xl">{course.title}</h1>
-          <p className="font-display text-4xl font-extrabold text-gold">{formatPrice(course.price)}</p>
+          <p className="font-display text-4xl font-extrabold text-cyan">{formatPrice(course.price)}</p>
           <ul className="space-y-2 text-muted">
             <li>✔ Las {course.total - 1} lecciones que siguen a la lección gratis</li>
             <li>✔ La batalla final contra {g?.name ?? "el Guardián"} y su recompensa</li>
@@ -69,7 +69,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
                 Elige cómo pagar. Apenas la pasarela confirme el pago, el curso se abre solo. Si eres menor de edad, hazlo con tu acudiente.
               </SpeechBubble>
               {pending && (
-                <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 p-3 text-sm">
+                <p role="status" className="rounded-xl border border-warn/50 bg-warn/10 p-3 text-sm">
                   ⏳ Tienes un pago en proceso (referencia <span className="font-mono">{pending.reference}</span>).{" "}
                   <Link href={`/pago/${pending.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link>
                 </p>

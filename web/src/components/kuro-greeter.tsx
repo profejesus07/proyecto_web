@@ -53,7 +53,7 @@ export function KuroGreeter() {
 
   return (
     <div className="relative mx-auto w-fit pt-16">
-      <p aria-live="polite" className={`absolute left-1/2 top-0 z-10 w-max max-w-[15rem] -translate-x-1/2 rounded-2xl bg-white px-3.5 py-2 text-center text-sm font-semibold leading-snug text-[#14123b] shadow-xl transition-all duration-300 after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-white ${phrase ? "opacity-100" : "pointer-events-none translate-y-1.5 opacity-0"}`}>
+      <p aria-live="polite" className={`absolute left-1/2 top-0 z-10 w-max max-w-[15rem] -translate-x-1/2 rounded-2xl bg-white px-3.5 py-2 text-center text-sm font-semibold leading-snug text-ink shadow-xl transition-all duration-300 after:absolute after:left-1/2 after:top-full after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-white ${phrase ? "opacity-100" : "pointer-events-none translate-y-1.5 opacity-0"}`}>
         {phrase}
       </p>
       <button ref={box} type="button" onClick={celebrate} aria-label="Saludar a Kuro"

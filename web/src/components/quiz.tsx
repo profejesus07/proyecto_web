@@ -126,7 +126,7 @@ function Highlighted({ text, stems }: { text: string; stems: string[] }) {
   return (
     <>
       {text.split(/(\s+)/).map((w, i) => (set.has(stemOf(w)) && stemOf(w).length >= 4
-        ? <mark key={i} className="rounded bg-gold/30 px-0.5 text-inherit">{w}</mark>
+        ? <mark key={i} className="rounded bg-cyan/25 px-0.5 text-inherit">{w}</mark>
         : <span key={i}>{w}</span>))}
     </>
   );
@@ -142,7 +142,7 @@ function ScoreRing({ score, passed }: { score: number; passed: boolean }) {
     <div className="relative grid size-36 place-items-center" role="img" aria-label={`${score} por ciento de aciertos`}>
       <svg viewBox="0 0 120 120" className="absolute inset-0 -rotate-90" aria-hidden="true">
         <circle cx="60" cy="60" r={r} fill="none" stroke="rgb(255 255 255 / 0.1)" strokeWidth="10" />
-        <circle cx="60" cy="60" r={r} fill="none" stroke={passed ? "#4ade80" : "#ffc83d"} strokeWidth="10" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} style={{ transition: "stroke-dashoffset 1s ease-out" }} />
+        <circle cx="60" cy="60" r={r} fill="none" stroke={passed ? "var(--green)" : "var(--warn)"} strokeWidth="10" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} style={{ transition: "stroke-dashoffset 1s ease-out" }} />
       </svg>
       <span className="font-display text-4xl font-extrabold">{score}<span className="text-xl">%</span></span>
     </div>
@@ -488,7 +488,7 @@ export function Quiz(p: QuizProps) {
               </div>
             )}
             {win && p.subscribe && (
-              <p className="max-w-lg rounded-xl border border-gold/50 bg-gold/10 px-5 py-3 text-warn">
+              <p className="max-w-lg rounded-xl border border-cyan/50 bg-cyan/10 px-5 py-3 text-text">
                 ¡Superaste la lección gratis! Para seguir con las demás misiones y enfrentar a {p.guardian.name}, suscríbete al curso ({p.subscribe.price}).
               </p>
             )}
@@ -590,7 +590,7 @@ export function Quiz(p: QuizProps) {
                 <span className="text-muted">{hp === 0 ? "¡Listo para purificarlo!" : `Faltan ${Math.max(0, needed - rightCount)} aciertos`}</span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`Vida de ${p.guardian.name}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(hp * 100)}>
-                <div className="h-full rounded-full bg-gradient-to-r from-coral to-gold transition-[width] duration-700 ease-out" style={{ width: `${hp * 100}%` }} />
+                <div className="h-full rounded-full bg-coral transition-[width] duration-700 ease-out" style={{ width: `${hp * 100}%` }} />
               </div>
             </div>
           ) : (
@@ -611,13 +611,13 @@ export function Quiz(p: QuizProps) {
         {(ps.escudo || ps.lluvia) && !res && (
           <span className="absolute bottom-3 left-3 flex gap-1.5">
             {ps.escudo && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm">🛡️ Escudo activo</span>}
-            {ps.lluvia && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-gold backdrop-blur-sm">🌠 Lluvia activa</span>}
+            {ps.lluvia && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm">🌠 Lluvia activa</span>}
           </span>
         )}
       </section>
 
       {res && (
-        <div id="feedback" data-bubble tabIndex={-1} role="status" className={`pop space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-gold/50 bg-gold/10"}`}>
+        <div id="feedback" data-bubble tabIndex={-1} role="status" className={`pop space-y-3 rounded-2xl border px-5 py-4 outline-none ${res.correct ? "border-green/50 bg-green/10" : "border-warn/50 bg-warn/10"}`}>
           <div className="flex justify-end">
             <SpeakButton name="Kuro" auto key={`${q.id}-${res.correct}`}
               text={`${res.correct ? CHEERS[idx % CHEERS.length] : "No era esa, pero tranquilo."}\n${res.explanation}`} />
@@ -635,7 +635,7 @@ export function Quiz(p: QuizProps) {
               {POWERS.aliento.icon} Segundo Aliento · responder otra vez
             </button>
           )}
-          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-[#d9c9ff]" : "text-err"}`}>{powerMsg.text}</p>}
+          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-cyan" : "text-err"}`}>{powerMsg.text}</p>}
           {p.isBoss && !res.correct && !stillPossible && (
             <p className="text-sm text-muted">Esta vez no alcanzarás el {PASS_MARK}%, pero termina la prueba: cada respuesta te prepara para la revancha.</p>
           )}
@@ -663,7 +663,8 @@ export function Quiz(p: QuizProps) {
 
       <fieldset className="panel space-y-5 p-5 sm:p-7" disabled={pending}>
         <legend className="text-sm font-semibold text-muted">Pregunta {idx + 1} de {total}</legend>
-        <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">
+        {/* La pregunta se lee, no es un título: Lexend (fluidez lectora), no Unbounded. */}
+        <h2 ref={headingRef} tabIndex={-1} className="font-sans text-2xl font-semibold leading-snug tracking-normal outline-none sm:text-3xl">
           {!res && ps.rayo ? <Highlighted text={q.prompt} stems={ps.rayo.stems} /> : q.prompt}
         </h2>
         {!choiceKind ? (
@@ -686,7 +687,7 @@ export function Quiz(p: QuizProps) {
                   ? "border-line bg-bg/30 opacity-60"
                   : out
                     ? "border-dashed border-line/60 bg-bg/20 opacity-45"
-                    : "border-line bg-bg/40 peer-checked:border-cyan peer-checked:bg-cyan/10 hover:border-[#5a52b8]";
+                    : "border-line bg-bg/40 peer-checked:border-cyan peer-checked:bg-cyan/10 hover:border-line-fuerte";
             return (
               <label key={i} className={res || out ? "cursor-default" : "cursor-pointer"} data-descartada={out || undefined} data-correcta={isRight || undefined}>
                 <input type="radio" name={`q-${q.id}`} value={i} checked={(res ? res.choice : selected) === i} onChange={() => setSelected(i)} disabled={!!res || out} className="peer sr-only" />
@@ -695,7 +696,7 @@ export function Quiz(p: QuizProps) {
                     {isRight ? "✓" : isWrongPick ? "✕" : out ? "✕" : LETTERS[i]}
                   </span>
                   <span className={`font-medium ${out ? "line-through" : ""}`}>{opt}</span>
-                  {shadow && <span className="ml-auto shrink-0 rounded-md bg-gold/20 px-2 py-0.5 text-xs font-bold text-gold">👤 Tu sombra eligió esta</span>}
+                  {shadow && <span className="ml-auto shrink-0 rounded-md bg-cyan/15 px-2 py-0.5 text-xs font-bold text-cyan">👤 Tu sombra eligió esta</span>}
                   {out && <span className="sr-only"> (descartada por el 50/50)</span>}
                   {isRight && <span className="sr-only"> (respuesta correcta)</span>}
                   {isWrongPick && <span className="sr-only"> (tu respuesta)</span>}
@@ -708,14 +709,14 @@ export function Quiz(p: QuizProps) {
 
         {!res && (
           <>
-            {hintText && <p role="note" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-warn">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
+            {hintText && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-text">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
             {ps.rayo?.lead && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-sm">⚡ Fíjate en esto: «{ps.rayo.lead}»</p>}
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
               <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
               {q.hasHint && !hintText && (
                 <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
                   title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
-                  💡 Pista · {pista.freeAvailable ? <strong className="text-gold">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
+                  💡 Pista · {pista.freeAvailable ? <strong className="text-cyan">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
                 </button>
               )}
               {q.kind !== "opcion" ? null : removed.length > 0 ? (
@@ -747,7 +748,7 @@ export function Quiz(p: QuizProps) {
                 })}
               </div>
             )}
-            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-[#d9c9ff]" : "text-err"}`}>{powerMsg?.text}</p>
+            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-cyan" : "text-err"}`}>{powerMsg?.text}</p>
           </>
         )}
       </fieldset>

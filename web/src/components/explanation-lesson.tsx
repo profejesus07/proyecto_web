@@ -41,7 +41,7 @@ export function ExplanationLesson({ missionId, title, intro, body, videoUrl, cou
         <div className="flex justify-end"><SpeakButton name="Archivista Eon" text={`${title}\n${plainBody(body)}`} /></div>
         <div className="space-y-4 text-lg leading-relaxed text-text/90">
           {parseBody(body).map((b, i) => {
-            if (b.type === "h") return <h2 key={i} className="pt-2 text-2xl text-gold"><Inline text={b.text} /></h2>;
+            if (b.type === "h") return <h2 key={i} className="pt-2 text-2xl text-cyan"><Inline text={b.text} /></h2>;
             if (b.type === "p") return <p key={i}><Inline text={b.text} /></p>;
             const List = b.type === "ul" ? "ul" : "ol";
             return (

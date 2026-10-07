@@ -87,7 +87,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
       <nav aria-label="Categorías" className="flex flex-wrap gap-2">
         {SHOP_CATEGORIES.filter((c) => all.some((i) => i.categoria === c)).map((c) => (
           <Link key={c} href={`/tienda?c=${c}`} aria-current={c === cat ? "page" : undefined}
-            className={`rounded-full border-2 px-4 py-2 text-sm font-bold transition ${c === cat ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-muted hover:border-[#5a52b8] hover:text-text"}`}>
+            className={`rounded-full border-2 px-4 py-2 text-sm font-bold transition ${c === cat ? "border-cyan bg-cyan/15 text-cyan" : "border-line text-muted hover:border-line-fuerte hover:text-text"}`}>
             {CATEGORY_LABEL[c]}
           </Link>
         ))}

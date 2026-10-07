@@ -253,7 +253,7 @@ export function MissionForm({ action, kind, mission, submitLabel, modules = [], 
         </>
       )}
       {!reading && <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" name="isBoss" defaultChecked={mission?.isBoss ?? false} className="size-4 accent-[#8a5cff]" />
+        <input type="checkbox" name="isBoss" defaultChecked={mission?.isBoss ?? false} className="size-4 accent-accion" />
         {kind === "curso" && modules.length > 0
           ? "Es la prueba del Guardián del módulo (debe ser la última lección del módulo)"
           : "Es la prueba final contra el Guardián (debe ser la última lección)"}

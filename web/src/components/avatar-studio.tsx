@@ -46,7 +46,7 @@ function ColorRow({ title, slot, swatches, base, value, onPick }: { title: strin
           <label key={o.key} className="cursor-pointer" title={o.name}>
             <input type="radio" name={slot} checked={o.v === value} onChange={() => onPick(o.v)} className="peer sr-only" aria-label={o.name} />
             <span
-              className={`grid size-10 place-items-center rounded-full border-2 border-line transition peer-checked:scale-110 peer-checked:border-gold peer-checked:shadow-[0_0_0_3px_rgba(255,200,61,.35)] peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${o.v === undefined ? "border-dashed" : ""}`}
+              className={`grid size-10 place-items-center rounded-full border-2 border-line transition peer-checked:scale-110 peer-checked:border-cyan peer-checked:shadow-[0_0_0_3px_color-mix(in_srgb,var(--cyan)_35%,transparent)] peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${o.v === undefined ? "border-dashed" : ""}`}
               style={{ background: o.color }}
             >
               {o.v === undefined && <span aria-hidden="true" className="text-[10px] font-extrabold text-white drop-shadow-[0_1px_1px_#000]">ORIG</span>}
@@ -62,7 +62,7 @@ function StyleOption({ label, checked, onPick, base, rank, look }: { label: stri
   return (
     <label className="cursor-pointer">
       <input type="radio" name="style" checked={checked} onChange={onPick} className="peer sr-only" aria-label={label} />
-      <span className="flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 text-center transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
+      <span className="flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 text-center transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
         <AvatarFace base={base} rank={rank} look={{ ...look, gear: "E" }} size={52} />
         <span className="text-[11px] font-bold leading-tight">{label}</span>
       </span>
@@ -83,13 +83,13 @@ function ItemRow({ title, name, options, value, onPick, none = "Ninguno", round 
         {none !== null && (
           <label className="cursor-pointer">
             <input type="radio" name={name} checked={!value} onChange={() => onPick(undefined)} className="peer sr-only" aria-label={none} />
-            <span className="grid size-16 place-items-center rounded-xl border-2 border-dashed border-line bg-bg/40 text-xs font-bold text-muted transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{none}</span>
+            <span className="grid size-16 place-items-center rounded-xl border-2 border-dashed border-line bg-bg/40 text-xs font-bold text-muted transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">{none}</span>
           </label>
         )}
         {options.map((o) => (
           <label key={o.id} className="cursor-pointer" title={o.name}>
             <input type="radio" name={name} checked={value === o.id} onChange={() => onPick(o.id)} className="peer sr-only" aria-label={o.name} />
-            <span className={`grid size-16 place-items-center overflow-hidden rounded-xl border-2 border-line bg-bg/40 transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${round ? "p-0.5" : "p-1"}`}>
+            <span className={`grid size-16 place-items-center overflow-hidden rounded-xl border-2 border-line bg-bg/40 transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${round ? "p-0.5" : "p-1"}`}>
               <Sprite src={o.image} alt="" decorative className="size-full object-contain" />
             </span>
           </label>
@@ -149,7 +149,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
-      <section aria-label="Vista previa" data-fija="arriba" className="panel panel-glow sticky top-[4.5rem] z-10 flex items-center gap-4 overflow-hidden !bg-[#1d1a4d] p-3 md:top-20 md:flex-col md:p-6">
+      <section aria-label="Vista previa" data-fija="arriba" className="panel panel-glow sticky top-[4.5rem] z-10 flex items-center gap-4 overflow-hidden !bg-panel p-3 md:top-20 md:flex-col md:p-6">
         <div className="relative h-32 w-24 shrink-0 md:h-96 md:w-full" style={{ background: "radial-gradient(60% 60% at 50% 60%, rgba(46,230,214,.18), transparent 70%)" }}>
           <Sprite src={avatarSrc(base, rank, look)} alt={`Vista previa de ${AVATAR_NAMES[base]}`} priority className="absolute inset-0 size-full object-contain" />
           {pet && <Sprite src={pet.image} alt={`Tu compañero: ${pet.name}`} className="absolute bottom-0 right-0 h-1/3 w-auto md:right-4" />}
@@ -178,7 +178,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
               {AVATAR_BASES.map((b) => (
                 <label key={b} className="cursor-pointer">
                   <input type="radio" name="base" value={b} checked={base === b} onChange={() => { setBase(b); setMsg(null); }} className="peer sr-only" />
-                  <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
+                  <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
                     <AvatarFace base={b} rank={rank} look={look} size={56} />
                     <span className="text-xs font-bold">{AVATAR_NAMES[b]}</span>
                   </span>
@@ -242,13 +242,13 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
                 return (
                   <label key={r.key} className={open ? "cursor-pointer" : "cursor-not-allowed"}>
                     <input type="radio" name="gear" disabled={!open} checked={wearing === r.key} onChange={() => set("gear", r.key === rank ? undefined : r.key)} className="peer sr-only" aria-label={`${GEAR[r.key]}, rango ${r.key}${open ? "" : ", bloqueado"}`} />
-                    <span className={`flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-2 text-center transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${open ? "" : "opacity-50"}`}>
+                    <span className={`flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-2 text-center transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${open ? "" : "opacity-50"}`}>
                       <span className="relative block h-28 w-full">
                         <Sprite src={open ? avatarSrc(base, r.key, colors) : asset.avatar(base, r.key)} alt="" decorative className={`absolute inset-0 size-full object-contain ${open ? "" : "grayscale"}`} />
                         {!open && <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-2xl">🔒</span>}
                       </span>
                       <span className="text-xs font-bold">{GEAR[r.key]}</span>
-                      <span className="rounded-md px-1.5 text-[11px] font-extrabold" style={{ background: r.color, color: "#14123b" }}>{open ? `Rango ${r.key}` : `Se abre en rango ${r.key}`}</span>
+                      <span className="rounded-md px-1.5 text-[11px] font-extrabold" style={{ background: r.color, color: "var(--ink)" }}>{open ? `Rango ${r.key}` : `Se abre en rango ${r.key}`}</span>
                     </span>
                   </label>
                 );

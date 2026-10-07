@@ -174,7 +174,8 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await page.goto("/tienda");
   const nav = page.getByRole("navigation", { name: "Categorías" });
   await expect(nav.getByRole("link", { name: "Poderes" })).toBeVisible();
-  await expect(page.getByText(/Próximamente/)).toHaveCount(0);
+  // Ningún artículo de la tienda está «Próximamente» (el pie sí lo dice de otras plataformas UNEX).
+  await expect(page.getByRole("main").getByText(/Próximamente/)).toHaveCount(0);
   const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
   // Tras cada compra se comprueba lo que queda guardado (la mochila), no el aviso: ver AVISOS más arriba.
   await card("50/50").getByRole("button", { name: /Comprar/ }).click();
@@ -481,7 +482,8 @@ test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proye
   // Portada: la bienvenida de Kuro, con el estilo del Gremio.
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bienvenido al Gremio");
   await expect(page.getByRole("img", { name: "Kuro te da la bienvenida" })).toBeVisible();
-  await expect(page.getByText("Próximamente")).toHaveCount(0);
+  // La portada no anuncia cursos «Próximamente» (la franja y el pie sí lo dicen de otras plataformas UNEX).
+  await expect(page.getByRole("main").getByText("Próximamente")).toHaveCount(0);
   await expect(page.getByRole("search")).toHaveCount(0);
   await expect(page.locator("header").getByRole("link", { name: "Ingresar" })).toHaveAttribute("href", "/ingresar");
   const destacados = page.getByRole("region", { name: "Cursos para empezar" });

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
 import { Footer } from "@/components/footer";
 import { logoutAction } from "@/app/actions/auth";
 import { Icon } from "@/components/icons";
@@ -23,29 +24,35 @@ export async function SiteHeader() {
   // ven una cabecera sencilla, sin monedas, avatar ni menú del juego.
   if (viewer && isStaff(viewer.role)) {
     return (
-      <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
-        <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
-          <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
-          <nav aria-label="Administración" className="flex items-center gap-2">
-            <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
-            <form action={logoutAction}>
-              <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <>
+        <FranjaUnex />
+        <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+          <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+            <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
+            <nav aria-label="Administración" className="flex items-center gap-2">
+              <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
+              <form action={logoutAction}>
+                <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
+              </form>
+            </nav>
+          </div>
+        </header>
+      </>
     );
   }
 
   return (
     <>
+      {/* Franja UNEX solo sin sesión (ingresar, registro…): en el Gremio el acceso está en el pie. */}
+      {!viewer && <FranjaUnex />}
       <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-2 px-4 sm:h-20 sm:gap-4 sm:px-6">
           <Logo href={viewer ? homePath(viewer.role) : "/"} compact size="h-14 lg:h-[4.5rem]" />
 
           {viewer ? (
             <>
-              <NavLinks className="hidden md:flex" family={viewer.role === "familia"} />
+              {/* El menú cabe en la cabecera desde lg; en celular y tableta va abajo, en la barra con ícono y texto. */}
+              <NavLinks className="hidden lg:flex" family={viewer.role === "familia"} />
               <div className="flex items-center gap-1 sm:gap-3">
                 <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
@@ -53,7 +60,7 @@ export async function SiteHeader() {
                 </span>
                 <Link href="/perfil" className="flex items-center gap-2 rounded-full border border-line bg-panel/70 py-1 pl-1 pr-2 hover:border-cyan/60 sm:pr-3" aria-label={`Tu perfil: ${viewer.displayName}, rango ${rank?.key}`}>
                   {adultGuide ? <GuideFace guide={adultGuide} size={36} /> : <AvatarFace base={viewer.avatarBase} look={viewer.avatarLook} rank={rank?.key ?? "E"} size={36} />}
-                  <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank?.color, color: "#14123b" }}>{rank?.key}</span>
+                  <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: rank?.color, color: "var(--ink)" }}>{rank?.key}</span>
                 </Link>
                 <form action={logoutAction}>
                   <button className="btn btn-ghost btn-sm max-sm:px-2" type="submit" aria-label="Salir" title="Salir">
@@ -72,7 +79,7 @@ export async function SiteHeader() {
         </div>
       </header>
       {/* Fuera del <header>: su backdrop-blur haría que «fixed» se anclara a la cabecera y la tapara. */}
-      {viewer && <NavLinks mobile className="md:hidden" family={viewer.role === "familia"} />}
+      {viewer && <NavLinks mobile className="lg:hidden" family={viewer.role === "familia"} />}
     </>
   );
 }
@@ -103,6 +110,7 @@ export function PublicHeader() {
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="theme-gremio">
+      <FranjaUnex />
       <PublicHeader />
       <main id="contenido">{children}</main>
       <Footer />

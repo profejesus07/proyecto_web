@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { logoutAction } from "@/app/actions/auth";
 import { Icon } from "@/components/icons";
+import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
 import { Logo } from "@/components/logo";
 import { ROLE_LABEL } from "@/lib/roles";
 import type { Profile } from "@/lib/data/types";
@@ -20,16 +21,18 @@ export function Workspace({ viewer, badge, home, groups, navLabel, children }: {
 }) {
   return (
     <div className="theme-panel">
+      <FranjaUnex ancha />
       <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
         <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Logo href={home} size="h-10" compact />
           <span className="badge badge-brand hidden sm:inline-flex">{badge}</span>
           <nav aria-label="Cuenta" className="ml-auto flex items-center gap-1">
-            <Link href="/" className="btn btn-ghost btn-sm hidden md:inline-flex"><Icon name="external" className="size-4" /> Ver el sitio</Link>
-            <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm hidden md:inline-flex"><Icon name="key" className="size-4" /> Contraseña</Link>
+            {/* Entre md y lg solo el ícono: con el logo a 160 px como mínimo, el texto no cabe en la fila. */}
+            <Link href="/" className="btn btn-ghost btn-sm hidden md:inline-flex" aria-label="Ver el sitio" title="Ver el sitio"><Icon name="external" className="size-4" /><span className="hidden lg:inline">Ver el sitio</span></Link>
+            <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm hidden md:inline-flex" aria-label="Contraseña" title="Contraseña"><Icon name="key" className="size-4" /><span className="hidden lg:inline">Contraseña</span></Link>
             <span className="mx-1 hidden h-6 w-px bg-line md:block" aria-hidden="true" />
             <span className="flex items-center gap-2 pl-1">
-              <span className="grid size-8 place-items-center rounded-full bg-[#15103f] text-xs font-bold text-white" aria-hidden="true">{initials(viewer.displayName)}</span>
+              <span className="grid size-8 place-items-center rounded-full bg-ink text-xs font-bold text-white" aria-hidden="true">{initials(viewer.displayName)}</span>
               <span className="hidden leading-tight sm:block">
                 <span className="block max-w-40 truncate text-sm font-semibold">{viewer.displayName}</span>
                 <span className="block text-xs text-muted">{ROLE_LABEL[viewer.role]}</span>

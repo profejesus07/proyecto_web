@@ -16,7 +16,7 @@ export const metadata: Metadata = { title: "Panel docente" };
 function Bar({ pct, label }: { pct: number; label: string }) {
   return (
     <span className="block h-1.5 w-full overflow-hidden rounded-full bg-[#eceef4]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={label}>
-      <span className="block h-full rounded-full bg-[#4a22c9]" style={{ width: `${pct}%` }} />
+      <span className="block h-full rounded-full bg-violet" style={{ width: `${pct}%` }} />
     </span>
   );
 }
@@ -64,7 +64,7 @@ export default async function TeacherHome() {
             <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {groups.map((g) => (
                 <li key={g.group.id}>
-                  <Link href={`/maestro/${g.group.id}`} className="panel group flex h-full flex-col gap-4 p-5 transition hover:border-[#c9c3e6] hover:shadow-md">
+                  <Link href={`/maestro/${g.group.id}`} className="panel group flex h-full flex-col gap-4 p-5 transition hover:border-line-fuerte hover:shadow-md">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="truncate text-lg">{g.group.name}</h3>
@@ -80,7 +80,7 @@ export default async function TeacherHome() {
                       <span className="flex items-center gap-1.5"><Icon name="people" className="size-4" /> {g.group.members} {g.group.members === 1 ? "estudiante" : "estudiantes"}</span>
                       <span className="flex items-center gap-1.5"><Icon name="flame" className="size-4" /> {g.activeWeek} activos</span>
                     </div>
-                    <span className="flex items-center gap-1 text-sm font-semibold text-[#4a22c9]">Ver informe <Icon name="arrow" className="size-4 transition group-hover:translate-x-0.5" /></span>
+                    <span className="flex items-center gap-1 text-sm font-semibold text-accion">Ver informe <Icon name="arrow" className="size-4 transition group-hover:translate-x-0.5" /></span>
                   </Link>
                 </li>
               ))}
@@ -122,7 +122,7 @@ export default async function TeacherHome() {
           <ul className="mt-3 divide-y divide-line">
             {classes.filter((c) => c.archived).map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                <Link href={`/maestro/${c.id}`} className="font-medium hover:text-[#4a22c9] hover:underline">{c.name}</Link>
+                <Link href={`/maestro/${c.id}`} className="font-medium hover:text-accion hover:underline">{c.name}</Link>
                 <span className="text-muted">{c.members} estudiantes</span>
               </li>
             ))}
