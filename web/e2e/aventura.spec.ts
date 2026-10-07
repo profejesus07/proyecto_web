@@ -477,7 +477,7 @@ test("el Bestiario registra las criaturas encontradas y deja en sombra a los Gua
   await expect(page.getByText("Rango S · Aún sin portal")).toBeVisible();
 });
 
-test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proyectos, y los filtros ordenan el catálogo", async ({ page }) => {
+test("la portada presenta los cursos, el encabezado lleva a las secciones y a las plataformas, y los filtros ordenan el catálogo", async ({ page }) => {
   await page.goto("/");
   // Portada: la bienvenida de Kuro, con el estilo del Gremio.
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bienvenido al Gremio");
@@ -489,15 +489,24 @@ test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proye
   const destacados = page.getByRole("region", { name: "Cursos para empezar" });
   await expect(destacados.getByRole("link", { name: /El Portal de los Pasos Pequeños/ })).toBeVisible();
 
-  // El menú de la cabecera: solo Cursos, Servicios y Proyectos.
-  const menu = page.locator("header").getByRole("navigation", { name: "Secciones" }).first();
-  await expect(menu.getByRole("link")).toHaveText(["Cursos", "Servicios", "Proyectos"]);
-  await menu.getByRole("link", { name: "Proyectos" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();
-  await expect(menu.getByRole("link", { name: "Proyectos" })).toHaveAttribute("aria-current", "page");
+  // El encabezado: tres secciones, el selector de plataformas (Academy marcada) y Crear cuenta.
+  const encabezado = page.locator("header");
+  const menu = encabezado.getByRole("navigation", { name: "Secciones" }).first();
+  await expect(menu.getByRole("link")).toHaveText(["Cursos", "Cómo se juega", "Familias y docentes"]);
+  await expect(encabezado.getByRole("link", { name: "Crear cuenta" }).first()).toHaveAttribute("href", "/registro");
+  await encabezado.getByText("Plataformas", { exact: true }).click();
+  const plataformas = encabezado.getByRole("list", { name: "Plataformas UNEX" }).first();
+  await expect(plataformas.getByRole("link", { name: "UNEX Academy" })).toHaveAttribute("aria-current", "page");
+  await page.keyboard.press("Escape");
+  await expect(plataformas).toBeHidden();
+  await menu.getByRole("link", { name: "Cursos" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Cursos" })).toHaveAttribute("aria-current", "page");
 
-  // Servicios.
-  await menu.getByRole("link", { name: "Servicios" }).click();
+  // Proyectos y Servicios ya no están en el menú, pero sus páginas siguen.
+  await page.goto("/proyectos");
+  await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();
+  await page.goto("/servicios");
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();
