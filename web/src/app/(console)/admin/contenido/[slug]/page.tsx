@@ -106,7 +106,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
       </header>
 
       {!course.published && problems.length > 0 && (
-        <div role="note" className="panel !border-gold/50 p-4 text-sm">
+        <div role="note" className="panel !border-warn/50 p-4 text-sm">
           <p className="font-semibold text-warn">Para publicar falta:</p>
           <ul className="mt-1 list-disc pl-5 text-muted">{problems.map((p) => <li key={p}>{p}</li>)}</ul>
         </div>
@@ -157,7 +157,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
                 <p className="font-display text-lg font-bold text-warn">Lecciones sin módulo · ábrelas y elige su módulo</p>
               )}
               {mod && !missions.some((m) => m.lessonKind === "explicacion") && (
-                <p className="rounded-xl border border-gold/40 bg-gold/10 px-3 py-2 text-sm text-warn">📖 Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
+                <p className="rounded-xl border border-warn/40 bg-warn/10 px-3 py-2 text-sm text-warn">📖 Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
               )}
               <ol className="space-y-3">
                 {missions.map((m, i) => <li key={m.id}>{lesson(m, i, missions.length)}</li>)}

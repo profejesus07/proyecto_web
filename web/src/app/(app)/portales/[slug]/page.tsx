@@ -70,7 +70,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
       )}
 
       {!course.hasAccess && (
-        <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-gold/60" : "!border-gold/40"}`}>
+        <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-cyan/60" : "!border-cyan/40"}`}>
           <span aria-hidden="true" className="text-4xl">🔑</span>
           <div className="min-w-0 flex-1 space-y-1">
             <p className="font-display text-xl font-bold">{course.needsSubscription ? "¡Superaste la lección gratis!" : "La primera lección es gratis"}</p>
@@ -148,7 +148,7 @@ function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const locked = m.state === "bloqueada";
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
-      <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-gold text-ink" : "bg-white/10 text-muted"}`} aria-hidden="true">
+      <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-accion text-ink" : "bg-white/10 text-muted"}`} aria-hidden="true">
         {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : m.lessonKind === "explicacion" ? "📖" : index}
       </span>
       <div className="min-w-0 flex-1">

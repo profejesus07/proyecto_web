@@ -35,7 +35,7 @@ export function GuidePicker({ options, current, legend }: { options: readonly Gu
         {options.map((g) => (
           <label key={g.id} className="cursor-pointer">
             <input type="radio" name="guide" value={g.id} checked={value === g.id} onChange={() => pick(g.id)} className="peer sr-only" aria-label={g.name} />
-            <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 text-center transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
+            <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-1.5 text-center transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan">
               <Sprite src={guideSrc(g, "saludar")} alt="" decorative className="h-24 w-auto" />
               <span className="text-[11px] font-bold leading-tight">{g.name}</span>
             </span>

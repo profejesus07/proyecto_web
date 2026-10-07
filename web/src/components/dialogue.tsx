@@ -12,7 +12,8 @@ export function SpeechBubble({
   /** Personaje cuya voz se usa (si el nombre del globo es otro, p. ej. el nombre de la familia). */
   voice?: string;
 }) {
-  const border = { cyan: "border-cyan/40", gold: "border-gold/50", coral: "border-coral/50", violet: "border-violet/50" }[tone];
+  // Color de identidad del personaje (mundo): Brann en dorado, Eon en lavanda, Kael en coral; el resto, el acento.
+  const border = { cyan: "border-cyan/40", gold: "border-gold/50", coral: "border-coral/50", violet: "border-[#b9a0ff]/50" }[tone];
   const label = { cyan: "text-cyan", gold: "text-gold", coral: "text-coral", violet: "text-[#b9a0ff]" }[tone];
   return (
     <div data-bubble className={`bubble flex items-end gap-3 sm:gap-4 ${className}`}>

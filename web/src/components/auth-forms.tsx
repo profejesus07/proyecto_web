@@ -122,7 +122,7 @@ export function RegisterForm() {
           {AVATARS.map((a, i) => (
             <label key={a.value} className="cursor-pointer">
               <input type="radio" name="avatar" value={a.value} defaultChecked={i === 0} className="peer sr-only" />
-              <span className="block overflow-hidden rounded-xl border-2 border-line bg-bg/40 p-1 text-center transition peer-checked:border-gold peer-checked:bg-gold/10 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan hover:border-[#4a43a0]">
+              <span className="block overflow-hidden rounded-xl border-2 border-line bg-bg/40 p-1 text-center transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan hover:border-[#4a43a0]">
                 <span className="relative mx-auto block h-24 w-full overflow-hidden rounded-lg"><Sprite src={asset.avatar(a.value, "e")} alt="" decorative className="absolute left-1/2 top-0 !h-auto !max-w-none w-[150%] -translate-x-1/2" /></span>
                 <span className="block pb-1 text-sm font-bold">{a.name}</span>
               </span>
@@ -152,7 +152,7 @@ export function RegisterForm() {
       </div>
 
       <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-bg/40 p-3 text-sm">
-        <input type="checkbox" name="consent" required className="mt-1 size-5 shrink-0 accent-[#8a5cff]" />
+        <input type="checkbox" name="consent" required className="mt-1 size-5 shrink-0 accent-accion" />
         <span>
           Soy mayor de edad, o mi acudiente autoriza que use esta plataforma. He leído la <Link href="/privacidad" className="text-cyan underline underline-offset-4" target="_blank">política de privacidad</Link> y los <Link href="/terminos" className="text-cyan underline underline-offset-4" target="_blank">términos de uso</Link>.
         </span>
@@ -174,10 +174,10 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
         <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-3 text-sm font-medium text-ok">✔ Tu correo quedó confirmado. Ingresa con tu correo y tu contraseña.</p>
       )}
       {notice === "recuperar-otro-navegador" && (
-        <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-warn">Abre el enlace para cambiar la contraseña en el mismo navegador donde lo pediste, o pide uno nuevo desde «¿Olvidaste tu contraseña?».</p>
+        <p role="status" className="rounded-xl border border-warn/50 bg-warn/10 px-4 py-3 text-sm font-medium text-warn">Abre el enlace para cambiar la contraseña en el mismo navegador donde lo pediste, o pide uno nuevo desde «¿Olvidaste tu contraseña?».</p>
       )}
       {notice === "enlace" && (
-          <p role="status" className="rounded-xl border border-gold/50 bg-gold/10 px-4 py-3 text-sm font-medium text-warn">Ese enlace ya no es válido. Ingresa con tu correo y contraseña o crea tu cuenta de nuevo.</p>
+          <p role="status" className="rounded-xl border border-warn/50 bg-warn/10 px-4 py-3 text-sm font-medium text-warn">Ese enlace ya no es válido. Ingresa con tu correo y contraseña o crea tu cuenta de nuevo.</p>
         )}
         <input type="hidden" name="siguiente" value={next ?? ""} />
         <div>

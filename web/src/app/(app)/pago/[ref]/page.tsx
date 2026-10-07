@@ -20,7 +20,7 @@ const VIEW: Record<PaymentStatus, { icon: string; title: string; text: string; t
   anulado: { icon: "↩", title: "El pago se anuló", text: "La pasarela anuló o reembolsó este pago, así que el curso ya no está activo por él.", tone: "red" },
   error: { icon: "⚠", title: "Hubo un problema con el pago", text: `La pasarela informó algo que no coincide con este pago. Escríbenos a ${SUPPORT_EMAIL} con la referencia y lo revisamos.`, tone: "red" },
 };
-const TONE = { green: "!border-green/50 text-ok", gold: "!border-gold/50 text-warn", red: "!border-[#ff8080]/50 text-err" };
+const TONE = { green: "!border-green/50 text-ok", gold: "!border-warn/50 text-warn", red: "!border-[#ff8080]/50 text-err" };
 
 export default async function PaymentResultPage({ params, searchParams }: PageProps<"/pago/[ref]">) {
   const { ref } = await params;

@@ -11,9 +11,9 @@ export function ProgramCard({ c }: { c: CatalogItem }) {
   const meta = [c.kind === "clase" ? (c.grade ? `Grado ${c.grade}` : c.area) : c.area, c.hours ? `${c.hours} h` : null].filter(Boolean).join(" · ");
   return (
     <li className="lift group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-panel">
-      <div className="relative h-40 overflow-hidden border-b border-line" style={{ background: `radial-gradient(90% 120% at 80% 20%, ${color}40, transparent 70%), linear-gradient(160deg, #241f5c, #14123b)` }}>
+      <div className="relative h-40 overflow-hidden border-b border-line" style={{ background: `radial-gradient(90% 120% at 80% 20%, ${color}40, transparent 70%), linear-gradient(160deg, var(--panel-2), var(--bg-2))` }}>
         <Sprite src={asset.boss(c.guardian)} alt="" decorative className="absolute -bottom-2 right-3 h-[112%] w-auto transition-transform duration-300 group-hover:scale-105" />
-        <span className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-[#15103f] shadow-sm">{KIND_LABEL[c.kind]}</span>
+        <span className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-ink shadow-sm">{KIND_LABEL[c.kind]}</span>
       </div>
       <div className="flex flex-1 flex-col gap-2 p-5">
         {meta && <p className="text-xs font-semibold uppercase tracking-wider text-muted">{meta}</p>}
@@ -24,7 +24,7 @@ export function ProgramCard({ c }: { c: CatalogItem }) {
         <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-sm">
           <span className="inline-flex items-center gap-1.5 text-muted"><Icon name="lesson" className="size-4" /> {c.lessons} {c.lessons === 1 ? "lección" : "lecciones"}</span>
           {c.isFree ? (
-            <span className="rounded-md bg-[#ffc83d] px-2 py-0.5 text-xs font-bold text-[#15103f]">Gratis</span>
+            <span className="rounded-md bg-accion px-2 py-0.5 text-xs font-bold text-ink">Gratis</span>
           ) : (
             <span className="font-semibold">{c.price === null ? "1.ª lección gratis" : formatPrice(c.price)}</span>
           )}

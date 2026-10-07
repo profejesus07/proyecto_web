@@ -54,7 +54,7 @@ export default async function ChroniclesPage() {
                     <Link href={`/cronicas/${ch.id}`} className="panel group flex h-full flex-col gap-2 p-5 transition hover:-translate-y-0.5" style={{ borderColor: `${color}66` }}>
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-bold uppercase tracking-wider text-muted">{shelf.course ? `Capítulo ${i + 1}` : "Prólogo"}</span>
-                        {!read && <span className="rounded-md bg-gold px-2 py-0.5 text-xs font-extrabold text-ink">Nuevo</span>}
+                        {!read && <span className="rounded-md bg-accion px-2 py-0.5 text-xs font-extrabold text-ink">Nuevo</span>}
                       </div>
                       <h3 className="font-display text-lg font-bold leading-tight">{ch.title}</h3>
                       <p className="text-sm text-muted">{ch.teaser}</p>

@@ -49,7 +49,7 @@ export default async function ProfilePage() {
         <div className="space-y-5 self-center">
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
-          {title && <p className="w-fit rounded-lg bg-violet/20 px-3 py-1 text-sm font-bold text-[#d9c9ff]">🎖️ «{title}»</p>}
+          {title && <p className="w-fit rounded-lg bg-gold/15 px-3 py-1 text-sm font-bold text-gold">🎖️ «{title}»</p>}
           <div className="flex flex-wrap gap-2">
             <Link href="/perfil/avatar" className="btn btn-primary btn-sm">🎨 Personalizar avatar</Link>
             <a href="#editar" className="btn btn-secondary btn-sm">✏️ Editar perfil</a>

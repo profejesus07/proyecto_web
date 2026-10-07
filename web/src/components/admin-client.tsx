@@ -45,7 +45,7 @@ export function CreateTeacherForm() {
           <p className="text-sm">Envíale estos datos para que ingrese. <strong>La contraseña solo se muestra ahora</strong>; pídele que la cambie en Perfil → Cambiar mi contraseña.</p>
           <dl className="grid gap-1 rounded-xl bg-bg/50 p-3 font-mono text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
             <dt className="text-muted">Correo</dt><dd>{state.email}</dd>
-            <dt className="text-muted">Contraseña temporal</dt><dd className="font-bold text-gold">{state.password}</dd>
+            <dt className="text-muted">Contraseña temporal</dt><dd className="font-bold text-accion-fuerte">{state.password}</dd>
           </dl>
           <button type="button" className="btn btn-secondary btn-sm" onClick={async () => {
             try {

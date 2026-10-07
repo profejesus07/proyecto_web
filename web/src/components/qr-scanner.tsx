@@ -109,7 +109,7 @@ export function QrScanner() {
           <input type="file" accept="image/*" className="sr-only" onChange={(e) => { void fromFile(e.target.files?.[0]); e.target.value = ""; }} />
         </label>
       </div>
-      <div className={`relative overflow-hidden rounded-2xl bg-[#15103f] ${scanning ? "" : "hidden"}`}>
+      <div className={`relative overflow-hidden rounded-2xl bg-bg-2 ${scanning ? "" : "hidden"}`}>
         <video ref={video} playsInline muted className="aspect-square w-full object-cover sm:aspect-video" aria-label="Vista de la cámara" />
         {/* Marco guía para centrar el QR. */}
         <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden="true">

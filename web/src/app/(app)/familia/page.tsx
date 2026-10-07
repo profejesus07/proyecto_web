@@ -56,7 +56,7 @@ function Unlock({ c, pay }: { c: FamilyChild; pay: PayInfo }) {
           const waiting = pay.pending.find((p) => p.userId === c.id && p.courseSlug === k.slug);
           return (
             <li key={k.slug} className="space-y-3 rounded-xl border border-line bg-bg/40 p-4">
-              <p className="flex flex-wrap items-baseline justify-between gap-2 font-bold">{k.title} <span className="font-display text-xl text-gold">{formatPrice(price.get(k.slug) ?? null)}</span></p>
+              <p className="flex flex-wrap items-baseline justify-between gap-2 font-bold">{k.title} <span className="font-display text-xl text-cyan">{formatPrice(price.get(k.slug) ?? null)}</span></p>
               {waiting && (
                 <p role="status" className="text-sm text-warn">⏳ Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
               )}
@@ -81,9 +81,9 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
         <AvatarFace base={c.avatar} look={c.avatarLook} rank={p.rank.key} size={72} />
         <div className="min-w-0 flex-1">
           <h2 id={`child-${c.id}`} className="text-2xl">{c.name}</h2>
-          {titleLabel(c.avatarLook.title) && <p className="text-sm font-bold text-[#d9c9ff]">🎖️ «{titleLabel(c.avatarLook.title)}»</p>}
+          {titleLabel(c.avatarLook.title) && <p className="text-sm font-bold text-gold">🎖️ «{titleLabel(c.avatarLook.title)}»</p>}
           <p className="text-sm text-muted">
-            <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: p.rank.color, color: "#14123b" }}>{p.rank.key}</span>{" "}
+            <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: p.rank.color, color: "var(--ink)" }}>{p.rank.key}</span>{" "}
             Rango {p.rank.name} · {c.xp} XP
           </p>
         </div>
@@ -127,7 +127,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
                   <ul className="flex flex-wrap gap-2">
                     {k.lessons.map((l) => (
                       <li key={l.position} title={`${l.title}: mejor nota ${l.bestScore}% en ${l.attempts} ${l.attempts === 1 ? "intento" : "intentos"}`}
-                        className={`rounded-lg px-2 py-1 text-xs font-bold ${l.completed ? "bg-green/20 text-ok" : "bg-gold/15 text-warn"}`}>
+                        className={`rounded-lg px-2 py-1 text-xs font-bold ${l.completed ? "bg-green/20 text-ok" : "bg-warn/15 text-warn"}`}>
                         L{l.position} · {l.bestScore}%{l.completed ? " ✔" : ""}
                       </li>
                     ))}
