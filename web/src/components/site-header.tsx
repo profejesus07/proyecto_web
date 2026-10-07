@@ -26,7 +26,7 @@ export async function SiteHeader() {
     return (
       <>
         <FranjaUnex />
-        <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+        <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
           <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
             <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
             <nav aria-label="Administración" className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export async function SiteHeader() {
     <>
       {/* Franja UNEX solo sin sesión (ingresar, registro…): en el Gremio el acceso está en el pie. */}
       {!viewer && <FranjaUnex />}
-      <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+      <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-2 px-4 sm:h-20 sm:gap-4 sm:px-6">
           <Logo href={viewer ? homePath(viewer.role) : "/"} compact size="h-14 lg:h-[4.5rem]" />
 
@@ -89,7 +89,7 @@ export async function SiteHeader() {
  *  En celular, el menú baja a una segunda fila. */
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+    <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
       <div className="site-header-line" aria-hidden="true" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
         <Logo href="/" size="h-12 sm:h-14 lg:h-16" />

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AlturasFijas } from "@/components/alturas-fijas";
 import { PageTransition } from "@/components/page-transition";
 import { SITE_NAME } from "@/lib/env";
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
         <PageTransition />
+        <AlturasFijas />
         {children}
       </body>
     </html>

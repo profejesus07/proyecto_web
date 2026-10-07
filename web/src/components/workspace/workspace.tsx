@@ -22,7 +22,7 @@ export function Workspace({ viewer, badge, home, groups, navLabel, children }: {
   return (
     <div className="theme-panel">
       <FranjaUnex ancha />
-      <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
+      <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur print:hidden">
         <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <Logo href={home} size="h-10" compact />
           <span className="badge badge-brand hidden sm:inline-flex">{badge}</span>

@@ -149,7 +149,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,320px)_1fr] md:items-start">
-      <section aria-label="Vista previa" className="panel panel-glow sticky top-[4.5rem] z-10 flex items-center gap-4 overflow-hidden !bg-panel p-3 md:top-20 md:flex-col md:p-6">
+      <section aria-label="Vista previa" data-fija="arriba" className="panel panel-glow sticky top-[4.5rem] z-10 flex items-center gap-4 overflow-hidden !bg-panel p-3 md:top-20 md:flex-col md:p-6">
         <div className="relative h-32 w-24 shrink-0 md:h-96 md:w-full" style={{ background: "radial-gradient(60% 60% at 50% 60%, rgba(46,230,214,.18), transparent 70%)" }}>
           <Sprite src={avatarSrc(base, rank, look)} alt={`Vista previa de ${AVATAR_NAMES[base]}`} priority className="absolute inset-0 size-full object-contain" />
           {pet && <Sprite src={pet.image} alt={`Tu compañero: ${pet.name}`} className="absolute bottom-0 right-0 h-1/3 w-auto md:right-4" />}
