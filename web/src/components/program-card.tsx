@@ -24,7 +24,7 @@ export function ProgramCard({ c }: { c: CatalogItem }) {
         <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-sm">
           <span className="inline-flex items-center gap-1.5 text-muted"><Icon name="lesson" className="size-4" /> {c.lessons} {c.lessons === 1 ? "lección" : "lecciones"}</span>
           {c.isFree ? (
-            <span className="rounded-md bg-accion px-2 py-0.5 text-xs font-bold text-ink">Gratis</span>
+            <span className="rounded-md bg-accion px-2 py-0.5 text-xs font-bold text-sobre-accion">Gratis</span>
           ) : (
             <span className="font-semibold">{c.price === null ? "1.ª lección gratis" : formatPrice(c.price)}</span>
           )}

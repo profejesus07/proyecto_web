@@ -60,7 +60,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
             <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
                 <span className="chip">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
-                {c.isFree && <span className="rounded-full bg-accion px-3 py-1 text-xs font-bold text-ink">Gratis</span>}
+                {c.isFree && <span className="rounded-full bg-accion px-3 py-1 text-xs font-bold text-sobre-accion">Gratis</span>}
               </div>
               <h1 className="text-4xl leading-tight sm:text-5xl">{c.title}</h1>
               <p className="max-w-2xl text-lg text-muted">{c.summary}</p>

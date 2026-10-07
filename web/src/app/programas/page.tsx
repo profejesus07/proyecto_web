@@ -38,7 +38,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
           <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-white/5 p-1 ring-1 ring-line sm:inline-flex sm:w-auto">
             {FILTERS.map(([t, label]) => (
               <Link key={t} href={t ? `/programas?tipo=${t}` : "/programas"} aria-current={tipo === t ? "page" : undefined}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-accion text-ink shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-accion text-sobre-accion shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
             ))}
           </nav>
         </div>

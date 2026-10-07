@@ -24,8 +24,9 @@
 }
 
 /* Tokens de la interfaz. Conservan sus nombres antiguos; los valores son UNEX en versión oscura
-   (el Gremio y el sitio público). El mapeo y sus contrastes están en CLAUDE.md, «Marca UNEX». */
-:root {
+   (el Gremio). El mapeo y sus contrastes están en CLAUDE.md, «Marca UNEX».
+   [data-tema="oscuro"] vuelve a estos tokens dentro de una página clara (encabezado, portada y pie sobre Cosmos). */
+:root, [data-tema="oscuro"] {
   --bg: #0D0F2B;           /* Fondo oscuro */
   --bg-2: #15173F;         /* Cosmos */
   --panel: #161941;        /* Superficie oscura */
@@ -41,6 +42,14 @@
   --coral: #ff6b6b;
   --green: #4ade80;
   --ink: #15173F;          /* Cosmos: texto sobre Aurora y Nova */
+  --sobre-accion: #15173F; /* texto sobre un fondo --accion: Cosmos sobre Aurora (7,4:1) */
+  /* Piezas que dependen del fondo (los dos temas las redefinen). */
+  --campo: color-mix(in srgb, var(--bg) 70%, transparent);   /* fondo de los campos */
+  --chip-fondo: rgb(255 255 255 / 0.08);
+  --chip-borde: rgb(255 255 255 / 0.12);
+  --riel: rgb(255 255 255 / 0.09);                           /* fondo de las barras */
+  --hover-suave: rgb(255 255 255 / 0.07);
+  --sombra-panel: 0 18px 40px -24px rgb(0 0 0 / 0.7);
   /* Estados (avisos, pagos, notas): tonos pastel que se leen sobre el fondo oscuro del Gremio. */
   --ok: #b6f5cb;
   --warn: #ffe3a0;
@@ -58,6 +67,7 @@
   --color-muted: var(--muted);
   --color-cyan: var(--cyan);
   --color-accion: var(--accion);
+  --color-sobre-accion: var(--sobre-accion);
   /* Solo en .theme-panel (consola y panel docente). */
   --color-accion-fuerte: var(--accion-fuerte);
   --color-accion-suave: var(--accion-suave);
@@ -132,10 +142,10 @@ p { text-wrap: pretty; }
   border: 1px solid var(--line);
   border-radius: var(--radius-2xl);
   background: linear-gradient(180deg, color-mix(in srgb, var(--panel-2) 72%, transparent), color-mix(in srgb, var(--panel) 82%, transparent));
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 18px 40px -24px rgb(0 0 0 / 0.7);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, var(--sombra-panel);
   backdrop-filter: blur(6px);
 }
-.panel-glow { box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyan) 35%, transparent), 0 0 36px -8px color-mix(in srgb, var(--cyan) 35%, transparent), 0 18px 40px -24px rgb(0 0 0 / 0.7); }
+.panel-glow { box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyan) 35%, transparent), 0 0 36px -8px color-mix(in srgb, var(--cyan) 35%, transparent), var(--sombra-panel); }
 
 .eyebrow {
   font-size: 0.75rem;
@@ -169,14 +179,14 @@ p { text-wrap: pretty; }
 /* Botón principal: Aurora con texto Cosmos (7,4:1). Nova queda para los logros. */
 .btn-primary {
   background: var(--accion);
-  color: var(--ink);
+  color: var(--sobre-accion);
   box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--accion) 55%, transparent), 0 -3px 0 rgb(0 0 0 / 0.15) inset;
 }
 .btn-primary:hover:not(:disabled) { transform: translateY(-1px); background: color-mix(in srgb, var(--accion), #fff 12%); box-shadow: 0 12px 28px -8px color-mix(in srgb, var(--accion) 70%, transparent), 0 -3px 0 rgb(0 0 0 / 0.15) inset; }
 .btn-secondary { background: color-mix(in srgb, var(--cyan) 8%, transparent); border-color: color-mix(in srgb, var(--cyan) 55%, transparent); color: var(--cyan); }
 .btn-secondary:hover:not(:disabled) { background: color-mix(in srgb, var(--cyan) 16%, transparent); }
 .btn-ghost { color: var(--text); background: transparent; }
-.btn-ghost:hover:not(:disabled) { background: rgb(255 255 255 / 0.07); }
+.btn-ghost:hover:not(:disabled) { background: var(--hover-suave); }
 .btn-lg { min-height: 3.25rem; padding: 0.9rem 1.75rem; font-size: 1.05rem; }
 .btn-sm { min-height: 2.25rem; padding: 0.45rem 0.9rem; font-size: 0.875rem; }
 
@@ -185,7 +195,7 @@ p { text-wrap: pretty; }
   min-height: 3rem;
   padding: 0.7rem 1rem;
   border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  background: var(--campo);
   border: 1.5px solid var(--line-fuerte);
   color: var(--text);
   font: inherit;
@@ -201,12 +211,12 @@ p { text-wrap: pretty; }
   display: inline-flex; align-items: center; gap: 0.4rem;
   padding: 0.2rem 0.65rem; border-radius: 999px;
   font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em;
-  background: rgb(255 255 255 / 0.08); border: 1px solid rgb(255 255 255 / 0.12);
+  background: var(--chip-fondo); border: 1px solid var(--chip-borde);
 }
 
 .skip-link {
   position: absolute; left: 1rem; top: -4rem; z-index: 100;
-  background: var(--accion); color: var(--ink); padding: 0.6rem 1rem; border-radius: 0.6rem; font-weight: 700;
+  background: var(--accion); color: var(--sobre-accion); padding: 0.6rem 1rem; border-radius: 0.6rem; font-weight: 700;
   transition: top 0.15s;
 }
 .skip-link:focus { top: 1rem; }
@@ -218,7 +228,7 @@ p { text-wrap: pretty; }
 .float { animation: float 5s ease-in-out infinite; }
 
 /* Barra de progreso */
-.bar { height: 0.7rem; border-radius: 999px; background: rgb(255 255 255 / 0.09); overflow: hidden; }
+.bar { height: 0.7rem; border-radius: 999px; background: var(--riel); overflow: hidden; }
 .bar > i { display: block; height: 100%; border-radius: inherit; background: var(--violet); transition: width 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -331,8 +341,8 @@ p { text-wrap: pretty; }
 .theme-gremio .site-nav { background: rgb(255 255 255 / 0.05); box-shadow: inset 0 0 0 1px var(--line); }
 .theme-gremio .site-nav a { color: var(--muted); }
 .theme-gremio .site-nav a:hover { color: var(--text); background: rgb(255 255 255 / 0.08); box-shadow: none; }
-.theme-gremio .site-nav a[aria-current="page"] { color: var(--ink); background: var(--accion); }
-.theme-gremio .site-nav a[aria-current="page"] svg { color: var(--ink); }
+.theme-gremio .site-nav a[aria-current="page"] { color: var(--sobre-accion); background: var(--accion); }
+.theme-gremio .site-nav a[aria-current="page"] svg { color: var(--sobre-accion); }
 /* Estrella de Nova que marca la sección activa. */
 .site-nav a[aria-current="page"]::after {
   content: ""; position: absolute; top: -3px; right: 10px; width: 7px; height: 7px; background: var(--unex-nova);
@@ -368,10 +378,9 @@ p { text-wrap: pretty; }
 .lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--ink) 35%, transparent); }
 @media (prefers-reduced-motion: reduce) { .lift:hover { transform: none; } }
 
-/* Panel de trabajo (consola de administración y panel docente): claro, neutro y profesional.
-   Tipografía sans, tablas legibles, Aurora oscuro (--accion) solo para la acción y el estado activo. */
-.theme-panel {
-  /* Paleta UNEX en versión clara. */
+/* Paleta UNEX en versión clara: la comparten la consola y el panel docente (.theme-panel) y las páginas
+   públicas ([data-tema="claro"]). Los contrastes están en CLAUDE.md, «Marca UNEX». */
+.theme-panel, [data-tema="claro"] {
   --bg: #F5F4FB;           /* Polvo */
   --bg-2: #FFFFFF;
   --panel: #FFFFFF;
@@ -389,9 +398,21 @@ p { text-wrap: pretty; }
   --coral: #c0362c;
   --green: #12804a;
   --ink: #15173F;
+  --sobre-accion: #FFFFFF; /* texto blanco sobre Aurora oscuro (5,7:1) */
+  --campo: #FFFFFF;
+  --chip-fondo: color-mix(in srgb, #15173F 5%, transparent);
+  --chip-borde: #DDDBEE;
+  --riel: #DDDBEE;
+  --hover-suave: color-mix(in srgb, #15173F 6%, transparent);
+  --sombra-panel: 0 16px 32px -24px rgb(21 23 63 / 0.3);
   --ok: #0f6b3a;
   --warn: #8a5a00;
   --err: #b42318;
+}
+
+/* Panel de trabajo (consola de administración y panel docente): claro, neutro y profesional.
+   Tipografía sans, tablas legibles, Aurora oscuro (--accion) solo para la acción y el estado activo. */
+.theme-panel {
   min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
@@ -444,3 +465,31 @@ p { text-wrap: pretty; }
 
 /* Logotipo: dos tintas, se muestra la que corresponde al tema. */
 .brand-claro { display: none; }
+
+/* ============================================================
+   Páginas públicas en tema claro, como el sitio principal UNEX ([data-tema="claro"] en su contenedor).
+   Los componentes son los mismos del Gremio: los tokens claros hacen casi todo; aquí solo va lo que no es color.
+   [data-tema="oscuro"] marca las zonas sobre Cosmos dentro de esas páginas (encabezado, portada, pie).
+   ============================================================ */
+html:has([data-tema="claro"]) { background-color: var(--unex-polvo); color-scheme: light; }
+[data-tema="claro"] { background-color: var(--bg); color: var(--text); color-scheme: light; }
+[data-tema="oscuro"] { color: var(--text); color-scheme: dark; }
+[data-tema="claro"] ::selection { background: color-mix(in srgb, var(--accion) 18%, transparent); color: inherit; }
+[data-tema="oscuro"] ::selection { background: var(--unex-aurora-oscuro); color: #fff; }
+[data-tema="claro"] .btn-primary:hover:not(:disabled) { background: var(--accion-fuerte); }
+[data-tema="oscuro"] .btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accion), #fff 12%); }
+[data-tema="claro"] .btn-primary:disabled, [data-tema="claro"] .btn-primary[aria-disabled="true"] { background: var(--line); color: var(--muted); }
+[data-tema="claro"] .hover\:bg-white\/5:hover, [data-tema="claro"] .hover\:bg-white\/10:hover { background: var(--hover-suave); }
+/* Logotipo: versión normal sobre claro y negativa sobre las zonas Cosmos. */
+[data-tema="claro"] .brand-oscuro { display: none; }
+[data-tema="claro"] .brand-claro { display: inline-block; }
+[data-tema="claro"] [data-tema="oscuro"] .brand-oscuro { display: inline-block; }
+[data-tema="claro"] [data-tema="oscuro"] .brand-claro { display: none; }
+
+/* Escala del sitio principal (manual §6). En la capa base: las clases de cada página pueden ajustarla. */
+@layer base {
+  [data-tema="claro"] { font-size: 1.0625rem; font-weight: 350; line-height: 1.6; }
+  [data-tema="claro"] h1 { font-size: clamp(2rem, 1.2rem + 3.6vw, 3.5rem); font-weight: 700; line-height: 1.15; }
+  [data-tema="claro"] h2 { font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.125rem); font-weight: 600; line-height: 1.15; }
+  [data-tema="claro"] h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.15; }
+}
