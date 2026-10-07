@@ -78,7 +78,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 
 ## Administración
 
-- **Quién es administrador:** una cuenta de docente con la marca `is_admin`. Hoy lo es `profejesus365@gmail.com`. Para marcar otra cuenta, en Supabase → **SQL Editor** ejecuta:
+- **Quién es administrador:** una cuenta de docente con la marca `is_admin`. El administrador principal es `unexeducation07@gmail.com` (también es el correo de contacto de la plataforma, `SUPPORT_EMAIL` en `web/src/lib/features.ts`) y `profejesus365@gmail.com` es el de respaldo. Para marcar otra cuenta, en Supabase → **SQL Editor** ejecuta:
 
   ```sql
   update public.profiles set is_admin = true, role = 'docente'

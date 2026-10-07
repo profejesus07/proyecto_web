@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { loginAction, registerAction, requestPasswordResetAction, resendConfirmationAction, updatePasswordAction, type FormState } from "@/app/actions/auth";
 import { Sprite, asset } from "@/components/sprite";
+import { SUPPORT_EMAIL } from "@/lib/features";
 import { PASSWORD_RULES } from "@/lib/validation";
 
 function Submit({ children, pending: label, variant = "primary" }: { children: React.ReactNode; pending: string; variant?: "primary" | "secondary" }) {
@@ -113,7 +114,7 @@ export function RegisterForm() {
             </label>
           ))}
         </div>
-        <p className="hint">¿Eres docente? Las cuentas de Maestro del Gremio las crea el administrador: escribe a <a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a>.</p>
+        <p className="hint">¿Eres docente? Las cuentas de Maestro del Gremio las crea el administrador: escribe a <a href={`mailto:${SUPPORT_EMAIL}`} className="text-cyan underline underline-offset-4">{SUPPORT_EMAIL}</a>.</p>
       </fieldset>
 
       <fieldset className="space-y-3">
