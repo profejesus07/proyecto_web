@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <LegalPage title="Privacidad y datos" updated="octubre de 2026">
       <section>
         <h2>Quién es el responsable</h2>
-        <p>El responsable del tratamiento de los datos es <strong>Mgtr. Jesús David Álvarez Sáez</strong>. Puedes escribirnos a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong> para cualquier consulta sobre tus datos.</p>
+        <p>El responsable del tratamiento de los datos es <strong>Mgtr. Jesús David Álvarez Sáez</strong>. Puedes escribirnos a <strong><a href="mailto:unexeducation07@gmail.com" className="text-cyan underline underline-offset-4">unexeducation07@gmail.com</a></strong> para cualquier consulta sobre tus datos.</p>
       </section>
       <section>
         <h2>Qué datos guardamos</h2>
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>Tus derechos</h2>
-        <p>Puedes conocer, actualizar, rectificar y pedir que eliminemos tus datos, o revocar tu autorización, escribiendo a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong>. Responderemos en los plazos que establece la normativa colombiana de protección de datos personales (Ley 1581 de 2012 y sus decretos).</p>
+        <p>Puedes conocer, actualizar, rectificar y pedir que eliminemos tus datos, o revocar tu autorización, escribiendo a <strong><a href="mailto:unexeducation07@gmail.com" className="text-cyan underline underline-offset-4">unexeducation07@gmail.com</a></strong>. Responderemos en los plazos que establece la normativa colombiana de protección de datos personales (Ley 1581 de 2012 y sus decretos).</p>
       </section>
       <section>
         <h2>Cuánto tiempo los guardamos</h2>

@@ -49,7 +49,7 @@ export default function TermsPage() {
       </section>
       <section>
         <h2>Cambios y contacto</h2>
-        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong><a href="mailto:profejesus365@gmail.com" className="text-cyan underline underline-offset-4">profejesus365@gmail.com</a></strong> si tienes dudas.</p>
+        <p>Podemos actualizar estos términos; si el cambio es importante, te avisaremos en la plataforma. Escríbenos a <strong><a href="mailto:unexeducation07@gmail.com" className="text-cyan underline underline-offset-4">unexeducation07@gmail.com</a></strong> si tienes dudas.</p>
       </section>
     </LegalPage>
   );
