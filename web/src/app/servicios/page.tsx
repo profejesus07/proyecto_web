@@ -36,7 +36,7 @@ export default function ServicesPage() {
         <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((s) => (
             <li key={s.id} className="lift flex flex-col rounded-2xl border border-line bg-panel p-7">
-              <span className={`grid size-12 place-items-center rounded-xl ${s.main ? "bg-violet text-white" : "bg-cyan/10 text-cyan"}`}><Icon name={s.icon} className="size-6" /></span>
+              <span className={`grid size-12 place-items-center rounded-xl ${s.main ? "bg-accion text-sobre-accion" : "bg-cyan/10 text-cyan"}`}><Icon name={s.icon} className="size-6" /></span>
               <h3 className="mt-5 text-xl leading-snug">{s.title}</h3>
               <p className="mt-2 text-sm text-muted">{s.lead}</p>
               <ul className="mt-4 space-y-1.5 text-sm">
@@ -72,7 +72,7 @@ export default function ServicesPage() {
         <div className="ink-band rounded-3xl p-8 text-center sm:p-14">
           <p className="eyebrow">Contacto</p>
           <h2 id="contacto-t" className="mt-2 text-3xl sm:text-4xl">Cuéntanos qué quieres lograr</h2>
-          <p className="mx-auto mt-3 max-w-lg text-white/75">Escríbenos con el nombre de tu institución y lo que necesitas. Te respondemos con una propuesta.</p>
+          <p className="mx-auto mt-3 max-w-lg text-muted">Escríbenos con el nombre de tu institución y lo que necesitas. Te respondemos con una propuesta.</p>
           <a href={mail("Solicitud de propuesta")} className="btn btn-primary btn-lg mt-8 max-w-full whitespace-normal">Escribir a {SUPPORT_EMAIL}</a>
         </div>
       </section>

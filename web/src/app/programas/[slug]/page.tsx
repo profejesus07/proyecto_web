@@ -92,9 +92,13 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <dl className={`relative -mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_12px_30px_-20px_rgb(21_16_63/0.35)] sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>
           {facts.map((f) => (
-            <div key={f.label} className="flex items-center gap-3 bg-panel p-5">
-              <span className="grid size-10 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name={f.icon} /></span>
-              <div><dt className="text-xs uppercase tracking-wider text-muted">{f.label}</dt><dd className="text-lg font-semibold">{f.value}</dd></div>
+            // Cada <div> del <dl> lleva solo su <dt> y su <dd>; el ícono va dentro del <dt>, a la izquierda.
+            <div key={f.label} className="relative bg-panel py-5 pl-[4.5rem] pr-5">
+              <dt className="text-xs uppercase tracking-wider text-muted">
+                <span aria-hidden="true" className="absolute left-5 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-xl bg-cyan/10 text-cyan"><Icon name={f.icon} /></span>
+                {f.label}
+              </dt>
+              <dd className="text-lg font-semibold">{f.value}</dd>
             </div>
           ))}
         </dl>
@@ -117,7 +121,7 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
                       <span className="min-w-0 grow basis-48 font-medium">{m.title}</span>
                       {m.position <= free && !c.isFree && <span className="rounded-md bg-cyan/15 px-2 py-0.5 text-xs font-semibold text-cyan">Gratis</span>}
                       {m.lessonKind === "explicacion" && <span className="rounded-md bg-cyan/10 px-2 py-0.5 text-xs font-semibold text-cyan">Explicación</span>}
-                      {m.isBoss && <span className="rounded-md bg-white/10 px-2 py-0.5 text-xs font-semibold text-text">Reto del Guardián</span>}
+                      {m.isBoss && <span className="rounded-md bg-panel-2 px-2 py-0.5 text-xs font-semibold text-text ring-1 ring-line">Reto del Guardián</span>}
                     </li>
                   ))}
                 </ol>
