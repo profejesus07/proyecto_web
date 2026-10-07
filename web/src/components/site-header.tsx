@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
 import { Footer } from "@/components/footer";
 import { logoutAction } from "@/app/actions/auth";
 import { Icon } from "@/components/icons";
@@ -23,22 +24,27 @@ export async function SiteHeader() {
   // ven una cabecera sencilla, sin monedas, avatar ni menú del juego.
   if (viewer && isStaff(viewer.role)) {
     return (
-      <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
-        <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
-          <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
-          <nav aria-label="Administración" className="flex items-center gap-2">
-            <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
-            <form action={logoutAction}>
-              <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <>
+        <FranjaUnex />
+        <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
+          <div className="mx-auto flex h-[4.5rem] max-w-6xl sm:h-20 items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+            <Logo href={homePath(viewer.role)} compact size="h-14 lg:h-[4.5rem]" />
+            <nav aria-label="Administración" className="flex items-center gap-2">
+              <Link href={homePath(viewer.role)} className="btn btn-secondary btn-sm">{isAdmin(viewer.role) ? "← Volver a la consola" : "← Volver a mi panel"}</Link>
+              <form action={logoutAction}>
+                <button className="btn btn-ghost btn-sm" type="submit">Salir</button>
+              </form>
+            </nav>
+          </div>
+        </header>
+      </>
     );
   }
 
   return (
     <>
+      {/* Franja UNEX solo sin sesión (ingresar, registro…): en el Gremio el acceso está en el pie. */}
+      {!viewer && <FranjaUnex />}
       <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-2 px-4 sm:h-20 sm:gap-4 sm:px-6">
           <Logo href={viewer ? homePath(viewer.role) : "/"} compact size="h-14 lg:h-[4.5rem]" />
@@ -103,6 +109,7 @@ export function PublicHeader() {
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="theme-gremio">
+      <FranjaUnex />
       <PublicHeader />
       <main id="contenido">{children}</main>
       <Footer />

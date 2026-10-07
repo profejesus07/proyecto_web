@@ -1,0 +1,185 @@
+/* Franja UNEX: siempre sobre Cosmos, igual que el encabezado del sitio principal. Solo usa tokens de marca. */
+
+.franja {
+  position: relative;
+  z-index: 50; /* el menú desplegable pasa por encima de la cabecera fija de Academy (z-40) */
+  background: var(--unex-cosmos);
+  color: var(--unex-polvo);
+  border-bottom: 1px solid color-mix(in srgb, var(--unex-polvo) 10%, transparent);
+  font-size: 0.8125rem;
+}
+
+.franja :focus-visible {
+  outline: 2px solid var(--unex-polvo);
+  outline-offset: 2px;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 72rem; /* el mismo ancho que la cabecera del sitio público (max-w-6xl) */
+  min-height: 2.5rem;
+  margin-inline: auto;
+  padding: 0.25rem 1rem;
+}
+
+.principal {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 6px;
+  color: var(--unex-polvo);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.principal img {
+  width: 24px; /* mínimo del manual para el isotipo */
+  height: 24px;
+}
+
+.principal:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ancha {
+  max-width: 90rem;
+}
+
+@media (min-width: 640px) {
+  .barra {
+    padding-inline: 1.5rem; /* como las cabeceras (px-4 sm:px-6) */
+  }
+}
+
+/* Plataformas */
+
+.lista,
+.panel {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista {
+  display: none;
+}
+
+.enlace,
+.inactivo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.enlace {
+  color: var(--unex-polvo);
+  transition: background-color 0.15s;
+}
+
+.enlace:hover {
+  background: color-mix(in srgb, var(--unex-polvo) 12%, transparent);
+}
+
+.enlace[aria-current="page"] {
+  background: color-mix(in srgb, var(--plataforma) 22%, transparent);
+  color: var(--plataforma-claro);
+  font-weight: 500;
+}
+
+.inactivo {
+  color: color-mix(in srgb, var(--unex-polvo) 72%, transparent);
+  cursor: default;
+}
+
+.punto {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plataforma);
+}
+
+.pronto {
+  padding: 0 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+/* Menú desplegable (pantallas pequeñas) */
+
+.menu {
+  position: relative;
+}
+
+.menu summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--unex-polvo) 35%, transparent);
+  border-radius: 999px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu summary::after {
+  content: "";
+  width: 0.4em;
+  height: 0.4em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.menu[open] summary::after {
+  transform: translateY(15%) rotate(-135deg);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  gap: 0.25rem;
+  width: max-content;
+  max-width: calc(100vw - 2rem); /* nunca se sale de la pantalla en el celular */
+  min-width: 15rem;
+  padding: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--unex-polvo) 20%, transparent);
+  border-radius: 14px;
+  background: var(--unex-cosmos);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--unex-cosmos) 45%, transparent);
+  font-size: 0.875rem;
+}
+
+.panel .pronto {
+  margin-left: auto;
+}
+
+@media (min-width: 768px) {
+  .lista {
+    display: flex;
+    gap: 0.125rem;
+  }
+
+  .menu {
+    display: none;
+  }
+}
