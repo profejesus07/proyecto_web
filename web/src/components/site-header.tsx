@@ -51,7 +51,8 @@ export async function SiteHeader() {
 
           {viewer ? (
             <>
-              <NavLinks className="hidden md:flex" family={viewer.role === "familia"} />
+              {/* El menú cabe en la cabecera desde lg; en celular y tableta va abajo, en la barra con ícono y texto. */}
+              <NavLinks className="hidden lg:flex" family={viewer.role === "familia"} />
               <div className="flex items-center gap-1 sm:gap-3">
                 <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
@@ -78,7 +79,7 @@ export async function SiteHeader() {
         </div>
       </header>
       {/* Fuera del <header>: su backdrop-blur haría que «fixed» se anclara a la cabecera y la tapara. */}
-      {viewer && <NavLinks mobile className="md:hidden" family={viewer.role === "familia"} />}
+      {viewer && <NavLinks mobile className="lg:hidden" family={viewer.role === "familia"} />}
     </>
   );
 }
