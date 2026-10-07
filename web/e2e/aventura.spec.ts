@@ -503,6 +503,12 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
   await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
   await expect(menu.getByRole("link", { name: "Cursos" })).toHaveAttribute("aria-current", "page");
 
+  for (const [seccion, titulo] of [["Cómo se juega", "Cómo se juega"], ["Familias y docentes", "Familias y docentes"]]) {
+    await menu.getByRole("link", { name: seccion }).click();
+    await expect(page.getByRole("heading", { level: 1, name: titulo })).toBeVisible();
+    await expect(menu.getByRole("link", { name: seccion })).toHaveAttribute("aria-current", "page");
+  }
+
   // Proyectos y Servicios ya no están en el menú, pero sus páginas siguen.
   await page.goto("/proyectos");
   await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();
