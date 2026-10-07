@@ -49,6 +49,10 @@
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
+  /* Lo que se desplaza o recibe el foco no queda bajo lo fijo (cabecera, barra de menú). Las alturas las
+     mide components/alturas-fijas.tsx según el ancho y la página. */
+  scroll-padding-top: calc(var(--alto-fijo-arriba, 0px) + 0.75rem);
+  scroll-padding-bottom: calc(var(--alto-fijo-abajo, 0px) + 0.75rem);
   -webkit-text-size-adjust: 100%;
 }
 
