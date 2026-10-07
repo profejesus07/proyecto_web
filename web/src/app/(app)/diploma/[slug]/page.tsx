@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { bricolage, dmSans } from "@/app/fonts/documentos";
 import { PrintButton } from "@/components/print-button";
 import { requirePlayer } from "@/lib/auth";
 import { loadDiplomas } from "@/lib/data/queries";
@@ -29,8 +30,10 @@ export default async function DiplomaPage({ params }: PageProps<"/diploma/[slug]
         Para guardarlo como PDF, pulsa «Descargar PDF / imprimir» y elige «Guardar como PDF». Este diploma celebra tu logro en UMBRAL; no es una constancia de estudios.
         {diploma.certifiable && <> Este curso también da constancia de asistencia: <Link href={`/constancia/solicitar/${diploma.slug}`} className="font-semibold text-cyan underline underline-offset-4">solicítala aquí</Link>.</>}
       </p>
-      {/* El SVG sale de una plantilla propia; el nombre y el curso van escapados en renderDiploma. */}
-      <div className="certificate overflow-hidden rounded-2xl shadow-2xl print:rounded-none print:shadow-none" dangerouslySetInnerHTML={{ __html: svg }} />
+      {/* El SVG sale de una plantilla propia; el nombre y el curso van escapados en renderDiploma.
+          El diploma es arte del mundo: conserva Bricolage y DM Sans, que la plantilla pide como
+          --font-display y --font-body y que este contenedor define solo para él. */}
+      <div className={`${bricolage.variable} ${dmSans.variable} certificate overflow-hidden rounded-2xl shadow-2xl print:rounded-none print:shadow-none`} dangerouslySetInnerHTML={{ __html: svg }} />
     </div>
   );
 }

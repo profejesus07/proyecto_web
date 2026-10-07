@@ -663,7 +663,8 @@ export function Quiz(p: QuizProps) {
 
       <fieldset className="panel space-y-5 p-5 sm:p-7" disabled={pending}>
         <legend className="text-sm font-semibold text-muted">Pregunta {idx + 1} de {total}</legend>
-        <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-snug outline-none sm:text-3xl">
+        {/* La pregunta se lee, no es un título: Lexend (fluidez lectora), no Unbounded. */}
+        <h2 ref={headingRef} tabIndex={-1} className="font-sans text-2xl font-semibold leading-snug tracking-normal outline-none sm:text-3xl">
           {!res && ps.rayo ? <Highlighted text={q.prompt} stems={ps.rayo.stems} /> : q.prompt}
         </h2>
         {!choiceKind ? (

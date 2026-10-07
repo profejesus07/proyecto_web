@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { dmSans, fraunces } from "@/app/fonts/documentos";
 import { LEGAL_FOOTER, docShort, longDate } from "@/lib/certificates";
 import type { Certificate } from "@/lib/data/types";
 
@@ -57,7 +58,7 @@ export async function CertificateDocument({ cert, verifyUrl, signaturePng }: { c
   return (
     <div className="rounded-2xl print:rounded-none">
       <article aria-label="Constancia de asistencia"
-        className="certificate relative mx-auto aspect-[297/210] w-full max-w-[1100px] overflow-hidden bg-[#fffdf8] text-[#15103f] shadow-[0_30px_60px_-30px_rgb(21_16_63/0.45)] [container-type:inline-size] print:max-w-none print:shadow-none">
+        className={`${fraunces.variable} ${dmSans.className} certificate relative mx-auto aspect-[297/210] w-full max-w-[1100px] overflow-hidden bg-[#fffdf8] text-[#15103f] shadow-[0_30px_60px_-30px_rgb(21_16_63/0.45)] [container-type:inline-size] print:max-w-none print:shadow-none`}>
         {/* Fondo: guilloche suave y marca de agua. */}
         <div className="absolute inset-0" aria-hidden="true" style={{
           backgroundImage: "repeating-radial-gradient(circle at 50% 120%, rgb(176 138 46 / 0.06) 0 1px, transparent 1px 9px), radial-gradient(70% 60% at 50% 45%, #fffdf8, #f6f0e2)",

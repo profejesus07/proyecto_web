@@ -78,6 +78,8 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
 - **Unbounded** (títulos: h1 700, h2 600, h3 y h4 500) y **Lexend** (texto, 350), como archivos locales en
   `src/app/fonts/` con `next/font/local`. No se usa `next/font/google`.
 - El tamaño base se queda en 16 px. La consola usa Lexend también en los títulos.
+- Unbounded solo en títulos y etiquetas cortas. Lo que se lee va en Lexend aunque sea grande: la pregunta de
+  la misión y las páginas de las Crónicas.
 - **Fraunces** solo en las constancias. **Bricolage Grotesque y DM Sans** solo en el diploma "Sello del Portal"
   (y DM Sans en las constancias anteriores al cambio). Se cargan únicamente donde se usan, no en todo el sitio.
 

@@ -49,7 +49,7 @@ export function ChapterReader({
           <SpeakButton key={page} name="Archivista Eon" text={page === 0 ? `${title}\n${pages[0]}` : pages[page]} auto />
         </div>
         <div ref={textRef} tabIndex={-1} aria-live="polite" className="min-h-28 outline-none">
-          <p key={page} className="pop font-display text-xl leading-relaxed sm:text-2xl">{pages[page]}</p>
+          <p key={page} className="pop text-xl font-normal leading-relaxed sm:text-2xl">{pages[page]}</p>
         </div>
         <div className="flex gap-1.5" aria-hidden="true">
           {pages.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= page ? "bg-violet" : "bg-white/15"}`} />)}

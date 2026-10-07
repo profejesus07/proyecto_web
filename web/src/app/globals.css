@@ -69,8 +69,9 @@
   --color-ok: var(--ok);
   --color-warn: var(--warn);
   --color-err: var(--err);
-  --font-sans: var(--font-body), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--font-display), "Trebuchet MS", system-ui, sans-serif;
+  /* Tipografía UNEX: Lexend para el texto y Unbounded para los títulos (variables de layout.tsx). */
+  --font-sans: var(--font-lexend), "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-unbounded), "Arial Black", system-ui, sans-serif;
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.75rem;
@@ -93,9 +94,11 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   line-height: 1.6;
-  font-size: 1rem;
+  font-size: 1rem;      /* el manual pide 17 px; se queda en 16 px para no romper los ajustes de celular */
+  font-weight: 350;     /* Lexend 350, texto del manual */
 }
 
+/* Escala del manual: Unbounded 700 / 600 / 500. Las clases font-* de cada título siguen mandando. */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -103,6 +106,8 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
+h2 { font-weight: 600; }
+h3, h4 { font-weight: 500; }
 p { text-wrap: pretty; }
 
 /* Aurora oscuro con texto blanco (5,7:1). */
