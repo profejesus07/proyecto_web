@@ -210,7 +210,6 @@ p { text-wrap: pretty; }
 /* Entradas suaves */
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(183 155 255 / 0.5); } 100% { box-shadow: 0 0 0 18px rgb(183 155 255 / 0); } }
 .rise { animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .float { animation: float 5s ease-in-out infinite; }
 
@@ -336,23 +335,6 @@ p { text-wrap: pretty; }
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
-/* Portada interactiva (hero-stage.tsx): luz que sigue al cursor, cuadrícula que se ilumina
-   y un paralaje leve del titular. La escena animada queda fuera del efecto. */
-.hero-stage { --mx: 50%; --my: 50%; --px: 0; --py: 0; position: relative; isolation: isolate; }
-.hero-glow, .hero-grid { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; }
-.hero-glow { background: radial-gradient(34rem circle at var(--mx) var(--my), rgb(138 92 255 / 0.16), rgb(255 200 61 / 0.05) 35%, transparent 65%); }
-.hero-grid {
-  background-image:
-    linear-gradient(rgb(74 34 201 / 0.22) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(74 34 201 / 0.22) 1px, transparent 1px);
-  background-size: 32px 32px;
-  -webkit-mask-image: radial-gradient(16rem circle at var(--mx) var(--my), #000, transparent 75%);
-  mask-image: radial-gradient(16rem circle at var(--mx) var(--my), #000, transparent 75%);
-}
-.hero-stage[data-active] .hero-glow, .hero-stage[data-active] .hero-grid { opacity: 1; }
-.hero-parallax { transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px), 0); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
-@media (prefers-reduced-motion: reduce) { .hero-parallax { transform: none !important; } }
-
 /* Recuadro guía del lector de QR, con una línea que lo recorre. */
 .qr-frame {
   position: relative;
@@ -368,14 +350,6 @@ p { text-wrap: pretty; }
 @keyframes qr-scan { to { top: 88%; } }
 @media (prefers-reduced-motion: reduce) { .qr-frame::after { animation: none; top: 50%; } }
 
-/* Barra de garantías: cada icono se ilumina por turnos, muy despacio. */
-.promise-icon { animation: promise-glow 7.5s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 2.5s); }
-@keyframes promise-glow {
-  0%, 26%, 100% { transform: none; box-shadow: 0 0 0 0 rgb(74 34 201 / 0); background: #f3f1fa; }
-  10% { transform: translateY(-2px) scale(1.06); box-shadow: 0 0 0 5px rgb(74 34 201 / 0.08), 0 6px 14px -8px rgb(74 34 201 / 0.6); background: #ebe5ff; }
-}
-@media (prefers-reduced-motion: reduce) { .promise-icon { animation: none; } }
-
 /* Botón con un destello que cruza al pasar el cursor. */
 .btn-shine { position: relative; overflow: hidden; isolation: isolate; }
 .btn-shine::after {
@@ -388,9 +362,7 @@ p { text-wrap: pretty; }
 
 .lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .lift:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px color-mix(in srgb, var(--ink) 35%, transparent); }
-@keyframes drift { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-8px) rotate(var(--r, 0deg)); } }
-.drift { animation: drift 6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .drift { animation: none; } .lift:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lift:hover { transform: none; } }
 
 /* Panel de trabajo (consola de administración y panel docente): claro, neutro y profesional.
    Tipografía sans, tablas legibles, Aurora oscuro (--accion) solo para la acción y el estado activo. */
@@ -465,19 +437,6 @@ p { text-wrap: pretty; }
 /* Cambio de página con recarga completa (formularios, redirecciones): fundido del navegador. */
 @view-transition { navigation: auto; }
 @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
-
-/* Portada: destello del giro de la historia (luz dorada y turquesa del logo). */
-@keyframes story-flash {
-  0% { opacity: 0; transform: scale(0.6); }
-  25% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.25); }
-}
-.story-flash {
-  background: radial-gradient(45% 55% at 30% 62%, rgb(255 246 214 / 0.95), rgb(255 200 61 / 0.55) 35%, rgb(183 155 255 / 0.25) 60%, transparent 75%);
-  animation: story-flash 1.1s ease-out both;
-  mix-blend-mode: screen;
-}
-@media (prefers-reduced-motion: reduce) { .story-flash { animation: none; opacity: 0; } }
 
 /* Logotipo: dos tintas, se muestra la que corresponde al tema. */
 .brand-claro { display: none; }
