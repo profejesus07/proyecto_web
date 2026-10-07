@@ -10,7 +10,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
    - *Confirm email* **activado** (recomendado): cada persona confirma su correo. Ojo: el correo gratuito de Supabase envía muy pocos mensajes por hora; para un grupo grande conviene configurar un servicio de correo propio (**Authentication → SMTP Settings**).
    - *Confirm email* **desactivado**: entran de inmediato. Útil para probar o para clases donde el docente crea las cuentas.
    - En la misma pantalla, **Minimum password length:** `8` y **Password requirements:** *Letters and digits*. Son las mismas reglas que muestra el formulario de registro. (*Prevent use of leaked passwords* solo existe en el plan Pro.)
-4. **Direcciones permitidas.** **Authentication → URL Configuration**: en *Site URL* pon `https://academiaumbral.vercel.app` y en *Redirect URLs* añade `https://academiaumbral.vercel.app/auth/callback`.
+4. **Direcciones permitidas.** **Authentication → URL Configuration**: en *Site URL* pon `https://unex-academia.vercel.app` y en *Redirect URLs* añade `https://unex-academia.vercel.app/auth/callback`.
 5. **Copiar las claves.** **Project Settings → API Keys** (o *API*): copia
    - `Project URL`
    - la clave pública (`anon` o `publishable`)
@@ -27,10 +27,10 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
    | `NEXT_PUBLIC_SUPABASE_URL` | la `Project URL` |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la clave pública |
    | `SUPABASE_SERVICE_ROLE_KEY` | la clave `service_role` (márcala como *Sensitive*) |
-   | `NEXT_PUBLIC_SITE_URL` | `https://academiaumbral.vercel.app` |
+   | `NEXT_PUBLIC_SITE_URL` | `https://unex-academia.vercel.app` |
 
 4. **Deploy.** Al terminar, vuelve a Supabase (paso 1.4) y revisa que la dirección del sitio esté puesta.
-5. **Dominio oficial: `academiaumbral.vercel.app`.** **Settings → Domains → Add** y escribe `academiaumbral.vercel.app` (Vercel lo asigna gratis si está libre). Si el proyecto tenía otra dirección `.vercel.app`, puedes dejarla redirigiendo a la nueva con **Edit → Redirect to**. Si cambias `NEXT_PUBLIC_SITE_URL`, vuelve a desplegar (**Deployments → ⋯ → Redeploy**).
+5. **Dominio oficial: `unex-academia.vercel.app`.** **Settings → Domains → Add** y escribe `unex-academia.vercel.app` (Vercel lo asigna gratis si está libre). Si el proyecto tenía otra dirección `.vercel.app`, puedes dejarla redirigiendo a la nueva con **Edit → Redirect to**. Si cambias `NEXT_PUBLIC_SITE_URL`, vuelve a desplegar (**Deployments → ⋯ → Redeploy**).
 
 > La rama de trabajo es `claude/focused-cannon-jwalw4`. Vercel crea una dirección de prueba para cada rama. Cuando estés conforme, se fusiona con `main` y esa pasa a ser la dirección oficial.
 
@@ -63,7 +63,7 @@ Tiempo estimado: 15 minutos. Solo necesitas tu cuenta de Supabase y tu cuenta de
 - **Tienda.** Solo vende lo que funciona: Pista y 50/50, poderes, cosméticos y objetos para la mano (se ven en el avatar), marcos del retrato, compañeros y decoración para la Terraza del Hogar. Todo se paga con monedas del juego, nunca con dinero.
 - **Poderes.** Rayo de Claridad y Escudo de Calma (rango D); Aura de Concentración, Lluvia de Estrellas, Invocación de Kuro y Pulso de Memoria (rango B). La Sombra Dorada y el Segundo Aliento se ganan al llegar al rango S. Cada uno tiene tope diario; las reglas están en `web/src/lib/game/powers.ts` y en las migraciones 0018 y 0019.
 - **Curso de demostración.** En producción queda un solo curso de ejemplo: «Curso de demostración: aprender paso a paso» (dirección `primer-portal`), gratis, con dos módulos (Petrox e Ignaris) y una actividad de cada tipo. Se armó con `supabase/contenido/curso_demo.sql` (contenido, no migración). El portal viejo «El Portal del Primer Intento» quedó vacío y oculto: elimínalo desde **Admin → Contenido**. La vista previa local y las pruebas automáticas conservan los dos cursos de ejemplo originales.
-- **Tres estilos.** El sitio público (portada, `/programas`, `/servicios`, `/proyectos`, legales y verificación) usa el tema claro y académico `.theme-site` (títulos en Fraunces, menú de tres secciones en `site-nav.tsx`); la consola de administración (`/admin`, en `src/app/(console)`: Resumen, Personas, Grupos, Pagos, Cursos y precios, Contenido y Constancias) y el panel docente (`/maestro`, en `src/app/(panel)`) usan el panel claro y profesional `.theme-panel` con el marco `components/workspace/`; estudiantes y familias conservan el estilo del Gremio. Los temas solo redefinen los colores (variables CSS) en `globals.css`.
+- **Tres estilos.** El sitio público (portada, `/programas`, `/servicios`, `/proyectos`, legales y verificación) usa el estilo del Gremio `.theme-gremio` (menú de tres secciones en `site-nav.tsx`); la consola de administración (`/admin`, en `src/app/(console)`: Resumen, Personas, Grupos, Pagos, Cursos y precios, Contenido y Constancias) y el panel docente (`/maestro`, en `src/app/(panel)`) usan el panel claro y profesional `.theme-panel` con el marco `components/workspace/`; estudiantes y familias conservan el estilo del Gremio. Los temas solo redefinen los colores (variables CSS) en `globals.css`.
 - **Verificar con el código QR.** En `/verificar` se escanea el QR de la constancia con la cámara (o se sube una foto); por eso la cabecera `Permissions-Policy` permite `camera=(self)`.
 - **Universos y servicios.** Los universos están en `web/src/content/universos.ts` (hoy solo «El Gremio de los Portales»; los próximos se agregan ahí cuando estén listos); los servicios, el proceso y los proyectos de `/servicios`, en `web/src/content/servicios.ts` (ahí se agregan los enlaces de demostración de cada proyecto).
 - **Sonido.** Todo se genera en el navegador, sin archivos ni servicios externos:
@@ -103,14 +103,14 @@ El código ya está listo; solo faltan tus cuentas y llaves. Mientras una pasare
 1. Crea la cuenta de comercio en [comercios.wompi.co](https://comercios.wompi.co) (como persona natural basta el RUT y una cuenta bancaria).
 2. En **Desarrolladores → Llaves del API**, en el ambiente de **Pruebas**, copia la llave pública (`pub_test_…`), el secreto de integridad (`test_integrity_…`) y el secreto de eventos (`test_events_…`).
 3. En Vercel → **Settings → Environment Variables** crea `WOMPI_PUBLIC_KEY`, `WOMPI_INTEGRITY_SECRET` y `WOMPI_EVENTS_SECRET` con esos valores. Vuelve a desplegar.
-4. En Wompi, en **Desarrolladores → Seguimiento de transacciones (URL de eventos)**, pon `https://academiaumbral.vercel.app/api/pagos/wompi` (Admin → Pagos en línea muestra la dirección exacta).
+4. En Wompi, en **Desarrolladores → Seguimiento de transacciones (URL de eventos)**, pon `https://unex-academia.vercel.app/api/pagos/wompi` (Admin → Pagos en línea muestra la dirección exacta).
 5. Prueba con las tarjetas y cuentas de prueba de la documentación de Wompi. Cuando funcione, repite 2–4 con las llaves de **Producción** (`pub_prod_…`, `prod_integrity_…`, `prod_events_…`).
 
 ### Mercado Pago
 
 1. Entra a [mercadopago.com.co/developers](https://www.mercadopago.com.co/developers) → **Tus integraciones → Crear aplicación** (producto: *Pagos online*, Checkout Pro).
 2. En **Credenciales de prueba** copia el **Access Token**. Crea en Vercel `MERCADOPAGO_ACCESS_TOKEN` con ese valor (y `MERCADOPAGO_TEST=1` si el token de prueba empieza con `APP_USR-`).
-3. En **Webhooks**, pon `https://academiaumbral.vercel.app/api/pagos/mercadopago`, marca el evento **Pagos** y copia la **clave secreta** en `MERCADOPAGO_WEBHOOK_SECRET`. Vuelve a desplegar.
+3. En **Webhooks**, pon `https://unex-academia.vercel.app/api/pagos/mercadopago`, marca el evento **Pagos** y copia la **clave secreta** en `MERCADOPAGO_WEBHOOK_SECRET`. Vuelve a desplegar.
 4. Prueba con los usuarios y tarjetas de prueba de Mercado Pago. Cuando funcione, cambia `MERCADOPAGO_ACCESS_TOKEN` por el de **Credenciales de producción** y quita `MERCADOPAGO_TEST`.
 
 **Nunca** pegues estas llaves en un chat, en el código ni con el prefijo `NEXT_PUBLIC_`. Si una llave se filtra, genérala de nuevo en la pasarela y actualízala en Vercel.
