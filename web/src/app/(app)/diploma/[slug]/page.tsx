@@ -27,7 +27,7 @@ export default async function DiplomaPage({ params }: PageProps<"/diploma/[slug]
         <PrintButton />
       </div>
       <p className="text-sm text-muted print:hidden">
-        Para guardarlo como PDF, pulsa «Descargar PDF / imprimir» y elige «Guardar como PDF». Este diploma celebra tu logro en UMBRAL; no es una constancia de estudios.
+        Para guardarlo como PDF, pulsa «Descargar PDF / imprimir» y elige «Guardar como PDF». Este diploma celebra tu logro en el Gremio; no es una constancia de estudios.
         {diploma.certifiable && <> Este curso también da constancia de asistencia: <Link href={`/constancia/solicitar/${diploma.slug}`} className="font-semibold text-cyan underline underline-offset-4">solicítala aquí</Link>.</>}
       </p>
       {/* El SVG sale de una plantilla propia; el nombre y el curso van escapados en renderDiploma.

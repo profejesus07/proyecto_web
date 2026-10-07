@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 import { QrScanner } from "@/components/qr-scanner";
 import { SiteShell } from "@/components/site-header";
 
-export const metadata: Metadata = { title: "Verificar constancia", description: "Comprueba que una constancia de asistencia de la Academia Virtual Umbral es auténtica: escanea su código QR o escribe su código." };
+export const metadata: Metadata = { title: "Verificar constancia", description: "Comprueba que una constancia de asistencia de UNEX Academy (antes Academia Virtual Umbral) es auténtica: escanea su código QR o escribe su código." };
 
 export default async function VerifyFormPage({ searchParams }: PageProps<"/verificar">) {
   const sp = await searchParams;
@@ -16,7 +16,7 @@ export default async function VerifyFormPage({ searchParams }: PageProps<"/verif
         <div className="mx-auto max-w-4xl px-4 pb-10 pt-12 sm:px-6 sm:pt-16">
           <p className="eyebrow">Verificación</p>
           <h1 className="mt-2 text-4xl sm:text-5xl">Verificar una constancia</h1>
-          <p className="mt-3 max-w-xl text-lg text-muted">Comprueba en segundos que una constancia de la Academia Virtual Umbral es auténtica.</p>
+          <p className="mt-3 max-w-xl text-lg text-muted">Comprueba en segundos que una constancia de UNEX Academy (antes Academia Virtual Umbral) es auténtica.</p>
         </div>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-2">

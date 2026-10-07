@@ -195,7 +195,7 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
         <div className="flex items-end justify-between gap-4 p-6 sm:p-10">
           <div className="md:max-w-md">
             <PageTitle eyebrow="Guardianes del Hogar" title="Mi familia">
-              <p className="text-text/80">Acompaña el avance de tus hijos en UMBRAL: sus portales, sus notas y su racha. Solo lo ves; no puedes cambiar nada de su cuenta.</p>
+              <p className="text-text/80">Acompaña el avance de tus hijos en UNEX Academy: sus portales, sus notas y su racha. Solo lo ves; no puedes cambiar nada de su cuenta.</p>
             </PageTitle>
           </div>
           <Sprite src={guideSrc(guide, "saludar")} alt={`${guide.name}, tu Guardián del Hogar, te saluda`} className="hidden h-48 w-auto sm:block" />

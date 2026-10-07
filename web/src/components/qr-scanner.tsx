@@ -71,7 +71,7 @@ export function QrScanner() {
         ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
         const text = decode(ctx.getImageData(0, 0, canvas.width, canvas.height));
         if (text && found(text)) return;
-        if (text) setStatus({ tone: "error", text: "Ese código QR no es de una constancia de la Academia Virtual Umbral." });
+        if (text) setStatus({ tone: "error", text: "Ese código QR no es de una constancia de UNEX Academy (antes Academia Virtual Umbral)." });
       }
       requestAnimationFrame(tick);
     };
@@ -90,7 +90,7 @@ export function QrScanner() {
       const ctx = canvas.getContext("2d")!;
       ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
       const text = decode(ctx.getImageData(0, 0, canvas.width, canvas.height));
-      if (!found(text)) setStatus({ tone: "error", text: text ? "Ese código QR no es de una constancia de la Academia Virtual Umbral." : "No encontramos un código QR en la imagen. Prueba con una foto más cercana y nítida." });
+      if (!found(text)) setStatus({ tone: "error", text: text ? "Ese código QR no es de una constancia de UNEX Academy (antes Academia Virtual Umbral)." : "No encontramos un código QR en la imagen. Prueba con una foto más cercana y nítida." });
     } catch {
       setStatus({ tone: "error", text: "No pudimos leer esa imagen." });
     }

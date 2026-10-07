@@ -1,9 +1,13 @@
+import type { Viewport } from "next";
 import { Workspace } from "@/components/workspace/workspace";
 import { ADMIN_GROUPS } from "@/components/workspace/nav-config";
 import type { WorkspaceGroup } from "@/components/workspace/workspace-nav";
 import { requireTeacher } from "@/lib/auth";
 import { getRepo } from "@/lib/data";
 import { isAdmin } from "@/lib/roles";
+
+// Tema claro: la barra del navegador en el celular es blanca, como la cabecera del panel.
+export const viewport: Viewport = { themeColor: "#FFFFFF", colorScheme: "light" };
 
 /**
  * Panel docente: el docente supervisa a los estudiantes que el administrador le asigna (por

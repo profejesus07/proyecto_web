@@ -72,7 +72,7 @@ export interface Project {
 }
 
 export const PROJECTS: readonly Project[] = [
-  { title: "Academia Virtual Umbral", kind: "Cursos y clases con historia", text: "Esta plataforma: cursos cortos y clases gamificadas, con informes para docentes, panel para familias y constancias verificables.", href: "/programas" },
+  { title: "UNEX Academy", kind: "Cursos y clases con historia", text: "Esta plataforma: cursos cortos y clases gamificadas, con informes para docentes, panel para familias y constancias verificables.", href: "/programas" },
   { title: "Panel escolar", kind: "Gestión docente", text: "Asistencia, notas, observador y actas en una sola herramienta para el docente y la coordinación.", href: null },
   { title: "Exámenes institucionales", kind: "Evaluación", text: "Plataforma para aplicar y calificar evaluaciones de toda una institución, con resultados al instante.", href: null },
 ];

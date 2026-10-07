@@ -22,7 +22,7 @@ export default async function Home() {
             <p className="text-sm text-muted">Tócame, ¡me encanta saludar!</p>
           </aside>
           <div className="panel space-y-5 p-6 sm:p-8">
-            <p className="eyebrow">Academia Virtual Umbral</p>
+            <p className="eyebrow">UNEX Academy</p>
             <h1 id="bienvenida-t" className="text-3xl sm:text-4xl">Bienvenido al Gremio</h1>
             <p className="text-muted">Aquí aprender se vive como una aventura: cursos y clases con lecciones breves, retos que se superan y constancias verificables.</p>
             <p className="font-semibold">La primera lección de cada curso es gratis.</p>

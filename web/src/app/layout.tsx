@@ -25,13 +25,14 @@ const base = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRO
 export const metadata: Metadata = {
   metadataBase: new URL(base),
   title: { default: SITE_NAME, template: `%s · ${SITE_NAME}` },
-  description: "Academia digital de cursos cortos y clases: lecciones breves, práctica con retroalimentación inmediata y constancias verificables. La primera lección es gratis.",
+  description: "UNEX Academy, la plataforma de cursos cortos de UNEX Education: lecciones breves, práctica con retroalimentación inmediata y constancias verificables. La primera lección es gratis.",
   applicationName: SITE_NAME,
-  openGraph: { type: "website", locale: "es_CO", siteName: SITE_NAME, title: SITE_NAME, description: "Cursos cortos y clases en línea que se viven como una aventura." },
+  openGraph: { type: "website", locale: "es_CO", siteName: SITE_NAME, title: SITE_NAME, description: "Cursos cortos y clases en línea que se viven como una aventura. Una plataforma de UNEX Education." },
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = { themeColor: "#0f0d2e", colorScheme: "dark", width: "device-width", initialScale: 1 };
+// themeColor = --bg de globals.css (#0D0F2B): la barra del navegador en el celular continúa el fondo.
+export const viewport: Viewport = { themeColor: "#0D0F2B", colorScheme: "dark", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

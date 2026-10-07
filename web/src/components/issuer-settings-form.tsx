@@ -33,7 +33,7 @@ export function IssuerSettingsForm({ settings }: { settings: IssuerSettings }) {
           <input name="issuerName" required defaultValue={settings.issuerName ?? "Mgtr. Jesús David Álvarez Sáez"} maxLength={120} className="input" />
         </label>
         <label className="block space-y-1"><span className="label">Cargo o título (opcional)</span>
-          <input name="issuerTitle" defaultValue={settings.issuerTitle ?? ""} maxLength={160} placeholder="Responsable de la Academia Virtual Umbral" className="input" />
+          <input name="issuerTitle" defaultValue={settings.issuerTitle ?? ""} maxLength={160} placeholder="Responsable de UNEX Academy" className="input" />
         </label>
         <label className="block space-y-1"><span className="label">Documento (opcional, no se muestra)</span>
           <input name="issuerDoc" defaultValue={settings.issuerDoc ?? ""} maxLength={40} className="input" />

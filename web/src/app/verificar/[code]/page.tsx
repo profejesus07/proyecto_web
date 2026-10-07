@@ -39,7 +39,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
               <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-2xl text-ink">✕</span>
               <div>
                 <h1 className="text-2xl">No encontramos esa constancia</h1>
-                <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por la Academia Virtual Umbral.</p>
+                <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por UNEX Academy (antes Academia Virtual Umbral).</p>
               </div>
             </div>
             <Link href="/verificar" className="btn btn-secondary">Probar con otro código</Link>

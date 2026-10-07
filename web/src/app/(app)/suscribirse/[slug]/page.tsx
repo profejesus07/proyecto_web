@@ -25,7 +25,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
   const color = ELEMENT_COLOR[course.element];
   const chapters = CHAPTERS.filter((c) => c.guardian === course.guardian).length;
   const subject = `Quiero suscribirme a «${course.title}»`;
-  const body = `Hola. Quiero activar el curso completo «${course.title}».\nMi nombre de aventurero en UMBRAL es: ${viewer.displayName}\nEl correo de mi cuenta es: `;
+  const body = `Hola. Quiero activar el curso completo «${course.title}».\nMi nombre de aventurero en UNEX Academy es: ${viewer.displayName}\nEl correo de mi cuenta es: `;
   const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   const { options, test } = payOptions();
   const canPay = options.length > 0 && (course.price ?? 0) > 0 && viewer.role === "estudiante";

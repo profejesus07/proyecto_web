@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { RegisterForm } from "@/components/auth-forms";
 import { Sprite, asset } from "@/components/sprite";
 
-export const metadata: Metadata = { title: "Crear cuenta", description: "Crea tu cuenta, elige tu avatar y empieza tu aventura en la Academia Virtual Umbral." };
+export const metadata: Metadata = { title: "Crear cuenta", description: "Crea tu cuenta, elige tu avatar y empieza tu aventura en UNEX Academy." };
 
 export default function RegisterPage() {
   return (

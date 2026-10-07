@@ -43,7 +43,7 @@ export async function GET() {
   return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": 'attachment; filename="plantilla-estudiantes-umbral.xlsx"',
+      "Content-Disposition": 'attachment; filename="plantilla-estudiantes-unex-academy.xlsx"',
       "Cache-Control": "private, no-store",
     },
   });

@@ -6,7 +6,7 @@ import { loadCatalog } from "@/lib/data/queries";
 
 export const metadata: Metadata = {
   title: "Cursos",
-  description: "Cursos cortos y clases de la Academia Virtual Umbral. La primera lección de cada programa es gratis.",
+  description: "Cursos cortos y clases de UNEX Academy. La primera lección de cada programa es gratis.",
 };
 
 const FAQ = [

@@ -27,7 +27,7 @@ export function Footer() {
         ))}
       </div>
       <div className="border-t border-line">
-        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">© {new Date().getFullYear()} Academia Virtual Umbral · Mgtr. Jesús David Álvarez Sáez. Todos los derechos reservados.</p>
+        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">© {new Date().getFullYear()} UNEX Academy · Mgtr. Jesús David Álvarez Sáez. Todos los derechos reservados.</p>
       </div>
     </footer>
   );
