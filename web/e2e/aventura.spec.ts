@@ -167,7 +167,7 @@ test("al superar la lección gratis se ofrece desbloquear el curso", async ({ pa
   await expect(page.getByText("¡Superaste la lección gratis!")).toBeVisible();
   await page.getByRole("link", { name: /Desbloquear el curso/ }).click();
   await expect(page).toHaveURL(/\/suscribirse\/portal-del-primer-intento$/);
-  await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:profejesus365@gmail\.com/);
+  await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:unexeducation07@gmail\.com/);
 });
 
 test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en el Vestidor", async ({ page }) => {
@@ -501,7 +501,7 @@ test("la portada presenta los cursos, el menú lleva a Cursos, Servicios y Proye
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataformas de gestión docente" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Escribir a profejesus365@gmail\.com/ })).toHaveAttribute("href", /^mailto:/);
+  await expect(page.getByRole("link", { name: /Escribir a unexeducation07@gmail\.com/ })).toHaveAttribute("href", /^mailto:/);
 
   // Los filtros del catálogo.
   await page.goto("/programas?tipo=clase");
