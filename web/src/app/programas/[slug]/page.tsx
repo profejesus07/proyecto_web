@@ -14,6 +14,9 @@ import { groupByModule } from "@/lib/modules";
 import { isAdmin } from "@/lib/roles";
 import { freeUntil } from "@/lib/lessons";
 import type { CourseDetail } from "@/lib/data/types";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+
+export const viewport = VIEWPORT_PUBLICO;
 
 async function load(slug: string): Promise<CourseDetail | null> {
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) return null;

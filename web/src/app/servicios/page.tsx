@@ -4,6 +4,9 @@ import { Icon } from "@/components/icons";
 import { SiteShell } from "@/components/site-header";
 import { PROCESS, SERVICES } from "@/content/servicios";
 import { SUPPORT_EMAIL } from "@/lib/features";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+
+export const viewport = VIEWPORT_PUBLICO;
 
 export const metadata: Metadata = {
   title: "Servicios",

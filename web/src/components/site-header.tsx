@@ -83,10 +83,10 @@ export async function SiteHeader() {
   );
 }
 
-/** Envoltura del sitio público, con su cabecera y su pie, en el estilo del Gremio (el mismo de ingresar y registro). */
+/** Envoltura del sitio público, con su encabezado y su pie: tema claro, como el sitio principal UNEX. */
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="theme-gremio">
+    <div data-tema="claro" className="sitio-publico">
       <EncabezadoPublico />
       <main id="contenido">{children}</main>
       <PiePublico />

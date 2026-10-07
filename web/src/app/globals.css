@@ -294,7 +294,8 @@ p { text-wrap: pretty; }
 /* ============================================================
    Temas por zona. Cada zona redefine los mismos tokens:
    · el Gremio (estudiantes, familias, docentes) usa los de :root;
-   · .theme-gremio: el sitio público (portada, cursos, servicios, legales), con los mismos colores del Gremio;
+   · [data-tema="claro"]: el sitio público (portada, cursos, legales, ingreso y registro), claro como el
+     sitio principal UNEX, con zonas [data-tema="oscuro"] sobre Cosmos (encabezado, portada, pie);
    · .theme-panel: la consola de administración y el panel docente, claros y profesionales.
    ============================================================ */
 
@@ -304,23 +305,23 @@ p { text-wrap: pretty; }
 .kuro-greeter:active { transform: translate(calc(var(--kx) * 10px), calc(var(--ky) * 5px - 6px)) rotate(calc(var(--kx) * 7deg)) scale(1.04); }
 @media (prefers-reduced-motion: reduce) { .kuro-greeter, .kuro-greeter:active { transform: none; } }
 
-/* Piezas del sitio público en el estilo del Gremio (fondo oscuro). */
-.theme-gremio .paper {
+/* Piezas del sitio público. */
+.sitio-publico .paper {
   background-image:
     linear-gradient(color-mix(in srgb, var(--cyan) 5%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--cyan) 5%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-.theme-gremio .ink-band {
+.sitio-publico .ink-band {
   background: radial-gradient(28rem 18rem at 100% 0%, color-mix(in srgb, var(--unex-aurora) 22%, transparent), transparent 60%), linear-gradient(135deg, var(--panel-2), var(--bg-2));
   color: var(--text);
   box-shadow: inset 0 0 0 1px var(--line);
 }
-.theme-gremio .serif { font-family: var(--font-display); font-weight: 700; }
+.sitio-publico .serif { font-family: var(--font-display); font-weight: 700; }
 
 /* Contenedor del sitio público: el pie queda abajo en páginas cortas. */
-.theme-gremio { min-height: 100dvh; display: flex; flex-direction: column; }
-.theme-gremio > main { flex: 1; }
+.sitio-publico { min-height: 100dvh; display: flex; flex-direction: column; }
+.sitio-publico > main { flex: 1; }
 
 /* Recuadro guía del lector de QR, con una línea que lo recorre. */
 .qr-frame {
@@ -444,13 +445,17 @@ p { text-wrap: pretty; }
    Los componentes son los mismos del Gremio: los tokens claros hacen casi todo; aquí solo va lo que no es color.
    [data-tema="oscuro"] marca las zonas sobre Cosmos dentro de esas páginas (encabezado, portada, pie).
    ============================================================ */
-html:has([data-tema="claro"]) { background-color: var(--unex-polvo); color-scheme: light; }
+/* El fondo de la página (también al estirar el desplazamiento) es Polvo, sin el cielo nocturno del Gremio. */
+html:has([data-tema="claro"]), html:has([data-tema="claro"]) body { background: var(--unex-polvo); color-scheme: light; }
 [data-tema="claro"] { background-color: var(--bg); color: var(--text); color-scheme: light; }
 [data-tema="oscuro"] { color: var(--text); color-scheme: dark; }
 [data-tema="claro"] ::selection { background: color-mix(in srgb, var(--accion) 18%, transparent); color: inherit; }
 [data-tema="oscuro"] ::selection { background: var(--unex-aurora-oscuro); color: #fff; }
-[data-tema="claro"] .btn-primary:hover:not(:disabled) { background: var(--accion-fuerte); }
-[data-tema="oscuro"] .btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accion), #fff 12%); }
+/* Botón principal: en claro, plano con sombra mínima (como la consola); sobre Cosmos, el brillo del Gremio. */
+[data-tema="claro"] .btn-primary { box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent); }
+[data-tema="claro"] .btn-primary:hover:not(:disabled) { background: var(--accion-fuerte); box-shadow: 0 2px 6px color-mix(in srgb, var(--ink) 16%, transparent); }
+[data-tema="oscuro"] .btn-primary { box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--accion) 55%, transparent), 0 -3px 0 rgb(0 0 0 / 0.15) inset; }
+[data-tema="oscuro"] .btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accion), #fff 12%); box-shadow: 0 12px 28px -8px color-mix(in srgb, var(--accion) 70%, transparent), 0 -3px 0 rgb(0 0 0 / 0.15) inset; }
 [data-tema="claro"] .btn-primary:disabled, [data-tema="claro"] .btn-primary[aria-disabled="true"] { background: var(--line); color: var(--muted); }
 [data-tema="claro"] .hover\:bg-white\/5:hover, [data-tema="claro"] .hover\:bg-white\/10:hover { background: var(--hover-suave); }
 /* Logotipo: versión normal sobre claro y negativa sobre las zonas Cosmos. */

@@ -3,6 +3,9 @@ import Link from "next/link";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
 import { loadCatalog } from "@/lib/data/queries";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+
+export const viewport = VIEWPORT_PUBLICO;
 
 export const metadata: Metadata = {
   title: "Cursos",

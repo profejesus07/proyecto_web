@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
 
 export const metadata: Metadata = { title: "Términos de uso" };
+export const viewport = VIEWPORT_PUBLICO;
 
 export default function TermsPage() {
   return (

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteShell } from "@/components/site-header";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+
+export const viewport = VIEWPORT_PUBLICO;
 
 export const metadata: Metadata = {
   title: "Familias y docentes",
