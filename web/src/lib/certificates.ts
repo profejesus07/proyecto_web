@@ -29,10 +29,10 @@ export const CODE_PATTERN = /^UMB-[A-Z2-9]{4}-[A-Z2-9]{4}$/;
  * emitió: antes de esta fecha, Academia Virtual Umbral; desde esta fecha, UNEX Academy. La base de datos no
  * guarda la marca: se deduce de issued_at.
  *
- * PROVISIONAL: se fija en su propio commit justo antes del merge («Fija la fecha»). Mientras sea una fecha
- * futura, todas las constancias se ven como hoy (con la marca anterior), que es lo seguro.
+ * Fijada al hacer el cambio de marca en producción: 7 de octubre de 2026, 07:20 hora de Colombia. No cambiarla:
+ * las constancias anteriores dependen de ella para seguir viéndose como se emitieron.
  */
-export const MARCA_UNEX_DESDE = "2099-01-01T00:00:00-05:00";
+export const MARCA_UNEX_DESDE = "2026-10-07T07:20:00-05:00";
 
 export interface MarcaConstancia {
   id: "umbral" | "unex";

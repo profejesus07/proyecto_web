@@ -99,7 +99,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   sello, marca de agua y emisor de `/verificar`. Las de UNEX Academy usan `unex-academy.svg`, el isotipo
   monocromo al 4 % y texto en Lexend; las anteriores, exactamente lo de antes (DM Sans, logo y sello Umbral).
 - El documento fija `font-normal`: no hereda el peso 350 del sitio.
-- `MARCA_UNEX_DESDE` es provisional (2099) hasta el commit «Fija la fecha», justo antes del merge.
+- `MARCA_UNEX_DESDE` = `2026-10-07T07:20:00-05:00` (el cambio de marca en producción). No se cambia.
 
 ### Al trabajar
 - Rama `marca-unex`, nunca `main` ni la rama de producción (`claude/focused-cannon-jwalw4`). El usuario hace
