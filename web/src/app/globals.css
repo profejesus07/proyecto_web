@@ -155,6 +155,8 @@ p { text-wrap: pretty; }
 }
 .btn:active { transform: translateY(1px) scale(0.99); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; transform: none; }
+/* El principal deshabilitado no se pinta con Aurora translúcido (se ve turbio): pasa a neutro. */
+.btn-primary:disabled, .btn-primary[aria-disabled="true"] { opacity: 1; background: var(--panel-2); color: var(--muted); box-shadow: none; }
 /* Botón principal: Aurora con texto Cosmos (7,4:1). Nova queda para los logros. */
 .btn-primary {
   background: var(--accion);
@@ -278,8 +280,8 @@ p { text-wrap: pretty; }
    · .theme-panel: la consola de administración y el panel docente, claros y profesionales.
    ============================================================ */
 
-/* Cabecera pública: línea de portal (Aurora que termina en un punto de Nova) y menú segmentado. */
-.site-header-line { height: 3px; background: linear-gradient(90deg, var(--unex-aurora-oscuro), var(--unex-aurora) 80%, var(--unex-nova)); }
+/* Cabecera pública: línea de portal en Aurora y menú segmentado. */
+.site-header-line { height: 3px; background: linear-gradient(90deg, var(--unex-aurora-oscuro), var(--unex-aurora)); }
 .site-nav { position: relative; gap: 0.25rem; padding: 0.3rem; border-radius: 999px; background: var(--unex-polvo); box-shadow: inset 0 0 0 1px #DDDBEE; }
 .site-nav a {
   position: relative; display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 0.45rem;
@@ -425,6 +427,7 @@ p { text-wrap: pretty; }
 /* En claro, el botón principal es Aurora oscuro con texto blanco (5,7:1). */
 .theme-panel .btn-primary { background: var(--accion); color: #fff; box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent); }
 .theme-panel .btn-primary:hover:not(:disabled) { background: var(--accion-fuerte); box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 12%, transparent); transform: none; }
+.theme-panel .btn-primary:disabled, .theme-panel .btn-primary[aria-disabled="true"] { opacity: 1; background: var(--line); color: var(--muted); box-shadow: none; }
 .theme-panel .btn-secondary { background: #fff; border-color: var(--line); color: var(--text); }
 .theme-panel .btn-secondary:hover:not(:disabled) { background: var(--panel-2); border-color: var(--line-fuerte); }
 .theme-panel .btn-ghost { color: var(--muted); }
