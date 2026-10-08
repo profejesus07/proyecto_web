@@ -16,7 +16,7 @@ interface Step {
 }
 
 /** Bienvenida de la Maestra Sora: aparece una sola vez, la primera vez que se entra al Gremio. */
-export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: string | null }) {
+export function SoraWelcome({ name }: { name: string }) {
   const router = useRouter();
   const ref = useRef<HTMLDialogElement>(null);
   const [step, setStep] = useState(0);
@@ -31,7 +31,7 @@ export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: 
       extra: { src: asset.kuro("saludar"), alt: "Kuro te saluda moviendo la cola" },
     },
     { anim: "abrir-portal", title: "Al final, un Guardián", text: "Cada portal lo custodia un Guardián atrapado por la niebla. No se vence con fuerza: se purifica con lo que aprendiste. Así ganas XP, monedas, objetos y subes de rango." },
-    { anim: "celebrar", title: "¿Listo para empezar?", text: "El Archivista Eon guarda toda esta historia en las Crónicas, y se irá abriendo a medida que avances. Tu primer portal te espera." },
+    { anim: "celebrar", title: "¿Listo para empezar?", text: "El Archivista Eon guarda toda esta historia en las Crónicas, y se irá abriendo a medida que avances. Elige tu primer portal en la Sala de Portales." },
   ];
   const s = steps[step];
   const last = step === steps.length - 1;
@@ -85,7 +85,8 @@ export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: 
           ) : (
             <>
               <Link href="/cronicas/prologo" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); close("/cronicas/prologo"); }}><Icon name="scroll" className="size-5" /> Leer el prólogo</Link>
-              <button type="button" className="btn btn-primary" autoFocus onClick={() => close(firstPortal ? `/portales/${firstPortal}` : undefined)}>Cruzar mi primer portal</button>
+              {/* Al terminar la bienvenida, a la Sala de Portales: el estudiante elige por dónde empezar. */}
+              <button type="button" className="btn btn-primary" autoFocus onClick={() => close("/portales")}>Ver los portales</button>
             </>
           )}
         </div>

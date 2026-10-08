@@ -52,13 +52,13 @@ async function captura(page: Page, nombre: string) {
 
 test.describe.configure({ mode: "serial" });
 
-test("la Maestra Sora da la bienvenida la primera vez y lleva al primer portal", async ({ page }) => {
+test("la Maestra Sora da la bienvenida la primera vez y lleva a la Sala de Portales", async ({ page }) => {
   await page.goto("/gremio");
   await expect(page.getByRole("dialog", { name: /Bienvenido al Gremio/ })).toBeVisible();
   const sora = page.getByRole("dialog");
   for (let i = 0; i < 4; i++) await sora.getByRole("button", { name: "Siguiente" }).click();
-  await sora.getByRole("button", { name: "Cruzar mi primer portal" }).click();
-  await expect(page).toHaveURL(/\/portales\/primer-portal$/);
+  await sora.getByRole("button", { name: "Ver los portales" }).click();
+  await expect(page).toHaveURL(/\/portales$/);
   await page.goto("/gremio");
   await expect(page.getByRole("dialog")).toHaveCount(0); // no vuelve a aparecer
 });
