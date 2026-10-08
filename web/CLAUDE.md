@@ -42,6 +42,8 @@ La biblioteca está en `public/assets` (ver su `README.md`) y el elenco en `docs
 |---|---|---|
 | Inicio | Portada | Kuro (`KuroGreeter`) |
 | Inicio | Tarjeta del Gremio de los Portales | Sora, sobre el escenario del Gremio (`universe-art.tsx`) |
+| Cursos (`/programas`) | Franja de arriba | Escenario de la Sala de Portales (`escenarios/portales/portales-disponible-cuadrado.svg`) |
+| Ficha de un curso | Franja de arriba | El Guardián del curso |
 | Cómo se juega | Franja de arriba | Archivista Eon |
 | Cómo se juega | Paso «Crea tu cuenta y elige tu avatar» | Aria, Leo, Tomás y Nuri (rango E, reposo) |
 | Cómo se juega | Paso «Supera las misiones» | Slime Confuso, Duende Enredador, Sombrita y Cofre Mímico |
@@ -52,7 +54,7 @@ La biblioteca está en `public/assets` (ver su `README.md`) y el elenco en `docs
 | Familias y docentes | Franja de arriba | Abuela Amara |
 | Familias y docentes | Para las familias | Los 4 Guardianes del Hogar y la Terraza del Hogar |
 | Familias y docentes | Para docentes | Los 4 Maestros del Gremio |
-| Ingresar | Junto al formulario | Kael (saludar) |
+| Ingresar | Junto al formulario | Maestra Ilia abriendo un portal (`maestra-ilia-abrir-portal.svg`) |
 | Recuperar | Junto al formulario | Kael (pensar) |
 | Registro | Junto al formulario | Aria, Leo, Tomás y Nuri |
 | Registro (cuenta creada) / Recuperar (correo enviado) | Aviso | Kael (celebrar) / Archivista Eon (señalar) |
@@ -62,7 +64,10 @@ Reglas:
 - En las páginas públicas, Kuro y Sora aparecen una sola vez cada uno (Kuro en la portada del inicio y Sora en la
   tarjeta del Gremio). Las pieles de Kuro de la tienda son objetos, no el personaje.
 - No se usa la animación de señas de Nuri hasta validarla con una persona usuaria de Lengua de Señas Colombiana.
-- Poses en reposo o animaciones suaves (los SVG respetan «reducir movimiento»).
+- Poses en reposo o animaciones suaves (los SVG respetan «reducir movimiento»: con esa preferencia, la Maestra Ilia
+  queda con el portal ya dibujado).
+- Las preguntas frecuentes de las páginas públicas salen de `content/preguntas-frecuentes.ts`; no mencionan
+  pasarelas ni medios de pago mientras los pagos no estén abiertos al público.
 - Solo la ilustración que se ve al abrir lleva `priority`; las demás cargan en diferido (`Sprite` usa
   `loading="lazy"` por omisión). Una ilustración que se oculta en celular no lleva `priority`.
 

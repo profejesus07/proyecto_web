@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/auth-forms";
-import { Sprite, asset } from "@/components/sprite";
+import { Sprite } from "@/components/sprite";
 import { safeNext } from "@/lib/validation";
 
 export const metadata: Metadata = { title: "Ingresar", description: "Ingresa a tu cuenta de UNEX Academy y continúa tu aventura." };
@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/ingresar">
   return (
     <div className="mx-auto grid max-w-3xl items-center gap-8 md:grid-cols-[1fr_1.2fr]">
       <aside className="hidden text-center md:block">
-        <Sprite src={asset.kael("saludar")} alt="Kael te saluda" className="mx-auto h-56 w-auto" />
+        <Sprite src="/assets/maestros/maestra-ilia/maestra-ilia-abrir-portal.svg" alt="La Maestra Ilia abre un portal" className="mx-auto h-56 w-auto" />
         <p className="mt-3 font-display text-xl font-bold">¡Qué bueno verte de nuevo!</p>
       </aside>
       <section className="panel p-6 sm:p-8" aria-labelledby="ingreso-t">
