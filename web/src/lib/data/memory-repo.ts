@@ -79,10 +79,14 @@ interface State {
 
 const g = globalThis as unknown as { __umbralPreview?: State };
 
+/** Monedas con que empieza el estudiante de prueba. Las e2e piden más (playwright.config.ts) para comprar lo que
+ *  necesitan sin quitárselo a otras pruebas; la vista previa normal empieza con 40. */
+const MONEDAS_INICIALES = Number(process.env.UMBRAL_PREVIEW_MONEDAS) || 40;
+
 function state(): State {
   if (!g.__umbralPreview) {
     g.__umbralPreview = {
-      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", avatarLook: {}, xp: 0, coins: 40, gems: 0, streak: 1, introSeen: false, chroniclesRead: [] },
+      profile: { id: PREVIEW_USER_ID, role: "estudiante", displayName: "Despertado", avatarBase: "aria", avatarLook: {}, xp: 0, coins: MONEDAS_INICIALES, gems: 0, streak: 1, introSeen: false, chroniclesRead: [] },
       progress: new Map(),
       bosses: new Set(),
       inventory: [],

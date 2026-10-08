@@ -18,7 +18,9 @@ export default defineConfig({
   webServer: {
     command: `npx next dev -p ${port}`,
     url: `http://localhost:${port}/privacidad`,
-    env: { UMBRAL_PREVIEW: "1" },
+    // 200 monedas al empezar (la vista previa normal tiene 40): alcanzan para todas las compras de la suite,
+    // incluida la misión completa, sin que unas pruebas dependan de lo que gastan otras.
+    env: { UMBRAL_PREVIEW: "1", UMBRAL_PREVIEW_MONEDAS: "200" },
     reuseExistingServer: false,
     timeout: 120_000,
   },
