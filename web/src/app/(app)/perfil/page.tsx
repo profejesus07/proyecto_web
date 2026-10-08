@@ -79,9 +79,9 @@ export default async function ProfilePage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <RankCard xp={viewer.xp} />
-        <Stat icon={<ObjetoJuego nombre="moneda" className="size-8" />} label="Monedas" value={viewer.coins} />
-        <Stat icon={<ObjetoJuego nombre="gema" className="size-8" />} label="Gemas" value={viewer.gems} />
-        <Stat icon={<ObjetoJuego nombre="racha" className="size-8" />} label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
+        <Stat icon={<ObjetoJuego nombre="moneda" className="size-10" />} label="Monedas" value={viewer.coins} />
+        <Stat icon={<ObjetoJuego nombre="gema" className="size-10" />} label="Gemas" value={viewer.gems} />
+        <Stat icon={<ObjetoJuego nombre="racha" className="size-10" />} label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
       </div>
 
       {myCerts.length > 0 && (

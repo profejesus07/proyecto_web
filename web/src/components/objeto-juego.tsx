@@ -11,7 +11,8 @@ const ARCHIVOS = {
   moneda: "recurso/obj_recurso_moneda",
   gema: "recurso/obj_recurso_gema",
   xp: "recurso/obj_recurso_xp",
-  racha: "interfaz/obj_ui_racha",
+  // Variante sin el «7» del marcador original (que es un ejemplo): el número va en el texto del contador.
+  racha: "interfaz/obj_ui_racha_sin_numero",
   pista: "ayuda/obj_ayuda_pista",
   "5050": "ayuda/obj_ayuda_5050",
 } as const;
