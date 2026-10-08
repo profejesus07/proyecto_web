@@ -62,18 +62,19 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
       {course.kind === "curso" && course.status === "completado" && (
         <div role="note" className="panel panel-glow flex flex-wrap items-center gap-4 !border-gold/60 p-5">
           <Icon name="seal" className="size-10 shrink-0 text-gold" />
-          <div className="min-w-0 flex-1">
+          {/* Ancho mínimo para el texto: en el celular el botón baja a su propia fila en vez de aplastar el texto. */}
+          <div className="min-w-48 flex-1">
             <p className="font-display text-xl font-bold">{myCert ? "Tu constancia de asistencia está lista" : "¡Terminaste el curso!"}</p>
-            <p className="text-muted">{myCert ? `Código de verificación: ${myCert.code}` : "Ya puedes solicitar tu constancia de asistencia."}</p>
+            <p className="text-muted">{myCert ? <>Código de verificación: <span className="whitespace-nowrap">{myCert.code}</span></> : "Ya puedes solicitar tu constancia de asistencia."}</p>
           </div>
-          <Link href={myCert ? `/constancia/${myCert.code}` : `/constancia/solicitar/${slug}`} className="btn btn-primary">{myCert ? "Ver mi constancia" : "Solicitar mi constancia"}</Link>
+          <Link href={myCert ? `/constancia/${myCert.code}` : `/constancia/solicitar/${slug}`} className="btn btn-primary max-sm:w-full">{myCert ? "Ver mi constancia" : "Solicitar mi constancia"}</Link>
         </div>
       )}
 
       {!course.hasAccess && (
         <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-cyan/60" : "!border-cyan/40"}`}>
           <Icon name="key" className="size-10 shrink-0 text-cyan" />
-          <div className="min-w-0 flex-1 space-y-1">
+          <div className="min-w-48 flex-1 space-y-1">
             <p className="font-display text-xl font-bold">{course.needsSubscription ? "¡Superaste la lección gratis!" : "La primera lección es gratis"}</p>
             <p className="text-muted">
               {course.kind === "clase"
@@ -81,7 +82,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
                 : <>Suscríbete a este curso para abrir todas sus lecciones, enfrentar a {g?.name ?? "su Guardián"} y recibir tu constancia de asistencia. Curso completo: <strong className="text-text">{formatPrice(course.price)}</strong>.</>}
             </p>
           </div>
-          <Link href={`/suscribirse/${course.slug}`} className="btn btn-primary">Desbloquear el curso</Link>
+          <Link href={`/suscribirse/${course.slug}`} className="btn btn-primary max-sm:w-full">Desbloquear el curso</Link>
         </div>
       )}
 
@@ -148,15 +149,16 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
 function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const locked = m.state === "bloqueada";
   const body = (
-    <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
+    <div className={`panel flex flex-wrap items-center gap-x-4 gap-y-2 p-4 sm:flex-nowrap sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
       <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-accion text-sobre-accion" : "bg-white/10 text-muted"}`} aria-hidden="true">
         {m.state === "completada" ? <Icon name="check" className="size-6" /> : m.lock === "suscripcion" ? <Icon name="key" className="size-6" /> : locked ? <Icon name="lock" className="size-6" /> : m.lessonKind === "explicacion" ? <Icon name="book" className="size-6" /> : index}
       </span>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-48 flex-1">
         <p className="font-display text-lg font-bold leading-tight">{m.lessonKind === "explicacion" && <span className="mr-1.5 rounded-md bg-cyan/15 px-1.5 py-0.5 align-middle text-xs font-bold text-cyan">Explicación</span>}{m.title}</p>
         <p className="text-sm text-muted">{m.lock === "suscripcion" ? "Incluida en la suscripción al curso." : locked ? "Termina la misión anterior para abrirla." : m.intro}</p>
       </div>
-      <div className="shrink-0 text-right text-sm">
+      {/* En el celular, el puntaje y la acción bajan a su propia línea, alineados con el título (no aplastan el texto). */}
+      <div className="shrink-0 text-right text-sm max-sm:flex max-sm:w-full max-sm:items-center max-sm:gap-3 max-sm:pl-16 max-sm:text-left">
         {m.state === "completada" ? (
           m.lessonKind === "explicacion" ? <p className="text-muted">Volver a leer</p> : <><p className="font-bold text-green">{m.bestScore}%</p><p className="text-muted">Repetir</p></>
         ) : locked ? (
