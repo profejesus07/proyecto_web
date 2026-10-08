@@ -37,6 +37,24 @@ const INSTITUCIONES = [
 
 const LISTA = "mt-3 list-disc space-y-2 pl-5 marker:text-accion";
 
+// Reparto de personajes: CLAUDE.md, «Reparto de personajes en páginas públicas».
+const GUARDIANES_HOGAR = [["mama-lucia", "Mamá Lucía"], ["papa-kenji", "Papá Kenji"], ["abuela-amara", "Abuela Amara"], ["abuelo-iker", "Abuelo Iker"]];
+const MAESTROS = [["maestra-ilia", "Maestra Ilia"], ["maestra-nadia", "Maestra Nadia"], ["maestro-olu", "Maestro Olu"], ["maestro-ravi", "Maestro Ravi"]];
+
+/** Los cuatro personajes de un rol, en reposo y con su nombre. Cargan en diferido (no se ven al abrir). */
+function Elenco({ etiqueta, carpeta, personas }: { etiqueta: string; carpeta: string; personas: string[][] }) {
+  return (
+    <ul aria-label={etiqueta} className="grid grid-cols-4 gap-2 sm:gap-4">
+      {personas.map(([id, nombre]) => (
+        <li key={id} className="flex flex-col items-center text-center">
+          <Sprite src={`/assets/${carpeta}/${id}/${id}-reposo.svg`} alt="" decorative className="h-28 w-auto sm:h-36" />
+          <span className="mt-1 text-xs text-muted sm:text-sm">{nombre}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function FamiliasYDocentesPage() {
   return (
     <SiteShell>
@@ -46,15 +64,20 @@ export default function FamiliasYDocentesPage() {
           <a href="#familias" className="btn btn-primary">Para las familias</a>
           <a href="#docentes" className="btn btn-secondary">Para docentes e instituciones</a>
         </>}
-        ilustracion={<Sprite src="/assets/familia/abuela-amara/abuela-amara-saludar.svg" alt="La Abuela Amara, una de las Guardianas del Hogar, saluda" className="h-52 w-auto sm:h-64" />}
+        ilustracion={<Sprite src="/assets/familia/abuela-amara/abuela-amara-saludar.svg" alt="La Abuela Amara, una de las Guardianas del Hogar, saluda" priority className="h-52 w-auto sm:h-64" />}
       >
         <p>Quien aprende no lo hace solo. En UNEX Academy las familias y los docentes ven el avance de sus estudiantes, celebran sus logros y saben cuándo darles una mano.</p>
       </FranjaPortada>
 
       <div className="mx-auto w-full max-w-5xl space-y-20 px-4 py-14 sm:px-6 sm:py-16">
         <section id="familias" aria-labelledby="familias-t" className="scroll-mt-6">
-          <h2 id="familias-t">Para las familias</h2>
-          <p className="mt-3 max-w-2xl text-lg text-muted">Con una cuenta de familia acompañas el avance de tus hijos sin entrar a su cuenta.</p>
+          <div className="grid items-end gap-6 md:grid-cols-[1fr_1.1fr]">
+            <div>
+              <h2 id="familias-t">Para las familias</h2>
+              <p className="mt-3 max-w-2xl text-lg text-muted">Con una cuenta de familia acompañas el avance de tus hijos sin entrar a su cuenta.</p>
+            </div>
+            <Elenco etiqueta="Los Guardianes del Hogar" carpeta="familia" personas={GUARDIANES_HOGAR} />
+          </div>
 
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             <section aria-labelledby="vincular-t" className="panel p-6 sm:p-8 lg:col-span-2">
@@ -86,6 +109,11 @@ export default function FamiliasYDocentesPage() {
               </ul>
             </section>
 
+            <figure className="panel overflow-hidden lg:col-span-2">
+              <Sprite src="/assets/escenarios/terraza/terraza-atardecer.svg" alt="La Terraza del Hogar al atardecer" className="aspect-[16/9] w-full object-cover sm:aspect-[21/9]" />
+              <figcaption className="px-6 py-3 text-sm text-muted">La Terraza del Hogar: tus hijos la decoran con lo que compran en la tienda.</figcaption>
+            </figure>
+
             <section aria-labelledby="privacidad-t" className="panel p-6 sm:p-8 lg:col-span-2">
               <h3 id="privacidad-t">Su privacidad, primero</h3>
               <p className="mt-3">Nunca verás su correo, su contraseña ni sus respuestas, y no puedes cambiar nada de su cuenta. Tu hijo o hija puede dejar de compartir su avance desde su perfil.</p>
@@ -97,12 +125,12 @@ export default function FamiliasYDocentesPage() {
         </section>
 
         <section id="docentes" aria-labelledby="docentes-t" className="scroll-mt-6">
-          <div className="grid items-center gap-8 md:grid-cols-[1fr_auto]">
+          <div className="grid items-end gap-6 md:grid-cols-[1fr_1.1fr]">
             <div>
               <h2 id="docentes-t">Para docentes e instituciones</h2>
               <p className="mt-3 max-w-2xl text-lg text-muted">Las cuentas de Maestro del Gremio las crea UNEX Academy para cada docente, con los grupos y los estudiantes que acompaña.</p>
             </div>
-            <Sprite src="/assets/guias/sora/sora-senalar.svg" alt="" decorative className="mx-auto hidden h-44 w-auto md:block" />
+            <Elenco etiqueta="Los Maestros del Gremio" carpeta="maestros" personas={MAESTROS} />
           </div>
 
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
