@@ -10,6 +10,8 @@ import { guardianBySlug } from "@/content/guardians";
 import { sfx } from "@/lib/audio/music";
 import { speak } from "@/lib/audio/voices";
 import { Sprite, asset } from "@/components/sprite";
+import { EN_TEXTO, Icon } from "@/components/icons";
+import { ObjetoJuego, PoderIcono, RangoIcono } from "@/components/objeto-juego";
 import { beatDuration, enemyFor, foeAnim, kuroAnim, sceneFor, type BeatKind } from "@/lib/game/battle";
 import { PASS_MARK } from "@/lib/game/grading";
 import { duel, kaelScore } from "@/lib/game/kael";
@@ -178,7 +180,7 @@ export function Quiz(p: QuizProps) {
   const [powers, setPowers] = useState(p.powers);
   const [pstate, setPstate] = useState(p.powerState);
   const [memory, setMemory] = useState(p.memory);
-  const [powerMsg, setPowerMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [powerMsg, setPowerMsg] = useState<{ ok: boolean; text: string; poder?: PowerKind } | null>(null);
   const [fx, setFx] = useState<{ src: string; n: number } | null>(null);
   const [bonus, setBonus] = useState<number | null>(null);
   const [aidPending, startAid] = useTransition();
@@ -253,7 +255,7 @@ export function Quiz(p: QuizProps) {
         // El Escudo de Calma paró el error: la respuesta no quedó fija; se puede volver a intentar.
         setPstate((all) => ({ ...all, [p.questions[at].id]: { ...all[p.questions[at].id], escudo: false } }));
         setFx({ src: POWERS.escudo.fx, n: Date.now() });
-        setPowerMsg({ ok: true, text: "🛡️ ¡El Escudo de Calma te protegió! Esa no era: piénsalo otra vez." });
+        setPowerMsg({ ok: true, poder: "escudo", text: "¡El Escudo de Calma te protegió! Esa no era: piénsalo otra vez." });
         setSelected(-1);
         play("miss");
         return;
@@ -354,39 +356,39 @@ export function Quiz(p: QuizProps) {
       switch (kind) {
         case "rayo":
           patch({ rayo: { stems: r.stems ?? [], lead: r.lead ?? null } });
-          setPowerMsg({ ok: true, text: r.stems?.length ? "⚡ El Rayo de Claridad ilumina las palabras clave de la pregunta." : `⚡ El Rayo de Claridad te susurra: «${r.lead ?? ""}»` });
+          setPowerMsg({ ok: true, poder: "rayo", text: r.stems?.length ? "El Rayo de Claridad ilumina las palabras clave de la pregunta." : `El Rayo de Claridad te susurra: «${r.lead ?? ""}»` });
           break;
         case "escudo":
           patch({ escudo: true });
-          setPowerMsg({ ok: true, text: "🛡️ Escudo de Calma activo: si fallas esta pregunta, podrás intentarlo otra vez." });
+          setPowerMsg({ ok: true, poder: "escudo", text: "Escudo de Calma activo: si fallas esta pregunta, podrás intentarlo otra vez." });
           break;
         case "lluvia":
           patch({ lluvia: true });
-          setPowerMsg({ ok: true, text: "🌠 Lluvia de Estrellas lista: si aciertas, ganas 15 XP extra." });
+          setPowerMsg({ ok: true, poder: "lluvia", text: "Lluvia de Estrellas lista: si aciertas, ganas 15 XP extra." });
           break;
         case "kuro":
           patch({ kuro: { hint: r.hint ?? null, removed: r.removed ?? [] } });
           if (r.removed?.includes(selected)) setSelected(-1);
           if (r.hint) kuroSays(r.hint);
-          setPowerMsg({ ok: true, text: r.removed?.length ? "🐾 ¡Kuro acude a tu llamada! Te dice la pista y descarta una opción." : "🐾 ¡Kuro acude a tu llamada y te dice la pista!" });
+          setPowerMsg({ ok: true, poder: "kuro", text: r.removed?.length ? "¡Kuro acude a tu llamada! Te dice la pista y descarta una opción." : "¡Kuro acude a tu llamada y te dice la pista!" });
           break;
         case "pulso":
           setMemory((m) => ({ ...m, ...(r.hints ?? {}) }));
-          setPowerMsg({ ok: true, text: `💫 El Pulso de Memoria recupera ${Object.keys(r.hints ?? {}).length} ${Object.keys(r.hints ?? {}).length === 1 ? "pista" : "pistas"} que ya habías visto.` });
+          setPowerMsg({ ok: true, poder: "pulso", text: `El Pulso de Memoria recupera ${Object.keys(r.hints ?? {}).length} ${Object.keys(r.hints ?? {}).length === 1 ? "pista" : "pistas"} que ya habías visto.` });
           break;
         case "sombra":
           if (r.choice !== undefined) patch({ sombra: r.choice });
-          setPowerMsg({ ok: true, text: "👤 Tu Sombra Dorada recuerda la respuesta que elegiste la última vez." });
+          setPowerMsg({ ok: true, poder: "sombra", text: "Tu Sombra Dorada recuerda la respuesta que elegiste la última vez." });
           break;
         case "aura":
           setPowerMsg(null);
           next();
-          setPowerMsg({ ok: true, text: "🌀 Aura de Concentración: esa pregunta te espera al final. Piénsala con calma." });
+          setPowerMsg({ ok: true, poder: "aura", text: "Aura de Concentración: esa pregunta te espera al final. Piénsala con calma." });
           break;
         case "aliento":
           setResults((all) => all.map((x, i) => (i === at ? null : x)));
           setSelected(-1);
-          setPowerMsg({ ok: true, text: "💖 ¡Segundo Aliento! Puedes responder esta pregunta otra vez." });
+          setPowerMsg({ ok: true, poder: "aliento", text: "¡Segundo Aliento! Puedes responder esta pregunta otra vez." });
           play("enter");
           break;
       }
@@ -414,6 +416,8 @@ export function Quiz(p: QuizProps) {
   // ===== Resultado =====
   if (outcome?.ok) {
     const { result, review, newRanks, items } = outcome;
+    // Si sube más de un rango a la vez, se celebra el último (con su insignia).
+    const rangoNuevo = RANKS.find((r) => r.key === newRanks[newRanks.length - 1]);
     const win = result.passed;
     const duelOutcome = duel(result.score, p.missionId);
     const bossWin = p.isBoss && win;
@@ -463,14 +467,15 @@ export function Quiz(p: QuizProps) {
 
             {result.first && (
               <ul className="pop flex flex-wrap justify-center gap-2" aria-label="Recompensas">
-                {result.xpGain > 0 && <li className="chip !border-violet/60 !bg-violet/20 text-base">✨ +{result.xpGain} XP</li>}
-                {result.coinsGain > 0 && <li className="chip !border-gold/60 !bg-gold/15 text-base">🪙 +{result.coinsGain}</li>}
-                {result.gemsGain > 0 && <li className="chip !border-cyan/60 !bg-cyan/15 text-base">💎 +{result.gemsGain}</li>}
+                {result.xpGain > 0 && <li className="chip !border-violet/60 !bg-violet/20 text-base"><ObjetoJuego nombre="xp" /> +{result.xpGain} XP</li>}
+                {result.coinsGain > 0 && <li className="chip !border-gold/60 !bg-gold/15 text-base"><ObjetoJuego nombre="moneda" /> +{result.coinsGain}<span className="sr-only"> monedas</span></li>}
+                {result.gemsGain > 0 && <li className="chip !border-cyan/60 !bg-cyan/15 text-base"><ObjetoJuego nombre="gema" /> +{result.gemsGain}<span className="sr-only"> gemas</span></li>}
               </ul>
             )}
-            {newRanks.length > 0 && (
-              <p className="rounded-xl border border-gold/60 bg-gold/15 px-5 py-3 text-lg font-bold text-warn">
-                🎉 ¡Subiste al rango {newRanks[newRanks.length - 1]} · {RANKS.find((r) => r.key === newRanks[newRanks.length - 1])?.name}!
+            {rangoNuevo && (
+              <p className="flex items-center gap-3 rounded-xl border border-gold/60 bg-gold/15 px-5 py-3 text-lg font-bold text-warn">
+                <RangoIcono rango={rangoNuevo.key} className="size-10 shrink-0" />
+                ¡Subiste al rango {rangoNuevo.key} · {rangoNuevo.name}!
               </p>
             )}
             {items.length > 0 && (
@@ -493,7 +498,7 @@ export function Quiz(p: QuizProps) {
               </p>
             )}
             {result.courseDone && p.certificateHref && (
-              <Link href={p.certificateHref} className="btn btn-primary btn-lg">🎓 Solicitar mi constancia de asistencia</Link>
+              <Link href={p.certificateHref} className="btn btn-primary btn-lg"><Icon name="seal" className="size-5" /> Solicitar mi constancia de asistencia</Link>
             )}
             {outcome.chronicles.length > 0 && (
               <div className="w-full max-w-xl pt-2 text-left">
@@ -501,7 +506,7 @@ export function Quiz(p: QuizProps) {
                   {outcome.chronicles.length === 1 ? "¡Se abrió un capítulo nuevo de las Crónicas!" : "¡Se abrieron capítulos nuevos de las Crónicas!"}
                   <span className="mt-2 flex flex-wrap gap-2">
                     {outcome.chronicles.map((c) => (
-                      <Link key={c.id} href={`/cronicas/${c.id}`} className="btn btn-secondary btn-sm">📜 {c.title}</Link>
+                      <Link key={c.id} href={`/cronicas/${c.id}`} className="btn btn-secondary btn-sm"><Icon name="scroll" className="size-4" /> {c.title}</Link>
                     ))}
                   </span>
                 </SpeechBubble>
@@ -509,7 +514,7 @@ export function Quiz(p: QuizProps) {
             )}
             <div className="flex flex-wrap justify-center gap-3 pt-2">
               {win && p.nextMissionId && !p.subscribe && <Link href={`/mision/${p.nextMissionId}`} className="btn btn-primary btn-lg">Siguiente misión</Link>}
-              {win && p.subscribe && <Link href={p.subscribe.href} className="btn btn-primary btn-lg">🔑 Desbloquear el curso</Link>}
+              {win && p.subscribe && <Link href={p.subscribe.href} className="btn btn-primary btn-lg"><Icon name="key" className="size-5" /> Desbloquear el curso</Link>}
               {!win && <button type="button" onClick={retry} className="btn btn-primary btn-lg">Intentarlo de nuevo</button>}
               <Link href={`/portales/${p.courseSlug}`} className="btn btn-secondary btn-lg">Volver al portal</Link>
             </div>
@@ -523,7 +528,7 @@ export function Quiz(p: QuizProps) {
               const r = review[i];
               return (
                 <li key={qq.id} className={`panel space-y-2 p-5 ${r.correct ? "!border-green/50" : "!border-coral/50"}`}>
-                  <p className="flex gap-3 font-bold"><span aria-hidden="true">{r.correct ? "✅" : "❌"}</span><span><span className="sr-only">{r.correct ? "Correcta. " : "Incorrecta. "}</span>{qq.prompt}</span></p>
+                  <p className="flex gap-3 font-bold"><span aria-hidden="true" className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full ${r.correct ? "bg-green/20 text-ok" : "bg-coral/20 text-err"}`}><Icon name={r.correct ? "check" : "x"} className="size-4" /></span><span><span className="sr-only">{r.correct ? "Correcta. " : "Incorrecta. "}</span>{qq.prompt}</span></p>
                   {isChoiceKind(qq.kind) ? (
                     <>
                       {!r.correct && <p className="pl-9 text-sm text-muted">Tu respuesta: {r.chosen >= 0 ? qq.options[r.chosen] : "sin responder"}</p>}
@@ -535,7 +540,7 @@ export function Quiz(p: QuizProps) {
                       <SolutionView kind={qq.kind} solution={r.solution} />
                     </div>
                   )}
-                  <p className="pl-9 text-sm text-muted">💡 {r.explanation}</p>
+                  <p className="pl-9 text-sm text-muted"><ObjetoJuego nombre="pista" /> {r.explanation}</p>
                 </li>
               );
             })}
@@ -596,7 +601,7 @@ export function Quiz(p: QuizProps) {
           ) : (
             <span className="rounded-full bg-bg/75 px-3 py-1 text-xs font-bold backdrop-blur-sm sm:text-sm">{enemy.name} · {idx + 1} de {total}</span>
           )}
-          <span className="hidden shrink-0 rounded-full bg-bg/75 px-3 py-1 text-xs font-bold backdrop-blur-sm sm:inline sm:text-sm">✔ {rightCount} · ✕ {wrongCount}</span>
+          <span className="hidden shrink-0 rounded-full bg-bg/75 px-3 py-1 text-xs font-bold backdrop-blur-sm sm:inline-flex sm:items-center sm:gap-1 sm:text-sm"><Icon name="check" className="size-3.5" /><span className="sr-only">Aciertos:</span> {rightCount} · <Icon name="x" className="size-3.5" /><span className="sr-only">Errores:</span> {wrongCount}</span>
         </div>
 
         <Sprite key={kuroSrc} src={kuroSrc} alt={res ? (res.correct ? "Kuro celebra" : "Kuro te anima") : "Kuro piensa contigo"} className="absolute bottom-[3%] left-[6%] h-[34%] w-auto sm:left-[18%]" />
@@ -610,8 +615,8 @@ export function Quiz(p: QuizProps) {
         {fx && <Sprite key={fx.n} src={fx.src} alt="" decorative priority className="pointer-events-none absolute inset-0 m-auto h-full w-auto animate-[fadein_.2s_ease-out]" />}
         {(ps.escudo || ps.lluvia) && !res && (
           <span className="absolute bottom-3 left-3 flex gap-1.5">
-            {ps.escudo && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm">🛡️ Escudo activo</span>}
-            {ps.lluvia && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm">🌠 Lluvia activa</span>}
+            {ps.escudo && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm"><PoderIcono poder="escudo" /> Escudo activo</span>}
+            {ps.lluvia && <span className="rounded-full bg-bg/80 px-2.5 py-1 text-xs font-bold text-cyan backdrop-blur-sm"><PoderIcono poder="lluvia" /> Lluvia activa</span>}
           </span>
         )}
       </section>
@@ -627,15 +632,15 @@ export function Quiz(p: QuizProps) {
               ? p.isBoss ? `${CHEERS[idx % CHEERS.length]} ${p.guardian.name} pierde fuerza.` : `${CHEERS[idx % CHEERS.length]} El ${enemy.name} se desvanece en luz.`
               : p.isBoss ? `¡Uy! ${p.guardian.name} se crece un momento. Kuro te explica:` : "¡Uy, no era esa! Kuro te explica:"}
           </p>
-          <p className={res.correct ? "text-muted" : "text-warn"}>💡 {res.explanation}</p>
+          <p className={res.correct ? "text-muted" : "text-warn"}><ObjetoJuego nombre="pista" /> {res.explanation}</p>
           {!choiceKind && !res.correct && <SolutionView kind={q.kind} solution={res.solution} />}
-          {bonus && res.correct && <p className="font-bold text-gold">🌠 ¡La Lluvia de Estrellas te da +{bonus} XP!</p>}
+          {bonus && res.correct && <p className="font-bold text-gold"><PoderIcono poder="lluvia" /> ¡La Lluvia de Estrellas te da +{bonus} XP!</p>}
           {!res.correct && canUse("aliento") && (
             <button type="button" onClick={() => activatePower("aliento")} disabled={aidPending || pending} className="btn btn-secondary btn-sm">
-              {POWERS.aliento.icon} Segundo Aliento · responder otra vez
+              <PoderIcono poder="aliento" /> Segundo Aliento · responder otra vez
             </button>
           )}
-          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-cyan" : "text-err"}`}>{powerMsg.text}</p>}
+          {powerMsg && <p className={`text-sm font-medium ${powerMsg.ok ? "text-cyan" : "text-err"}`}>{powerMsg.poder && <PoderIcono poder={powerMsg.poder} />} {powerMsg.text}</p>}
           {p.isBoss && !res.correct && !stillPossible && (
             <p className="text-sm text-muted">Esta vez no alcanzarás el {PASS_MARK}%, pero termina la prueba: cada respuesta te prepara para la revancha.</p>
           )}
@@ -693,10 +698,10 @@ export function Quiz(p: QuizProps) {
                 <input type="radio" name={`q-${q.id}`} value={i} checked={(res ? res.choice : selected) === i} onChange={() => setSelected(i)} disabled={!!res || out} className="peer sr-only" />
                 <span className={`flex items-center gap-4 rounded-2xl border-2 p-4 text-lg transition peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${tone}`}>
                   <span className={`grid size-9 shrink-0 place-items-center rounded-lg font-display font-extrabold ${isRight ? "bg-green text-ink" : isWrongPick ? "bg-coral text-ink" : "bg-white/10"}`} aria-hidden="true">
-                    {isRight ? "✓" : isWrongPick ? "✕" : out ? "✕" : LETTERS[i]}
+                    {isRight ? <Icon name="check" className="size-5" /> : isWrongPick || out ? <Icon name="x" className="size-5" /> : LETTERS[i]}
                   </span>
                   <span className={`font-medium ${out ? "line-through" : ""}`}>{opt}</span>
-                  {shadow && <span className="ml-auto shrink-0 rounded-md bg-cyan/15 px-2 py-0.5 text-xs font-bold text-cyan">👤 Tu sombra eligió esta</span>}
+                  {shadow && <span className="ml-auto shrink-0 rounded-md bg-cyan/15 px-2 py-0.5 text-xs font-bold text-cyan"><PoderIcono poder="sombra" /> Tu sombra eligió esta</span>}
                   {out && <span className="sr-only"> (descartada por el 50/50)</span>}
                   {isRight && <span className="sr-only"> (respuesta correcta)</span>}
                   {isWrongPick && <span className="sr-only"> (tu respuesta)</span>}
@@ -709,24 +714,24 @@ export function Quiz(p: QuizProps) {
 
         {!res && (
           <>
-            {hintText && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-text">{ps.kuro?.hint && !shown.hint ? "🐾" : memory[q.id] && !shown.hint ? "💫" : "💡"} {hintText}</p>}
-            {ps.rayo?.lead && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-sm">⚡ Fíjate en esto: «{ps.rayo.lead}»</p>}
+            {hintText && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-text">{ps.kuro?.hint && !shown.hint ? <PoderIcono poder="kuro" /> : memory[q.id] && !shown.hint ? <PoderIcono poder="pulso" /> : <ObjetoJuego nombre="pista" />} {hintText}</p>}
+            {ps.rayo?.lead && <p role="note" className="rounded-xl border border-cyan/40 bg-cyan/10 px-4 py-3 text-sm"><PoderIcono poder="rayo" /> Fíjate en esto: «{ps.rayo.lead}»</p>}
             <div className="flex flex-wrap items-center gap-2 border-t border-line pt-4" role="group" aria-label="Ayudas">
               <span className="mr-1 text-sm font-bold text-muted">Ayudas:</span>
               {q.hasHint && !hintText && (
                 <button type="button" onClick={() => askAid("pista")} disabled={!pistaReady || aidPending || pending} className="btn btn-ghost btn-sm"
                   title={pista.freeAvailable ? "La primera pista de cada misión es gratis cada día" : pistaCapped ? "Llegaste al máximo de pistas de hoy" : undefined}>
-                  💡 Pista · {pista.freeAvailable ? <strong className="text-cyan">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
+                  <ObjetoJuego nombre="pista" /> Pista · {pista.freeAvailable ? <strong className="text-cyan">gratis</strong> : pistaCapped ? "tope de hoy" : `tienes ${pista.stock}`}
                 </button>
               )}
               {q.kind !== "opcion" ? null : removed.length > 0 ? (
-                <span className="chip text-sm text-muted">🔮 50/50 usado</span>
+                <span className="chip text-sm text-muted"><ObjetoJuego nombre="5050" /> 50/50 usado</span>
               ) : !fifty.unlocked ? (
-                <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}>🔒 50/50 · rango {fifty.minRank}</span>
+                <span className="chip text-sm text-muted" title={`El 50/50 se desbloquea en el rango ${fifty.minRank}`}><Icon name="lock" className={EN_TEXTO} /> 50/50 · rango {fifty.minRank}</span>
               ) : (
                 <button type="button" onClick={() => askAid("5050")} disabled={!fiftyReady || aidPending || pending} className="btn btn-ghost btn-sm"
                   title={fiftyCapped ? "Llegaste al máximo de 50/50 de hoy" : "Quita la mitad de las respuestas incorrectas"}>
-                  🔮 50/50 · {fiftyCapped ? "tope de hoy" : `tienes ${fifty.stock}`}
+                  <ObjetoJuego nombre="5050" /> 50/50 · {fiftyCapped ? "tope de hoy" : `tienes ${fifty.stock}`}
                 </button>
               )}
               {aidPending && <span className="text-sm text-muted">Usando ayuda…</span>}
@@ -742,13 +747,13 @@ export function Quiz(p: QuizProps) {
                   return (
                     <button key={x.kind} type="button" onClick={() => activatePower(x.kind)} disabled={capped || aidPending || pending} title={rule.effect}
                       className="btn btn-ghost btn-sm !border-violet/50">
-                      {rule.icon} {rule.name}{rule.permanent ? "" : ` · ${x.have}`}{capped ? " · tope de hoy" : ""}
+                      <PoderIcono poder={x.kind} /> {rule.name}{rule.permanent ? "" : ` · ${x.have}`}{capped ? " · tope de hoy" : ""}
                     </button>
                   );
                 })}
               </div>
             )}
-            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-cyan" : "text-err"}`}>{powerMsg?.text}</p>
+            <p aria-live="polite" className={`text-sm font-medium empty:hidden ${powerMsg?.ok ? "text-cyan" : "text-err"}`}>{powerMsg?.poder && <><PoderIcono poder={powerMsg.poder} />{" "}</>}{powerMsg?.text}</p>
           </>
         )}
       </fieldset>
