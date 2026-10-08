@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Pista" data-id="mini_pista" data-tamano="16-24 px">
+<title>Pista</title>
+<!-- Versión pequeña (16–24 px) del objeto de la tienda: solo el símbolo central, con sus colores del juego. El original
+     con aro y fondo sigue en objetos/ayuda/ para la tienda y los tamaños grandes. -->
+<path d="M9 5.2a3 3 0 0 1 6 0" fill="none" stroke="#FFC83D" stroke-width="1.6" stroke-linecap="round"/>
+<rect x="7.5" y="5.2" width="9" height="2.6" rx="1" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M8 7.8h8l1.6 2.7v5.6L16 18.8H8l-1.6-2.7v-5.6z" fill="#2EE6D6" stroke="#0E0C2B" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="12" cy="13.3" r="2.6" fill="#E9FFFD"/>
+<rect x="7.5" y="18.8" width="9" height="2.4" rx="1" fill="#FFC83D" stroke="#0E0C2B" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Segundo Aliento" data-id="mini_aliento" data-tamano="16-24 px">
+<title>Segundo Aliento</title>
+<!-- Versión pequeña (16–24 px) del objeto de la tienda: solo el símbolo central, con sus colores del juego. El original
+     con aro y fondo sigue en objetos/poder/ para la tienda y los tamaños grandes. -->
+<path d="M12 21S2.8 15.6 2.8 9.2A4.8 4.8 0 0 1 7.6 4.4c1.9 0 3.5 1 4.4 2.5.9-1.5 2.5-2.5 4.4-2.5a4.8 4.8 0 0 1 4.8 4.8C21.2 15.6 12 21 12 21z" fill="#FF6B6B" stroke="#0E0C2B" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M12 9.3v6M9 12.3h6" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+</svg>

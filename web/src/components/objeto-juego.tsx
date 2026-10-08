@@ -4,6 +4,8 @@ import type { RankKey } from "@/lib/game/ranks";
 /*
  * Objetos del juego en tamaño de ícono: monedas, gemas, XP, racha, ayudas, poderes y rangos. Son los SVG de la
  * biblioteca (public/assets/objetos), no íconos de línea: lo que pertenece al mundo se ve como en el juego.
+ * Las ayudas y los poderes usan su versión pequeña (objetos/mini: el símbolo central, legible a 16–24 px); los
+ * originales, con aro y fondo, siguen para la tienda y los tamaños grandes.
  * La interfaz (estados, acciones, menú) usa los íconos de línea de icons.tsx.
  * Son decorativos: el texto de al lado dice qué son. Por omisión toman el tamaño de la letra.
  */
@@ -13,8 +15,8 @@ const ARCHIVOS = {
   xp: "recurso/obj_recurso_xp",
   // Variante sin el «7» del marcador original (que es un ejemplo): el número va en el texto del contador.
   racha: "interfaz/obj_ui_racha_sin_numero",
-  pista: "ayuda/obj_ayuda_pista",
-  "5050": "ayuda/obj_ayuda_5050",
+  pista: "mini/mini_pista",
+  "5050": "mini/mini_5050",
 } as const;
 
 export type ObjetoJuegoNombre = keyof typeof ARCHIVOS;
@@ -30,9 +32,9 @@ export function ObjetoJuego({ nombre, className }: { nombre: ObjetoJuegoNombre; 
   return <Imagen src={`/assets/objetos/${ARCHIVOS[nombre]}.svg`} className={className} />;
 }
 
-/** El objeto de un poder (el mismo que se ve en la tienda). */
+/** El símbolo de un poder en tamaño pequeño (versión mini del objeto de la tienda). */
 export function PoderIcono({ poder, className }: { poder: PowerKind; className?: string }) {
-  return <Imagen src={`/assets/objetos/poder/obj_poder_${poder}.svg`} className={className} />;
+  return <Imagen src={`/assets/objetos/mini/mini_${poder}.svg`} className={className} />;
 }
 
 /** La insignia de un rango. */
