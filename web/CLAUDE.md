@@ -201,3 +201,14 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
 - Ampliar la variedad del avatar (tonos de piel, peinados o más personajes base); cada opción se
   multiplica por rangos y animaciones, así que se planea aparte.
 - Antes de crear un segundo universo, revisar esta sección y proponer el diseño.
+
+## Pendiente para abrir los pagos
+Hoy no hay pasarelas configuradas en producción: el estudiante ve «Los pagos en línea llegan muy pronto» y un
+correo para activar el curso a mano. Antes de abrir los pagos al público:
+- Cambiar el título del cobro en `lib/payments/service.ts` de «Academia Virtual Umbral · {curso}» a
+  «UNEX Academy · {curso}» (con aprobación).
+- Configurar en Vercel las 6 variables de Wompi y Mercado Pago: `WOMPI_PUBLIC_KEY`, `WOMPI_INTEGRITY_SECRET`,
+  `WOMPI_EVENTS_SECRET`, `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET` y `MERCADOPAGO_TEST`.
+- Revisión legal de términos y privacidad: derecho de retracto (Ley 1480), nombre en el extracto bancario y
+  razón social.
+- Probar el flujo completo en modo de prueba antes de activarlo.
