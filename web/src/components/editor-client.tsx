@@ -59,8 +59,9 @@ export function NewCourseForm() {
           ))}
         </div>
       </fieldset>
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="min-w-0 flex-1"><Field label="Título"><input name="title" required minLength={3} maxLength={80} placeholder="Ej.: Matemáticas 6.° · 2027" className="input" /></Field></div>
+      {/* El título va solo en su fila: en la media columna de la consola, junto a Horas y el botón, quedaba de 65 px. */}
+      <Field label="Título"><input name="title" required minLength={3} maxLength={80} placeholder="Ej.: Matemáticas 6.° · 2027" className="input w-full" /></Field>
+      <div className="flex flex-wrap items-end gap-3">
         <Field label="Horas" hint="Curso: menos de 160."><input name="hours" type="number" min={1} max={2000} placeholder="Ej.: 20" className="input !w-28" /></Field>
         <Submit pending="Creando…" className="btn btn-primary">Crear y editar</Submit>
       </div>
