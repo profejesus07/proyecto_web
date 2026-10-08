@@ -248,15 +248,34 @@ input.input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([
 .sprite { display: block; max-width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
 }
 
-/* Impresión (constancias): hoja horizontal, fondo blanco y solo el documento. */
+/* Impresión (constancias): una sola hoja carta horizontal, fondo blanco y solo el documento.
+   El tamaño va en milímetros, no en vw/vh: en el celular esas medidas son las de la pantalla del teléfono
+   (no las de la hoja) y el documento no se ajustaba a una sola hoja. */
 @media print {
-  @page { size: A4 landscape; margin: 8mm; }
+  @page { size: letter landscape; margin: 10mm; }
   html { color-scheme: light; }
   html, body { background: #fff !important; color: #14123b !important; }
-  /* Con una constancia en la página, solo se imprime ella, en una sola hoja: se ocultan los
-     elementos que ni la contienen ni están dentro de ella. */
+  /* Con una constancia en la página, solo se imprime ella: se ocultan los elementos que ni la contienen ni
+     están dentro de ella, y los que la contienen pierden márgenes, rellenos y alto mínimo (la barra del
+     celular y el alto de pantalla completa empujaban el documento a otra hoja). */
   body:has(.certificate) *:not(:has(.certificate), .certificate, .certificate *) { display: none !important; }
-  .certificate { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: min(100vw, 141.4vh); }
+  html:has(.certificate), body:has(.certificate), body :has(> .certificate), body :has(.certificate) {
+    margin: 0 !important; padding: 0 !important; min-height: 0 !important; height: auto !important;
+    max-width: none !important; border: 0 !important; box-shadow: none !important; background: none !important;
+    overflow: visible !important; transform: none !important;
+  }
+  /* Carta horizontal: 279,4 × 215,9 mm menos 10 mm de margen = 259,4 × 195,9 mm útiles. El documento
+     (proporción 297:210) ocupa 259 × 183 mm. */
+  .certificate {
+    position: static !important; transform: none !important; width: 259mm !important; max-width: 100% !important;
+    margin: 0 auto !important; break-inside: avoid; page-break-inside: avoid;
+    print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  }
+}
+/* Si el teléfono imprime en vertical (algunos ignoran la orientación de la hoja), el documento ocupa el ancho
+   de la hoja, en una sola página y sin cortarse. */
+@media print and (orientation: portrait) {
+  .certificate { width: 100% !important; }
 }
 
 /* Efecto de un poder al aparecer sobre la escena de la misión. */
