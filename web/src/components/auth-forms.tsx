@@ -91,7 +91,7 @@ export function RegisterForm() {
   if (state?.message) {
     return (
       <div className="space-y-5 text-center" aria-live="polite">
-        <Sprite src={asset.kuro("celebrar")} alt="Kuro celebrando" className="mx-auto h-40 w-auto" />
+        <Sprite src={asset.kael("celebrar")} alt="Kael celebra contigo" className="mx-auto h-40 w-auto" />
         <h2 className="text-2xl">¡Revisa tu correo!</h2>
         <p className="text-muted">{state.message}</p>
         <Link href="/ingresar" className="btn btn-secondary">Ir a ingresar</Link>
@@ -219,7 +219,7 @@ export function ForgotPasswordForm() {
   if (state?.message) {
     return (
       <div className="space-y-4 text-center" aria-live="polite">
-        <Sprite src={asset.kuro("senalar")} alt="Kuro señala tu bandeja de entrada" className="mx-auto h-32 w-auto" />
+        <Sprite src={asset.eon("senalar")} alt="El Archivista Eon señala tu bandeja de entrada" className="mx-auto h-32 w-auto" />
         <p className="text-muted">{state.message}</p>
         <Link href="/ingresar" className="btn btn-secondary">Volver a ingresar</Link>
       </div>

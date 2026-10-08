@@ -11,9 +11,11 @@ export default function RegisterPage() {
         <p className="eyebrow">Únete al gremio</p>
         <h1 className="text-4xl">Tu aventura empieza aquí</h1>
         <p className="text-muted">Crear tu cuenta toma un minuto. Elige un avatar, ponle nombre y entra al primer portal.</p>
-        <div className="panel relative overflow-hidden p-4">
-          <Sprite src={asset.sora("saludar")} alt="Sora te da la bienvenida" className="mx-auto h-80 w-auto" />
-        </div>
+        <ul aria-label="Los cuatro avatares: Aria, Leo, Tomás y Nuri" className="panel grid grid-cols-4 items-end gap-2 p-4">
+          {(["aria", "leo", "tomas", "nuri"] as const).map((id) => (
+            <li key={id}><Sprite src={asset.avatarAnim(id, "rango-e-reposo")} alt="" decorative className="mx-auto h-48 w-auto" /></li>
+          ))}
+        </ul>
       </aside>
       <section className="panel p-6 sm:p-8" aria-labelledby="registro-t">
         <h2 id="registro-t" className="mb-6 text-2xl lg:sr-only">Crea tu cuenta</h2>
