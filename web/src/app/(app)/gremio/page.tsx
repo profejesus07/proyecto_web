@@ -114,7 +114,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
         </section>
       )}
 
-      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} firstPortal={courses[0]?.slug ?? null} />}
+      {!viewer.introSeen && <SoraWelcome name={viewer.displayName} />}
 
       {viewer.role === "familia" && (
         <section aria-label="Guardianes del Hogar" className="panel flex flex-wrap items-center justify-between gap-4 !border-cyan/40 p-5">
