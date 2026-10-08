@@ -86,7 +86,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
 ### Zonas y temas
 - **Gremio** (estudiantes y familias): oscuro, tokens de `:root`.
 - **Consola y panel docente**: `.theme-panel`, claro.
-- **Sitio público** (inicio, cursos, ficha, verificar, legales, servicios, proyectos, Cómo se juega, Familias y
+- **Sitio público** (inicio, cursos, ficha, verificar, legales, servicios, Cómo se juega, Familias y
   docentes, y sin sesión ingresar, registro y recuperar): `[data-tema="claro"]`, como el sitio principal UNEX.
   Dentro, las zonas sobre Cosmos (encabezado, portada del inicio y pie) llevan `[data-tema="oscuro"]`, que
   vuelve a los tokens de `:root`. Cada página pública exporta `viewport = VIEWPORT_PUBLICO`
@@ -109,6 +109,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   Familias y docentes), selector «Plataformas» con Academy marcada, Ingresar y Crear cuenta. Hasta 1079 px:
   logo, «Ingresar» siempre visible y un menú con lo demás. Los desplegables son `<details>` (`Desplegable`) y
   se cierran al cambiar de página, con Escape y al tocar fuera. Pie: `PiePublico`.
+  `/proyectos` ya no existe: redirige de forma permanente a `/programas` (`next.config.ts`).
 - **Consola, panel docente y páginas compartidas del personal**: la franja Cosmos `FranjaUnex` con
   "UNEX Education" y las cuatro plataformas.
 - Las direcciones de las plataformas están en `src/config/productos.ts`; mientras una sea `null`, se muestra

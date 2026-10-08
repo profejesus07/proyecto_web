@@ -508,10 +508,20 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
   await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
   await expect(menu.getByRole("link", { name: "Cursos" })).toHaveAttribute("aria-current", "page");
 
-  for (const [seccion, titulo] of [["Cómo se juega", "Cómo se juega"], ["Familias y docentes", "Familias y docentes"]]) {
+  for (const [seccion, titulo] of [["Cómo se juega", "Aprender es una aventura"], ["Familias y docentes", "Acompañar a quien aprende"]]) {
     await menu.getByRole("link", { name: seccion }).click();
     await expect(page.getByRole("heading", { level: 1, name: titulo })).toBeVisible();
     await expect(menu.getByRole("link", { name: seccion })).toHaveAttribute("aria-current", "page");
+    if (seccion === "Cómo se juega") {
+      await expect(page.getByRole("heading", { name: "Los Guardianes" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "¿Todo listo para cruzar tu primer portal?" })).toBeVisible();
+    } else {
+      // Los enlaces de la franja llevan a cada sección de la página.
+      await page.getByRole("link", { name: "Para docentes e instituciones" }).click();
+      await expect(page).toHaveURL(/#docentes$/);
+      await expect(page.getByRole("heading", { level: 2, name: "Para docentes e instituciones" })).toBeInViewport();
+      await expect(page.getByRole("heading", { name: "Cómo vincularte" })).toBeVisible();
+    }
   }
 
   // El pie público: las secciones, la cuenta y las plataformas UNEX.
@@ -520,9 +530,13 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
   await expect(pie.getByRole("link", { name: "Verificar una constancia" })).toHaveAttribute("href", "/verificar");
   await expect(pie.getByRole("navigation", { name: "Plataformas UNEX" }).getByRole("link", { name: "UNEX Education" })).toBeVisible();
 
-  // Proyectos y Servicios ya no están en el menú, pero sus páginas siguen.
+  // Proyectos se quitó: su dirección redirige a los cursos. Servicios ya no está en el menú, pero su página sigue.
+  const redireccion = await page.request.get("/proyectos", { maxRedirects: 0 });
+  expect(redireccion.status()).toBe(308);
+  expect(redireccion.headers()["location"]).toBe("/programas");
   await page.goto("/proyectos");
-  await expect(page.getByRole("heading", { level: 1, name: "Proyectos" })).toBeVisible();
+  await expect(page).toHaveURL(/\/programas$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
   await page.goto("/servicios");
   await expect(page.getByRole("heading", { level: 1, name: /Tecnología educativa/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plataforma institucional de exámenes" })).toBeVisible();

@@ -4,7 +4,7 @@ import { productos, sitioPrincipal } from "@/config/productos";
 import { SUPPORT_EMAIL } from "@/lib/features";
 
 const COLUMNS = [
-  { title: "UNEX Academy", links: [["/programas", "Cursos"], ["/servicios", "Servicios"], ["/proyectos", "Proyectos"]] },
+  { title: "UNEX Academy", links: [["/programas", "Cursos"], ["/servicios", "Servicios"]] },
   { title: "Tu cuenta", links: [["/ingresar", "Ingresar"], ["/registro", "Crear cuenta"], ["/verificar", "Verificar una constancia"]] },
   { title: "Legal", links: [["/privacidad", "Privacidad y datos"], ["/terminos", "Términos de uso"]] },
 ] as const;
