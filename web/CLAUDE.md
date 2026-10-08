@@ -30,6 +30,10 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
   `UMBRAL_PREVIEW` y los globales `__umbral*`.
 - *Universo* se reserva para los mundos temáticos de los cursos; Academy, Gestión, Evaluación y Apps son
   *plataformas*.
+- Los universos están en `src/content/universos.ts` (hoy solo «El Gremio de los Portales»; los demás se
+  anuncian en el inicio con una tarjeta genérica «Próximamente»). La base de datos no guarda el universo de cada
+  curso: `universoDeCurso` los asigna todos al Gremio. Cada universo puede tener su acento y su tipografía de
+  títulos con `[data-universo="<id>"]` en `globals.css`; el archivo explica los pasos para agregar uno.
 
 ### Logo
 - Nunca se redibuja ni se modifica. Los SVG se copian sin cambios a `public/brand/` y se usan con `<img>`.
