@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FranjaPortada } from "@/components/FranjaPortada";
+import { PreguntasFrecuentes } from "@/components/PreguntasFrecuentes";
 import { SiteShell } from "@/components/site-header";
 import { Sprite, asset } from "@/components/sprite";
 import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
@@ -81,12 +82,6 @@ const PODERES = [
   { t: "Lluvia de Estrellas", d: "si aciertas, ganas XP extra." },
   { t: "Invocación de Kuro", d: "Kuro te dice la pista en voz alta y descarta una opción incorrecta." },
   { t: "Pulso de Memoria", d: "vuelve a mostrar las pistas que ya habías visto." },
-];
-
-const PREGUNTAS = [
-  { q: "¿Qué pasa si me equivoco?", a: "Equivocarse es parte del juego. Repites la lección las veces que quieras y queda tu mejor nota." },
-  { q: "¿Cuánto cuesta?", a: "Crear la cuenta es gratis, y también la primera lección de cada curso. En cada curso verás si es gratis o cuánto cuesta." },
-  { q: "¿Para qué edades es?", a: "Para niñas, niños, adolescentes y adultos. Si eres menor de edad, tu acudiente debe autorizar el uso de la plataforma, y puede acompañarte desde una cuenta de familia." },
 ];
 
 const ACCIONES = (
@@ -178,20 +173,7 @@ export default function ComoSeJuegaPage() {
           </section>
         </div>
 
-        <section aria-labelledby="preguntas-t" className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
-          <h2 id="preguntas-t">Preguntas frecuentes</h2>
-          <div className="divide-y divide-line border-y border-line">
-            {PREGUNTAS.map((f) => (
-              <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-cyan/10 text-cyan transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 max-w-2xl text-muted">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <PreguntasFrecuentes ids={["equivocarse", "costo", "edades"]} />
 
         <section aria-labelledby="cierre-t" className="panel p-8 text-center sm:p-12">
           <h2 id="cierre-t">¿Todo listo para cruzar tu primer portal?</h2>

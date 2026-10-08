@@ -555,7 +555,9 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
   await page.goto("/programas");
   await expect(page.getByRole("heading", { level: 1, name: "Cursos" })).toBeVisible();
   await page.getByText("¿Cuánto cuesta?").click();
-  await expect(page.getByText(/se pagan en línea con Wompi o Mercado Pago/)).toBeVisible();
+  // La misma respuesta que en «Cómo se juega» (content/preguntas-frecuentes.ts), sin medios de pago.
+  await expect(page.getByText("En cada curso verás si es gratis o cuánto cuesta.", { exact: false })).toBeVisible();
+  await expect(page.getByRole("main").getByText(/wompi|mercado pago|nequi|\bPSE\b/i)).toHaveCount(0);
   await page.getByRole("link", { name: "El Portal del Primer Intento" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "El Portal del Primer Intento" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Contenido" })).toBeVisible();
