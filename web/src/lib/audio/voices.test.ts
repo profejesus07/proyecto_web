@@ -47,13 +47,13 @@ describe("voces de los personajes", () => {
     expect(pickVoice(profileFor("Archivista Eon"), [v("Alex", "en-US")]).voice).toBeNull();
   });
 
-  it("los tonos se mantienen cerca de lo natural", () => {
-    for (const name of ["Maestra Sora", "Kuro", "Archivista Eon", "Kael", "Petrox", "Zhaal, el Vacío", "Abuela Amara"]) {
+  it("tono casi natural y velocidad de conversación (ni lenta ni apurada)", () => {
+    for (const name of ["Maestra Sora", "Kuro", "Archivista Eon", "Kael", "Forjadora Brann", "Petrox", "Zhaal, el Vacío", "Abuela Amara", "Alguien sin perfil"]) {
       const p = profileFor(name);
-      expect(p.pitch).toBeGreaterThanOrEqual(0.8);
-      expect(p.pitch).toBeLessThanOrEqual(1.25);
-      expect(p.rate).toBeGreaterThanOrEqual(0.85);
-      expect(p.rate).toBeLessThanOrEqual(1.1);
+      expect(p.pitch).toBeGreaterThanOrEqual(0.94);
+      expect(p.pitch).toBeLessThanOrEqual(1.06);
+      expect(p.rate).toBeGreaterThanOrEqual(0.97);
+      expect(p.rate).toBeLessThanOrEqual(1.06);
     }
   });
 
@@ -61,16 +61,25 @@ describe("voces de los personajes", () => {
     expect(speakable("🐾 ¡Ganaste +50 XP! «Bien» · 80% → sigue")).toBe("¡Ganaste +50 puntos de experiencia! Bien, 80 por ciento, sigue");
     expect(sentences("Hola. ¿Cómo estás? Bien.")).toEqual(["Hola.", "¿Cómo estás?", "Bien."]);
     const long = "Una frase muy larga, ".repeat(20);
-    expect(sentences(long).every((s) => s.length <= 200)).toBe(true);
+    expect(sentences(long).every((s) => s.length <= 180)).toBe(true);
   });
 
-  it("hace pausa después de un título y entre frases, más larga al cerrar una idea", () => {
-    const p = phrases("Bienvenido al Gremio\nSoy la Maestra Sora. ¿Listo? Vamos, paso a paso: así se aprende.");
-    expect(p.map((x) => x.text)).toEqual(["Bienvenido al Gremio", "Soy la Maestra Sora.", "¿Listo?", "Vamos, paso a paso:", "así se aprende."]);
-    const [titulo, punto, pregunta] = p.map((x) => x.pause);
-    expect(titulo).toBeGreaterThan(punto);
-    expect(punto).toBeGreaterThanOrEqual(400);
-    expect(pregunta).toBeGreaterThanOrEqual(punto);
+  it("lee cada párrafo de corrido y hace pausa después de un título y entre párrafos", () => {
+    const p = phrases("Bienvenido al Gremio\nSoy la Maestra Sora. ¿Listo? Vamos, paso a paso: así se aprende.\nEmpecemos.");
+    // Las frases del párrafo van juntas: el motor les da la entonación y las pausas de los puntos.
+    expect(p.map((x) => x.text)).toEqual(["Bienvenido al Gremio", "Soy la Maestra Sora. ¿Listo? Vamos, paso a paso: así se aprende.", "Empecemos."]);
+    const [titulo, parrafo] = p.map((x) => x.pause);
+    expect(titulo).toBeGreaterThan(parrafo);
+    expect(parrafo).toBeGreaterThanOrEqual(300);
     expect(p.at(-1)!.pause).toBe(0);
+  });
+
+  it("un párrafo largo se parte en trozos de hasta 180 caracteres, por frases y con pausas cortas", () => {
+    const frase = "Esta es una frase de prueba con varias palabras.";
+    const p = phrases(Array(8).fill(frase).join(" "));
+    expect(p.length).toBeGreaterThan(1);
+    expect(p.every((x) => x.text.length <= 180)).toBe(true);
+    expect(p.every((x) => x.text.endsWith("."))).toBe(true); // no corta una frase por la mitad
+    expect(p.slice(0, -1).every((x) => x.pause > 0 && x.pause < 400)).toBe(true);
   });
 });
