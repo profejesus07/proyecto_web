@@ -127,11 +127,11 @@ export default function ComoSeJuegaPage() {
         <section aria-labelledby="guardianes-t">
           <h2 id="guardianes-t">Los Guardianes</h2>
           <p className="mt-3 max-w-2xl text-muted">Cada Guardián es un obstáculo que todos conocemos. Vencerlo es aprender a superarlo.</p>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             {GUARDIANES.map((g) => (
-              <li key={g.slug} className="panel flex flex-col items-center p-5 text-center">
-                <Sprite src={asset.boss(g.slug)} alt="" decorative className="size-28 object-contain" />
-                <h3 className="mt-3 text-lg">{g.nombre}</h3>
+              <li key={g.slug} className="panel flex flex-col items-center p-4 text-center sm:p-5">
+                <Sprite src={asset.boss(g.slug)} alt="" decorative className="size-20 object-contain sm:size-28" />
+                <h3 className="mt-3 text-base sm:text-lg">{g.nombre}</h3>
                 <p className="mt-1 text-sm text-muted">{g.texto}</p>
               </li>
             ))}
