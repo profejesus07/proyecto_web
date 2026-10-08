@@ -1,5 +1,5 @@
 /**
- * Universos de UMBRAL: cada uno es una forma distinta de vivir el aprendizaje, con su estilo visual,
+ * Universos de UNEX Academy: cada uno es una forma distinta de vivir el aprendizaje, con su estilo visual,
  * su historia y sus personajes. Los cursos y clases de hoy viven en «El Gremio de los Portales».
  *
  * Agregar un universo:
