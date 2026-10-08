@@ -13,6 +13,7 @@ import { formatPrice, loadCourseView } from "@/lib/data/queries";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { SUPPORT_EMAIL } from "@/lib/features";
 import { isRecentPending, payOptions } from "@/lib/payments/config";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Desbloquear curso" };
 
@@ -42,13 +43,13 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
           <h1 className="text-3xl leading-tight sm:text-4xl">{course.title}</h1>
           <p className="font-display text-4xl font-extrabold text-cyan">{formatPrice(course.price)}</p>
           <ul className="space-y-2 text-muted">
-            <li>✔ Las {course.total - 1} lecciones que siguen a la lección gratis</li>
-            <li>✔ La batalla final contra {g?.name ?? "el Guardián"} y su recompensa</li>
-            {chapters > 0 && <li>✔ Los {chapters} capítulos de sus Crónicas</li>}
+            <li><Icon name="check" className={EN_TEXTO} /> Las {course.total - 1} lecciones que siguen a la lección gratis</li>
+            <li><Icon name="check" className={EN_TEXTO} /> La batalla final contra {g?.name ?? "el Guardián"} y su recompensa</li>
+            {chapters > 0 && <li><Icon name="check" className={EN_TEXTO} /> Los {chapters} capítulos de sus Crónicas</li>}
             {course.kind === "curso"
-              ? <li>✔ Tu constancia de asistencia{course.hours ? ` por ${course.hours} horas` : ""}, verificable en línea</li>
-              : <li>✔ Acceso a todos los periodos{course.accessUntil ? ` hasta el ${new Date(`${course.accessUntil}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" })}` : " durante el año lectivo"}</li>}
-            <li>✔ Tu avance se conserva: sigues donde quedaste</li>
+              ? <li><Icon name="check" className={EN_TEXTO} /> Tu constancia de asistencia{course.hours ? ` por ${course.hours} horas` : ""}, verificable en línea</li>
+              : <li><Icon name="check" className={EN_TEXTO} /> Acceso a todos los periodos{course.accessUntil ? ` hasta el ${new Date(`${course.accessUntil}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric" })}` : " durante el año lectivo"}</li>}
+            <li><Icon name="check" className={EN_TEXTO} /> Tu avance se conserva: sigues donde quedaste</li>
           </ul>
         </div>
         <Sprite src={asset.boss(course.guardian)} alt={g?.name ?? "El Guardián"} className="mx-auto h-44 w-auto" />
@@ -57,7 +58,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
 
       {course.hasAccess ? (
         <div className="panel flex flex-wrap items-center justify-between gap-4 !border-green/50 p-5">
-          <p className="font-semibold text-ok">✔ Ya tienes este curso completo.</p>
+          <p className="font-semibold text-ok"><Icon name="check" className={EN_TEXTO} /> Ya tienes este curso completo.</p>
           <Link href={course.next ? `/mision/${course.next.id}` : `/portales/${course.slug}`} className="btn btn-primary">Continuar</Link>
         </div>
       ) : (
@@ -70,7 +71,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
               </SpeechBubble>
               {pending && (
                 <p role="status" className="rounded-xl border border-warn/50 bg-warn/10 p-3 text-sm">
-                  ⏳ Tienes un pago en proceso (referencia <span className="font-mono">{pending.reference}</span>).{" "}
+                  <Icon name="clock" className={EN_TEXTO} /> Tienes un pago en proceso (referencia <span className="font-mono">{pending.reference}</span>).{" "}
                   <Link href={`/pago/${pending.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link>
                 </p>
               )}
@@ -89,7 +90,7 @@ export default async function SubscribePage({ params }: PageProps<"/suscribirse/
               <div className="flex flex-wrap items-center gap-3">
                 {viewer.role === "familia"
                   ? <Link href="/familia" className="btn btn-primary">Ir a Mi familia</Link>
-                  : <a href={mailto} className="btn btn-primary">✉️ Escribir para suscribirme</a>}
+                  : <a href={mailto} className="btn btn-primary"><Icon name="mail" className="size-5" /> Escribir para suscribirme</a>}
                 <span className="text-sm text-muted">o escribe a <strong className="text-text">{SUPPORT_EMAIL}</strong> con tu nombre de aventurero y el correo de tu cuenta.</span>
               </div>
             </>

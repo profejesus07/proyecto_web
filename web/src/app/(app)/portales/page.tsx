@@ -6,6 +6,7 @@ import { ELEMENT_COLOR, ELEMENT_LABEL, guardianBySlug } from "@/content/guardian
 import { requirePlayer } from "@/lib/auth";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { type CourseView, formatPrice, loadCourseViews } from "@/lib/data/queries";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Sala de Portales" };
 
@@ -34,7 +35,7 @@ function PortalCard({ c }: { c: CourseView }) {
         <h3 className="text-xl">{c.title}</h3>
         <p className="text-sm text-muted">{c.summary}</p>
         <p className={`w-fit rounded-lg px-2.5 py-1 text-xs font-bold ${c.hasAccess ? "bg-green/15 text-ok" : "bg-warn/15 text-warn"}`}>
-          {c.hasAccess ? (c.kind === "clase" ? "✔ Acceso anual activo" : "✔ Curso completo") : `Lección 1 gratis · ${c.kind === "clase" ? "año completo" : "completo"}: ${formatPrice(c.price)}`}
+          {c.hasAccess ? <><Icon name="check" className={EN_TEXTO} /> {c.kind === "clase" ? "Acceso anual activo" : "Curso completo"}</> : `Lección 1 gratis · ${c.kind === "clase" ? "año completo" : "completo"}: ${formatPrice(c.price)}`}
         </p>
         <div className="mt-auto space-y-2 pt-2">
           <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={c.total} aria-valuenow={c.done} aria-label="Lecciones completadas"><i style={{ width: `${(c.done / Math.max(c.total, 1)) * 100}%` }} /></div>
@@ -86,7 +87,7 @@ export default async function PortalsPage() {
           {cursos.map((c) => <li key={c.slug}><PortalCard c={c} /></li>)}
           <li>
             <div className="panel flex h-full min-h-72 flex-col items-center justify-center gap-3 border-dashed p-6 text-center opacity-80">
-              <span className="grid size-20 place-items-center rounded-full border-[6px] border-line text-3xl" aria-hidden="true">🔒</span>
+              <span className="grid size-20 place-items-center rounded-full border-[6px] border-line text-muted" aria-hidden="true"><Icon name="lock" className="size-8" /></span>
               <h3 className="text-xl">Próximo portal</h3>
               <p className="text-sm text-muted">Pronto se abrirá un nuevo portal. Mientras tanto, sigue subiendo de rango.</p>
             </div>

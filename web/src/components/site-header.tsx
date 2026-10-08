@@ -3,7 +3,9 @@ import { EncabezadoPublico } from "@/components/encabezado/EncabezadoPublico";
 import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
 import { PiePublico } from "@/components/PiePublico";
 import { logoutAction } from "@/app/actions/auth";
+import { Icon } from "@/components/icons";
 import { Logo } from "@/components/logo";
+import { ObjetoJuego } from "@/components/objeto-juego";
 import { AvatarFace } from "@/components/avatar-face";
 import { GuideFace } from "@/components/guide-face";
 import { guideFor } from "@/lib/guides";
@@ -55,7 +57,7 @@ export async function SiteHeader() {
               <div className="flex items-center gap-1 sm:gap-3">
                 <SoundControl />
                 <span className="chip" title="Monedas del gremio" aria-label={`${viewer.coins} monedas`}>
-                  <span aria-hidden="true">🪙</span> {viewer.coins}
+                  <ObjetoJuego nombre="moneda" /> {viewer.coins}
                 </span>
                 <Link href="/perfil" className="flex items-center gap-2 rounded-full border border-line bg-panel/70 py-1 pl-1 pr-2 hover:border-cyan/60 sm:pr-3" aria-label={`Tu perfil: ${viewer.displayName}, rango ${rank?.key}`}>
                   {adultGuide ? <GuideFace guide={adultGuide} size={36} /> : <AvatarFace base={viewer.avatarBase} look={viewer.avatarLook} rank={rank?.key ?? "E"} size={36} />}
@@ -63,7 +65,7 @@ export async function SiteHeader() {
                 </Link>
                 <form action={logoutAction}>
                   <button className="btn btn-ghost btn-sm max-sm:px-2" type="submit" aria-label="Salir" title="Salir">
-                    <span aria-hidden="true" className="sm:hidden">🚪</span>
+                    <Icon name="logout" className="size-5 sm:hidden" />
                     <span className="hidden sm:inline">Salir</span>
                   </button>
                 </form>

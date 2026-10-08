@@ -10,15 +10,16 @@ import type { PaymentStatus } from "@/lib/data/types";
 import { SUPPORT_EMAIL } from "@/lib/features";
 import { PROVIDER_LABEL } from "@/lib/payments/config";
 import { confirmOnReturn } from "@/lib/payments/service";
+import { Icon, type IconName } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Estado del pago", robots: { index: false } };
 
-const VIEW: Record<PaymentStatus, { icon: string; title: string; text: string; tone: "green" | "gold" | "red" }> = {
-  aprobado: { icon: "✔", title: "¡Pago aprobado!", text: "El curso completo ya está abierto. ¡A seguir la aventura!", tone: "green" },
-  pendiente: { icon: "⏳", title: "Tu pago está en proceso", text: "Algunos medios (como PSE o Efecty) tardan unos minutos. Apenas la pasarela lo confirme, el curso se abre solo. Puedes cerrar esta página.", tone: "gold" },
-  rechazado: { icon: "✖", title: "El pago no se aprobó", text: "No se hizo ningún cobro. Puedes intentarlo otra vez con otro medio de pago.", tone: "red" },
-  anulado: { icon: "↩", title: "El pago se anuló", text: "La pasarela anuló o reembolsó este pago, así que el curso ya no está activo por él.", tone: "red" },
-  error: { icon: "⚠", title: "Hubo un problema con el pago", text: `La pasarela informó algo que no coincide con este pago. Escríbenos a ${SUPPORT_EMAIL} con la referencia y lo revisamos.`, tone: "red" },
+const VIEW: Record<PaymentStatus, { icon: IconName; title: string; text: string; tone: "green" | "gold" | "red" }> = {
+  aprobado: { icon: "check", title: "¡Pago aprobado!", text: "El curso completo ya está abierto. ¡A seguir la aventura!", tone: "green" },
+  pendiente: { icon: "clock", title: "Tu pago está en proceso", text: "Algunos medios (como PSE o Efecty) tardan unos minutos. Apenas la pasarela lo confirme, el curso se abre solo. Puedes cerrar esta página.", tone: "gold" },
+  rechazado: { icon: "x", title: "El pago no se aprobó", text: "No se hizo ningún cobro. Puedes intentarlo otra vez con otro medio de pago.", tone: "red" },
+  anulado: { icon: "undo", title: "El pago se anuló", text: "La pasarela anuló o reembolsó este pago, así que el curso ya no está activo por él.", tone: "red" },
+  error: { icon: "alert", title: "Hubo un problema con el pago", text: `La pasarela informó algo que no coincide con este pago. Escríbenos a ${SUPPORT_EMAIL} con la referencia y lo revisamos.`, tone: "red" },
 };
 const TONE = { green: "!border-green/50 text-ok", gold: "!border-warn/50 text-warn", red: "!border-[#ff8080]/50 text-err" };
 
@@ -42,7 +43,7 @@ export default async function PaymentResultPage({ params, searchParams }: PagePr
       <BackLink href={forFamily ? "/familia" : `/portales/${payment.courseSlug}`}>{forFamily ? "Mi familia" : course?.title ?? "Volver"}</BackLink>
       <PageTitle eyebrow="Pago" title={course?.title ?? "Curso"} />
       <section className={`panel space-y-3 p-6 ${TONE[v.tone]}`} role="status" aria-live="polite">
-        <h2 className="text-2xl"><span aria-hidden="true">{v.icon}</span> {v.title}</h2>
+        <h2 className="flex items-center gap-2 text-2xl"><Icon name={v.icon} className="size-7 shrink-0" /> {v.title}</h2>
         <p className="text-text/90">{forFamily && status === "aprobado" ? "El curso completo ya está abierto en la cuenta de tu hijo o hija." : v.text}</p>
       </section>
       <dl className="panel grid grid-cols-2 gap-3 p-5 text-sm">

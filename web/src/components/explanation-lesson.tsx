@@ -7,6 +7,7 @@ import { SpeechBubble } from "@/components/dialogue";
 import { SceneTheme, SpeakButton } from "@/components/sound";
 import { Sprite, asset } from "@/components/sprite";
 import { inlineParts, parseBody, plainBody, videoEmbedUrl } from "@/lib/lessons";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 function Inline({ text }: { text: string }) {
   return <>{inlineParts(text).map((p, i) => (p.bold ? <strong key={i} className="text-text">{p.text}</strong> : <span key={i}>{p.text}</span>))}</>;
@@ -29,7 +30,7 @@ export function ExplanationLesson({ missionId, title, intro, body, videoUrl, cou
       <SceneTheme theme="cronicas" />
       <header className="panel relative isolate overflow-hidden rounded-3xl p-6 sm:p-8">
         <Sprite src={asset.scene("cronicas", "calma")} alt="" decorative priority className="absolute inset-0 -z-10 size-full object-cover opacity-30" />
-        <p className="text-sm font-bold uppercase tracking-wider text-cyan">📖 Explicación · {courseTitle}</p>
+        <p className="text-sm font-bold uppercase tracking-wider text-cyan"><Icon name="book" className={EN_TEXTO} /> Explicación · {courseTitle}</p>
         <h1 id="exp-t" className="mt-2 text-3xl sm:text-4xl">{title}</h1>
       </header>
 

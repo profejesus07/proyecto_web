@@ -10,7 +10,6 @@ export interface PowerRule {
   kind: PowerKind;
   itemId: string;
   name: string;
-  icon: string;
   /** Qué hace en la misión, en una frase (botón y tienda). */
   effect: string;
   /** Usos al día (pagados o no). */
@@ -26,20 +25,20 @@ export interface PowerRule {
 }
 
 const rankXp = (key: string) => RANKS.find((r) => r.key === key)!.min;
-const rule = (kind: PowerKind, name: string, icon: string, effect: string, dailyCap: number, maxStock: number, minRank: string): PowerRule => ({
-  kind, itemId: `obj_poder_${kind}`, name, icon, effect, dailyCap, maxStock, minXp: rankXp(minRank), minRank, permanent: maxStock === 0,
+const rule = (kind: PowerKind, name: string, effect: string, dailyCap: number, maxStock: number, minRank: string): PowerRule => ({
+  kind, itemId: `obj_poder_${kind}`, name, effect, dailyCap, maxStock, minXp: rankXp(minRank), minRank, permanent: maxStock === 0,
   fx: `/assets/objetos/poder/poder_${kind}_efecto.svg`,
 });
 
 export const POWERS: Record<PowerKind, PowerRule> = {
-  rayo: rule("rayo", "Rayo de Claridad", "⚡", "Resalta las palabras de la pregunta donde está la pista.", 5, 10, "D"),
-  escudo: rule("escudo", "Escudo de Calma", "🛡️", "Si fallas esta pregunta, la respuesta no queda fija y puedes intentarlo otra vez.", 5, 10, "D"),
-  aura: rule("aura", "Aura de Concentración", "🌀", "Te da más tiempo para pensar: la pregunta pasa al final de la misión.", 5, 10, "B"),
-  lluvia: rule("lluvia", "Lluvia de Estrellas", "🌠", "Si aciertas esta pregunta, ganas 15 XP extra.", 3, 10, "B"),
-  kuro: rule("kuro", "Invocación de Kuro", "🐾", "Kuro te dice la pista en voz alta y descarta una opción incorrecta.", 3, 5, "B"),
-  pulso: rule("pulso", "Pulso de Memoria", "💫", "Vuelve a mostrar todas las pistas que ya habías visto en esta misión.", 3, 5, "B"),
-  sombra: rule("sombra", "Sombra Dorada", "👤", "Si ya acertaste esta pregunta antes, tu sombra marca la respuesta que elegiste.", 3, 0, "S"),
-  aliento: rule("aliento", "Segundo Aliento", "💖", "Devuelve una pregunta fallada para que la respondas otra vez.", 1, 0, "S"),
+  rayo: rule("rayo", "Rayo de Claridad", "Resalta las palabras de la pregunta donde está la pista.", 5, 10, "D"),
+  escudo: rule("escudo", "Escudo de Calma", "Si fallas esta pregunta, la respuesta no queda fija y puedes intentarlo otra vez.", 5, 10, "D"),
+  aura: rule("aura", "Aura de Concentración", "Te da más tiempo para pensar: la pregunta pasa al final de la misión.", 5, 10, "B"),
+  lluvia: rule("lluvia", "Lluvia de Estrellas", "Si aciertas esta pregunta, ganas 15 XP extra.", 3, 10, "B"),
+  kuro: rule("kuro", "Invocación de Kuro", "Kuro te dice la pista en voz alta y descarta una opción incorrecta.", 3, 5, "B"),
+  pulso: rule("pulso", "Pulso de Memoria", "Vuelve a mostrar todas las pistas que ya habías visto en esta misión.", 3, 5, "B"),
+  sombra: rule("sombra", "Sombra Dorada", "Si ya acertaste esta pregunta antes, tu sombra marca la respuesta que elegiste.", 3, 0, "S"),
+  aliento: rule("aliento", "Segundo Aliento", "Devuelve una pregunta fallada para que la respondas otra vez.", 1, 0, "S"),
 };
 export const POWER_KINDS = Object.keys(POWERS) as PowerKind[];
 /** Los que se ganan al llegar al rango S. */

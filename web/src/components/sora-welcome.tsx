@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { markIntroSeenAction } from "@/app/actions/game";
 import { SpeakButton } from "@/components/sound";
 import { Sprite, asset } from "@/components/sprite";
+import { Icon } from "@/components/icons";
 
 interface Step {
   anim: string;
@@ -83,7 +84,7 @@ export function SoraWelcome({ name, firstPortal }: { name: string; firstPortal: 
             </>
           ) : (
             <>
-              <Link href="/cronicas/prologo" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); close("/cronicas/prologo"); }}>📜 Leer el prólogo</Link>
+              <Link href="/cronicas/prologo" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); close("/cronicas/prologo"); }}><Icon name="scroll" className="size-5" /> Leer el prólogo</Link>
               <button type="button" className="btn btn-primary" autoFocus onClick={() => close(firstPortal ? `/portales/${firstPortal}` : undefined)}>Cruzar mi primer portal</button>
             </>
           )}

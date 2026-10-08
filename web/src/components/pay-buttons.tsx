@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { startPaymentAction } from "@/app/actions/payments";
 import type { PaymentProvider } from "@/lib/data/types";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export interface PayOption { id: PaymentProvider; label: string }
 
@@ -37,7 +38,7 @@ export function PayButtons({ course, student, options, test }: { course: string;
           </form>
         ))}
       </div>
-      {test && <p className="text-center text-xs font-semibold text-warn">🧪 Modo de prueba: no se cobra dinero real.</p>}
+      {test && <p className="text-center text-xs font-semibold text-warn"><Icon name="alert" className={EN_TEXTO} /> Modo de prueba: no se cobra dinero real.</p>}
       <div aria-live="polite">{state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}</div>
     </div>
   );

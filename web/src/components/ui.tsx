@@ -19,10 +19,12 @@ export function RankCard({ xp }: { xp: number }) {
   );
 }
 
-export function Stat({ icon, label, value }: { icon: string; label: string; value: string | number }) {
+/** Un contador (monedas, gemas, racha…). icon: el objeto del juego que lo representa, decorativo (40 px: los SVG
+ *  traen margen interno y a menos tamaño el objeto se ve chico). */
+export function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
     <div className="panel flex items-center gap-3 p-4">
-      <span className="grid size-11 place-items-center rounded-xl bg-white/5 text-2xl" aria-hidden="true">{icon}</span>
+      <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-white/5" aria-hidden="true">{icon}</span>
       <div>
         <p className="font-display text-2xl font-extrabold leading-none">{value}</p>
         <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-muted">{label}</p>

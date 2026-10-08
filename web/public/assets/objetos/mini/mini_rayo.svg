@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Rayo de Claridad" data-id="mini_rayo" data-tamano="16-24 px">
+<title>Rayo de Claridad</title>
+<!-- Versión pequeña (16–24 px) del objeto de la tienda: solo el símbolo central, con sus colores del juego. El original
+     con aro y fondo sigue en objetos/poder/ para la tienda y los tamaños grandes. -->
+<path d="M14.2 2 5.5 13.4h5.4L9.3 22l9.2-12h-5.6z" fill="#2EE6D6" stroke="#0E0C2B" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M12.6 5.3 8.6 11" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+</svg>

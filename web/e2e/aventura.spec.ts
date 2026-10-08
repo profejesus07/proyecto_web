@@ -18,7 +18,7 @@ async function elegir(radio: Locator) {
  * «1 estudiante asignado.», «¡Enviado!…»): viven en el estado de React. Con `next dev`, la primera vez que se
  * compila una ruta, el servidor a veces recarga la página justo después de la acción y el aviso se pierde,
  * aunque la acción sí se guardó. Por eso estas pruebas comprueban el resultado que queda guardado (la mochila,
- * «✔ Ya lo tienes», «Guardado ✔», el estudiante en el grupo, los mensajes que quedan hoy). Si las e2e pasan a
+ * «Ya lo tienes», «Guardado», el estudiante en el grupo, los mensajes que quedan hoy). Si las e2e pasan a
  * correr contra la versión compilada, se pueden volver a comprobar los avisos.
  */
 
@@ -35,6 +35,19 @@ async function play(page: Page, id: string, answers: number[]) {
   }
   await page.getByRole("button", { name: /Terminar misión|Purificar al Guardián/ }).click();
   await expect(page.getByRole("heading", { name: "Repaso de tus respuestas" })).toBeVisible();
+}
+
+/** Captura opcional para comparar antes y después en un PR: solo si E2E_CAPTURAS indica una carpeta. */
+async function captura(page: Page, nombre: string) {
+  const dir = process.env.E2E_CAPTURAS;
+  if (!dir) return;
+  const original = page.viewportSize() ?? { width: 1280, height: 900 };
+  for (const width of [original.width, 375]) {
+    await page.setViewportSize({ width, height: original.height });
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${dir}/${nombre}-${width}.png`, fullPage: true });
+  }
+  await page.setViewportSize(original);
 }
 
 test.describe.configure({ mode: "serial" });
@@ -162,6 +175,81 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
 });
 
+test("una misión completa: poder, acierto, error, 50/50, pista y la pantalla de recompensa", async ({ page }) => {
+  // Justo después de vencer a Petrox (ya tiene rango D) y antes de jugar la lección gratis del segundo curso, así la
+  // misión se supera por primera vez y muestra sus recompensas. Respuestas de c2m1: [1, 0, 2, 0].
+  // Compra lo suyo (Escudo de Calma y un 50/50) y lo gasta aquí: las pruebas de la tienda, de los poderes y del 50/50
+  // siguen comprando y usando lo de ellas (las e2e empiezan con 200 monedas, playwright.config.ts).
+  await page.goto("/tienda?c=poder");
+  const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
+  await card("Escudo de Calma").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("Escudo de Calma").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
+  await page.goto("/tienda?c=ayuda");
+  await card("50/50").getByRole("button", { name: /Comprar/ }).click();
+  await expect(card("50/50").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
+  await captura(page, "mision-tienda");
+
+  await page.goto("/mision/c2m1");
+  await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
+  const opcion = (i: number) => page.locator("label:has(input[type=radio])").nth(i);
+  const ayudas = page.getByRole("group", { name: "Ayudas" });
+  const poderes = page.getByRole("group", { name: "Poderes" });
+  await captura(page, "mision-inicio");
+
+  // Pregunta 1: un poder (Escudo de Calma) y acierto. Al gastar la única unidad, el grupo de poderes desaparece.
+  await poderes.getByRole("button", { name: /Escudo de Calma · 1/ }).click();
+  await expect(page.getByText(/Escudo de Calma activo/)).toBeVisible();
+  await expect(page.getByText("Escudo activo")).toBeVisible();
+  await captura(page, "mision-poder");
+  await expect(poderes).toHaveCount(0);
+  await opcion(1).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await expect(page.locator("label[data-correcta]")).toHaveCount(1);
+  await captura(page, "mision-acierto");
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+
+  // Pregunta 2: error.
+  await expect(page.getByText("Pregunta 2 de 4", { exact: true })).toBeVisible();
+  await opcion(1).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.getByText("¡Uy, no era esa!")).toBeVisible();
+  await captura(page, "mision-error");
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+
+  // Pregunta 3: 50/50, pista y acierto.
+  await expect(page.getByText("Pregunta 3 de 4", { exact: true })).toBeVisible();
+  await ayudas.getByRole("button", { name: /50\/50 · tienes 1/ }).click();
+  await expect(ayudas.getByText("50/50 usado")).toBeVisible();
+  await expect(page.locator("label[data-descartada]")).toHaveCount(2);
+  await expect(opcion(2)).not.toHaveAttribute("data-descartada");
+  await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
+  await expect(page.getByRole("note")).toBeVisible();
+  await captura(page, "mision-ayudas");
+  await opcion(2).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+
+  // Pregunta 4: el 50/50 ya no tiene unidades; acierto y fin de la misión (3 de 4, 75 %).
+  await expect(page.getByText("Pregunta 4 de 4", { exact: true })).toBeVisible();
+  await expect(ayudas.getByRole("button", { name: /50\/50 · tienes 0/ })).toBeDisabled();
+  await opcion(0).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await page.getByRole("button", { name: /Terminar misión|Purificar al Guardián/ }).click();
+
+  // La recompensa: misión superada, XP y monedas, y el repaso con el acierto y el error.
+  await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
+  const recompensas = page.getByRole("list", { name: "Recompensas" });
+  await expect(recompensas.getByText("+60 XP")).toBeVisible();
+  await expect(recompensas.getByText(/\+\d+/).nth(1)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Repaso de tus respuestas" })).toBeVisible();
+  await expect(page.getByText("Correcta.", { exact: false }).first()).toBeAttached();
+  await expect(page.getByText("Incorrecta.", { exact: false }).first()).toBeAttached();
+  await captura(page, "mision-recompensa");
+});
+
 test("al superar la lección gratis se ofrece desbloquear el curso", async ({ page }) => {
   await play(page, "c2m1", CORRECT.c2m1);
   await expect(page.getByText("¡Superaste la lección gratis!")).toBeVisible();
@@ -187,13 +275,13 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await nav.getByRole("link", { name: "Cosméticos" }).click();
   await expect(card("Capa de hojas").getByRole("img", { name: /Así te queda: Capa de hojas/ })).toHaveAttribute("src", /c=[^&]*K1/);
   await card("Capa de hojas").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("Capa de hojas").getByText("✔ Ya lo tienes")).toBeVisible();
+  await expect(card("Capa de hojas").getByText("Ya lo tienes")).toBeVisible();
   await card("Capa de hojas").getByRole("link", { name: /Póntelo en el Vestidor/ }).click();
   await expect(page).toHaveURL(/\/perfil\/avatar$/);
   await elegir(page.getByRole("group", { name: /^Capa/ }).getByRole("radio", { name: "Capa de hojas" }));
   await elegir(page.getByRole("group", { name: /Marco del retrato/ }).getByRole("radio", { name: "Marco básico" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
   await page.goto("/perfil");
   await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=[^&]*K1/);
   // Lo que no tiene no aparece para ponérselo.
@@ -394,7 +482,7 @@ test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita
   await page.getByRole("button", { name: "Unirme" }).click();
   await expect(page.getByText(/tienes acceso a «Ciencias 5\.° · 2027» hasta el 30 de noviembre de 2027/)).toBeVisible();
   await page.goto("/portales");
-  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText("✔ Acceso anual activo")).toBeVisible();
+  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText("Acceso anual activo")).toBeVisible();
 
   await page.goto("/perfil");
   page.once("dialog", (d) => d.accept());
@@ -614,7 +702,7 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await expect(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio")).toHaveCount(7);
   await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3y9/);
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
 
   // La imagen con colores se sirve como SVG.
   const res = await page.request.get("/avatar/aria/aria-rango-e-reposo.svg?c=h4t3");
@@ -629,7 +717,7 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await page.getByRole("button", { name: "Colores originales" }).click();
   await elegir(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio", { name: "Original" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
 });
 
 test("la familia se vincula con el código del estudiante, ve su avance y el estudiante puede quitarla", async ({ page, context }) => {
@@ -662,7 +750,7 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   // Las pruebas anteriores ya jugaron el primer portal.
   await expect(card.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" })).toBeVisible();
   const portal = card.locator("li").filter({ has: page.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" }) });
-  await expect(portal.getByText(/L1 · 100% ✔/)).toBeVisible();
+  await expect(portal.getByText(/L1 · 100%\s*superada/)).toBeVisible();
 
   // La terraza muestra el regalo que el estudiante compró en la tienda.
   await expect(page.getByRole("region", { name: "La Terraza del Hogar" }).getByRole("img", { name: "Macetas en flor" })).toBeVisible();
@@ -742,7 +830,7 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
   await page.goto("/mision/c2m2");
   await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
   await page.goto("/suscribirse/portal-del-primer-intento");
-  await expect(page.getByText("✔ Ya tienes este curso completo.")).toBeVisible();
+  await expect(page.getByText("Ya tienes este curso completo.")).toBeVisible();
 
   // Nadie más ve el estado de ese pago, y el administrador lo ve en su lista.
   await context.addCookies([asAdmin]);
@@ -816,7 +904,7 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   async function addLesson(module: string, title: string, { boss = false, reading = "" } = {}) {
     const d = details(`+ Agregar lección a «${module}»`);
     if (!(await d.getAttribute("open").then((v) => v !== null))) await d.locator(":scope > summary").click();
-    await d.getByText(reading ? "📖 Explicación (para leer)" : "⚔️ Reto (actividades)").click();
+    await d.getByText(reading ? "Explicación (para leer)" : "Reto (actividades)").click();
     await d.getByLabel("Título de la lección").fill(title);
     if (reading) await d.getByRole("textbox", { name: /^Explicación/ }).fill(reading);
     if (boss) await d.getByLabel(/prueba del Guardián del módulo/).check();
@@ -955,13 +1043,13 @@ test("el sonido se configura desde la cabecera y los personajes se pueden escuch
   await page.getByRole("button", { name: "Escuchar a Archivista Eon" }).click();
   const sound = page.locator("summary[aria-label=Sonido]");
   await sound.click();
-  const music = page.getByLabel("🎵 Música de fondo");
+  const music = page.getByLabel("Música de fondo");
   await expect(music).toBeChecked();
   await music.uncheck();
   await page.reload();
   await page.locator("summary[aria-label=Sonido]").click();
-  await expect(page.getByLabel("🎵 Música de fondo")).not.toBeChecked();
-  await page.getByLabel("🎵 Música de fondo").check();
+  await expect(page.getByLabel("Música de fondo")).not.toBeChecked();
+  await page.getByLabel("Música de fondo").check();
   // En la misión, Sora y Kael traen su voz.
   await page.goto("/mision/m1");
   await expect(page.getByRole("button", { name: "Escuchar a Maestra Sora" }).or(page.getByRole("button", { name: "Escuchar a Kuro" })).first()).toBeVisible();
@@ -1068,7 +1156,7 @@ test("el administrador carga estudiantes a mano y desde Excel, con usuario y con
   await page.getByLabel("Usuario o correo del estudiante 2").fill("luna.perez");
   await page.getByLabel("Contraseña del estudiante 2").fill("Luna2027");
   await page.getByRole("button", { name: "Crear 2 cuentas" }).click();
-  await expect(page.getByText("✔ 2 cuentas creadas.")).toBeVisible();
+  await expect(page.getByText("2 cuentas creadas.")).toBeVisible();
   const results = page.getByRole("region", { name: "Resultado de la carga" });
   await expect(results.getByRole("row").filter({ hasText: "luna.perez" })).toContainText("Luna2027");
   // Sin contraseña, la plataforma crea una.
@@ -1085,7 +1173,7 @@ test("el administrador carga estudiantes a mano y desde Excel, con usuario y con
   await page.getByRole("tab", { name: "Subir un Excel" }).click();
   await page.getByLabel("Archivo de Excel con los estudiantes").setInputFiles({ name: "estudiantes.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: xlsx });
   await page.getByRole("button", { name: "Cargar estudiantes" }).click();
-  await expect(page.getByText("✔ 1 cuenta creada.")).toBeVisible();
+  await expect(page.getByText("1 cuenta creada.")).toBeVisible();
 
   // Aparecen en Personas con su usuario, y el administrador les puede dar una contraseña nueva.
   await page.goto("/admin/personas");

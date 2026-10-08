@@ -4,6 +4,7 @@ import { SiteShell } from "@/components/site-header";
 import { CODE_PATTERN, LEGAL_FOOTER, docShort, longDate, marcaDeConstancia, maskDoc } from "@/lib/certificates";
 import { getRepo } from "@/lib/data";
 import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+import { Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Verificación de constancia", robots: { index: false } };
 export const viewport = VIEWPORT_PUBLICO;
@@ -18,7 +19,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
         {cert ? (
           <section className="mt-4 space-y-5">
             <div className="panel flex items-center gap-4 !border-green/60 p-5">
-              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-green text-2xl text-ink">✓</span>
+              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-green text-ink"><Icon name="check" className="size-7" /></span>
               <div>
                 <h1 className="text-2xl">Constancia auténtica</h1>
                 {/* El emisor con el que se expidió: las anteriores al corte, Academia Virtual Umbral. */}
@@ -39,7 +40,7 @@ export default async function VerifyPage({ params }: PageProps<"/verificar/[code
         ) : (
           <section className="mt-4 space-y-4">
             <div className="panel flex items-center gap-4 !border-coral/60 p-5">
-              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-2xl text-ink">✕</span>
+              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-coral text-ink"><Icon name="x" className="size-7" /></span>
               <div>
                 <h1 className="text-2xl">No encontramos esa constancia</h1>
                 <p className="text-sm text-muted">El código <strong className="font-mono">{code}</strong> no corresponde a ninguna constancia expedida por UNEX Academy (antes Academia Virtual Umbral).</p>

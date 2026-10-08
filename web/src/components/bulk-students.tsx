@@ -3,7 +3,7 @@
 import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { createStudentsAction, importStudentsAction, type BulkState } from "@/app/actions/students";
-import { Icon } from "@/components/icons";
+import { EN_TEXTO, Icon } from "@/components/icons";
 import type { StudentRowIn } from "@/lib/student-import";
 
 type Group = { code: string; name: string };
@@ -38,7 +38,7 @@ function Outcome({ state }: { state: BulkState }) {
   return (
     <section aria-label="Resultado de la carga" className="space-y-3 rounded-xl border border-line bg-white p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p role="status" className="font-semibold text-ok">✔ {created.length} {created.length === 1 ? "cuenta creada" : "cuentas creadas"}{rows.length > created.length ? ` · ${rows.length - created.length} con error` : ""}.</p>
+        <p role="status" className="font-semibold text-ok"><Icon name="check" className={EN_TEXTO} /> {created.length} {created.length === 1 ? "cuenta creada" : "cuentas creadas"}{rows.length > created.length ? ` · ${rows.length - created.length} con error` : ""}.</p>
         {created.length > 0 && (
           <div className="flex gap-2">
             <button type="button" onClick={download} className="btn btn-secondary btn-sm"><Icon name="download" className="size-4" /> Descargar credenciales</button>
@@ -112,7 +112,7 @@ function ManualForm({ groups }: { groups: Group[] }) {
                     {groups.map((g) => <option key={g.code} value={g.code}>{g.name}</option>)}
                   </select>
                 </td>
-                <td className="px-2 py-1.5"><button type="button" onClick={() => setRows((rs) => rs.length > 1 ? rs.filter((_, j) => j !== i) : [empty()])} className="btn btn-ghost btn-sm !px-2" aria-label={`Quitar la fila ${i + 1}`}>✕</button></td>
+                <td className="px-2 py-1.5"><button type="button" onClick={() => setRows((rs) => rs.length > 1 ? rs.filter((_, j) => j !== i) : [empty()])} className="btn btn-ghost btn-sm !px-2" aria-label={`Quitar la fila ${i + 1}`}><Icon name="x" className="size-4" /></button></td>
               </tr>
             ))}
           </tbody>

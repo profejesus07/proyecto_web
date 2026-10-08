@@ -9,6 +9,7 @@ import { GRADES, PERIODS } from "@/lib/content";
 import { ACTIVITY_KINDS, ACTIVITY_LABEL, type ActivityKind } from "@/lib/activities";
 import type { CourseKind, EditableQuestion, LessonKind, MissionSummary, Module } from "@/lib/data/types";
 import { LESSON_KIND_LABEL, MAX_BODY, READING_XP } from "@/lib/lessons";
+import { Icon } from "@/components/icons";
 
 type FormAction = (prev: EditorState, fd: FormData) => Promise<EditorState>;
 type Quick = () => Promise<EditorState>;
@@ -219,7 +220,7 @@ export function MissionForm({ action, kind, mission, submitLabel, modules = [], 
         {(["explicacion", "reto"] as const).map((k) => (
           <label key={k} className={`cursor-pointer rounded-full border px-3 py-1.5 text-sm font-semibold ${lessonKind === k ? "border-cyan bg-cyan/10 text-cyan" : "border-line text-muted"}`}>
             <input type="radio" name="lessonKindPick" value={k} checked={lessonKind === k} onChange={() => setLessonKind(k)} className="sr-only" />
-            {k === "explicacion" ? "📖 " : "⚔️ "}{LESSON_KIND_LABEL[k]}
+            <Icon name={k === "explicacion" ? "book" : "swords"} className="size-4" /> {LESSON_KIND_LABEL[k]}
           </label>
         ))}
       </fieldset>

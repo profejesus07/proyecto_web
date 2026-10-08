@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react"
 import { setTheme, sfx, unlockAudio, type Theme } from "@/lib/audio/music";
 import { getServerSettings, getSettings, subscribeSettings, updateSettings } from "@/lib/audio/settings";
 import { isSpeechAvailable, onSpeaking, speak, stopSpeaking } from "@/lib/audio/voices";
+import { Icon } from "@/components/icons";
 
 const noop = () => () => {};
 
@@ -65,18 +66,18 @@ export function SoundControl() {
     <details className="relative">
       <summary className="grid size-9 cursor-pointer list-none place-items-center rounded-full border border-line bg-panel/70 text-base hover:border-cyan/60 [&::-webkit-details-marker]:hidden"
         aria-label="Sonido" title="Sonido">
-        <span aria-hidden="true">{allOff ? "🔇" : "🔊"}</span>
+        <Icon name={allOff ? "mute" : "volume"} className="size-5" />
       </summary>
       <div className="absolute right-0 top-11 z-50 w-72 space-y-3 rounded-2xl border border-line bg-bg-2 p-4 text-sm shadow-2xl" role="group" aria-label="Opciones de sonido">
         <p className="font-display text-base font-bold">Sonido</p>
         {([
-          ["music", "🎵 Música de fondo"],
-          ["voices", "🗣️ Voces de los personajes"],
-          ["autoRead", "📖 Leer los diálogos al aparecer"],
-          ["sfx", "✨ Efectos de sonido"],
-        ] as const).map(([k, label]) => (
+          ["music", "music", "Música de fondo"],
+          ["voices", "feedback", "Voces de los personajes"],
+          ["autoRead", "book", "Leer los diálogos al aparecer"],
+          ["sfx", "sparkles", "Efectos de sonido"],
+        ] as const).map(([k, icon, label]) => (
           <label key={k} className="flex cursor-pointer items-center justify-between gap-3">
-            <span>{label}</span>
+            <span className="flex items-center gap-2"><Icon name={icon} className="size-4 shrink-0 text-muted" />{label}</span>
             <input type="checkbox" checked={s[k]} disabled={k === "autoRead" && !s.voices} className="size-4 accent-accion"
               onChange={(e) => { unlockAudio(); updateSettings({ [k]: e.target.checked }); if (k === "voices" && !e.target.checked) stopSpeaking(); }} />
           </label>
@@ -144,7 +145,7 @@ export function SpeakButton({ name, auto = false, text }: { name: string; auto?:
     <button ref={ref} type="button" onClick={() => { unlockAudio(); if (speaking) stopSpeaking(); else void read(); }}
       className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[0.7rem] font-bold text-muted transition hover:border-cyan/50 hover:text-text"
       aria-label={speaking ? `Detener la voz de ${name}` : `Escuchar a ${name}`}>
-      {speaking ? <><span className="voice-wave" aria-hidden="true"><i /><i /><i /></span> Detener</> : <>🔊 Escuchar</>}
+      {speaking ? <><span className="voice-wave" aria-hidden="true"><i /><i /><i /></span> Detener</> : <><Icon name="volume" className="size-4" /> Escuchar</>}
     </button>
   );
 }

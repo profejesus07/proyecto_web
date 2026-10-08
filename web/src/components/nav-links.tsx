@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Icon, type IconName } from "@/components/icons";
 
-const LINKS = [
-  { href: "/gremio", label: "Gremio", icon: "🏰" },
-  { href: "/portales", label: "Portales", icon: "🌀" },
-  { href: "/cronicas", label: "Crónicas", icon: "📜" },
-  { href: "/tienda", label: "Tienda", icon: "🛡️" },
-  { href: "/perfil", label: "Perfil", icon: "⭐" },
+// La tienda usa un ícono de tienda (no el yunque de Brann): es una sola para todos los universos.
+const LINKS: { href: string; label: string; icon: IconName }[] = [
+  { href: "/gremio", label: "Gremio", icon: "castle" },
+  { href: "/portales", label: "Portales", icon: "portal" },
+  { href: "/cronicas", label: "Crónicas", icon: "scroll" },
+  { href: "/tienda", label: "Tienda", icon: "store" },
+  { href: "/perfil", label: "Perfil", icon: "user" },
 ];
 
-const FAMILY_LINK = { href: "/familia", label: "Mi familia", icon: "👪" };
+const FAMILY_LINK: (typeof LINKS)[number] = { href: "/familia", label: "Mi familia", icon: "people" };
 
 export function NavLinks({ className = "", mobile = false, family = false }: { className?: string; mobile?: boolean; family?: boolean }) {
   const pathname = usePathname();
@@ -30,7 +32,7 @@ export function NavLinks({ className = "", mobile = false, family = false }: { c
             : `rounded-full px-4 py-2 text-sm font-semibold transition-colors ${active ? "bg-cyan/15 text-cyan" : "text-muted hover:bg-white/5 hover:text-text"}`
         }
       >
-        {mobile && <span aria-hidden="true" className="text-lg leading-none">{l.icon}</span>}
+        {mobile && <Icon name={l.icon} className="size-6" />}
         {l.label}
       </Link>
     );

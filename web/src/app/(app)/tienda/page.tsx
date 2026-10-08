@@ -13,6 +13,8 @@ import { CATEGORY_LABEL, RARITY, consumableRule, itemImage, petImage, priceOf, s
 import { getRepo } from "@/lib/data";
 import { powerByItem } from "@/lib/game/powers";
 import { rankForXp } from "@/lib/game/ranks";
+import { Icon } from "@/components/icons";
+import { ObjetoJuego } from "@/components/objeto-juego";
 
 export const metadata: Metadata = { title: "Tienda y Arsenal" };
 
@@ -78,7 +80,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
             <PageTitle eyebrow="Forja de Brann" title="Tienda y Arsenal">
               <p className="text-text/80">Cambia tus monedas por ayudas, accesorios y compañeros. Las monedas se ganan completando misiones; nunca se compran con dinero.</p>
             </PageTitle>
-            <p className="chip w-fit text-base" aria-label={`Tienes ${viewer.coins} monedas`}>🪙 {viewer.coins} monedas</p>
+            <p className="chip w-fit text-base" aria-label={`Tienes ${viewer.coins} monedas`}><ObjetoJuego nombre="moneda" /> {viewer.coins} monedas</p>
           </div>
           <Sprite src={`/assets/personajes/brann/brann-${BRANN[cat].anim}.svg`} alt="La Forjadora Brann" className="hidden h-56 w-auto shrink-0 sm:block" />
         </div>
@@ -123,7 +125,7 @@ export default async function ShopPage({ searchParams }: PageProps<"/tienda">) {
                       stack={{ have: stock[it.id] ?? 0, max: aid.maxStock, dailyCap: aid.dailyCap, locked: viewer.xp < aid.minXp ? aid.minRank : null }} />
                   ) : (
                     <BuyButton itemId={it.id} price={price} coins={viewer.coins} owned={owned.has(it.id)}
-                      use={wearable ? { href: "/perfil/avatar", label: "🎨 Póntelo en el Vestidor" } : decor ? { href: "/perfil#familia-t", label: "🏡 Ver la terraza" } : undefined} />
+                      use={wearable ? { href: "/perfil/avatar", label: <><Icon name="palette" className="size-4" /> Póntelo en el Vestidor</> } : decor ? { href: "/perfil#familia-t", label: <><Icon name="home" className="size-4" /> Ver la terraza</> } : undefined} />
                   )}</div>
                 </li>
               );

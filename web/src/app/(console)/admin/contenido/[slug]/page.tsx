@@ -16,6 +16,7 @@ import { requireAdmin } from "@/lib/auth";
 import { freeUntil } from "@/lib/lessons";
 import { KIND_LABEL, publishProblems } from "@/lib/content";
 import { getRepo } from "@/lib/data";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Editar portal" };
 
@@ -39,7 +40,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
     <details className="rounded-2xl border border-line bg-bg/30 p-4 sm:p-5 group">
       <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3">
         <span className="min-w-0">
-          <span className="mr-2 inline-grid size-8 place-items-center rounded-lg bg-white/10 font-display font-extrabold">{m.isBoss ? "👑" : m.lessonKind === "explicacion" ? "📖" : m.position}</span>
+          <span className="mr-2 inline-grid size-8 place-items-center rounded-lg bg-white/10 font-display font-extrabold">{m.isBoss ? <Icon name="crown" className="size-4" /> : m.lessonKind === "explicacion" ? <Icon name="book" className="size-4" /> : m.position}</span>
           <span className="font-semibold">{m.title}</span>
           <span className="ml-2 text-xs text-muted">{m.period ? `${m.period}.° periodo · ` : ""}{m.lessonKind === "explicacion" ? `Explicación${m.videoUrl ? " con video" : ""}` : `${m.questions.length} ${m.questions.length === 1 ? "actividad" : "actividades"}`}{m.position <= free && !course.isFree ? " · gratis" : ""}</span>
         </span>
@@ -89,7 +90,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
       <BackLink href="/admin/contenido">Contenido</BackLink>
       {imported && (
         <p role="status" className="panel p-4 font-medium text-ok">
-          ✔ Importado desde Excel: {course.modules.length > 0 ? `${course.modules.length} ${course.modules.length === 1 ? "módulo" : "módulos"}, ` : ""}{n} {n === 1 ? "lección" : "lecciones"} y {course.missions.reduce((k, m) => k + m.questions.length, 0)} actividades. Quedó como borrador: revísalo y publícalo cuando esté listo.
+          <Icon name="check" className={EN_TEXTO} /> Importado desde Excel: {course.modules.length > 0 ? `${course.modules.length} ${course.modules.length === 1 ? "módulo" : "módulos"}, ` : ""}{n} {n === 1 ? "lección" : "lecciones"} y {course.missions.reduce((k, m) => k + m.questions.length, 0)} actividades. Quedó como borrador: revísalo y publícalo cuando esté listo.
         </p>
       )}
 
@@ -157,7 +158,7 @@ export default async function EditCoursePage({ params, searchParams }: PageProps
                 <p className="font-display text-lg font-bold text-warn">Lecciones sin módulo · ábrelas y elige su módulo</p>
               )}
               {mod && !missions.some((m) => m.lessonKind === "explicacion") && (
-                <p className="rounded-xl border border-warn/40 bg-warn/10 px-3 py-2 text-sm text-warn">📖 Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
+                <p className="rounded-xl border border-warn/40 bg-warn/10 px-3 py-2 text-sm text-warn"><Icon name="book" className={EN_TEXTO} /> Este módulo aún no tiene su lección de explicación. Agrégala (lo ideal: como primera lección).</p>
               )}
               <ol className="space-y-3">
                 {missions.map((m, i) => <li key={m.id}>{lesson(m, i, missions.length)}</li>)}
