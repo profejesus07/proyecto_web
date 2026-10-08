@@ -482,8 +482,13 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
   // Portada: la bienvenida de Kuro, con el estilo del Gremio.
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bienvenido al Gremio");
   await expect(page.getByRole("img", { name: "Kuro te da la bienvenida" })).toBeVisible();
-  // La portada no anuncia cursos «Próximamente» (la franja y el pie sí lo dicen de otras plataformas UNEX).
-  await expect(page.getByRole("main").getByText("Próximamente")).toHaveCount(0);
+  // Los universos: primero el Gremio de los Portales con sus cursos; los demás, una sola tarjeta «Próximamente».
+  // Ningún curso se anuncia como «Próximamente».
+  await expect(page.getByRole("heading", { level: 2, name: "Elige tu universo" })).toBeVisible();
+  const gremio = page.getByRole("article", { name: "El Gremio de los Portales" });
+  await expect(gremio.getByRole("region", { name: "Cursos para empezar" })).toBeVisible();
+  await expect(page.getByRole("main").getByText("Próximamente")).toHaveCount(1);
+  await expect(page.getByRole("article", { name: "Nuevos universos en camino" }).getByText("Próximamente")).toBeVisible();
   await expect(page.getByRole("search")).toHaveCount(0);
   await expect(page.locator("header").getByRole("link", { name: "Ingresar" })).toHaveAttribute("href", "/ingresar");
   const destacados = page.getByRole("region", { name: "Cursos para empezar" });
