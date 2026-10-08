@@ -43,6 +43,12 @@ export function AudioDirector() {
     // Al cambiar de página, nadie sigue hablando.
     stopSpeaking();
   }, [path]);
+  // Al salir del juego (cerrar sesión, ir al sitio público), la música y las voces se apagan: el director se
+  // desmonta con el diseño de la app y, sin esto, el audio seguía sonando hasta recargar la página.
+  useEffect(() => () => {
+    setTheme(null);
+    stopSpeaking();
+  }, []);
   return null;
 }
 
@@ -68,7 +74,9 @@ export function SoundControl() {
         aria-label="Sonido" title="Sonido">
         <Icon name={allOff ? "mute" : "volume"} className="size-5" />
       </summary>
-      <div className="absolute right-0 top-11 z-50 w-72 space-y-3 rounded-2xl border border-line bg-bg-2 p-4 text-sm shadow-2xl" role="group" aria-label="Opciones de sonido">
+      {/* En el celular el botón no está en el borde de la pantalla: el panel va fijo bajo el encabezado, a todo el ancho
+          con márgenes, para no salirse. Desde sm, desplegado junto al botón. */}
+      <div className="absolute right-0 top-11 z-50 w-72 space-y-3 rounded-2xl border border-line bg-bg-2 p-4 text-sm shadow-2xl max-sm:fixed max-sm:inset-x-4 max-sm:top-[calc(var(--alto-fijo-arriba,4.5rem)+0.5rem)] max-sm:w-auto" role="group" aria-label="Opciones de sonido">
         <p className="font-display text-base font-bold">Sonido</p>
         {([
           ["music", "music", "Música de fondo"],

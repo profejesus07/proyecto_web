@@ -203,6 +203,13 @@ p { text-wrap: pretty; }
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .input::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+/* Cursor de texto propio: Cosmos con borde blanco. El del sistema puede ser blanco y se perdía sobre los campos
+   blancos del tema claro (por ejemplo, en Ingresar). Se ve sobre fondo claro y oscuro. La barra de escritura,
+   en el color de acción. */
+input.input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), textarea.input {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='24' viewBox='0 0 16 24'><path d='M4.5 2.5c1.8 0 3.5.6 3.5 2.3v14.4c0 1.7-1.7 2.3-3.5 2.3M11.5 2.5c-1.8 0-3.5.6-3.5 2.3v14.4c0 1.7 1.7 2.3 3.5 2.3' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/><path d='M4.5 2.5c1.8 0 3.5.6 3.5 2.3v14.4c0 1.7-1.7 2.3-3.5 2.3M11.5 2.5c-1.8 0-3.5.6-3.5 2.3v14.4c0 1.7 1.7 2.3 3.5 2.3' fill='none' stroke='%2315173F' stroke-width='1.8' stroke-linecap='round'/></svg>") 8 12, text;
+  caret-color: var(--accion);
+}
 .input:hover { border-color: color-mix(in srgb, var(--line-fuerte), var(--text) 25%); }
 .input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cyan) 18%, transparent); }
 .label { display: block; font-weight: 600; font-size: 0.925rem; margin-bottom: 0.4rem; }
