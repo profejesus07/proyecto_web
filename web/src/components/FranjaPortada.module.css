@@ -1,0 +1,46 @@
+/* Franja Cosmos de las páginas públicas, como la portada del inicio (app/portada.module.css). */
+
+.franja {
+  background:
+    radial-gradient(ellipse 55% 60% at 75% 50%, color-mix(in srgb, var(--unex-aurora) 14%, transparent), transparent 70%),
+    var(--unex-cosmos);
+  color: var(--unex-polvo);
+}
+
+.franja :focus-visible {
+  outline: 3px solid var(--unex-polvo);
+  outline-offset: 3px;
+}
+
+.contenido {
+  display: grid;
+  align-items: center;
+  gap: 2rem;
+  max-width: 1000px;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 7vw, 4.5rem) 16px clamp(2.5rem, 7vw, 4.5rem);
+}
+
+@media (min-width: 768px) {
+  .conIlustracion {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 3rem;
+  }
+}
+
+.entradilla {
+  max-width: 38rem;
+  margin-top: 1.25rem;
+  color: color-mix(in srgb, var(--unex-polvo) 85%, transparent);
+  font-size: 1.1875rem; /* 19 px, como la entradilla del sitio principal */
+  font-weight: 300;
+}
+
+.entradilla > * + * {
+  margin-top: 0.75rem;
+}
+
+.ilustracion {
+  display: flex;
+  justify-content: center;
+}
