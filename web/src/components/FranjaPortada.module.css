@@ -28,6 +28,17 @@
   }
 }
 
+/* Mismo ancho y márgenes que max-w-6xl con px-4 sm:px-6. */
+.amplia {
+  max-width: 72rem;
+}
+
+@media (min-width: 640px) {
+  .amplia {
+    padding-inline: 24px;
+  }
+}
+
 .entradilla {
   max-width: 38rem;
   margin-top: 1.25rem;
