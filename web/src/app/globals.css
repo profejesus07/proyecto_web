@@ -485,3 +485,12 @@ html:has([data-tema="claro"]), html:has([data-tema="claro"]) body { background: 
   [data-tema="claro"] h2 { font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.125rem); font-weight: 600; line-height: 1.15; }
   [data-tema="claro"] h3 { font-size: 1.25rem; font-weight: 500; line-height: 1.15; }
 }
+
+/* ============================================================
+   Universos (content/universos.ts): cada universo puede tener su acento y la tipografía de sus títulos.
+   Un universo nuevo agrega aquí su bloque [data-universo="<id>"] (por ejemplo, una fuente pixel art).
+   ============================================================ */
+[data-universo] { --universo-acento: var(--accion); --universo-fuente: var(--font-display); }
+/* El Gremio de los Portales usa la paleta de Academy y Unbounded. */
+[data-universo="gremio"] { --universo-acento: var(--accion); }
+.universo-titulo { font-family: var(--universo-fuente); }
