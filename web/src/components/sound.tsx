@@ -43,6 +43,12 @@ export function AudioDirector() {
     // Al cambiar de página, nadie sigue hablando.
     stopSpeaking();
   }, [path]);
+  // Al salir del juego (cerrar sesión, ir al sitio público), la música y las voces se apagan: el director se
+  // desmonta con el diseño de la app y, sin esto, el audio seguía sonando hasta recargar la página.
+  useEffect(() => () => {
+    setTheme(null);
+    stopSpeaking();
+  }, []);
   return null;
 }
 

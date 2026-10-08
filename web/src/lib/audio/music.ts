@@ -219,7 +219,8 @@ function stopLoop() {
 
 function start(t: Theme) {
   const c = ensure();
-  if (!c || !unlocked || !getSettings().music || t === "victoria") return;
+  // Un cambio de tema pendiente no vuelve a encender la música si mientras tanto se pidió otra cosa (o silencio).
+  if (!c || !unlocked || !getSettings().music || t === "victoria" || wanted !== t) return;
   if (theme === t && timer) return;
   stopLoop();
   theme = t;
