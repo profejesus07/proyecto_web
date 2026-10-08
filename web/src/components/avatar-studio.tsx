@@ -10,6 +10,7 @@ import { BASE_PALETTE, EYES, GEAR, HAIR, PANTS, SKIN, TOP, WEAR_LABEL, WEAR_SLOT
 import { HAIRSTYLES } from "@/lib/avatar-hair";
 import { AVATAR_BASES, AVATAR_NAMES, type AvatarBase } from "@/lib/data/types";
 import { RANKS, type RankKey } from "@/lib/game/ranks";
+import { Icon } from "@/components/icons";
 
 type ColorSlot = "skin" | "hair" | "eyes" | "top" | "pants";
 
@@ -160,7 +161,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
             <p className="font-display text-lg font-bold leading-tight">{AVATAR_NAMES[base]} <span className="block text-xs font-normal text-muted">{titleName ? `«${titleName}» · ` : ""}{GEAR[wearing]}</span></p>
           </div>
           <button type="button" onClick={save} disabled={!dirty || pending} className="btn btn-primary btn-sm w-full">
-            {pending ? "Guardando…" : dirty ? "Guardar cambios" : "Guardado ✔"}
+            {pending ? "Guardando…" : dirty ? "Guardar cambios" : <>Guardado <Icon name="check" className="size-4" /></>}
           </button>
           <button type="button" onClick={() => { setLook((l) => sanitizeLook({ gear: l.gear, style: l.style, wear: l.wear, frame: l.frame, title: l.title, pet: l.pet })); setMsg(null); }} className="btn btn-ghost btn-sm w-full !py-1">
             Colores originales
@@ -245,7 +246,7 @@ export function AvatarStudio({ initialBase, initialLook, rank, owned }: { initia
                     <span className={`flex h-full flex-col items-center gap-1 rounded-xl border-2 border-line bg-bg/40 p-2 text-center transition peer-checked:border-cyan peer-checked:bg-cyan/10 peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cyan ${open ? "" : "opacity-50"}`}>
                       <span className="relative block h-28 w-full">
                         <Sprite src={open ? avatarSrc(base, r.key, colors) : asset.avatar(base, r.key)} alt="" decorative className={`absolute inset-0 size-full object-contain ${open ? "" : "grayscale"}`} />
-                        {!open && <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-2xl">🔒</span>}
+                        {!open && <span aria-hidden="true" className="absolute inset-0 grid place-items-center"><Icon name="lock" className="size-7" /></span>}
                       </span>
                       <span className="text-xs font-bold">{GEAR[r.key]}</span>
                       <span className="rounded-md px-1.5 text-[11px] font-extrabold" style={{ background: r.color, color: "var(--ink)" }}>{open ? `Rango ${r.key}` : `Se abre en rango ${r.key}`}</span>

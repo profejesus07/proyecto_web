@@ -5,6 +5,7 @@ import { useActionState, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { familyCodeAction, linkFamilyAction, readFamilyMessagesAction, sendFamilyMessageAction, unlinkFamilyAction } from "@/app/actions/family";
 import { FAMILY_MESSAGES } from "@/content/elenco";
+import { Icon } from "@/components/icons";
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -85,7 +86,7 @@ export function FamilyCodeCard() {
     return (
       <div className="space-y-2">
         <button type="button" className="btn btn-secondary btn-sm" disabled={pending} onClick={() => load(false)}>
-          {pending ? "Cargando…" : "👪 Mostrar mi código de familia"}
+          {pending ? "Cargando…" : <><Icon name="people" className="size-4" /> Mostrar mi código de familia</>}
         </button>
         {error && <p role="alert" className="text-sm text-err">{error}</p>}
       </div>
@@ -96,7 +97,7 @@ export function FamilyCodeCard() {
       <div className="flex flex-wrap items-center gap-3">
         <span className="rounded-xl border-2 border-dashed border-cyan/70 bg-cyan/10 px-4 py-2 font-mono text-2xl font-bold tracking-[0.25em] text-cyan"
           aria-label={`Tu código de familia: ${code.split("").join(" ")}`}>{code}</span>
-        <button type="button" className="btn btn-secondary btn-sm" onClick={copy}>{copied ? "✔ Copiado" : "Copiar"}</button>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={copy}>{copied ? <><Icon name="check" className="size-4" /> Copiado</> : "Copiar"}</button>
       </div>
       <button type="button" className="btn btn-ghost btn-sm" disabled={pending}
         onClick={() => window.confirm("¿Cambiar el código? El anterior dejará de servir (las familias ya vinculadas siguen vinculadas).") && load(true)}>
@@ -140,7 +141,7 @@ export function SendMessage({ studentId, name, left }: { studentId: string; name
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" className="btn btn-primary btn-sm" disabled={!choice || pending} onClick={send}>{pending ? "Enviando…" : "💌 Enviar"}</button>
+        <button type="button" className="btn btn-primary btn-sm" disabled={!choice || pending} onClick={send}>{pending ? "Enviando…" : <><Icon name="mail" className="size-4" /> Enviar</>}</button>
         <span className="text-xs text-muted">{remaining > 0 ? `Te quedan ${remaining} hoy.` : "Ya enviaste los mensajes de hoy."}</span>
       </div>
       <p aria-live="polite" className={`text-sm font-medium ${msg?.ok ? "text-green" : "text-err"}`}>{msg?.text}</p>
@@ -155,7 +156,7 @@ export function ThanksButton() {
   return (
     <button type="button" className="btn btn-secondary btn-sm" disabled={pending}
       onClick={() => start(async () => { await readFamilyMessagesAction(); router.refresh(); })}>
-      {pending ? "…" : "💛 ¡Gracias!"}
+      {pending ? "…" : <><Icon name="heart" className="size-4" /> ¡Gracias!</>}
     </button>
   );
 }

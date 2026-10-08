@@ -19,6 +19,8 @@ import type { Course, FamilyChild, Payment } from "@/lib/data/types";
 import { isRecentPending, payOptions } from "@/lib/payments/config";
 import { PASS_MARK } from "@/lib/game/grading";
 import { rankProgress } from "@/lib/game/ranks";
+import { EN_TEXTO, Icon } from "@/components/icons";
+import { ObjetoJuego } from "@/components/objeto-juego";
 
 export const metadata: Metadata = { title: "Mi familia" };
 
@@ -58,7 +60,7 @@ function Unlock({ c, pay }: { c: FamilyChild; pay: PayInfo }) {
             <li key={k.slug} className="space-y-3 rounded-xl border border-line bg-bg/40 p-4">
               <p className="flex flex-wrap items-baseline justify-between gap-2 font-bold">{k.title} <span className="font-display text-xl text-cyan">{formatPrice(price.get(k.slug) ?? null)}</span></p>
               {waiting && (
-                <p role="status" className="text-sm text-warn">⏳ Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
+                <p role="status" className="text-sm text-warn"><Icon name="clock" className={EN_TEXTO} /> Hay un pago en proceso. <Link href={`/pago/${waiting.reference}`} className="font-semibold text-cyan underline underline-offset-4">Ver cómo va</Link></p>
               )}
               {pay.options.length
                 ? <PayButtons course={k.slug} student={c.id} options={pay.options} test={pay.test} />
@@ -81,7 +83,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
         <AvatarFace base={c.avatar} look={c.avatarLook} rank={p.rank.key} size={72} />
         <div className="min-w-0 flex-1">
           <h2 id={`child-${c.id}`} className="text-2xl">{c.name}</h2>
-          {titleLabel(c.avatarLook.title) && <p className="text-sm font-bold text-gold">🎖️ «{titleLabel(c.avatarLook.title)}»</p>}
+          {titleLabel(c.avatarLook.title) && <p className="text-sm font-bold text-gold"><Icon name="medal" className={EN_TEXTO} /> «{titleLabel(c.avatarLook.title)}»</p>}
           <p className="text-sm text-muted">
             <span className="rounded-md px-1.5 text-xs font-extrabold" style={{ background: p.rank.color, color: "var(--ink)" }}>{p.rank.key}</span>{" "}
             Rango {p.rank.name} · {c.xp} XP
@@ -90,12 +92,12 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
       </header>
 
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[
+        {([
           ["Última vez", lastSeen(c.lastActive)],
-          ["Racha", `🔥 ${c.streak} ${c.streak === 1 ? "día" : "días"}`],
+          ["Racha", <><ObjetoJuego nombre="racha" /> {c.streak} {c.streak === 1 ? "día" : "días"}</>],
           ["Esta semana", `${c.weekAttempts} ${c.weekAttempts === 1 ? "misión" : "misiones"}`],
           ["Lecciones superadas", String(done)],
-        ].map(([k, v]) => (
+        ] as [string, React.ReactNode][]).map(([k, v]) => (
           <div key={k} className="rounded-xl border border-line bg-bg/40 p-3">
             <dt className="text-xs font-semibold uppercase tracking-wide text-muted">{k}</dt>
             <dd className="mt-1 font-display text-lg font-bold">{v}</dd>
@@ -128,7 +130,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
                     {k.lessons.map((l) => (
                       <li key={l.position} title={`${l.title}: mejor nota ${l.bestScore}% en ${l.attempts} ${l.attempts === 1 ? "intento" : "intentos"}`}
                         className={`rounded-lg px-2 py-1 text-xs font-bold ${l.completed ? "bg-green/20 text-ok" : "bg-warn/15 text-warn"}`}>
-                        L{l.position} · {l.bestScore}%{l.completed ? " ✔" : ""}
+                        L{l.position} · {l.bestScore}%{l.completed && <> <Icon name="check" className={EN_TEXTO} /><span className="sr-only">superada</span></>}
                       </li>
                     ))}
                   </ul>
@@ -148,7 +150,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
             <section aria-label="Clases" className="space-y-2">
               <h3 className="text-lg">Clases</h3>
               <ul className="space-y-1 text-sm">
-                {c.classes.map((x) => <li key={x.name}>🏫 <strong>{x.name}</strong> <span className="text-muted">· {x.teacher}</span></li>)}
+                {c.classes.map((x) => <li key={x.name}><Icon name="school" className={EN_TEXTO} /> <strong>{x.name}</strong> <span className="text-muted">· {x.teacher}</span></li>)}
               </ul>
             </section>
           )}
@@ -157,7 +159,7 @@ function ChildCard({ c, guide, left, pay }: { c: FamilyChild; guide: Guide; left
               <h3 className="text-lg">Constancias</h3>
               <ul className="space-y-1 text-sm">
                 {c.certificates.map((x) => (
-                  <li key={x.code}>🎓 <strong>{x.courseTitle}</strong> <span className="text-muted">· {x.hours} h · {fmtDate(x.issuedAt)}</span>{" "}
+                  <li key={x.code}><Icon name="seal" className={EN_TEXTO} /> <strong>{x.courseTitle}</strong> <span className="text-muted">· {x.hours} h · {fmtDate(x.issuedAt)}</span>{" "}
                     <Link href={`/verificar/${x.code}`} className="font-semibold text-cyan underline underline-offset-4">Verificar</Link>
                   </li>
                 ))}
@@ -214,7 +216,7 @@ export default async function FamilyPage({ searchParams }: PageProps<"/familia">
         </section>
       )}
 
-      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok">✔ Tu contraseña quedó guardada.</p>}
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok"><Icon name="check" className={EN_TEXTO} /> Tu contraseña quedó guardada.</p>}
 
       {children.map((c) => <ChildCard key={c.id} c={c} guide={guide} left={left[c.id] ?? FAMILY_MESSAGES_PER_DAY}
         pay={{ options, test, courses, access: access.get(c.id) ?? new Set(), pending }} />)}

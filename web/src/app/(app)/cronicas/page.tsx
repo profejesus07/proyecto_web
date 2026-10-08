@@ -6,6 +6,7 @@ import { PageTitle } from "@/components/ui";
 import { ELEMENT_COLOR, guardianBySlug } from "@/content/guardians";
 import { requirePlayer } from "@/lib/auth";
 import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Archivo de Crónicas" };
 
@@ -29,7 +30,7 @@ export default async function ChroniclesPage() {
                 ? <>Tienes <strong>{unread} {unread === 1 ? "capítulo nuevo" : "capítulos nuevos"}</strong> esperándote. Siéntate, que esta historia es larga.</>
                 : "Cada libro de estos estantes guarda una historia. Cruza portales y te contaré más."}
             </SpeechBubble>
-            <Link href="/cronicas/bestiario" className="btn btn-secondary w-fit">📖 Abrir el Bestiario</Link>
+            <Link href="/cronicas/bestiario" className="btn btn-secondary w-fit"><Icon name="book" className="size-5" /> Abrir el Bestiario</Link>
           </div>
         </div>
       </section>
@@ -63,7 +64,7 @@ export default async function ChroniclesPage() {
                   ) : (
                     <div className="panel flex h-full flex-col gap-2 border-dashed p-5 opacity-75" aria-label={`Capítulo ${i + 1} bloqueado`}>
                       <span className="text-xs font-bold uppercase tracking-wider text-muted">Capítulo {i + 1}</span>
-                      <p className="font-display text-lg font-bold leading-tight">🔒 Páginas selladas</p>
+                      <p className="font-display text-lg font-bold leading-tight"><Icon name="lock" className={EN_TEXTO} /> Páginas selladas</p>
                       <p className="text-sm text-muted">{ch.hint}</p>
                     </div>
                   )}

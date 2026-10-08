@@ -7,6 +7,7 @@ import { ELEMENT_COLOR, GUARDIANS } from "@/content/guardians";
 import { requirePlayer } from "@/lib/auth";
 import { loadCourseViews } from "@/lib/data/queries";
 import { ALL_ENEMIES } from "@/lib/game/battle";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Bestiario" };
 
@@ -54,8 +55,8 @@ export default async function BestiaryPage() {
                   {known ? (
                     <>
                       <p className="text-sm">{lore.lore}</p>
-                      <p className="text-sm"><strong className="text-coral">⚡ {lore.special}</strong></p>
-                      <p className="text-sm text-ok">🛡️ {lore.howTo}</p>
+                      <p className="text-sm"><strong className="text-coral"><Icon name="bolt" className={EN_TEXTO} /> {lore.special}</strong></p>
+                      <p className="text-sm text-ok"><Icon name="shield" className={EN_TEXTO} /> {lore.howTo}</p>
                     </>
                   ) : (
                     <p className="text-sm text-muted">{e.slug === "cofre-mimico" ? "Termina una misión larga para descubrirla." : "Termina tu primera misión para descubrirla."}</p>
@@ -80,7 +81,7 @@ export default async function BestiaryPage() {
                     className={`h-32 w-auto ${state === "oculto" ? "brightness-0 opacity-40" : ""}`} />
                 </div>
                 <p className="text-xs font-bold uppercase tracking-wider" style={{ color: state === "oculto" ? undefined : color }}>
-                  {state === "purificado" ? "✨ Purificado" : state === "portal" ? "Te espera en su portal" : `Rango ${g.rank} · Aún sin portal`}
+                  {state === "purificado" ? <><Icon name="sparkles" className={EN_TEXTO} /> Purificado</> : state === "portal" ? "Te espera en su portal" : `Rango ${g.rank} · Aún sin portal`}
                 </p>
                 <h3 className="font-display text-lg font-bold">{state === "oculto" ? "???" : g.name}</h3>
                 {state === "oculto" ? (

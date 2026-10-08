@@ -10,6 +10,7 @@ import { CHAPTERS, isUnlocked, stagesReached } from "@/content/cronicas";
 import { INFORMAL_NOTICE } from "@/lib/content";
 import { formatPrice, loadCourseView, type MissionView } from "@/lib/data/queries";
 import { groupByModule } from "@/lib/modules";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 export async function generateMetadata({ params }: PageProps<"/portales/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -60,7 +61,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
 
       {course.kind === "curso" && course.status === "completado" && (
         <div role="note" className="panel panel-glow flex flex-wrap items-center gap-4 !border-gold/60 p-5">
-          <span aria-hidden="true" className="text-4xl">🎓</span>
+          <Icon name="seal" className="size-10 shrink-0 text-gold" />
           <div className="min-w-0 flex-1">
             <p className="font-display text-xl font-bold">{myCert ? "Tu constancia de asistencia está lista" : "¡Terminaste el curso!"}</p>
             <p className="text-muted">{myCert ? `Código de verificación: ${myCert.code}` : "Ya puedes solicitar tu constancia de asistencia."}</p>
@@ -71,7 +72,7 @@ export default async function CoursePage({ params }: PageProps<"/portales/[slug]
 
       {!course.hasAccess && (
         <div role="note" className={`panel flex flex-wrap items-center gap-4 p-5 ${course.needsSubscription ? "panel-glow !border-cyan/60" : "!border-cyan/40"}`}>
-          <span aria-hidden="true" className="text-4xl">🔑</span>
+          <Icon name="key" className="size-10 shrink-0 text-cyan" />
           <div className="min-w-0 flex-1 space-y-1">
             <p className="font-display text-xl font-bold">{course.needsSubscription ? "¡Superaste la lección gratis!" : "La primera lección es gratis"}</p>
             <p className="text-muted">
@@ -149,7 +150,7 @@ function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
       <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-accion text-sobre-accion" : "bg-white/10 text-muted"}`} aria-hidden="true">
-        {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : m.lessonKind === "explicacion" ? "📖" : index}
+        {m.state === "completada" ? <Icon name="check" className="size-6" /> : m.lock === "suscripcion" ? <Icon name="key" className="size-6" /> : locked ? <Icon name="lock" className="size-6" /> : m.lessonKind === "explicacion" ? <Icon name="book" className="size-6" /> : index}
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-display text-lg font-bold leading-tight">{m.lessonKind === "explicacion" && <span className="mr-1.5 rounded-md bg-cyan/15 px-1.5 py-0.5 align-middle text-xs font-bold text-cyan">Explicación</span>}{m.title}</p>
@@ -186,10 +187,10 @@ function BossCard({ boss, guardian, normalCount, label }: { boss: MissionView; g
           {g && <p className="text-muted"><strong className="text-text">{g.obstacle}</strong> · se vence con: {g.weakness.toLowerCase()}.</p>}
           <p className="text-sm text-muted">{boss.title} · {boss.xpReward} XP · necesitas 70% para purificarlo.</p>
           {boss.state === "bloqueada" ? (
-            <p className="inline-flex items-center gap-2 rounded-xl border border-line bg-bg/60 px-4 py-2 text-sm font-semibold"><span aria-hidden="true">{boss.lock === "suscripcion" ? "🔑" : "🔒"}</span> {boss.lock === "suscripcion" ? "Incluido en la suscripción al curso" : `Termina las ${normalCount} misiones anteriores para desbloquearlo`}</p>
+            <p className="inline-flex items-center gap-2 rounded-xl border border-line bg-bg/60 px-4 py-2 text-sm font-semibold"><Icon name={boss.lock === "suscripcion" ? "key" : "lock"} className="size-4" /> {boss.lock === "suscripcion" ? "Incluido en la suscripción al curso" : `Termina las ${normalCount} misiones anteriores para desbloquearlo`}</p>
           ) : boss.state === "completada" ? (
             <div className="flex flex-wrap items-center gap-3">
-              <span className="chip !border-green/60 !bg-green/15 text-sm text-ok">✔ Purificado · mejor nota {boss.bestScore}%</span>
+              <span className="chip !border-green/60 !bg-green/15 text-sm text-ok"><Icon name="check" className={EN_TEXTO} /> Purificado · mejor nota {boss.bestScore}%</span>
               <Link href={`/mision/${boss.id}`} className="btn btn-secondary btn-sm">Volver a enfrentarlo</Link>
             </div>
           ) : (
@@ -218,12 +219,12 @@ function ChronicleList({ guardian, done, title }: { guardian: string; done: Read
             <li key={ch.id}>
               {open ? (
                 <Link href={`/cronicas/${ch.id}`} className="panel flex h-full items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-violet/60">
-                  <span aria-hidden="true" className="text-2xl">📜</span>
+                  <Icon name="scroll" className="size-7 shrink-0 text-violet" />
                   <span className="min-w-0"><span className="block text-xs font-bold uppercase tracking-wider text-muted">Capítulo {i + 1}</span><span className="font-display font-bold leading-tight">{ch.title}</span></span>
                 </Link>
               ) : (
                 <div className="panel flex h-full items-center gap-3 border-dashed p-4 opacity-75">
-                  <span aria-hidden="true" className="text-2xl">🔒</span>
+                  <Icon name="lock" className="size-7 shrink-0 text-muted" />
                   <span className="min-w-0"><span className="block text-xs font-bold uppercase tracking-wider text-muted">Capítulo {i + 1}</span><span className="text-sm text-muted">{ch.hint}</span></span>
                 </div>
               )}

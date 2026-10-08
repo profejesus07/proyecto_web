@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { buyItemAction, updateDisplayNameAction } from "@/app/actions/game";
+import { EN_TEXTO, Icon } from "@/components/icons";
+import { ObjetoJuego } from "@/components/objeto-juego";
 
 export function DisplayNameForm({ current }: { current: string }) {
   const [state, action, pending] = useActionState(updateDisplayNameAction, null);
@@ -27,7 +29,7 @@ interface Stack {
   locked: string | null;
 }
 
-export function BuyButton({ itemId, price, coins, owned, open = true, stack, use }: { itemId: string; price: number; coins: number; owned: boolean; open?: boolean; stack?: Stack; /** Dónde usarlo después de comprarlo (p. ej. el Vestidor). */ use?: { href: string; label: string } }) {
+export function BuyButton({ itemId, price, coins, owned, open = true, stack, use }: { itemId: string; price: number; coins: number; owned: boolean; open?: boolean; stack?: Stack; /** Dónde usarlo después de comprarlo (p. ej. el Vestidor). */ use?: { href: string; label: React.ReactNode } }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -36,15 +38,15 @@ export function BuyButton({ itemId, price, coins, owned, open = true, stack, use
   if (owned) {
     return (
       <div className="space-y-2">
-        <span className="chip !border-green/60 !bg-green/15 text-sm text-ok">✔ Ya lo tienes</span>
+        <span className="chip !border-green/60 !bg-green/15 text-sm text-ok"><Icon name="check" className={EN_TEXTO} /> Ya lo tienes</span>
         {/* Tras comprar, la página se actualiza y el objeto ya es suyo: el mensaje se conserva. */}
         {msg?.ok && <p role="status" className="text-xs font-medium text-green">{msg.text}</p>}
         {useLink}
       </div>
     );
   }
-  if (!open) return <span className="chip text-sm text-muted" title="La compra se abrirá pronto">🪙 {price} · Próximamente</span>;
-  if (stack?.locked) return <span className="chip text-sm text-muted">🔒 Se desbloquea en rango {stack.locked}</span>;
+  if (!open) return <span className="chip text-sm text-muted" title="La compra se abrirá pronto"><ObjetoJuego nombre="moneda" /> {price} · Próximamente</span>;
+  if (stack?.locked) return <span className="chip text-sm text-muted"><Icon name="lock" className={EN_TEXTO} /> Se desbloquea en rango {stack.locked}</span>;
   const poor = coins < price;
   const full = !!stack && stack.have >= stack.max;
 
@@ -68,7 +70,7 @@ export function BuyButton({ itemId, price, coins, owned, open = true, stack, use
           })
         }
       >
-        {pending ? "Comprando…" : full ? "Mochila llena" : <>🪙 {price} · Comprar</>}
+        {pending ? "Comprando…" : full ? "Mochila llena" : <><ObjetoJuego nombre="moneda" /> {price} · Comprar</>}
       </button>
       {poor && !full && !msg && <p className="text-center text-xs text-muted">Te faltan {price - coins} monedas</p>}
       <p aria-live="polite" className={`text-center text-xs font-medium ${msg?.ok ? "text-green" : "text-err"}`}>{msg?.text}</p>
