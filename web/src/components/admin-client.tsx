@@ -7,6 +7,7 @@ import { useFormStatus } from "react-dom";
 import {
   assignTeacherAction, createLinkedClassAction, createTeacherAction, grantAccessAction, resetPasswordAction, revokeAccessAction, setPriceAction, setRoleAction, type AdminFormState,
 } from "@/app/actions/admin";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 function Submit({ children, pending, className = "btn btn-primary" }: { children: React.ReactNode; pending: string; className?: string }) {
   const { pending: busy } = useFormStatus();
@@ -41,7 +42,7 @@ export function CreateTeacherForm() {
       <Notice state={state} />
       {state?.password && (
         <div role="status" className="space-y-2 rounded-2xl border border-green/50 bg-green/10 p-4">
-          <p className="font-semibold text-ok">✔ {state.message}</p>
+          <p className="font-semibold text-ok"><Icon name="check" className={EN_TEXTO} /> {state.message}</p>
           <p className="text-sm">Envíale estos datos para que ingrese. <strong>La contraseña solo se muestra ahora</strong>; pídele que la cambie en Perfil → Cambiar mi contraseña.</p>
           <dl className="grid gap-1 rounded-xl bg-bg/50 p-3 font-mono text-sm sm:grid-cols-[auto_1fr] sm:gap-x-4">
             <dt className="text-muted">Correo</dt><dd>{state.email}</dd>
@@ -52,7 +53,7 @@ export function CreateTeacherForm() {
               await navigator.clipboard.writeText(`UNEX Academy — tu cuenta de docente\nIngresa en: ${location.origin}/ingresar\nCorreo: ${state.email}\nContraseña temporal: ${state.password}\nCámbiala en Perfil → Cambiar mi contraseña.`);
               setCopied(true);
             } catch { setCopied(false); }
-          }}>{copied ? "✔ Copiado" : "Copiar mensaje para enviar"}</button>
+          }}>{copied ? <><Icon name="check" className="size-4" /> Copiado</> : "Copiar mensaje para enviar"}</button>
         </div>
       )}
     </div>
@@ -101,7 +102,7 @@ export function AccessChip({ userId, course, title, expiresAt, expired }: { user
     <span className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold ${expired ? "bg-coral/15 text-err" : "bg-green/15 text-ok"}`}>
       {title}{expiresAt ? ` · ${expired ? "venció" : "hasta"} ${new Date(expiresAt).toLocaleDateString("es-CO")}` : ""}
       <button type="button" disabled={pending} aria-label={`Quitar acceso a ${title}`} className="rounded px-1 hover:bg-white/10"
-        onClick={() => { if (confirm(`¿Quitar el acceso a «${title}»?`)) run(() => revokeAccessAction(userId, course)); }}>✕</button>
+        onClick={() => { if (confirm(`¿Quitar el acceso a «${title}»?`)) run(() => revokeAccessAction(userId, course)); }}><Icon name="x" className="size-4" /></button>
     </span>
   );
 }
@@ -176,7 +177,7 @@ export function CreateLinkedClassForm({ clases, teachers }: { clases: { slug: st
         {state?.error && <p role="alert" className="text-sm font-medium text-err">{state.error}</p>}
         {state?.message && (
           <p role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-green/50 bg-green/10 px-4 py-2 font-semibold text-ok">
-            ✔ {state.message}
+            <Icon name="check" className={EN_TEXTO} /> {state.message}
             {state.id && <Link href={`/admin/grupos/${state.id}`} className="text-accion underline underline-offset-4">Asignar estudiantes →</Link>}
           </p>
         )}

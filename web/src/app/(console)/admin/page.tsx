@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Icon, type IconName } from "@/components/icons";
+import { EN_TEXTO, Icon, type IconName } from "@/components/icons";
 import { PAYMENT_STATUS, shortDate, dateTime } from "@/components/workspace/admin-format";
 import { Empty, Kpi, PanelHeader, PanelSection } from "@/components/workspace/ui";
 import { requireAdmin } from "@/lib/auth";
@@ -42,7 +42,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
         <Link href="/admin/contenido" className="btn btn-secondary btn-sm"><Icon name="lesson" className="size-4" /> Contenido</Link>
         <Link href="/admin/personas" className="btn btn-primary btn-sm"><Icon name="people" className="size-4" /> Personas</Link>
       </PanelHeader>
-      {sp.aviso === "clave" && <p role="status" className="panel p-4 font-medium text-ok">✔ Tu contraseña quedó guardada.</p>}
+      {sp.aviso === "clave" && <p role="status" className="panel p-4 font-medium text-ok"><Icon name="check" className={EN_TEXTO} /> Tu contraseña quedó guardada.</p>}
 
       {alerts.length > 0 && (
         <ul className="space-y-2">

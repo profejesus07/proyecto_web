@@ -7,6 +7,7 @@ import { loginAction, registerAction, requestPasswordResetAction, resendConfirma
 import { Sprite, asset } from "@/components/sprite";
 import { SUPPORT_EMAIL } from "@/lib/features";
 import { PASSWORD_RULES } from "@/lib/validation";
+import { EN_TEXTO, Icon } from "@/components/icons";
 
 function Submit({ children, pending: label, variant = "primary" }: { children: React.ReactNode; pending: string; variant?: "primary" | "secondary" }) {
   const { pending } = useFormStatus();
@@ -53,7 +54,7 @@ function PasswordRules({ value }: { value: string }) {
         const ok = r.test(value);
         return (
           <li key={r.id} data-cumple={ok || undefined} className={`flex items-center gap-1.5 transition-colors ${ok ? "text-green" : "text-muted"}`}>
-            <span aria-hidden="true" className={`grid size-4 place-items-center rounded-full text-[0.65rem] font-black ${ok ? "bg-green text-bg" : "border border-current"}`}>{ok ? "✓" : ""}</span>
+            <span aria-hidden="true" className={`grid size-4 place-items-center rounded-full text-[0.65rem] font-black ${ok ? "bg-green text-bg" : "border border-current"}`}>{ok && <Icon name="check" className="size-3" />}</span>
             {r.label}
             <span className="sr-only">{ok ? " (listo)" : " (falta)"}</span>
           </li>
@@ -172,7 +173,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
     <>
       <form action={action} className="space-y-5">
         {notice === "confirmado" && (
-        <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-3 text-sm font-medium text-ok">✔ Tu correo quedó confirmado. Ingresa con tu correo y tu contraseña.</p>
+        <p role="status" className="rounded-xl border border-green/50 bg-green/10 px-4 py-3 text-sm font-medium text-ok"><Icon name="check" className={EN_TEXTO} /> Tu correo quedó confirmado. Ingresa con tu correo y tu contraseña.</p>
       )}
       {notice === "recuperar-otro-navegador" && (
         <p role="status" className="rounded-xl border border-warn/50 bg-warn/10 px-4 py-3 text-sm font-medium text-warn">Abre el enlace para cambiar la contraseña en el mismo navegador donde lo pediste, o pide uno nuevo desde «¿Olvidaste tu contraseña?».</p>

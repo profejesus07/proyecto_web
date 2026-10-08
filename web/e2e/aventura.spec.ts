@@ -18,7 +18,7 @@ async function elegir(radio: Locator) {
  * «1 estudiante asignado.», «¡Enviado!…»): viven en el estado de React. Con `next dev`, la primera vez que se
  * compila una ruta, el servidor a veces recarga la página justo después de la acción y el aviso se pierde,
  * aunque la acción sí se guardó. Por eso estas pruebas comprueban el resultado que queda guardado (la mochila,
- * «✔ Ya lo tienes», «Guardado ✔», el estudiante en el grupo, los mensajes que quedan hoy). Si las e2e pasan a
+ * «Ya lo tienes», «Guardado», el estudiante en el grupo, los mensajes que quedan hoy). Si las e2e pasan a
  * correr contra la versión compilada, se pueden volver a comprobar los avisos.
  */
 
@@ -192,13 +192,13 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await nav.getByRole("link", { name: "Cosméticos" }).click();
   await expect(card("Capa de hojas").getByRole("img", { name: /Así te queda: Capa de hojas/ })).toHaveAttribute("src", /c=[^&]*K1/);
   await card("Capa de hojas").getByRole("button", { name: /Comprar/ }).click();
-  await expect(card("Capa de hojas").getByText("✔ Ya lo tienes")).toBeVisible();
+  await expect(card("Capa de hojas").getByText("Ya lo tienes")).toBeVisible();
   await card("Capa de hojas").getByRole("link", { name: /Póntelo en el Vestidor/ }).click();
   await expect(page).toHaveURL(/\/perfil\/avatar$/);
   await elegir(page.getByRole("group", { name: /^Capa/ }).getByRole("radio", { name: "Capa de hojas" }));
   await elegir(page.getByRole("group", { name: /Marco del retrato/ }).getByRole("radio", { name: "Marco básico" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
   await page.goto("/perfil");
   await expect(page.getByRole("img", { name: /Tu avatar/ })).toHaveAttribute("src", /c=[^&]*K1/);
   // Lo que no tiene no aparece para ponérselo.
@@ -453,7 +453,7 @@ test("un código de grupo da acceso anual a la clase, y salir del grupo lo quita
   await page.getByRole("button", { name: "Unirme" }).click();
   await expect(page.getByText(/tienes acceso a «Ciencias 5\.° · 2027» hasta el 30 de noviembre de 2027/)).toBeVisible();
   await page.goto("/portales");
-  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText("✔ Acceso anual activo")).toBeVisible();
+  await expect(page.locator("a", { hasText: "Ciencias 5.° · 2027" }).getByText("Acceso anual activo")).toBeVisible();
 
   await page.goto("/perfil");
   page.once("dialog", (d) => d.accept());
@@ -673,7 +673,7 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await expect(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio")).toHaveCount(7);
   await expect(page.getByRole("img", { name: /Vista previa/ })).toHaveAttribute("src", /\/avatar\/.+c=h4t3y9/);
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
 
   // La imagen con colores se sirve como SVG.
   const res = await page.request.get("/avatar/aria/aria-rango-e-reposo.svg?c=h4t3");
@@ -688,7 +688,7 @@ test("en el Vestidor se cambian los colores del avatar y los atuendos de rangos 
   await page.getByRole("button", { name: "Colores originales" }).click();
   await elegir(page.getByRole("group", { name: "Peinados masculinos" }).getByRole("radio", { name: "Original" }));
   await page.getByRole("button", { name: "Guardar cambios" }).click();
-  await expect(page.getByRole("button", { name: "Guardado ✔" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardado", exact: true })).toBeVisible();
 });
 
 test("la familia se vincula con el código del estudiante, ve su avance y el estudiante puede quitarla", async ({ page, context }) => {
@@ -721,7 +721,7 @@ test("la familia se vincula con el código del estudiante, ve su avance y el est
   // Las pruebas anteriores ya jugaron el primer portal.
   await expect(card.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" })).toBeVisible();
   const portal = card.locator("li").filter({ has: page.getByRole("progressbar", { name: "Avance en El Portal de los Pasos Pequeños" }) });
-  await expect(portal.getByText(/L1 · 100% ✔/)).toBeVisible();
+  await expect(portal.getByText(/L1 · 100%\s*superada/)).toBeVisible();
 
   // La terraza muestra el regalo que el estudiante compró en la tienda.
   await expect(page.getByRole("region", { name: "La Terraza del Hogar" }).getByRole("img", { name: "Macetas en flor" })).toBeVisible();
@@ -801,7 +801,7 @@ test("se paga un curso en línea: un pago rechazado no abre nada y uno aprobado 
   await page.goto("/mision/c2m2");
   await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
   await page.goto("/suscribirse/portal-del-primer-intento");
-  await expect(page.getByText("✔ Ya tienes este curso completo.")).toBeVisible();
+  await expect(page.getByText("Ya tienes este curso completo.")).toBeVisible();
 
   // Nadie más ve el estado de ese pago, y el administrador lo ve en su lista.
   await context.addCookies([asAdmin]);
@@ -875,7 +875,7 @@ test("un curso corto por módulos, con actividades variadas, un Guardián por m�
   async function addLesson(module: string, title: string, { boss = false, reading = "" } = {}) {
     const d = details(`+ Agregar lección a «${module}»`);
     if (!(await d.getAttribute("open").then((v) => v !== null))) await d.locator(":scope > summary").click();
-    await d.getByText(reading ? "📖 Explicación (para leer)" : "⚔️ Reto (actividades)").click();
+    await d.getByText(reading ? "Explicación (para leer)" : "Reto (actividades)").click();
     await d.getByLabel("Título de la lección").fill(title);
     if (reading) await d.getByRole("textbox", { name: /^Explicación/ }).fill(reading);
     if (boss) await d.getByLabel(/prueba del Guardián del módulo/).check();
@@ -1014,13 +1014,13 @@ test("el sonido se configura desde la cabecera y los personajes se pueden escuch
   await page.getByRole("button", { name: "Escuchar a Archivista Eon" }).click();
   const sound = page.locator("summary[aria-label=Sonido]");
   await sound.click();
-  const music = page.getByLabel("🎵 Música de fondo");
+  const music = page.getByLabel("Música de fondo");
   await expect(music).toBeChecked();
   await music.uncheck();
   await page.reload();
   await page.locator("summary[aria-label=Sonido]").click();
-  await expect(page.getByLabel("🎵 Música de fondo")).not.toBeChecked();
-  await page.getByLabel("🎵 Música de fondo").check();
+  await expect(page.getByLabel("Música de fondo")).not.toBeChecked();
+  await page.getByLabel("Música de fondo").check();
   // En la misión, Sora y Kael traen su voz.
   await page.goto("/mision/m1");
   await expect(page.getByRole("button", { name: "Escuchar a Maestra Sora" }).or(page.getByRole("button", { name: "Escuchar a Kuro" })).first()).toBeVisible();
@@ -1127,7 +1127,7 @@ test("el administrador carga estudiantes a mano y desde Excel, con usuario y con
   await page.getByLabel("Usuario o correo del estudiante 2").fill("luna.perez");
   await page.getByLabel("Contraseña del estudiante 2").fill("Luna2027");
   await page.getByRole("button", { name: "Crear 2 cuentas" }).click();
-  await expect(page.getByText("✔ 2 cuentas creadas.")).toBeVisible();
+  await expect(page.getByText("2 cuentas creadas.")).toBeVisible();
   const results = page.getByRole("region", { name: "Resultado de la carga" });
   await expect(results.getByRole("row").filter({ hasText: "luna.perez" })).toContainText("Luna2027");
   // Sin contraseña, la plataforma crea una.
@@ -1144,7 +1144,7 @@ test("el administrador carga estudiantes a mano y desde Excel, con usuario y con
   await page.getByRole("tab", { name: "Subir un Excel" }).click();
   await page.getByLabel("Archivo de Excel con los estudiantes").setInputFiles({ name: "estudiantes.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: xlsx });
   await page.getByRole("button", { name: "Cargar estudiantes" }).click();
-  await expect(page.getByText("✔ 1 cuenta creada.")).toBeVisible();
+  await expect(page.getByText("1 cuenta creada.")).toBeVisible();
 
   // Aparecen en Personas con su usuario, y el administrador les puede dar una contraseña nueva.
   await page.goto("/admin/personas");
