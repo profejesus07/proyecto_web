@@ -49,7 +49,7 @@ export default async function ContentPage() {
                     <Link href={`/admin/contenido/${c.slug}`} className="flex flex-1 items-center gap-3 p-4">
                       <Sprite src={asset.boss(c.guardian)} alt="" decorative className="size-14 shrink-0 rounded-lg bg-bg object-contain p-1" />
                       <span className="min-w-0">
-                        <span className="block truncate font-semibold">{c.title}</span>
+                        <span className="block break-words font-semibold">{c.title}</span>
                         <span className="block text-xs text-muted">
                           {KIND_LABEL[c.kind]} · {c.missionCount} {c.missionCount === 1 ? "lección" : "lecciones"}
                           {c.kind === "clase" && c.grade ? ` · ${c.area ?? ""} ${c.grade} ${c.schoolYear ?? ""}` : ""}

@@ -68,7 +68,7 @@ export default async function TeacherHome() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <h3 className="truncate text-lg">{g.group.name}</h3>
-                        <p className="truncate text-sm text-muted">{g.group.courseTitle ?? "Seguimiento general"}</p>
+                        <p className="break-words text-sm text-muted">{g.group.courseTitle ?? "Seguimiento general"}</p>
                       </div>
                       {g.needSupport > 0 && <span className="badge badge-warn shrink-0">{g.needSupport} con apoyo</span>}
                     </div>
