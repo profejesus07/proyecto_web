@@ -83,7 +83,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
             <ul className="panel divide-y divide-line">
               {payments.slice(0, 6).map((p) => (
                 <li key={p.reference} className="flex items-center gap-3 px-4 py-3 text-sm">
-                  <span className="min-w-0 flex-1"><span className="block truncate font-medium">{p.student}</span><span className="block truncate text-xs text-muted">{p.courseTitle} · {dateTime(p.createdAt)}</span></span>
+                  <span className="min-w-0 flex-1"><span className="block truncate font-medium">{p.student}</span><span className="block break-words text-xs text-muted">{p.courseTitle} · {dateTime(p.createdAt)}</span></span>
                   <span className="font-semibold tabular-nums">{formatPrice(p.amount)}</span>
                   <span className={`badge ${PAYMENT_STATUS[p.status].badge}`}>{PAYMENT_STATUS[p.status].label}</span>
                 </li>
@@ -98,7 +98,7 @@ export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
                 <li key={c.code}>
                   <Link href={`/admin/constancias/${c.code}`} className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-[#f8f8fc]">
                     <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-accion-suave text-accion"><Icon name="seal" className="size-4" /></span>
-                    <span className="min-w-0 flex-1"><span className="block truncate font-medium">{c.participantName}</span><span className="block truncate text-xs text-muted">{c.courseTitle} · {shortDate(c.issuedAt)}</span></span>
+                    <span className="min-w-0 flex-1"><span className="block truncate font-medium">{c.participantName}</span><span className="block break-words text-xs text-muted">{c.courseTitle} · {shortDate(c.issuedAt)}</span></span>
                     <span className="font-mono text-xs text-muted">{c.code}</span>
                   </Link>
                 </li>
