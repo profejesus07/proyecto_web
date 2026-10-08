@@ -12,6 +12,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  async redirects() {
+    return [
+      // La sección Proyectos se quitó (etapa 3 del rediseño): quien tenga el enlace llega a los cursos.
+      { source: "/proyectos", destination: "/programas", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },

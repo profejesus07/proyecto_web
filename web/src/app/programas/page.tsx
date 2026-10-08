@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FranjaPortada } from "@/components/FranjaPortada";
+import { PreguntasFrecuentes } from "@/components/PreguntasFrecuentes";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
+import { Sprite } from "@/components/sprite";
 import { loadCatalog } from "@/lib/data/queries";
 import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
 
@@ -11,13 +14,6 @@ export const metadata: Metadata = {
   title: "Cursos",
   description: "Cursos cortos y clases de UNEX Academy. La primera lección de cada programa es gratis.",
 };
-
-const FAQ = [
-  { q: "¿Cuánto cuesta?", a: "Crear la cuenta es gratis y la primera lección de cada programa también. Algunos programas son gratis completos; los demás tienen su precio en pesos colombianos y se pagan en línea con Wompi o Mercado Pago (PSE, Nequi, tarjeta y más)." },
-  { q: "¿Para qué edades es?", a: "Para niñas, niños, adolescentes y adultos. Si eres menor de edad, tu acudiente debe autorizar el uso de la plataforma; puede acompañarte desde una cuenta de familia." },
-  { q: "¿Necesito instalar algo?", a: "No. Funciona en el navegador del celular, la tableta o el computador. Tu avance se guarda en tu cuenta." },
-  { q: "¿Qué valor tienen las constancias?", a: "Los cursos cortos son educación informal (Ley 115 de 1994 y Decreto 1075 de 2015). Al terminarlos se expide una constancia de asistencia que cualquiera puede verificar en línea con su código. No conduce a título." },
-];
 
 const FILTERS = [["", "Todos"], ["curso", "Cursos cortos"], ["clase", "Clases"], ["gratis", "Gratis"]] as const;
 const GROUPS = [
@@ -33,19 +29,21 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
 
   return (
     <SiteShell>
-      <header className="paper border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-12 sm:px-6 sm:pt-16">
-          <p className="eyebrow">Catálogo</p>
-          <h1 className="mt-2 text-4xl sm:text-5xl">Cursos</h1>
-          <p className="mt-3 max-w-xl text-lg text-muted">La primera lección de cada curso es gratis.</p>
-          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-white/5 p-1.5 ring-1 ring-line sm:inline-flex sm:w-auto">
+      <FranjaPortada
+        id="cursos-t" antetitulo="Catálogo" titulo="Cursos" amplia
+        ilustracion={<Sprite src="/assets/escenarios/portales/portales-disponible-cuadrado.svg" alt="La Sala de Portales, con portales abiertos" priority className="aspect-square w-full max-w-xs rounded-3xl object-cover" />}
+        acciones={
+          // Tokens del tema: dentro de la franja Cosmos se ven en oscuro (antes bg-white/5, que solo servía en oscuro).
+          <nav aria-label="Filtrar" className="flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-[var(--chip-fondo)] p-1.5 ring-1 ring-[var(--chip-borde)] sm:inline-flex sm:w-auto">
             {FILTERS.map(([t, label]) => (
               <Link key={t} href={t ? `/programas?tipo=${t}` : "/programas"} aria-current={tipo === t ? "page" : undefined}
                 className={`rounded-lg px-3 py-2 text-sm font-semibold transition focus-visible:outline-offset-2 sm:px-4 ${tipo === t ? "bg-accion text-sobre-accion shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
             ))}
           </nav>
-        </div>
-      </header>
+        }
+      >
+        <p>La primera lección de cada curso es gratis.</p>
+      </FranjaPortada>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {groups.length === 0 ? (
           <p className="mt-12 rounded-2xl border border-dashed border-line p-10 text-center text-muted">
@@ -64,23 +62,7 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
             </section>
           ))
         )}
-        <section aria-labelledby="preguntas-t" className="mx-auto mt-24 grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.6fr]">
-          <div>
-            <p className="eyebrow">Ayuda</p>
-            <h2 id="preguntas-t" className="mt-2 text-3xl">Preguntas frecuentes</h2>
-          </div>
-          <div className="divide-y divide-line border-y border-line">
-            {FAQ.map((f) => (
-              <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-cyan/10 text-cyan transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 max-w-2xl text-muted">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <PreguntasFrecuentes ids={["costo", "edades", "instalar", "constancias"]} antetitulo="Ayuda" className="mx-auto mt-24 max-w-6xl" />
       </div>
     </SiteShell>
   );

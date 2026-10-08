@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FranjaPortada } from "@/components/FranjaPortada";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { SiteShell } from "@/components/site-header";
@@ -52,42 +53,44 @@ export default async function ProgramPage({ params }: PageProps<"/programas/[slu
 
   return (
     <SiteShell>
-      <header className="paper border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 pb-14 pt-8 sm:px-6">
+      <FranjaPortada
+        id="programa-t" titulo={c.title} amplia
+        ruta={
           <nav aria-label="Ruta" className="text-sm text-muted">
             <Link href="/programas" className="hover:text-text hover:underline hover:underline-offset-4">Cursos</Link>
             <span className="mx-2" aria-hidden="true">/</span>
             <span className="text-text">{c.title}</span>
           </nav>
-          <section className="mt-8 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
-            <div className="space-y-5">
-              <div className="flex flex-wrap gap-2">
-                <span className="chip">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
-                {c.isFree && <span className="rounded-full bg-accion px-3 py-1 text-xs font-bold text-sobre-accion">Gratis</span>}
-              </div>
-              <h1 className="text-4xl leading-tight sm:text-5xl">{c.title}</h1>
-              <p className="max-w-2xl text-lg text-muted">{c.summary}</p>
-              <div className="flex flex-wrap gap-3 pt-1">
-                {viewer && isAdmin(viewer.role) ? (
-                  <Link href={`/admin/contenido/${c.slug}`} className="btn btn-primary btn-lg">Editar en la consola</Link>
-                ) : viewer?.role === "docente" ? (
-                  <Link href="/maestro" className="btn btn-primary btn-lg">Ir a mi panel</Link>
-                ) : viewer ? (
-                  <Link href={`/portales/${c.slug}`} className="btn btn-primary btn-lg">Ir al programa</Link>
-                ) : (
-                  <>
-                    <Link href="/registro" className="btn btn-primary btn-lg">Empieza gratis</Link>
-                    <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-secondary btn-lg">Ya tengo cuenta</Link>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="relative h-72 overflow-hidden rounded-3xl border border-line shadow-[0_24px_48px_-30px_rgb(21_16_63/0.5)]" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}55, transparent 70%), linear-gradient(180deg, #2a1f7a, #15103f)` }}>
-              <Sprite src={asset.boss(c.guardian)} alt={g ? `${g.name}, el Guardián de este programa` : "El Guardián del programa"} className="absolute bottom-0 left-1/2 h-[92%] w-auto -translate-x-1/2" />
-            </div>
-          </section>
-        </div>
-      </header>
+        }
+        antetitulo={
+          <span className="flex flex-wrap gap-2 normal-case tracking-normal">
+            <span className="chip">{KIND_LABEL[c.kind]}{c.area ? ` · ${c.area}` : ""}</span>
+            {c.isFree && <span className="rounded-full bg-accion px-3 py-1 text-xs font-bold text-sobre-accion">Gratis</span>}
+          </span>
+        }
+        acciones={
+          viewer && isAdmin(viewer.role) ? (
+            <Link href={`/admin/contenido/${c.slug}`} className="btn btn-primary btn-lg">Editar en la consola</Link>
+          ) : viewer?.role === "docente" ? (
+            <Link href="/maestro" className="btn btn-primary btn-lg">Ir a mi panel</Link>
+          ) : viewer ? (
+            <Link href={`/portales/${c.slug}`} className="btn btn-primary btn-lg">Ir al programa</Link>
+          ) : (
+            <>
+              <Link href="/registro" className="btn btn-primary btn-lg">Empieza gratis</Link>
+              <Link href={`/ingresar?siguiente=${encodeURIComponent(`/portales/${c.slug}`)}`} className="btn btn-secondary btn-lg">Ya tengo cuenta</Link>
+            </>
+          )
+        }
+        ilustracion={
+          // El fondo del Guardián usa el color de su elemento: es arte del mundo, no interfaz.
+          <div className="relative h-64 w-full max-w-sm overflow-hidden rounded-3xl ring-1 ring-[var(--chip-borde)] sm:h-72" style={{ background: `radial-gradient(70% 90% at 50% 40%, ${color}55, transparent 70%), linear-gradient(180deg, #2a1f7a, #15103f)` }}>
+            <Sprite src={asset.boss(c.guardian)} alt={g ? `${g.name}, el Guardián de este programa` : "El Guardián del programa"} priority className="absolute bottom-0 left-1/2 h-[92%] w-auto -translate-x-1/2" />
+          </div>
+        }
+      >
+        <p>{c.summary}</p>
+      </FranjaPortada>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <dl className={`relative -mt-8 grid gap-px overflow-hidden rounded-2xl border border-line bg-line shadow-[0_12px_30px_-20px_rgb(21_16_63/0.35)] sm:grid-cols-2 ${facts.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}>

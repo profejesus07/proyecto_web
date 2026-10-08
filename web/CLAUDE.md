@@ -35,6 +35,42 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
   curso: `universoDeCurso` los asigna todos al Gremio. Cada universo puede tener su acento y su tipografía de
   títulos con `[data-universo="<id>"]` en `globals.css`; el archivo explica los pasos para agregar uno.
 
+### Reparto de personajes en páginas públicas
+La biblioteca está en `public/assets` (ver su `README.md`) y el elenco en `docs/biblia-de-personajes.md`.
+
+| Página | Lugar | Personajes |
+|---|---|---|
+| Inicio | Portada | Kuro (`KuroGreeter`) |
+| Inicio | Tarjeta del Gremio de los Portales | Sora, sobre el escenario del Gremio (`universe-art.tsx`) |
+| Cursos (`/programas`) | Franja de arriba | Escenario de la Sala de Portales (`escenarios/portales/portales-disponible-cuadrado.svg`) |
+| Ficha de un curso | Franja de arriba | El Guardián del curso |
+| Cómo se juega | Franja de arriba | Archivista Eon |
+| Cómo se juega | Paso «Crea tu cuenta y elige tu avatar» | Aria, Leo, Tomás y Nuri (rango E, reposo) |
+| Cómo se juega | Paso «Supera las misiones» | Slime Confuso, Duende Enredador, Sombrita y Cofre Mímico |
+| Cómo se juega | Los Guardianes | Los 8 Guardianes. Petrox e Ignaris con su texto; los demás con su nombre y su obstáculo de `content/guardians.ts` |
+| Cómo se juega | XP y rangos | Aria en los rangos E a S |
+| Cómo se juega | La Tienda y Arsenal | Forjadora Brann y 5 objetos del catálogo (capa, alas, sombrero, marco y un poder) |
+| Cómo se juega | Compañeros | 4 pieles de Kuro (`objetos/companero/`) |
+| Familias y docentes | Franja de arriba | Abuela Amara |
+| Familias y docentes | Para las familias | Los 4 Guardianes del Hogar y la Terraza del Hogar |
+| Familias y docentes | Para docentes | Los 4 Maestros del Gremio |
+| Ingresar | Junto al formulario | Maestra Ilia abriendo un portal (`maestra-ilia-abrir-portal.svg`) |
+| Recuperar | Junto al formulario | Kael (pensar) |
+| Registro | Junto al formulario | Aria, Leo, Tomás y Nuri |
+| Registro (cuenta creada) / Recuperar (correo enviado) | Aviso | Kael (celebrar) / Archivista Eon (señalar) |
+| Página 404 | Arriba | Archivista Eon (pensar) |
+
+Reglas:
+- En las páginas públicas, Kuro y Sora aparecen una sola vez cada uno (Kuro en la portada del inicio y Sora en la
+  tarjeta del Gremio). Las pieles de Kuro de la tienda son objetos, no el personaje.
+- No se usa la animación de señas de Nuri hasta validarla con una persona usuaria de Lengua de Señas Colombiana.
+- Poses en reposo o animaciones suaves (los SVG respetan «reducir movimiento»: con esa preferencia, la Maestra Ilia
+  queda con el portal ya dibujado).
+- Las preguntas frecuentes de las páginas públicas salen de `content/preguntas-frecuentes.ts`; no mencionan
+  pasarelas ni medios de pago mientras los pagos no estén abiertos al público.
+- Solo la ilustración que se ve al abrir lleva `priority`; las demás cargan en diferido (`Sprite` usa
+  `loading="lazy"` por omisión). Una ilustración que se oculta en celular no lleva `priority`.
+
 ### Logo
 - Nunca se redibuja ni se modifica. Los SVG se copian sin cambios a `public/brand/` y se usan con `<img>`.
 - `unex-academy-negativo.svg` sobre fondos oscuros; `unex-academy.svg` sobre fondos claros.
@@ -86,7 +122,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
 ### Zonas y temas
 - **Gremio** (estudiantes y familias): oscuro, tokens de `:root`.
 - **Consola y panel docente**: `.theme-panel`, claro.
-- **Sitio público** (inicio, cursos, ficha, verificar, legales, servicios, proyectos, Cómo se juega, Familias y
+- **Sitio público** (inicio, cursos, ficha, verificar, legales, servicios, Cómo se juega, Familias y
   docentes, y sin sesión ingresar, registro y recuperar): `[data-tema="claro"]`, como el sitio principal UNEX.
   Dentro, las zonas sobre Cosmos (encabezado, portada del inicio y pie) llevan `[data-tema="oscuro"]`, que
   vuelve a los tokens de `:root`. Cada página pública exporta `viewport = VIEWPORT_PUBLICO`
@@ -109,6 +145,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   Familias y docentes), selector «Plataformas» con Academy marcada, Ingresar y Crear cuenta. Hasta 1079 px:
   logo, «Ingresar» siempre visible y un menú con lo demás. Los desplegables son `<details>` (`Desplegable`) y
   se cierran al cambiar de página, con Escape y al tocar fuera. Pie: `PiePublico`.
+  `/proyectos` ya no existe: redirige de forma permanente a `/programas` (`next.config.ts`).
 - **Consola, panel docente y páginas compartidas del personal**: la franja Cosmos `FranjaUnex` con
   "UNEX Education" y las cuatro plataformas.
 - Las direcciones de las plataformas están en `src/config/productos.ts`; mientras una sea `null`, se muestra
@@ -134,3 +171,33 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   con mensajes en español.
 - En la vista previa de Vercel no se crean cuentas, constancias ni datos: puede usar la base real. Las e2e
   solo en CI o en local con el repositorio en memoria (`UMBRAL_PREVIEW=1`).
+
+## Principio: una sola cuenta de jugador para todos los universos
+
+### Una sola cuenta de jugador
+- Avatar, XP, rango, monedas, racha, insignias de racha, inventario, poderes y cuenta de familia
+  pertenecen al ESTUDIANTE y son únicos para toda UNEX Academy. Nunca se duplican por universo.
+- Cada universo aporta: historia, Crónicas, personajes guía, Guardianes, estilo visual, tendero
+  y sus propios logros y progreso de portales.
+- La tienda es una sola, con una sola moneda. Un universo puede tener artículos temáticos, pero
+  lo comprado se usa en cualquier universo.
+
+### El avatar (decisión tomada)
+- Hay UN solo avatar para todos los universos, en el estilo vectorial actual de Aria, Leo,
+  Tomás y Nuri (contorno limpio, colores planos con sombra suave). Es el estilo del avatar de
+  UNEX Academy, independiente de cualquier universo.
+- Narrativa: el avatar es «el viajero entre mundos». Conserva su forma en todos los universos,
+  también en los de otro estilo (por ejemplo, pixel art), donde es el visitante de otro mundo.
+- Reglas:
+  1. El cuerpo base del avatar no lleva elementos de ningún universo; todo eso va como accesorio.
+  2. Los accesorios temáticos de cada universo se dibujan en el estilo del avatar (vectorial),
+     para que se vean bien en cualquier parte.
+  3. En universos con otro estilo, el avatar aparece en la interfaz (tarjetas, retrato,
+     diálogos, celebraciones), no incrustado en los escenarios de ese estilo.
+  4. Los rangos siguen siendo la evolución visual del avatar.
+
+### Pendiente para más adelante
+- Nombres de rango neutrales que no suenen a un universo en particular.
+- Ampliar la variedad del avatar (tonos de piel, peinados o más personajes base); cada opción se
+  multiplica por rangos y animaciones, así que se planea aparte.
+- Antes de crear un segundo universo, revisar esta sección y proponer el diseño.
