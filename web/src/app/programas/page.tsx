@@ -3,6 +3,9 @@ import Link from "next/link";
 import { ProgramCard } from "@/components/program-card";
 import { SiteShell } from "@/components/site-header";
 import { loadCatalog } from "@/lib/data/queries";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
+
+export const viewport = VIEWPORT_PUBLICO;
 
 export const metadata: Metadata = {
   title: "Cursos",
@@ -35,10 +38,10 @@ export default async function ProgramsPage({ searchParams }: PageProps<"/program
           <p className="eyebrow">Catálogo</p>
           <h1 className="mt-2 text-4xl sm:text-5xl">Cursos</h1>
           <p className="mt-3 max-w-xl text-lg text-muted">La primera lección de cada curso es gratis.</p>
-          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-white/5 p-1 ring-1 ring-line sm:inline-flex sm:w-auto">
+          <nav aria-label="Filtrar" className="mt-8 flex w-full gap-1 overflow-x-auto whitespace-nowrap rounded-xl bg-white/5 p-1.5 ring-1 ring-line sm:inline-flex sm:w-auto">
             {FILTERS.map(([t, label]) => (
               <Link key={t} href={t ? `/programas?tipo=${t}` : "/programas"} aria-current={tipo === t ? "page" : undefined}
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition sm:px-4 ${tipo === t ? "bg-accion text-ink shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition focus-visible:outline-offset-2 sm:px-4 ${tipo === t ? "bg-accion text-sobre-accion shadow-sm" : "text-muted hover:text-text"}`}>{label}</Link>
             ))}
           </nav>
         </div>

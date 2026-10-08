@@ -1,0 +1,242 @@
+/* Encabezado público: siempre sobre Cosmos, sólido y no fijo, como el del sitio principal UNEX Education.
+   Solo usa tokens de marca. Hasta 1079 px: «Ingresar» y un menú desplegable; desde 1080 px: todo en la barra. */
+
+.encabezado {
+  position: relative;
+  z-index: 40;
+  background: var(--unex-cosmos);
+  color: var(--unex-polvo);
+  border-bottom: 1px solid color-mix(in srgb, var(--unex-polvo) 10%, transparent);
+}
+
+.encabezado :focus-visible {
+  outline: 3px solid var(--unex-polvo);
+  outline-offset: 3px;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1200px;
+  min-height: 4.5rem;
+  margin-inline: auto;
+  padding: 0.5rem 16px;
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Secciones */
+
+.seccionesFila,
+.seccionesColumna,
+.plataformas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seccionesFila {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.seccionesColumna {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.seccion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--unex-polvo) 88%, transparent);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.seccion:hover {
+  background: color-mix(in srgb, var(--unex-polvo) 12%, transparent);
+  color: var(--unex-polvo);
+}
+
+/* Sección actual: Aurora (tono claro sobre Cosmos) y la estrella de Nova. */
+.seccion[aria-current="page"] {
+  background: color-mix(in srgb, var(--unex-aurora) 22%, transparent);
+  color: var(--unex-aurora);
+}
+
+.seccion[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--unex-nova);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+
+/* Desplegables (Plataformas y Menú) */
+
+.desplegable {
+  position: relative;
+}
+
+.resumen {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--unex-polvo) 35%, transparent);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.resumen::-webkit-details-marker {
+  display: none;
+}
+
+.resumen::after {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s;
+}
+
+.desplegable[open] .resumen::after {
+  transform: translateY(15%) rotate(-135deg);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 19rem;
+  max-width: calc(100vw - 32px);
+  padding: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--unex-polvo) 20%, transparent);
+  border-radius: 16px;
+  background: var(--unex-cosmos);
+  box-shadow: 0 12px 32px color-mix(in srgb, #000 35%, transparent);
+}
+
+.panelMenu {
+  width: min(22rem, calc(100vw - 32px));
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.tituloPanel {
+  margin: 0.25rem 0 0;
+  padding-inline: 0.6rem;
+  color: color-mix(in srgb, var(--unex-polvo) 72%, transparent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Plataformas */
+
+.plataformas {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.plataforma,
+.inactivo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.plataforma {
+  color: var(--unex-polvo);
+}
+
+.plataforma:hover {
+  background: color-mix(in srgb, var(--unex-polvo) 12%, transparent);
+}
+
+.plataforma[aria-current="page"] {
+  background: color-mix(in srgb, var(--plataforma) 22%, transparent);
+  color: var(--plataforma-claro);
+  font-weight: 500;
+}
+
+.inactivo {
+  color: color-mix(in srgb, var(--unex-polvo) 72%, transparent);
+  cursor: default;
+}
+
+.punto {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--plataforma);
+}
+
+.pronto {
+  margin-left: auto;
+  padding: 0 0.45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+/* Qué se ve en cada ancho */
+
+.soloEscritorio {
+  display: none;
+}
+
+@media (min-width: 1080px) {
+  .soloEscritorio {
+    display: block;
+  }
+
+  a.soloEscritorio {
+    display: inline-flex;
+  }
+
+  .soloCelular {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seccion,
+  .resumen::after {
+    transition: none;
+  }
+}

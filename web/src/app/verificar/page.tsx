@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { QrScanner } from "@/components/qr-scanner";
 import { SiteShell } from "@/components/site-header";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
 
 export const metadata: Metadata = { title: "Verificar constancia", description: "Comprueba que una constancia de asistencia de UNEX Academy (antes Academia Virtual Umbral) es auténtica: escanea su código QR o escribe su código." };
+export const viewport = VIEWPORT_PUBLICO;
 
 export default async function VerifyFormPage({ searchParams }: PageProps<"/verificar">) {
   const sp = await searchParams;

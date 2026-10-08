@@ -3,8 +3,10 @@ import Link from "next/link";
 import { SiteShell } from "@/components/site-header";
 import { CODE_PATTERN, LEGAL_FOOTER, docShort, longDate, marcaDeConstancia, maskDoc } from "@/lib/certificates";
 import { getRepo } from "@/lib/data";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
 
 export const metadata: Metadata = { title: "Verificación de constancia", robots: { index: false } };
+export const viewport = VIEWPORT_PUBLICO;
 
 export default async function VerifyPage({ params }: PageProps<"/verificar/[code]">) {
   const { code } = await params;

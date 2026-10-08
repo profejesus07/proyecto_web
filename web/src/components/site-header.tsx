@@ -1,8 +1,8 @@
 import Link from "next/link";
+import { EncabezadoPublico } from "@/components/encabezado/EncabezadoPublico";
 import { FranjaUnex } from "@/components/encabezado/FranjaUnex";
-import { Footer } from "@/components/footer";
+import { PiePublico } from "@/components/PiePublico";
 import { logoutAction } from "@/app/actions/auth";
-import { Icon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { AvatarFace } from "@/components/avatar-face";
 import { GuideFace } from "@/components/guide-face";
@@ -12,7 +12,6 @@ import { rankProgress } from "@/lib/game/ranks";
 import { homePath, isAdmin, isStaff } from "@/lib/roles";
 import { NavLinks } from "./nav-links";
 import { SoundControl } from "./sound";
-import { SiteNav } from "./site-nav";
 
 export async function SiteHeader() {
   const viewer = await getViewer();
@@ -84,36 +83,13 @@ export async function SiteHeader() {
   );
 }
 
-/** Cabecera del sitio público: no depende de quién mira, así las páginas se sirven estáticas desde la CDN.
- *  Logo, las tres secciones al centro y, separado por una línea fina, el botón para ingresar.
- *  En celular, el menú baja a una segunda fila. */
-export function PublicHeader() {
-  return (
-    <header data-fija="arriba" className="sticky top-0 z-40 border-b border-line/60 bg-bg/80 backdrop-blur-md print:hidden">
-      <div className="site-header-line" aria-hidden="true" />
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:px-6 md:h-20 md:py-0">
-        <Logo href="/" size="h-12 sm:h-14 lg:h-16" />
-        <SiteNav className="hidden md:flex" />
-        <div className="flex items-center gap-3">
-          <span className="hidden h-8 w-px bg-line lg:block" aria-hidden="true" />
-          <Link href="/ingresar" className="btn btn-primary btn-shine max-sm:min-h-10 max-sm:px-3.5 max-sm:text-sm">
-            <Icon name="user" className="size-4" /> Ingresar
-          </Link>
-        </div>
-      </div>
-      <div className="px-4 pb-2.5 md:hidden"><SiteNav className="mx-auto flex max-w-md" /></div>
-    </header>
-  );
-}
-
-/** Envoltura del sitio público, con su cabecera y su pie, en el estilo del Gremio (el mismo de ingresar y registro). */
+/** Envoltura del sitio público, con su encabezado y su pie: tema claro, como el sitio principal UNEX. */
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="theme-gremio">
-      <FranjaUnex />
-      <PublicHeader />
+    <div data-tema="claro" className="sitio-publico">
+      <EncabezadoPublico />
       <main id="contenido">{children}</main>
-      <Footer />
+      <PiePublico />
     </div>
   );
 }

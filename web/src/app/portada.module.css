@@ -1,0 +1,42 @@
+/* Portada del inicio, como la del sitio principal UNEX: fondo Cosmos con un brillo suave (Aurora, el color de
+   Academy) detrás de Kuro. La altura depende del contenido (sin 100vh). */
+
+.portada {
+  background:
+    radial-gradient(ellipse 55% 60% at 30% 50%, color-mix(in srgb, var(--unex-aurora) 14%, transparent), transparent 70%),
+    var(--unex-cosmos);
+  color: var(--unex-polvo);
+}
+
+.portada :focus-visible {
+  outline: 3px solid var(--unex-polvo);
+  outline-offset: 3px;
+}
+
+.contenido {
+  display: grid;
+  align-items: center;
+  gap: 2rem;
+  max-width: 1000px;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 7vw, 5rem) 16px clamp(3rem, 8vw, 5.5rem);
+}
+
+@media (min-width: 768px) {
+  .contenido {
+    grid-template-columns: 1fr 1.4fr;
+    gap: 3rem;
+  }
+}
+
+.kuro {
+  text-align: center;
+}
+
+.entradilla {
+  max-width: 36rem;
+  margin-top: 1.25rem;
+  color: color-mix(in srgb, var(--unex-polvo) 85%, transparent);
+  font-size: 1.1875rem; /* 19 px, como la entradilla del sitio principal */
+  font-weight: 300;
+}

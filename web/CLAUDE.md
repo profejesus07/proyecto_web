@@ -46,7 +46,7 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
 ### Color
 Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores son UNEX:
 
-| Token | `:root` (Gremio y sitio público, oscuro) | `.theme-panel` (consola y panel docente, claro) |
+| Token | `:root` y `[data-tema="oscuro"]` (Gremio y zonas Cosmos) | `.theme-panel` y `[data-tema="claro"]` (consola, panel docente y sitio público) |
 |---|---|---|
 | `bg` | `#0D0F2B` (Fondo oscuro) | `#F5F4FB` (Polvo) |
 | `bg-2` | `#15173F` (Cosmos) | `#FFFFFF` |
@@ -62,6 +62,7 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
 | `violet` (gráficos: barras, anillos) | `#1FBFA9` (Aurora base, 7,3:1 sobre panel) | `#137365` (Aurora oscuro, 4,9:1 sobre el riel) |
 | `gold` | `#F8B630` (Nova) | `#A86A00` (ámbar oscuro, no es Nova) |
 | `ink` (texto sobre Aurora o Nova) | `#15173F` | `#15173F` |
+| `sobre-accion` (texto sobre un fondo `accion`) | `#15173F` (7,4:1) | `#FFFFFF` (5,7:1) |
 | `coral`, `green`, `ok`, `warn`, `err` | estados, sin cambio | estados, sin cambio |
 
 - `::selection` en modo oscuro: fondo `#137365` con texto blanco (5,7:1). **No uses `#137365` para gráficos
@@ -70,11 +71,24 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   `#137365`.
 - Aurora es el color de Academy. Color base solo para gráficos; para texto, el tono claro sobre Cosmos
   (`#1FBFA9`) o el oscuro sobre fondo claro (`#137365`).
-- **Botón principal**: Aurora con texto Cosmos (7,4:1). **Nova** solo para monedas, rangos, recompensas,
+- **Botón principal**: Aurora con texto Cosmos (7,4:1); en claro, Aurora oscuro con texto blanco (5,7:1). **Nova** solo para monedas, rangos, recompensas,
   logros y la estrella del menú activo. Nova nunca va como texto sobre fondo claro.
 - Los colores de estado no reutilizan los colores de plataforma. El verde de éxito siempre va con ícono y texto.
 - Sin colores escritos a mano en la interfaz: usa los tokens. El bloque `--unex-*` es copia literal de
-  `tokens.css`.
+  `tokens.css`. Sobre un fondo `bg-accion`, el texto va en `text-sobre-accion` (no en `text-ink` ni `text-white`).
+  Lo que depende del fondo también es token: `--campo`, `--chip-fondo`, `--chip-borde`, `--riel`,
+  `--hover-suave`, `--sombra-panel` y `--palomita` (casilla `.casilla`).
+
+### Zonas y temas
+- **Gremio** (estudiantes y familias): oscuro, tokens de `:root`.
+- **Consola y panel docente**: `.theme-panel`, claro.
+- **Sitio público** (inicio, cursos, ficha, verificar, legales, servicios, proyectos, Cómo se juega, Familias y
+  docentes, y sin sesión ingresar, registro y recuperar): `[data-tema="claro"]`, como el sitio principal UNEX.
+  Dentro, las zonas sobre Cosmos (encabezado, portada del inicio y pie) llevan `[data-tema="oscuro"]`, que
+  vuelve a los tokens de `:root`. Cada página pública exporta `viewport = VIEWPORT_PUBLICO`
+  (`src/config/viewport-publico.ts`, theme-color Cosmos `#15173F`).
+- Cualquier cambio en `globals.css` se comprueba con una comparación píxel a píxel del Gremio, la consola y el
+  panel docente antes y después: deben quedar idénticos.
 
 ### Tipografía
 - **Unbounded** (títulos: h1 700, h2 600, h3 y h4 500) y **Lexend** (texto, 350), como archivos locales en
@@ -86,9 +100,16 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   (y DM Sans en las constancias anteriores al cambio). Se cargan únicamente donde se usan, no en todo el sitio.
 
 ### Encabezado y pie
-- Franja Cosmos con "UNEX Education" y las cuatro plataformas en el sitio público y en el panel. Las direcciones
-  están en `src/config/productos.ts`; mientras una sea `null`, la plataforma se muestra como "Próximamente".
-- En el Gremio, el acceso a las otras plataformas está solo en el pie.
+- **Sitio público**: `EncabezadoPublico` (`src/components/encabezado/`), una sola barra Cosmos, sólida y no fija,
+  como la del sitio principal: logo, secciones (`src/config/secciones-publicas.ts`: Cursos, Cómo se juega,
+  Familias y docentes), selector «Plataformas» con Academy marcada, Ingresar y Crear cuenta. Hasta 1079 px:
+  logo, «Ingresar» siempre visible y un menú con lo demás. Los desplegables son `<details>` (`Desplegable`) y
+  se cierran al cambiar de página, con Escape y al tocar fuera. Pie: `PiePublico`.
+- **Consola, panel docente y páginas compartidas del personal**: la franja Cosmos `FranjaUnex` con
+  "UNEX Education" y las cuatro plataformas.
+- Las direcciones de las plataformas están en `src/config/productos.ts`; mientras una sea `null`, se muestra
+  como "Próximamente".
+- En el Gremio, el acceso a las otras plataformas está solo en el pie (`footer.tsx`).
 
 ### Constancias
 - Cada constancia se dibuja con la marca con la que se emitió. `MARCA_UNEX_DESDE` (`src/lib/certificates.ts`)

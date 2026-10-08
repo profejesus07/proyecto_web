@@ -10,7 +10,7 @@ import { type CourseView, formatPrice, loadCourseViews } from "@/lib/data/querie
 export const metadata: Metadata = { title: "Sala de Portales" };
 
 const STATUS = {
-  nuevo: { label: "Nuevo", cls: "bg-accion text-ink" },
+  nuevo: { label: "Nuevo", cls: "bg-accion text-sobre-accion" },
   "en-curso": { label: "En curso", cls: "bg-cyan text-ink" },
   completado: { label: "Completado", cls: "bg-green text-ink" },
 } as const;

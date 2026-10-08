@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site-header";
+import { VIEWPORT_PUBLICO } from "@/config/viewport-publico";
 
 export const metadata: Metadata = { title: "Proyectos" };
+export const viewport = VIEWPORT_PUBLICO;
 
 // Sección reservada: el contenido de proyectos se agregará más adelante.
 export default function ProjectsPage() {

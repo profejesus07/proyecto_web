@@ -148,7 +148,7 @@ function MissionRow({ m, index }: { m: MissionView; index: number }) {
   const locked = m.state === "bloqueada";
   const body = (
     <div className={`panel flex items-center gap-4 p-4 sm:p-5 transition ${locked ? "opacity-60" : "hover:-translate-y-0.5 hover:border-cyan/50"} ${m.state === "disponible" ? "panel-glow" : ""}`}>
-      <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-accion text-ink" : "bg-white/10 text-muted"}`} aria-hidden="true">
+      <span className={`grid size-12 shrink-0 place-items-center rounded-xl font-display text-xl font-extrabold ${m.state === "completada" ? "bg-green text-ink" : m.state === "disponible" ? "bg-accion text-sobre-accion" : "bg-white/10 text-muted"}`} aria-hidden="true">
         {m.state === "completada" ? "✔" : m.lock === "suscripcion" ? "🔑" : locked ? "🔒" : m.lessonKind === "explicacion" ? "📖" : index}
       </span>
       <div className="min-w-0 flex-1">
