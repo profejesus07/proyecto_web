@@ -35,36 +35,6 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
   curso: `universoDeCurso` los asigna todos al Gremio. Cada universo puede tener su acento y su tipografía de
   títulos con `[data-universo="<id>"]` en `globals.css`; el archivo explica los pasos para agregar uno.
 
-### Principio: una sola cuenta de jugador para todos los universos
-
-**Una sola cuenta de jugador**
-- Avatar, XP, rango, monedas, racha, insignias de racha, inventario, poderes y cuenta de familia pertenecen al
-  **estudiante** y son únicos para toda UNEX Academy. Nunca se duplican por universo.
-- Cada universo aporta: historia, Crónicas, personajes guía, Guardianes, estilo visual, tendero y sus propios
-  logros y progreso de portales.
-- La tienda es una sola, con una sola moneda. Un universo puede tener artículos temáticos, pero lo comprado se
-  usa en cualquier universo.
-
-**El avatar (decisión tomada)**
-- Hay **un solo avatar** para todos los universos, en el estilo vectorial actual de Aria, Leo, Tomás y Nuri
-  (contorno limpio, colores planos con sombra suave). Es el estilo del avatar de UNEX Academy, independiente de
-  cualquier universo.
-- Narrativa: el avatar es «el viajero entre mundos». Conserva su forma en todos los universos, también en los de
-  otro estilo (por ejemplo, pixel art), donde es el visitante de otro mundo.
-- Reglas:
-  1. El cuerpo base del avatar no lleva elementos de ningún universo; todo eso va como accesorio.
-  2. Los accesorios temáticos de cada universo se dibujan en el estilo del avatar (vectorial), para que se vean
-     bien en cualquier parte.
-  3. En universos con otro estilo, el avatar aparece en la interfaz (tarjetas, retrato, diálogos,
-     celebraciones), no incrustado en los escenarios de ese estilo.
-  4. Los rangos siguen siendo la evolución visual del avatar.
-
-**Pendiente para más adelante**
-- Nombres de rango neutrales que no suenen a un universo en particular.
-- Ampliar la variedad del avatar (tonos de piel, peinados o más personajes base); cada opción se multiplica por
-  rangos y animaciones, así que se planea aparte.
-- Antes de crear un segundo universo, revisar esta sección y proponer el diseño.
-
 ### Reparto de personajes en páginas públicas
 La biblioteca está en `public/assets` (ver su `README.md`) y el elenco en `docs/biblia-de-personajes.md`.
 
@@ -201,3 +171,33 @@ Los tokens de `src/app/globals.css` conservan sus nombres antiguos; sus valores 
   con mensajes en español.
 - En la vista previa de Vercel no se crean cuentas, constancias ni datos: puede usar la base real. Las e2e
   solo en CI o en local con el repositorio en memoria (`UMBRAL_PREVIEW=1`).
+
+## Principio: una sola cuenta de jugador para todos los universos
+
+### Una sola cuenta de jugador
+- Avatar, XP, rango, monedas, racha, insignias de racha, inventario, poderes y cuenta de familia
+  pertenecen al ESTUDIANTE y son únicos para toda UNEX Academy. Nunca se duplican por universo.
+- Cada universo aporta: historia, Crónicas, personajes guía, Guardianes, estilo visual, tendero
+  y sus propios logros y progreso de portales.
+- La tienda es una sola, con una sola moneda. Un universo puede tener artículos temáticos, pero
+  lo comprado se usa en cualquier universo.
+
+### El avatar (decisión tomada)
+- Hay UN solo avatar para todos los universos, en el estilo vectorial actual de Aria, Leo,
+  Tomás y Nuri (contorno limpio, colores planos con sombra suave). Es el estilo del avatar de
+  UNEX Academy, independiente de cualquier universo.
+- Narrativa: el avatar es «el viajero entre mundos». Conserva su forma en todos los universos,
+  también en los de otro estilo (por ejemplo, pixel art), donde es el visitante de otro mundo.
+- Reglas:
+  1. El cuerpo base del avatar no lleva elementos de ningún universo; todo eso va como accesorio.
+  2. Los accesorios temáticos de cada universo se dibujan en el estilo del avatar (vectorial),
+     para que se vean bien en cualquier parte.
+  3. En universos con otro estilo, el avatar aparece en la interfaz (tarjetas, retrato,
+     diálogos, celebraciones), no incrustado en los escenarios de ese estilo.
+  4. Los rangos siguen siendo la evolución visual del avatar.
+
+### Pendiente para más adelante
+- Nombres de rango neutrales que no suenen a un universo en particular.
+- Ampliar la variedad del avatar (tonos de piel, peinados o más personajes base); cada opción se
+  multiplica por rangos y animaciones, así que se planea aparte.
+- Antes de crear un segundo universo, revisar esta sección y proponer el diseño.
