@@ -37,6 +37,19 @@ async function play(page: Page, id: string, answers: number[]) {
   await expect(page.getByRole("heading", { name: "Repaso de tus respuestas" })).toBeVisible();
 }
 
+/** Captura opcional para comparar antes y después en un PR: solo si E2E_CAPTURAS indica una carpeta. */
+async function captura(page: Page, nombre: string) {
+  const dir = process.env.E2E_CAPTURAS;
+  if (!dir) return;
+  const original = page.viewportSize() ?? { width: 1280, height: 900 };
+  for (const width of [original.width, 375]) {
+    await page.setViewportSize({ width, height: original.height });
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${dir}/${nombre}-${width}.png`, fullPage: true });
+  }
+  await page.setViewportSize(original);
+}
+
 test.describe.configure({ mode: "serial" });
 
 test("la Maestra Sora da la bienvenida la primera vez y lleva al primer portal", async ({ page }) => {
@@ -162,14 +175,6 @@ test("completar el portal y vencer a Petrox da recompensa, sello y certificado",
   await expect(page.getByRole("heading", { name: "Este portal no existe" })).toBeVisible();
 });
 
-test("al superar la lección gratis se ofrece desbloquear el curso", async ({ page }) => {
-  await play(page, "c2m1", CORRECT.c2m1);
-  await expect(page.getByText("¡Superaste la lección gratis!")).toBeVisible();
-  await page.getByRole("link", { name: /Desbloquear el curso/ }).click();
-  await expect(page).toHaveURL(/\/suscribirse\/portal-del-primer-intento$/);
-  await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:unexeducation07@gmail\.com/);
-});
-
 test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en el Vestidor", async ({ page }) => {
   await page.goto("/tienda");
   const nav = page.getByRole("navigation", { name: "Categorías" });
@@ -208,37 +213,91 @@ test("la tienda vende ayudas y accesorios que funcionan; lo comprado se viste en
   await expect(page.getByRole("img", { name: "Macetas en flor" }).first()).toBeVisible();
 });
 
-test("los poderes se compran en la tienda y el Rayo de Claridad ilumina la pregunta", async ({ page }) => {
+test("la tienda de poderes muestra cuáles se desbloquean al subir de rango", async ({ page }) => {
   await page.goto("/tienda?c=poder");
   const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
   await expect(card("Sombra Dorada")).toHaveCount(0);
   await expect(card("Aura de Concentración").getByText(/Se desbloquea en rango B/)).toBeVisible();
+  // Comprar y usar un poder lo cubre «una misión completa…», con el Rayo de Claridad.
+});
+
+test("una misión completa: poder, acierto, error, 50/50, pista y la pantalla de recompensa", async ({ page }) => {
+  // Va después de la prueba de la tienda (que compró un 50/50) y antes de jugar la lección gratis del segundo
+  // curso, así la misión se supera por primera vez y muestra sus recompensas. Respuestas de c2m1: [1, 0, 2, 0].
+  // Las monedas de la suite están contadas: aquí se compra el Rayo y se usa el 50/50 ya comprado.
+  await page.goto("/tienda?c=poder");
+  const card = (name: string) => page.locator("li").filter({ has: page.getByRole("heading", { name, exact: true }) });
   await card("Rayo de Claridad").getByRole("button", { name: /Comprar/ }).click();
   await expect(card("Rayo de Claridad").getByText(/^En tu mochila: 1 \/ \d+$/)).toBeVisible();
+  await captura(page, "mision-tienda");
 
-  await page.goto("/mision/m1");
+  await page.goto("/mision/c2m1");
+  await expect(page.getByText("Pregunta 1 de 4", { exact: true })).toBeVisible();
+  const opcion = (i: number) => page.locator("label:has(input[type=radio])").nth(i);
+  const ayudas = page.getByRole("group", { name: "Ayudas" });
   const poderes = page.getByRole("group", { name: "Poderes" });
+  await captura(page, "mision-inicio");
+
+  // Pregunta 1: un poder (Rayo de Claridad) y acierto. Al gastar la única unidad, el grupo de poderes desaparece.
   await poderes.getByRole("button", { name: /Rayo de Claridad · 1/ }).click();
   await expect(page.getByText(/El Rayo de Claridad (ilumina|te susurra)/)).toBeVisible();
   await expect(page.locator("h2 mark").first().or(page.getByText(/Fíjate en esto/))).toBeVisible();
-  // Ya no quedan unidades: el botón desaparece.
+  await captura(page, "mision-poder");
   await expect(poderes).toHaveCount(0);
-});
+  await opcion(1).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await expect(page.locator("label[data-correcta]")).toHaveCount(1);
+  await captura(page, "mision-acierto");
+  await page.getByRole("button", { name: /Siguiente/ }).click();
 
-test("el 50/50 descarta respuestas incorrectas y gasta una unidad", async ({ page }) => {
-  await page.goto("/mision/m2");
-  const ayudas = page.getByRole("group", { name: "Ayudas" });
+  // Pregunta 2: error.
+  await expect(page.getByText("Pregunta 2 de 4", { exact: true })).toBeVisible();
+  await opcion(1).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.getByText("¡Uy, no era esa!")).toBeVisible();
+  await captura(page, "mision-error");
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+
+  // Pregunta 3: 50/50, pista y acierto.
+  await expect(page.getByText("Pregunta 3 de 4", { exact: true })).toBeVisible();
   await ayudas.getByRole("button", { name: /50\/50 · tienes 1/ }).click();
   await expect(ayudas.getByText("50/50 usado")).toBeVisible();
   await expect(page.locator("label[data-descartada]")).toHaveCount(2);
-  const correct = page.locator("label:has(input[type=radio])").nth(CORRECT.m2[0]);
-  await expect(correct).not.toHaveAttribute("data-descartada");
-  await correct.click();
-  await page.getByRole("button", { name: "Responder" }).click();
-  await page.getByRole("button", { name: /Siguiente enemigo/ }).click();
-  await expect(ayudas.getByRole("button", { name: /50\/50 · tienes 0/ })).toBeDisabled();
+  await expect(opcion(2)).not.toHaveAttribute("data-descartada");
   await ayudas.getByRole("button", { name: /Pista · gratis/ }).click();
   await expect(page.getByRole("note")).toBeVisible();
+  await captura(page, "mision-ayudas");
+  await opcion(2).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await page.getByRole("button", { name: /Siguiente/ }).click();
+
+  // Pregunta 4: el 50/50 ya no tiene unidades; acierto y fin de la misión (3 de 4, 75 %).
+  await expect(page.getByText("Pregunta 4 de 4", { exact: true })).toBeVisible();
+  await expect(ayudas.getByRole("button", { name: /50\/50 · tienes 0/ })).toBeDisabled();
+  await opcion(0).click();
+  await page.getByRole("button", { name: /Responder|Lanzar ataque/ }).click();
+  await expect(page.locator("#feedback")).toBeVisible();
+  await page.getByRole("button", { name: /Terminar misión|Purificar al Guardián/ }).click();
+
+  // La recompensa: misión superada, XP y monedas, y el repaso con el acierto y el error.
+  await expect(page.getByRole("heading", { name: "¡Misión superada!" })).toBeVisible();
+  const recompensas = page.getByRole("list", { name: "Recompensas" });
+  await expect(recompensas.getByText("+60 XP")).toBeVisible();
+  await expect(recompensas.getByText(/\+\d+/).nth(1)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Repaso de tus respuestas" })).toBeVisible();
+  await expect(page.getByText("Correcta.", { exact: false }).first()).toBeAttached();
+  await expect(page.getByText("Incorrecta.", { exact: false }).first()).toBeAttached();
+  await captura(page, "mision-recompensa");
+});
+
+test("al superar la lección gratis se ofrece desbloquear el curso", async ({ page }) => {
+  await play(page, "c2m1", CORRECT.c2m1);
+  await expect(page.getByText("¡Superaste la lección gratis!")).toBeVisible();
+  await page.getByRole("link", { name: /Desbloquear el curso/ }).click();
+  await expect(page).toHaveURL(/\/suscribirse\/portal-del-primer-intento$/);
+  await expect(page.getByRole("link", { name: /Escribir para suscribirme/ })).toHaveAttribute("href", /^mailto:unexeducation07@gmail\.com/);
 });
 
 test("el registro muestra qué le falta a la contraseña", async ({ page }) => {
