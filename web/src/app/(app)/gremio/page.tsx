@@ -15,6 +15,8 @@ import { loadChronicles, unreadCount } from "@/lib/data/chronicles";
 import { loadCourseViews } from "@/lib/data/queries";
 import { kuroStage } from "@/lib/game/battle";
 import { rankForXp, rankProgress } from "@/lib/game/ranks";
+import { EN_TEXTO, Icon } from "@/components/icons";
+import { ObjetoJuego } from "@/components/objeto-juego";
 
 export const metadata: Metadata = { title: "El Gremio" };
 
@@ -92,11 +94,11 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
         </div>
       </section>
 
-      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok">✔ Tu contraseña quedó guardada.</p>}
+      {passwordChanged && <p role="status" className="panel !border-green/50 p-4 font-medium text-ok"><Icon name="check" className={EN_TEXTO} /> Tu contraseña quedó guardada.</p>}
 
       {messages.length > 0 && (
         <section aria-labelledby="msg-t" className="panel space-y-3 !border-green/40 p-4 sm:p-5">
-          <h2 id="msg-t" className="font-display text-lg font-bold">💌 {messages.length === 1 ? "Un mensaje de tu familia" : "Mensajes de tu familia"}</h2>
+          <h2 id="msg-t" className="font-display text-lg font-bold"><Icon name="mail" className={EN_TEXTO} /> {messages.length === 1 ? "Un mensaje de tu familia" : "Mensajes de tu familia"}</h2>
           <ul className="space-y-3">
             {messages.map((m) => {
               const g = guideById(m.guide ?? undefined) ?? defaultGuide("hogar", m.from);
@@ -116,7 +118,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       {viewer.role === "familia" && (
         <section aria-label="Guardianes del Hogar" className="panel flex flex-wrap items-center justify-between gap-4 !border-cyan/40 p-5">
-          <p><strong className="font-display text-lg">👪 Guardián del Hogar.</strong> <span className="text-muted">Vincula a tu hijo o hija y acompaña su avance.</span></p>
+          <p><strong className="font-display text-lg"><Icon name="people" className={EN_TEXTO} /> Guardián del Hogar.</strong> <span className="text-muted">Vincula a tu hijo o hija y acompaña su avance.</span></p>
           <Link href="/familia" className="btn btn-primary">Ir a Mi familia</Link>
         </section>
       )}
@@ -127,7 +129,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
             {unread === 1 ? "Se abrió un capítulo nuevo de las Crónicas: " : `Tienes ${unread} capítulos nuevos en las Crónicas. El más reciente: `}
             <strong>«{newest.chapter.title}»</strong>.
           </SpeechBubble>
-          <Link href={`/cronicas/${newest.chapter.id}`} className="btn btn-secondary">📜 Leer ahora</Link>
+          <Link href={`/cronicas/${newest.chapter.id}`} className="btn btn-secondary"><Icon name="scroll" className="size-5" /> Leer ahora</Link>
         </section>
       )}
 
@@ -137,7 +139,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
             {kaelSays.text}
           </SpeechBubble>
           <div className="flex items-center gap-3">
-            {played > 0 && <p className="chip text-sm" aria-label={`Duelos: tú ${kael.wins}, Kael ${kael.losses}, empates ${kael.ties}`}>⚔️ Tú {kael.wins} · Kael {kael.losses}</p>}
+            {played > 0 && <p className="chip text-sm" aria-label={`Duelos: tú ${kael.wins}, Kael ${kael.losses}, empates ${kael.ties}`}><Icon name="swords" className={EN_TEXTO} /> Tú {kael.wins} · Kael {kael.losses}</p>}
             {kael.rematch && !kael.ally && <Link href={`/mision/${kael.rematch}`} className="btn btn-secondary">Revancha</Link>}
           </div>
         </section>
@@ -145,9 +147,9 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <RankCard xp={viewer.xp} />
-        <Stat icon="🪙" label="Monedas" value={viewer.coins} />
-        <Stat icon="💎" label="Gemas" value={viewer.gems} />
-        <Stat icon="🔥" label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
+        <Stat icon={<ObjetoJuego nombre="moneda" className="size-8" />} label="Monedas" value={viewer.coins} />
+        <Stat icon={<ObjetoJuego nombre="gema" className="size-8" />} label="Gemas" value={viewer.gems} />
+        <Stat icon={<ObjetoJuego nombre="racha" className="size-8" />} label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
@@ -167,7 +169,7 @@ export default async function GremioPage({ searchParams }: PageProps<"/gremio">)
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <p className="font-display text-lg font-bold leading-tight">{c.title}</p>
                       <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={c.total} aria-valuenow={c.done} aria-label="Misiones completadas"><i style={{ width: `${(c.done / Math.max(c.total, 1)) * 100}%` }} /></div>
-                      <p className="text-sm text-muted">{c.done} de {c.total} misiones{c.bossDefeated ? " · Guardián vencido ✔" : ""}{c.needsSubscription ? " · 🔓 Suscríbete para continuar" : ""}</p>
+                      <p className="text-sm text-muted">{c.done} de {c.total} misiones{c.bossDefeated && <> · Guardián vencido <Icon name="check" className={EN_TEXTO} /></>}{c.needsSubscription && <> · <Icon name="key" className={EN_TEXTO} /> Suscríbete para continuar</>}</p>
                     </div>
                   </Link>
                 </li>

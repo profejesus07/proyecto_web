@@ -12,6 +12,8 @@ import { allItems, getItem, petImage, titleLabel, type CatalogItem } from "@/lib
 import { getRepo } from "@/lib/data";
 import { loadDiplomas } from "@/lib/data/queries";
 import { rankProgress } from "@/lib/game/ranks";
+import { EN_TEXTO, Icon } from "@/components/icons";
+import { ObjetoJuego } from "@/components/objeto-juego";
 
 export const metadata: Metadata = { title: "Tu perfil" };
 
@@ -49,10 +51,10 @@ export default async function ProfilePage() {
         <div className="space-y-5 self-center">
           <PageTitle eyebrow="Tu perfil" title={viewer.displayName} />
           <p className="text-muted">Rango {p.rank.key} · {p.rank.name}</p>
-          {title && <p className="w-fit rounded-lg bg-gold/15 px-3 py-1 text-sm font-bold text-gold">🎖️ «{title}»</p>}
+          {title && <p className="w-fit rounded-lg bg-gold/15 px-3 py-1 text-sm font-bold text-gold"><Icon name="medal" className={EN_TEXTO} /> «{title}»</p>}
           <div className="flex flex-wrap gap-2">
-            <Link href="/perfil/avatar" className="btn btn-primary btn-sm">🎨 Personalizar avatar</Link>
-            <a href="#editar" className="btn btn-secondary btn-sm">✏️ Editar perfil</a>
+            <Link href="/perfil/avatar" className="btn btn-primary btn-sm"><Icon name="palette" className="size-4" /> Personalizar avatar</Link>
+            <a href="#editar" className="btn btn-secondary btn-sm"><Icon name="pencil" className="size-4" /> Editar perfil</a>
           </div>
         </div>
       </section>
@@ -64,22 +66,22 @@ export default async function ProfilePage() {
           <div className="space-y-2">
             <p className="label">Avatar</p>
             <p className="text-sm text-muted">Cambia de personaje, colores de piel, cabello, ojos y ropa, y los atuendos que ganas al subir de rango.</p>
-            <Link href="/perfil/avatar" className="btn btn-secondary btn-sm">🎨 Abrir el Vestidor</Link>
+            <Link href="/perfil/avatar" className="btn btn-secondary btn-sm"><Icon name="palette" className="size-4" /> Abrir el Vestidor</Link>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-          <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm">🔑 Cambiar mi contraseña</Link>
+          <Link href="/nueva-contrasena" className="btn btn-ghost btn-sm"><Icon name="key" className="size-4" /> Cambiar mi contraseña</Link>
           <form action={logoutAction}>
-            <button type="submit" className="btn btn-ghost btn-sm">🚪 Cerrar sesión</button>
+            <button type="submit" className="btn btn-ghost btn-sm"><Icon name="logout" className="size-4" /> Cerrar sesión</button>
           </form>
         </div>
       </section>
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <RankCard xp={viewer.xp} />
-        <Stat icon="🪙" label="Monedas" value={viewer.coins} />
-        <Stat icon="💎" label="Gemas" value={viewer.gems} />
-        <Stat icon="🔥" label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
+        <Stat icon={<ObjetoJuego nombre="moneda" className="size-8" />} label="Monedas" value={viewer.coins} />
+        <Stat icon={<ObjetoJuego nombre="gema" className="size-8" />} label="Gemas" value={viewer.gems} />
+        <Stat icon={<ObjetoJuego nombre="racha" className="size-8" />} label={viewer.streak === 1 ? "Día de racha" : "Días de racha"} value={viewer.streak} />
       </div>
 
       {myCerts.length > 0 && (
@@ -89,7 +91,7 @@ export default async function ProfilePage() {
             {myCerts.map((c) => (
               <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
                 <span><strong>{c.courseTitle}</strong> <span className="text-sm text-muted">· {c.hours} horas · {c.code}</span></span>
-                <Link href={`/constancia/${c.code}`} className="btn btn-secondary btn-sm">🎓 Ver y descargar</Link>
+                <Link href={`/constancia/${c.code}`} className="btn btn-secondary btn-sm"><Icon name="seal" className="size-4" /> Ver y descargar</Link>
               </li>
             ))}
           </ul>
@@ -129,7 +131,7 @@ export default async function ProfilePage() {
               <ul className="space-y-2">
                 {families.map((f) => (
                   <li key={f.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
-                    <span>👪 <strong>{f.name}</strong> <span className="text-sm text-muted">ve tu avance</span></span>
+                    <span><Icon name="people" className={EN_TEXTO} /> <strong>{f.name}</strong> <span className="text-sm text-muted">ve tu avance</span></span>
                     <UnlinkButton otherId={f.id} label="Quitar" confirmText={`¿Dejar de compartir tu avance con ${f.name}?`} />
                   </li>
                 ))}
@@ -158,7 +160,7 @@ export default async function ProfilePage() {
             {diplomas.map((d) => (
               <li key={d.slug} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-bg/40 px-4 py-2.5">
                 <strong>{d.title}</strong>
-                <Link href={`/diploma/${d.slug}`} className="btn btn-secondary btn-sm">📜 Ver y descargar</Link>
+                <Link href={`/diploma/${d.slug}`} className="btn btn-secondary btn-sm"><Icon name="scroll" className="size-4" /> Ver y descargar</Link>
               </li>
             ))}
           </ul>
