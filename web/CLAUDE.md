@@ -35,6 +35,37 @@ Léela antes de tocar colores, logos, fuentes o textos de marca.
   curso: `universoDeCurso` los asigna todos al Gremio. Cada universo puede tener su acento y su tipografía de
   títulos con `[data-universo="<id>"]` en `globals.css`; el archivo explica los pasos para agregar uno.
 
+### Reparto de personajes en páginas públicas
+La biblioteca está en `public/assets` (ver su `README.md`) y el elenco en `docs/biblia-de-personajes.md`.
+
+| Página | Lugar | Personajes |
+|---|---|---|
+| Inicio | Portada | Kuro (`KuroGreeter`) |
+| Inicio | Tarjeta del Gremio de los Portales | Sora, sobre el escenario del Gremio (`universe-art.tsx`) |
+| Cómo se juega | Franja de arriba | Archivista Eon |
+| Cómo se juega | Paso «Crea tu cuenta y elige tu avatar» | Aria, Leo, Tomás y Nuri (rango E, reposo) |
+| Cómo se juega | Paso «Supera las misiones» | Slime Confuso, Duende Enredador, Sombrita y Cofre Mímico |
+| Cómo se juega | Los Guardianes | Los 8 Guardianes. Petrox e Ignaris con su texto; los demás con su nombre y su obstáculo de `content/guardians.ts` |
+| Cómo se juega | XP y rangos | Aria en los rangos E a S |
+| Cómo se juega | La Tienda y Arsenal | Forjadora Brann y 5 objetos del catálogo (capa, alas, sombrero, marco y un poder) |
+| Cómo se juega | Compañeros | 4 pieles de Kuro (`objetos/companero/`) |
+| Familias y docentes | Franja de arriba | Abuela Amara |
+| Familias y docentes | Para las familias | Los 4 Guardianes del Hogar y la Terraza del Hogar |
+| Familias y docentes | Para docentes | Los 4 Maestros del Gremio |
+| Ingresar | Junto al formulario | Kael (saludar) |
+| Recuperar | Junto al formulario | Kael (pensar) |
+| Registro | Junto al formulario | Aria, Leo, Tomás y Nuri |
+| Registro (cuenta creada) / Recuperar (correo enviado) | Aviso | Kael (celebrar) / Archivista Eon (señalar) |
+| Página 404 | Arriba | Archivista Eon (pensar) |
+
+Reglas:
+- En las páginas públicas, Kuro y Sora aparecen una sola vez cada uno (Kuro en la portada del inicio y Sora en la
+  tarjeta del Gremio). Las pieles de Kuro de la tienda son objetos, no el personaje.
+- No se usa la animación de señas de Nuri hasta validarla con una persona usuaria de Lengua de Señas Colombiana.
+- Poses en reposo o animaciones suaves (los SVG respetan «reducir movimiento»).
+- Solo la ilustración que se ve al abrir lleva `priority`; las demás cargan en diferido (`Sprite` usa
+  `loading="lazy"` por omisión). Una ilustración que se oculta en celular no lleva `priority`.
+
 ### Logo
 - Nunca se redibuja ni se modifica. Los SVG se copian sin cambios a `public/brand/` y se usan con `<img>`.
 - `unex-academy-negativo.svg` sobre fondos oscuros; `unex-academy.svg` sobre fondos claros.

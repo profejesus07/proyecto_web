@@ -514,6 +514,10 @@ test("la portada presenta los cursos, el encabezado lleva a las secciones y a la
     await expect(menu.getByRole("link", { name: seccion })).toHaveAttribute("aria-current", "page");
     if (seccion === "Cómo se juega") {
       await expect(page.getByRole("heading", { name: "Los Guardianes" })).toBeVisible();
+      // Los 8 Guardianes del juego, cada uno con su obstáculo.
+      const guardianes = page.getByRole("region", { name: "Los Guardianes" }).getByRole("listitem");
+      await expect(guardianes).toHaveCount(8);
+      await expect(guardianes.filter({ hasText: "Zhaal, el Vacío" })).toContainText("Su obstáculo: Todo lo anterior.");
       await expect(page.getByRole("heading", { name: "¿Todo listo para cruzar tu primer portal?" })).toBeVisible();
     } else {
       // Los enlaces de la franja llevan a cada sección de la página.
